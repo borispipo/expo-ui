@@ -1,7 +1,6 @@
 import React from "$react"
 import { AppState,Linking,BackHandler,} from "react-native"
 import APP from "$capp";
-import {HOME as HOME_SCREEN_NAME} from "$escreens/Home/routes";
 import {AppStateService,trackIDLE,stop as stopIDLE} from "$capp/idle";
 import { NavigationContainer} from '@react-navigation/native';
 import {navigationRef} from "$cnavigation/utils"
@@ -145,7 +144,7 @@ function App(props) {
           trackIDLE(true);
       }
   },[isInitialized]);
-  const initialRouteName = HOME_SCREEN_NAME;
+  const initialRouteName = "Home";
   return (<SplashScreen isLoaded={!isLoading}>
       <NavigationContainer 
           ref={navigationRef}

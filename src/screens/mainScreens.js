@@ -1,10 +1,4 @@
-import Auth from "./Auth"
-import Start from "./Start"
-import Help from "./Help"
-import Home  from "./Home"
+import Auth from "./Auth";
 export default  [
     Auth,
-    Home,
-    Start,
-    Help,
 ]

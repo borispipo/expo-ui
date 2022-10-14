@@ -8,12 +8,14 @@ module.exports = (opts)=>{
     opts.assets = opts.assets || assets;
     opts.base = opts.base || dir;
     const r = require("@fto-consult/common/babel.config.alias")(opts);
-    r["$ecomponents"] = path.resolve(expo,"components");
+    r["$eauth"] = path.resolve(expo,"auth");
+    r["$ecomponents"] = r["$expo-components"] = path.resolve(expo,"components");
     r["$elayouts"] = path.resolve(expo,"layouts");
     r["$emedia"] = path.resolve(expo,"media");
     r["$enavigation"] = path.resolve(expo,"navigation");
     r["$escreens"] = path.resolve(expo,"screens");
     r["$escreen"] = path.resolve(expo,"layouts/Screen");
+    r["$screens"] = r["$screens"] || path.resolve(expo,"screens");
     r["$expo"] = r["$expo-ui"] = expo;
     if(typeof opts.mutator =='function'){
         opts.mutator(r);

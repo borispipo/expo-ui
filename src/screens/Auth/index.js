@@ -2,10 +2,9 @@
 import {SIGN_IN} from "./routes"
 import Screen from "$escreen";
 import {GROUP_NAMES} from "$escreens/utils";
-import Login from "$auth/components/Login";
+import Login from "$eauth/Login";
 import {getScreenProps} from "$enavigation/utils";
 import {getTitle} from "./utils";
-
 
 
 function AuthSignInScreen(_props){

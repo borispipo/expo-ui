@@ -1,6 +1,6 @@
 import {defaultBool,defaultArray,defaultVal,isObj,isNonNullString,defaultObj,isArray,defaultStr} from "$utils";
 import {sanitizeName,GROUP_NAMES} from "./utils";
-import mainScreens from "./mainScreens"
+import mainScreens from "$screens/mainScreens"
 import React from "$react";
 import { BackHandler } from "react-native";
 import APP from "$capp";

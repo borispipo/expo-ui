@@ -1,1 +1,0 @@
-export const PRIVACY_POLICY = "PRIVACY_POLICY";

@@ -1,5 +1,5 @@
 import React from "$react";
-import {isNonNullString,defaultNumber,defaultStr,uniqid,defaultFunc,isValidEmail,isFunction} from "$utils";
+import {isNonNullString,defaultNumber,defaultStr,uniqid,extendObj,isFunction} from "$utils";
 import {navigate} from "$enavigation/utils";
 import FormData from "$ecomponents/Form/FormData/FormData";
 import {getForm} from "$ecomponents/Form/utils";
@@ -21,44 +21,35 @@ import {isWeb} from "$cplatform";
 
 const WIDTH = 400;
 
-const updateMediaQueryStyle = ()=>{
-    const isSmallPhone = Dimensions.isSmallPhoneMedia(),isTablet = Dimensions.isTabletMedia(),
-    isMobile = Dimensions.isMobileMedia(),isDesktop = Dimensions.isDesktopMedia();
-    const {width} = Dimensions.get("window");
-    return {
-        width : isSmallPhone ? "95%" : isMobile?"90%" : isTablet ? "50%" : Math.min(WIDTH,(35*width)/100),
-        minWidth : isTablet || isDesktop ? WIDTH : undefined,
-    };
-}
-
 export default function LoginComponent(props){
-    let {formName,step,appBarProps,title,onSuccess,company,onCancel,withPortal,testID,withAppBar} = props;
+    let {formName,step,appBarProps,onSuccess,withPortal,testID} = props;
     const loginTitle = getTitle();
     testID = defaultStr(testID,"RN_Auth.LoginComponent");
-    const formNameRef = React.useRef(uniqid(defaultStr(formName,"login-formname")));
-    const passwordRef = React.useRef("");
+    formName = React.useRef(uniqid(defaultStr(formName,"login-formname"))).current;
+    const nextButtonRef = React.useRef(null);
+    const dialogProviderRef = React.useRef(null);
+    const backgroundColor = theme.colors.surface;
+    const Wrapper = withPortal ? Screen  : View;
+    
     const auth = useAuth();
     const notifyUser = (message)=> notify.error({message,position:'top'})
-    formName = formNameRef.current;
-    const companyRef = React.useRef(defaultStr(company,"bijou"));
     const [state,setState] = React.useState({
         step : defaultNumber(step,1),
-        username : undefined,
-        company,
     });
+    const _getForm = x=> getForm(formName);
     const getData = ()=>{
-        const form = getForm(formName);
+        const form = _getForm();
         if(form && form.getData){
             return form.getData();
         }
-        return {};
+        return defaultObj(props.data);
     }
     const goToFirstStep = ()=>{
         const data = getData();
-        setState({...state,step:1,password:defaultStr(data.password)});
+        setState({...state,step:1,data});
     }
     const focusField = (fieldName)=>{
-        const form = getForm(formName);
+        const form = _getForm();
         if(form){
             const field = form.getField(fieldName);
             if(field){
@@ -66,23 +57,60 @@ export default function LoginComponent(props){
             }
         }
     }
+    
+    React.useEffect(()=>{
+        Preloader.closeAll();
+    },[]);
+    React.useEffect(()=>{
+        if(typeof formProps.focusField =='function'){
+            return formProps.focusField({...state,focusField,nextButtonRef,data:getData()})
+        }
+    },[state.step]);
+    if(withPortal){
+        appBarProps = defaultObj(appBarProps);
+        appBarProps.backAction = false;
+    }
+    React.useEffect(()=>{
+        if(withPortal && isWeb() && typeof document !== 'undefined'){
+            setTimeout(()=>{
+                document.title = loginTitle
+            },1000)
+        }
+    },[withPortal])
+    const formProps = defaultObj(LoginComponent.getProps(LoginComponent.getProps({
+        ...state,
+        data : getData(),
+        focusField,
+        state,
+        setState,
+        nextButtonRef,
+    })));
+    /****la fonction à utiliser pour vérifier si l'on peut envoyer les données pour connextion
+     * par défaut, on envoie les données lorssqu'on est à l'étappe 2
+     * **/
+    const canSubmit = typeof formProps.canSubmit =='function'? formProps.canSubmit : ({step})=>step >= 2;
     const goToNext = ()=>{
         let step = state.step;
         let data = getData();
-        data.username = defaultStr(data.username, state.username);
-        if(!isNonNullString(data.username)){
-            notifyUser("Merci de renseigner un nom d'utilisateur valide");
+        data.code = defaultStr(data.code, state.code);
+        const form = _getForm();
+        if(!form){
+            notifyUser("Impossible de valider le formulaire car celui-ci semble invalide")
             return;
         }
-        if(step >= 2){
-            if(!isNonNullString(data.password)){
-                notifyUser("Merci de renseigner un mot de pass valide");
-                return;
+        const args = {data,form,step,nextButtonRef};
+        if(typeof formProps.validate =='function'){
+            const s = formProps.validate(args);
+            if(s === false) return;
+            if(isNonNullString(s)){
+                notifyUser(s);
+                return
             }
-            data = defaultObj(data);
-            data.username = defaultStr(data.username).trim();
+        }
+        if(canSubmit(args) && step > 1){
             Preloader.open("vérification ...");
             return auth.signIn(data).then((a)=>{
+                if(typeof formProps.onSuccess =='function' && formProps.onSuccess(a)=== false) return;
                 if(isFunction(onSuccess)){
                     onSuccess(true);
                 } else {
@@ -95,32 +123,11 @@ export default function LoginComponent(props){
             setState({...state,step:step+1,...data})
         }
     }
-    React.useEffect(()=>{
-        Preloader.closeAll();
-    },[]);
-    React.useEffect(()=>{
-        focusField(state.step === 2 ? "password" : "username");
-    },[state.step]);
-    const nextButtonRef = React.useRef(null);
-    const dialogProviderRef = React.useRef(null);
-    const backgroundColor = theme.colors.surface;
-    const Wrapper = withPortal ? Screen  : View;
-    if(withPortal){
-        appBarProps = defaultObj(appBarProps);
-        appBarProps.backAction = false;
-    }
-    React.useEffect(()=>{
-        if(withPortal && isWeb() && typeof document !== 'undefined'){
-            setTimeout(()=>{
-                document.title = loginTitle
-            },1000)
-        }
-    },[withPortal])
+    
     const wrapperProps = withPortal ? {appBarProps,authRequired:false,title:loginTitle} : { style:styles.wrapper};
     return <Wrapper testID = {testID+"_Wrapper" }{...wrapperProps}>
         <DialogProvider ref={dialogProviderRef}/>
         <Surface style={[styles.container,{backgroundColor}]} testID={testID}>
-            <Label>La vie de l'homme</Label>
             <Surface elevation = {0} mediaQueryUpdateNativeProps = {(a)=>{
                 return {style:updateMediaQueryStyle()}
             }} testID={testID+"_Content"} style={[styles.content,updateMediaQueryStyle(),{backgroundColor}]}>
@@ -133,57 +140,16 @@ export default function LoginComponent(props){
                         <Label testID={testID+"_HeaderText"} bool style={{color:theme.colors.primaryOnSurface,fontSize:18,paddingTop:10}}>Connectez vous SVP</Label>
                     </View>}
                     responsive  = {false}
+                    {...formProps}
                     formProps = {{
                         keyboardEvents : {
+                            ...defaultObj(formProps.keyboardEvents),
                             enter : ({formInstance})=>{
                                 goToNext();
                             }
                         }
                     }}
-                    data = {props.data}
-                    fields = {{
-                        company : {
-                            text : 'Société',
-                            type : 'select',
-                            items : [{code:'bijou',label:'Bijou'}],
-                            required : true,
-                            defaultValue : companyRef.current,
-                            onChange : ({value})=>{
-                                companyRef.current = value;
-                            },
-                            inputProps : {enableCopy:false},
-                            required : true,
-                        },
-                        username : {
-                            text : 'Nom de l\'utilisateur',
-                            visible : state.step == 1,
-                            affix : false,
-                            required : true,
-                            defaultValue : state.username,
-                            onValidatorValid : (args)=>{
-                                if(nextButtonRef.current && nextButtonRef.current.enable){
-                                    nextButtonRef.current.enable();
-                                }
-                            },
-                            onNoValidate : (a)=>{
-                                if(nextButtonRef.current && nextButtonRef.current.disable){
-                                    nextButtonRef.current.disable();
-                                }
-                            },
-                        },
-                        password : {
-                            type : 'password',
-                            defaultValue : passwordRef.current,
-                            onChange : ({value})=>{
-                                passwordRef.current = value;
-                            },
-                            readOnly : false,
-                            editable : true,
-                            required : true,
-                            visible : state.step >= 2,
-                            text : 'Mot de pass',
-                        }
-                    }}
+                    data = {extendObj(props.data,formProps.data)}
                 >
                     <View testID={testID+"_ButtonsContainer"} style={[styles.buttonWrapper]}>
                         <Button 
@@ -195,7 +161,7 @@ export default function LoginComponent(props){
                             onPress = {goToNext}
                             icon = {state.step == 1? 'arrow-right':'login'}
                             surface
-                            disabled = {!isNonNullString(state.username)}
+                            disabled = {!isNonNullString(state.code)}
                         >
                             {state.step == 1? 'Suivant' : 'Connexion' }
                         </Button>
@@ -217,6 +183,26 @@ export default function LoginComponent(props){
         </Surface>
     </Wrapper>;
 }   
+
+/**** cette fonction est utilisée, pour modifier dynamiquement les champs et les props de connexion au formulaire */
+LoginComponent.getProps = ({data,step,state,nextButtonRef})=>{
+    return {
+        ///les champ à utiliser pour l'authentification de l'utilisateur
+        fields : {
+        
+        }
+    }
+}
+
+const updateMediaQueryStyle = ()=>{
+    const isSmallPhone = Dimensions.isSmallPhoneMedia(),isTablet = Dimensions.isTabletMedia(),
+    isMobile = Dimensions.isMobileMedia(),isDesktop = Dimensions.isDesktopMedia();
+    const {width} = Dimensions.get("window");
+    return {
+        width : isSmallPhone ? "95%" : isMobile?"90%" : isTablet ? "50%" : Math.min(WIDTH,(35*width)/100),
+        minWidth : isTablet || isDesktop ? WIDTH : undefined,
+    };
+}
 
 const styles = StyleSheet.create({
     wrapper : {
@@ -265,3 +251,4 @@ const styles = StyleSheet.create({
         width : '100%'
     }
 });
+

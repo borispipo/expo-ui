@@ -1,9 +1,10 @@
 /**@see : https://www.npmjs.com/package/@expo/webpack-config/v/0.11.4 */
 const createExpoWebpackConfigAsync = require('@expo/webpack-config')
 // Expo CLI will await this method so you can optionally return a promise.
-module.exports = async function(env, argv) {
+module.exports = async function(env, argv,opts) {
     const path = require("path");
     const dir = path.resolve(__dirname);
+    opts = typeof opts =="object" && opts ? opts : {};
     const config = await createExpoWebpackConfigAsync(
       {
         ...env,
@@ -26,6 +27,6 @@ module.exports = async function(env, argv) {
     if (config.mode === 'production') {
       config.optimization.minimize = true;
     }
-    require("./compiler.config.js")({config,dir})
+    require("./compiler.config.js")({config,...opts,dir})
     return config;
 };

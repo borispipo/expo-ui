@@ -1,6 +1,7 @@
 const path = require("path");
-module.exports = function({config,isNext,nodeModulesPath,dir}){
+module.exports = function({config,isNext,nodeModulesPath,base,dir}){
     const root = path.resolve(dir,"..");
+    base = base || dir;
     nodeModulesPath = Array.isArray(nodeModulesPath)? nodeModulesPath : [];
     config.resolve.modules = Array.isArray(config.resolve.modules)? config.resolve.modules:[]
     config.resolve.modules = [path.resolve(dir, 'node_modules'),path.resolve(root, 'node_modules'), 'node_modules',...nodeModulesPath,...config.resolve.modules];
@@ -9,6 +10,7 @@ module.exports = function({config,isNext,nodeModulesPath,dir}){
             test: /\.(js|jsx|ts|tsx)$/,
             include: [
                 dir,
+                base,
                 path.resolve(dir,"node_modules","@fto-consult"),
                 /(common)/
             ],

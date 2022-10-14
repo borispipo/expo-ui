@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { Animated, StyleSheet} from "react-native";
-import View from "$components/View";
+import View from "$ecomponents/View";
 
 const START_VALUE = 0;
 const END_VALUE = 100;

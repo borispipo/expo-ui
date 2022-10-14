@@ -1,8 +1,8 @@
-import Avatar from "$components/Avatar";
+import Avatar from "$ecomponents/Avatar";
 import { StyleSheet,Pressable,Animated,View} from "react-native";
 import {defaultObj,isObj,defaultStr,isFunction,defaultBool} from "$utils";
-import {getContentHeight} from "$components/BottomSheet";
-import Label from "$components/Label";
+import {getContentHeight} from "$ecomponents/BottomSheet";
+import Label from "$ecomponents/Label";
 import PropTypes from "prop-types";
 import React from "$react";
 import theme from "$theme"

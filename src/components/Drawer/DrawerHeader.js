@@ -1,7 +1,7 @@
 import React from "$react";
-import Divider from "$components/Divider";
+import Divider from "$ecomponents/Divider";
 import { StyleSheet } from "react-native";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import {flattenStyle} from "$theme";
 import {defaultStr} from "$utils";
 

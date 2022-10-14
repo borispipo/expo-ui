@@ -1,5 +1,5 @@
 import SelectField from "./SelectField";
-import {getCountryFieldProps} from "$components/Countries";
+import {getCountryFieldProps} from "$ecomponents/Countries";
 import {defaultVal} from "$utils";
 
 export default class FormFieldSelectCountry extends SelectField{

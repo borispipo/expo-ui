@@ -3,7 +3,7 @@ import React from "$react";
 import {classExtends,isFunction,isNonNullString,defaultStr,defaultObj,defaultVal,extendObj} from "$utils";
 import {warning,Forms} from "./utils";
 import Action from "./Action";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import KeyboardAvoidingView from "./KeyboardAvoidingView";
 import { StyleSheet } from "react-native";
 import APP from "$app/instance";

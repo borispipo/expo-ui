@@ -1,6 +1,6 @@
 import React from "react";
 import { Animated, StyleSheet} from "react-native";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import { useAnimation } from "./animations/context";
 import { COLORS, SIZES } from "./tokens";
 import PropTypes from "prop-types";

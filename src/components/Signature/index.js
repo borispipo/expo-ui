@@ -1,6 +1,6 @@
 import Panel from './Panel';
 import {defaultBool} from "$utils";
-import Dialog from "$components/Dialog";
+import Dialog from "$ecomponents/Dialog";
 import React from '$react';
 import PropTypes from "prop-types";
 import {defaultObj} from "$utils";

@@ -1,13 +1,13 @@
-import Logo from "$components/Logo";
+import Logo from "$ecomponents/Logo";
 import PrivacyPolicyLink from "$screens/Help/PrivacyPolicy/Link"
 import TermsOfUseLink from "$screens/Help/TermsOfUses/Link"
 import {StyleSheet} from "react-native";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import {Paragraph} from "react-native-paper";
-import Label from "$components/Label";
+import Label from "$ecomponents/Label";
 import theme from "$theme";
 import React from "$react";
-import Button from "$components/Button";
+import Button from "$ecomponents/Button";
 
 export default function StartContent (props) {
     const buttonRef = React.useRef(null);

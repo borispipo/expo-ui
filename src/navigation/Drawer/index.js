@@ -1,4 +1,4 @@
-import Drawer,{DrawerItems} from "$components/Drawer";
+import Drawer,{DrawerItems} from "$ecomponents/Drawer";
 import ProfilAvatar from "./ProfilAvatar";
 import React from "$react";
 import items,{isItemActive,refresh as refreshItems} from "./items";

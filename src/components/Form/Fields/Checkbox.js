@@ -1,4 +1,4 @@
-import Checkbox from "$components/Checkbox";
+import Checkbox from "$ecomponents/Checkbox";
 import {defaultObj,isNonNullString} from "$utils";
 import Field  from"./Field";
 import React from "react";

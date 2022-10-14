@@ -1,7 +1,7 @@
 import React, { Component } from "$react";
 import {normalize,RGB_MAX,HUE_MAX,SV_MAX,hexToRgb} from "$theme/colors";
 import {extendObj} from "$utils";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import {
 	Animated,
 	Image,
@@ -10,13 +10,13 @@ import {
 	TouchableWithoutFeedback,
 } from 'react-native';
 
-import Elevations from '$components/Surface/Elevations';
+import Elevations from '$ecomponents/Surface/Elevations';
 import srcWheel from './assets/color-wheel.png';
 import srcSlider from './assets/black-gradient.png';
 import srcSliderRotated from './assets/black-gradient-rotated.png';
 
 import {Colors} from "$theme";
-import TextField from "$components/TextField";
+import TextField from "$ecomponents/TextField";
 
 
 const PALETTE = [

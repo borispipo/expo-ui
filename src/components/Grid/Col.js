@@ -4,7 +4,7 @@ import React from '$react';
 import {TouchableOpacity, StyleSheet} from 'react-native';
 import {defaultStr} from "$utils";
 import PropTypes from "prop-types";
-import View from "$components/View";
+import View from "$ecomponents/View";
 
 const GridColComponent = React.forwardRef((p,ref)=>{
     const {style,size,onPress,activeOpacity,onLongPress,flex:customFlex,onPressIn,onPressOut,...props} = p;

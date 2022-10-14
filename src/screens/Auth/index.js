@@ -1,6 +1,6 @@
 
 import {SIGN_IN} from "./routes"
-import Screen from "$screen";
+import Screen from "$escreen";
 import {GROUP_NAMES} from "$screens/utils";
 import Login from "$auth/components/Login";
 import {getScreenProps} from "$navigation/utils";

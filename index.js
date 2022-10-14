@@ -1,9 +1,20 @@
-import appConfig from "$app/config";
 import { registerRootComponent } from 'expo';
-appConfig.current = require("./src/app.config");
-
+import appConfig from "$app/config";
 require('dotenv').config();
 
-import App from './App';
+const isObj = x=>typeof x =='object' && x && !Array.isArray(x);
+const defaultObj = x=> isObj(x)? x : {};
 
-registerRootComponent(App);
+/**** initialise l'application expoUI avec les paramètres de configuration
+ * les options sont de la forme : 
+ * {
+ *      config {object}, le fichier de configuration de l'application
+ * }
+ */
+export default function ExpoUIApp (options){
+    options = defaultObj(options);
+    const config = defaultObj(options.config);
+    console.log(config," is config heeeeeee");
+    appConfig.current = config;
+    registerRootComponent(require('./src/App').default);
+}

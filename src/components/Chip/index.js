@@ -1,18 +1,18 @@
 import React from '$react';
-import View from "$components/View";
+import View from "$ecomponents/View";
 import {
   Animated,
   Platform,
   StyleSheet,
   TouchableWithoutFeedback,
 } from 'react-native';
-import Icon from "$components/Icon";
+import Icon from "$ecomponents/Icon";
 import {Text,TouchableRipple } from 'react-native-paper';
 import theme,{ black,Colors, white,StyleProps} from '$theme';
 import PropTypes from "prop-types";
-import {flatMode } from '$components/TextField/utils';
+import {flatMode } from '$ecomponents/TextField/utils';
 import {defaultStr} from "$utils";
-import Surface from "$components/Surface";
+import Surface from "$ecomponents/Surface";
 
 const ChipComponent = React.forwardRef(({
   mode = flatMode,

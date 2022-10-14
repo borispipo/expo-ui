@@ -8,7 +8,7 @@ import {
     PanResponder,
 } from 'react-native';
 // styles
-import View from "$components/View";
+import View from "$ecomponents/View";
 import {defaultStyles as styles} from './styles';
 
 const Rect = ({

@@ -3,11 +3,11 @@ import {
   StyleSheet,
   Pressable,
 } from 'react-native';
-import View from "$components/View";
+import View from "$ecomponents/View";
 import theme,{ StyleProps,Colors} from '$theme';
 import PropTypes from "prop-types";
 import {defaultVal,defaultNumber,defaultObj} from "$utils";
-import Label from "$components/Label";
+import Label from "$ecomponents/Label";
 
 const defaultSize = 18;
 const miniSize = 8;

@@ -1,5 +1,5 @@
 import _Footer from "./Footer";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import React from "$react";
 import memoize from "$react/memoize";
 export {default as FooterItem} from "./Footer";

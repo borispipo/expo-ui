@@ -4,8 +4,8 @@ import theme,{ StylePropTypes,flattenStyle,Colors} from '$theme';
 import PropTypes from "prop-types";
 import {defaultStr,isNonNullString} from "$utils";
 import { TouchableRipple } from "react-native-paper";
-import Icon from "$components/Icon";
-import Label from "$components/Label";
+import Icon from "$ecomponents/Icon";
+import Label from "$ecomponents/Label";
 
 const TabItemComponentNotThemed = ({
   active,

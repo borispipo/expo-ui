@@ -1,7 +1,7 @@
 import Popover from "./Popover";
 import {defaultObj,defaultVal} from "$utils";
-import View from "$components/View";
-import Label from "$components/Label";
+import View from "$ecomponents/View";
+import Label from "$ecomponents/Label";
 import React from "$react";
 export const actions = {press:'press',longpress:'longpress',hover:'hover'};
 

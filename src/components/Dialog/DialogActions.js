@@ -1,10 +1,10 @@
 import React from "$react";
 import {Dialog} from "react-native-paper";
-import Menu from "$components/Menu";
+import Menu from "$ecomponents/Menu";
 import theme,{Colors,flattenStyle} from "$theme";
-import {MORE_ICON} from "$components/Icon/utils";
+import {MORE_ICON} from "$ecomponents/Icon/utils";
 import {renderActions} from "./utils";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import { StyleSheet } from "react-native";
 
 const DialogActionsComponent = React.forwardRef(({actions,isAlert,onAlertRequestClose,testID,containerProps,actionMutator,actionProps,cancelButton,responsive,isFullScreen,fullScreen,actionsProps,menuProps,...rest},ref)=>{

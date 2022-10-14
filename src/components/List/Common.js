@@ -5,9 +5,9 @@ import {grid,StylePropTypes} from "$theme";
 import PropTypes from "prop-types";
 import {defaultObj,defaultDecimal,defaultArray,defaultFunc} from "$utils";
 import {isMobileMedia} from "$platform/dimensions";
-import BackToTop from "$components/BackToTop";
+import BackToTop from "$ecomponents/BackToTop";
 import {FlatList,StyleSheet,View} from "react-native";
-import Label from "$components/Label";
+import Label from "$ecomponents/Label";
 import { useWindowDimensions,Dimensions } from "react-native";
 
 const CommonListComponent = React.forwardRef((props,ref)=>{

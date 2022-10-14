@@ -1,10 +1,10 @@
-import Link from "$components/Link";
+import Link from "$ecomponents/Link";
 import {PRIVACY_POLICY} from "./routes";
 import theme from "$theme";
 import {StyleSheet} from "react-native";
 import title from "./title";
 import {defaultObj} from "$utils";
-import Label from "$components/Label";
+import Label from "$ecomponents/Label";
 export default function(props){
     const {style,...rest} = props;
     return <Link routeName={PRIVACY_POLICY}>

@@ -1,8 +1,8 @@
 import APP from "$app/instance";
 import deviceProps from "./deviceProps";
-import Label from "$components/Label";
+import Label from "$ecomponents/Label";
 import theme from "$theme";
-import View from "$components/View";
+import View from "$ecomponents/View";
 
 export default  (infos,force)=>{
     infos = defaultObj(infos,APP.DEVICE);

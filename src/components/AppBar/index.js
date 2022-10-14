@@ -10,8 +10,8 @@ import PropTypes from "prop-types";
 import { Dimensions,TouchableWithoutFeedback} from "react-native";
 import { useNavigation,useRoute,useScreenOptions } from "$navigation/utils";
 import Content from "./Content";
-import Icon from "$components/Icon";
-import {Elevations} from "$components/Surface";
+import Icon from "$ecomponents/Icon";
+import {Elevations} from "$ecomponents/Surface";
 
 export * from "./utils";
 

@@ -4,8 +4,8 @@ import ExpandableItem from './ExpandableItem';
 import DrawerItem from './DrawerItem';
 import DrawerSection from "./DrawerSection"
 import PropTypes from "prop-types";
-import Divider from "$components/Divider";
-import View from "$components/View";
+import Divider from "$ecomponents/Divider";
+import View from "$ecomponents/View";
 
 export * from "./utils";
 

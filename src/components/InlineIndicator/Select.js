@@ -1,5 +1,5 @@
-import SimpleSelect from "$components/SimpleSelect";
-import {flatMode} from "$components/TextField";
+import SimpleSelect from "$ecomponents/SimpleSelect";
+import {flatMode} from "$ecomponents/TextField";
 import { StyleSheet } from "react-native";
 import React from "$react";
 import {defaultObj} from "$utils";

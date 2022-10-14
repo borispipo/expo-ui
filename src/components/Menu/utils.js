@@ -1,9 +1,9 @@
-import Divider from "$components/Divider";
+import Divider from "$ecomponents/Divider";
 import {defaultObj,defaultFunc,defaultStr,isObjOrArray,defaultVal,isObj} from "$utils";
 import React from "$react";
 import {StyleSheet} from "react-native";
-import Action from '$components/Form/Action';
-import Expandable from "$components/Expandable";
+import Action from '$ecomponents/Form/Action';
+import Expandable from "$ecomponents/Expandable";
 import {cursorPointer} from "$theme";
 import Item from "./Item";
 

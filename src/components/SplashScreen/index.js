@@ -3,10 +3,10 @@
 import PropTypes from "prop-types"
 import * as React from "react"
 import {Animated, StyleSheet } from "react-native";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import {isNativeMobile} from "$platform";
 import {defaultDecimal} from "$utils";
-import {LogoProgress} from "$components/Logo";
+import {LogoProgress} from "$ecomponents/Logo";
 import styles, {
   _solidBackground,
   _staticBackground,

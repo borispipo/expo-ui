@@ -1,4 +1,4 @@
-import Slider from "$components/Slider";
+import Slider from "$ecomponents/Slider";
 import {defaultObj} from "$utils";
 import Field  from"./Field";
 import React from "react";

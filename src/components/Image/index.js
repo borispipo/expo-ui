@@ -1,16 +1,16 @@
 import {Image,View} from "react-native";
-import Menu from "$components/Menu";
-import Avatar from "$components/Avatar";
+import Menu from "$ecomponents/Menu";
+import Avatar from "$ecomponents/Avatar";
 import {TouchableOpacity,Pressable} from "react-native";
 import {isDecimal,setQueryParams,isValidURL,defaultStr as defaultString,isDataURL,isPromise,defaultBool,isObj,isNonNullString} from "$utils";
-import {notify} from "$components/Dialog";
+import {notify} from "$ecomponents/Dialog";
 let maxWidthDiff = 150, maxHeightDiff = 150;
 import {StyleSheet} from "react-native";
 import React from "$react";
 import PropTypes from "prop-types";
 import {isMobileNative} from "$platform";
-//import Signature from "$components/Signature";
-import Label from "$components/Label";
+//import Signature from "$ecomponents/Signature";
+import Label from "$ecomponents/Label";
 //import Editor from "./Editor";
 
 

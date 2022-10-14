@@ -1,15 +1,15 @@
 import React from "$react";
 import {defaultObj,defaultStr,isNonNullString} from "$utils";
-import TextField from "$components/TextField";
+import TextField from "$ecomponents/TextField";
 import { StyleSheet,Image,TouchableOpacity} from 'react-native';
 import PropTypes from "prop-types";
 import theme,{DISABLED_OPACITY} from "$theme";
-import {keyboardTypes,flatMode} from "$components/TextField";
-import Icon from "$components/Icon";
+import {keyboardTypes,flatMode} from "$ecomponents/TextField";
+import Icon from "$ecomponents/Icon";
 import PhoneNumber from "./PhoneNumber";
-import SelectCountry from "$components/Countries/SelectCountry";
-import {getFlag} from "$components/Countries";
-import View from "$components/View";
+import SelectCountry from "$ecomponents/Countries/SelectCountry";
+import {getFlag} from "$ecomponents/Countries";
+import View from "$ecomponents/View";
 
 import libPhoneNumber from 'google-libphonenumber';
 const asYouTypeFormatter = libPhoneNumber.AsYouTypeFormatter;

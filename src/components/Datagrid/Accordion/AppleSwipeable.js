@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import View from "$components/View";
+import View from "$ecomponents/View";
 import {
   Animated,
   StyleSheet,

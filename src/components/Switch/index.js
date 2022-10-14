@@ -1,14 +1,14 @@
 import { Switch,TouchableRipple } from 'react-native-paper';
 import {Pressable} from "react-native";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import React from "$react";
 import {isUndefined,defaultObj,defaultVal,defaultStr,defaultBool} from "$utils";
 import theme,{Colors,DISABLED_OPACITY} from "$theme";
 import {StyleSheet} from "react-native";
 import PropTypes from "prop-types";
-import Tooltip from "$components/Tooltip";
-import HelperText from "$components/HelperText";
-import Label from "$components/Label";
+import Tooltip from "$ecomponents/Tooltip";
+import HelperText from "$ecomponents/HelperText";
+import Label from "$ecomponents/Label";
 
 export const leftPosition = 'left';
 export const rightPosition = "right";

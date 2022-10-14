@@ -1,8 +1,8 @@
 import React from "$react";
 import Dialog from "./Dialog";
-import { createProviderRef } from "$components/Dialog/Provider";
+import { createProviderRef } from "$ecomponents/Dialog/Provider";
 import {isMobileOrTabletMedia} from "$platform/dimensions";
-import {MAX_WIDTH} from "$components/Dialog/utils";
+import {MAX_WIDTH} from "$ecomponents/Dialog/utils";
 import {extendObj,defaultObj,isObj,defaultBool,defaultStr} from "$utils";
 import grid from "$theme/grid";
 

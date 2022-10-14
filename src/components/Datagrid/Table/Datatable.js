@@ -1,12 +1,12 @@
-import View from "$components/View";
+import View from "$ecomponents/View";
 import React from '$react'
  import {
    StyleSheet,
  } from 'react-native'
- import ScrollView  from "$components/ScrollView";
+ import ScrollView  from "$ecomponents/ScrollView";
  import PropTypes from 'prop-types'
  import {isObj,defaultDecimal,defaultStr,isDecimal} from "$utils";
- import Label from "$components/Label";
+ import Label from "$ecomponents/Label";
 
  const DEFAULT_HEIGHT = 240;
  export const DEFAULT_COLUMN_WIDTH = 60;

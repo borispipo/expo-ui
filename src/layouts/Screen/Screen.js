@@ -3,17 +3,17 @@ import {StyleSheet} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import PropTypes from "prop-types";
 import {defaultObj,defaultStr,defaultNumber,defaultBool} from "$utils";
-import ScrollView from '$components/ScrollView';
-import View from "$components/View";
+import ScrollView from '$ecomponents/ScrollView';
+import View from "$ecomponents/View";
 import { useNavigation } from '$navigation/utils';
-import Fab from "$layouts/Fab";
+import Fab from "$elayouts/Fab";
 import {getScreenProps} from '$navigation/utils';
 import APP from "$app";
-import AppBar,{createAppBarRef} from "$layouts/AppBar";
-import ErrorBoundary from "$components/ErrorBoundary";
-import Portal from "$components/Portal";
+import AppBar,{createAppBarRef} from "$elayouts/AppBar";
+import ErrorBoundary from "$ecomponents/ErrorBoundary";
+import Portal from "$ecomponents/Portal";
 import theme from "$theme";
-import StatusBar from "$components/StatusBar";
+import StatusBar from "$ecomponents/StatusBar";
 import Auth from "$cauth";
 
 const getDefaultTitle = (nTitle,returnStr)=>{

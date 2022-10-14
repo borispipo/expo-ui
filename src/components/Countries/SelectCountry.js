@@ -1,12 +1,12 @@
 import React from "$react";
-import SimpleSelect from "$components/SimpleSelect";
+import SimpleSelect from "$ecomponents/SimpleSelect";
 import { countries } from "./utils";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import {StyleSheet,Image} from "react-native";
 import {defaultObj} from "$utils";
 import PropTypes from "prop-types";
 import {isNonNullString,isNumber,defaultStr} from "$utils";
-import Label from "$components/Label";
+import Label from "$ecomponents/Label";
 
 /**** retourne les props du champ de type countrie */
 export const getCountryFieldProps = (props)=>{

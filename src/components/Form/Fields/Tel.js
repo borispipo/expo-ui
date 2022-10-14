@@ -1,4 +1,4 @@
-import PhoneInput from "$components/PhoneInput";
+import PhoneInput from "$ecomponents/PhoneInput";
 import Field from "./Field";
 
 export default class FormPhoneInputField extends Field {

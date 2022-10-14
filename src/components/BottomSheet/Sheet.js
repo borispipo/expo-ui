@@ -2,21 +2,21 @@
 import React from "$react";
 import PropTypes from "prop-types";
 import theme,{Colors} from "$theme";
-import Label from "$components/Label";
-import { renderActions } from "$components/Dialog";
+import Label from "$ecomponents/Label";
+import { renderActions } from "$ecomponents/Dialog";
 import {isObjOrArray,defaultVal,defaultObj} from "$utils";
-import {renderSplitedActions} from "$components/AppBar/utils";
+import {renderSplitedActions} from "$ecomponents/AppBar/utils";
 import {isWeb,isNativeMobile} from "$platform";
-import Divider from "$components/Divider";
+import Divider from "$ecomponents/Divider";
 import {isMobileOrTabletMedia} from "$platform/dimensions";
 import APP from "$app/instance";
-import KeyboardAvoidingView from "$components/Form/KeyboardAvoidingView";
-import {Elevations} from "$components/Surface";
+import KeyboardAvoidingView from "$ecomponents/Form/KeyboardAvoidingView";
+import {Elevations} from "$ecomponents/Surface";
 import {defaultStr} from "$utils";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import {Easing} from "react-native";
-import Portal from "$components/Portal";
-import ScrollView  from "$components/ScrollView";
+import Portal from "$ecomponents/Portal";
+import ScrollView  from "$ecomponents/ScrollView";
 
 import {
   BackHandler,

@@ -5,7 +5,7 @@ import {
 import {TouchableRipple} from "react-native-paper";
 import Icon from './Icon';
 import CrossFadeIcon from './CrossFadeIcon';
-import Surface from '$components/Surface';
+import Surface from '$ecomponents/Surface';
 import PropTypes from "prop-types";
 import theme,{StyleProp,Colors} from "$theme";
 import {defaultStr,isNonNullString} from "$utils";

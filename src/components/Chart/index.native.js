@@ -1,10 +1,10 @@
 import FileSystem from "$file-system";
 import appexChartCode from "./appexchart.3.5.js.text";
 import React from "$react";
-import WebView from "$components/WebView";
-import HTMLView from '$components/Html/View';
+import WebView from "$ecomponents/WebView";
+import HTMLView from '$ecomponents/Html/View';
 import {defaultStr,uniqid} from "$utils";
-import View from "$components/View";
+import View from "$ecomponents/View";
 
 let appexchartJSString = null;
 

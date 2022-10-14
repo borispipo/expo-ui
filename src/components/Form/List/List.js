@@ -1,19 +1,19 @@
-import Button from "$components/Button";
-import {showConfirm,notify} from "$components/Dialog";
-import Avatar from "$components/Avatar";
-import Icon from "$components/Icon";
-import Datagrid from "$components/Datagrid";
+import Button from "$ecomponents/Button";
+import {showConfirm,notify} from "$ecomponents/Dialog";
+import Avatar from "$ecomponents/Avatar";
+import Icon from "$ecomponents/Icon";
+import Datagrid from "$ecomponents/Datagrid";
 import PropTypes from "prop-types";
 import React,{Component as AppComponent} from "$react";
 import {isNonNullString,defaultStr,defaultObj,defaultArray,extendObj,isObjOrArray,isFunction,isStringNumber} from "$utils";
 import {isPhoneMedia} from "$platform/dimensions";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import {StyleSheet} from "react-native";
 import {List} from "react-native-paper";
-import FlashList from "$components/List";
-import Surface from "$components/Surface";
+import FlashList from "$ecomponents/List";
+import Surface from "$ecomponents/Surface";
 import {navigate} from "$navigation/utils";
-import { handleBeforeSaveCallback } from "$components/Form/FormData/utils";
+import { handleBeforeSaveCallback } from "$ecomponents/Form/FormData/utils";
 import theme from "$theme";
 
 const NoDefinedIndexMssage = "Valeur non définie de l'indice pour l'enregistrement de la FormList";

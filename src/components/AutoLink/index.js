@@ -2,7 +2,7 @@ import * as Linking from 'expo-linking';
 import { Pressable } from 'react-native';
 import {isValidUrl,isValidEmail,defaultStr,isSms} from "$utils";
 import PropTypes from "prop-types";
-import Browser from "$components/Browser";
+import Browser from "$ecomponents/Browser";
 
 export default function AutolinkComponent({onPress,withBrowser,mailto,email,tel,phone,sms,url,href,...props}){
     url = defaultStr(url,href);

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, StylePropTypes, ViewStyle } from 'react-native';
 import {Text,TouchableRipple} from "react-native-paper";
-import Label from "$components/Label";
+import Label from "$ecomponents/Label";
 import PropTypes from "prop-types";
 import {styleTypeProps} from "$theme";
 

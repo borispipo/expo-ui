@@ -1,6 +1,6 @@
 import * as React from '$react';
 import { StyleSheet} from 'react-native';
-import View from "$components/View";
+import View from "$ecomponents/View";
 import theme,{StylePropTypes,DISABLED_OPACITY } from '$theme';
 import PropTypes from "prop-types";
 

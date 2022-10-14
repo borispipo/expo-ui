@@ -1,5 +1,5 @@
 import Field from "./Field";
-import Image from "$components/Image";
+import Image from "$ecomponents/Image";
 import PropTypes from "prop-types";
 import {defaultVal} from "$utils";
 export default class FormFieldImage extends Field {

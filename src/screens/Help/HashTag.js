@@ -1,10 +1,10 @@
-import templates from "$components/Form/Fields/sprintfSelectors";
-import Icon from "$components/Icon";
-import View from "$components/View";
-import Label from "$components/Label";
-import Screen from "$screen";
-import Br from "$components/Br";
-import Grid from "$components/Grid";
+import templates from "$ecomponents/Form/Fields/sprintfSelectors";
+import Icon from "$ecomponents/Icon";
+import View from "$ecomponents/View";
+import Label from "$ecomponents/Label";
+import Screen from "$escreen";
+import Br from "$ecomponents/Br";
+import Grid from "$ecomponents/Grid";
 import theme from "$theme";
 
 export default function HashTagHelpScreen (props){

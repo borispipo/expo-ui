@@ -1,7 +1,7 @@
 import React, {Component} from '$react';
 import {isObj,defaultStr} from "$utils";
-import View from "$components/View";
-import Portal from "$components/Portal";
+import View from "$ecomponents/View";
+import Portal from "$ecomponents/Portal";
 import theme,{Colors} from "$theme";
 import {
   StyleSheet,
@@ -13,7 +13,7 @@ import {
   Image,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import Label from "$components/Label";
+import Label from "$ecomponents/Label";
 import {
   DEFAULT_IMAGE_DIMENSIONS,
   IS_ANDROID,

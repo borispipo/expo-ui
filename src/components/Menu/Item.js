@@ -4,14 +4,14 @@ import {
   StyleSheet,
 } from 'react-native';
 import {TouchableRipple} from "react-native-paper";
-import Icon from "$components/Icon";
+import Icon from "$ecomponents/Icon";
 import theme,{black,white,Colors,StylePropTypes,DISABLED_OPACITY} from "$theme";
 import PropTypes from "prop-types";
 import { Dimensions } from 'react-native';
-import View from "$components/View";
+import View from "$ecomponents/View";
 import {defaultVal} from "$utils";
-import Tooltip from "$components/Tooltip";
-import Label from "$components/Label";
+import Tooltip from "$ecomponents/Tooltip";
+import Label from "$ecomponents/Label";
 
 const minWidth = 112;
 const maxWidth = 280;

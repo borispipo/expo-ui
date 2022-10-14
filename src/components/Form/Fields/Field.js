@@ -1,8 +1,8 @@
 import PropTypes from "prop-types";
 import KeyboardEventHandler from "../KeyboardEventHandler";
 const {getActions,getFormFields,Forms} = require("../utils")
-import TextField,{parseDecimal} from "$components/TextField";
-import Icon from "$components/Icon";
+import TextField,{parseDecimal} from "$ecomponents/TextField";
+import Icon from "$ecomponents/Icon";
 import {extendObj,isBool,isUndefined,uniqid,defaultObj,isObj,defaultFunc,isFunction,isNumber,arrayValueExists,defaultVal,defaultStr,isNonNullString,defaultBool,defaultDecimal} from "$utils";
 import {Component as AppComponent} from "$react";
 import {observable,addObserver} from "$observable";
@@ -17,7 +17,7 @@ import APP from "$app/instance";
 let sanitizeKeyEvent = 'ctrl+m' //le type hashtag
 import defaultKeyboardEvents from "../utils/keyboardEvents";
 import sprintf from "./sprintf";
-import ErrorMessage from "$components/ErrorBoundary/ErrorMessage";
+import ErrorMessage from "$ecomponents/ErrorBoundary/ErrorMessage";
 import { UPPER_CASE, LOWER_CASE} from "$common/lib/validator";
 
 

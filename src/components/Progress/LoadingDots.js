@@ -1,6 +1,6 @@
 import React from 'react'
 import {  StyleSheet, Animated, Easing } from 'react-native';
-import View from "$components/View";
+import View from "$ecomponents/View";
 import {isNativeMobile} from "$platform"; //boris fouomene
 const useNativeDriver = isNativeMobile();
 const SIZE = 16

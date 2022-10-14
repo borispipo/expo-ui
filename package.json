@@ -1,7 +1,7 @@
 {
-  "name": "expose-ui",
+  "name": "ftc-expose-ui",
   "version": "1.0.0",
-  "description": "Bibliothèque de composant UI Expo React native",
+  "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

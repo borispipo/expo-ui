@@ -3,14 +3,14 @@ import {
   Animated,
   StyleSheet,
 } from 'react-native';
-import View from "$components/View";
-import Tooltip from "$components/Tooltip";
+import View from "$ecomponents/View";
+import Tooltip from "$ecomponents/Tooltip";
 import theme,{DISABLED_OPACITY,Colors,cursorNotAllowed,StylePropsTypes} from "$theme";
-import Icon from "$components/Icon";
+import Icon from "$ecomponents/Icon";
 import {TouchableRipple} from "react-native-paper";
-import ActivityIndicator from "$components/ActivityIndicator";
-import Surface from "$components/Surface";
-import Label from "$components/Label";
+import ActivityIndicator from "$ecomponents/ActivityIndicator";
+import Surface from "$ecomponents/Surface";
+import Label from "$ecomponents/Label";
 import {defaultObj,defaultVal,defaultDecimal,defaultStr} from "$utils";
 
 import PropTypes from "prop-types";

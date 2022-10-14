@@ -7,21 +7,21 @@ import {Provider as PaperProvider } from 'react-native-paper';
 import App from '$src';
 import {Portal } from 'react-native-paper';
 import {PreloaderProvider} from "$preloader";
-import DropdownAlert from '$components/Dialog/DropdownAlert';
+import DropdownAlert from '$ecomponents/Dialog/DropdownAlert';
 import {notificationRef} from "$notify";
-import BottomSheetProvider from "$components/BottomSheet/Provider";
-import DialogProvider from "$components/Dialog/Provider";
+import BottomSheetProvider from "$ecomponents/BottomSheet/Provider";
+import DialogProvider from "$ecomponents/Dialog/Provider";
 import { DialogProvider as FormDataDialogProvider } from './src/components/Form/FormData';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { PreferencesContext } from './src/Preferences';
 import {AuthProvider} from '$cauth';
-import {PortalProvider } from '$components/Portal';
-import ErrorBoundary from "$components/ErrorBoundary";
-import ErrorBoundaryProvider from "$components/ErrorBoundary/Provider";
+import {PortalProvider } from '$ecomponents/Portal';
+import ErrorBoundary from "$ecomponents/ErrorBoundary";
+import ErrorBoundaryProvider from "$ecomponents/ErrorBoundary/Provider";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
-import StatusBar from "$components/StatusBar";
-import SimpleSelect from '$components/SimpleSelect';
-import {Provider as AlertProvider} from '$components/Dialog/confirm/Alert';
+import StatusBar from "$ecomponents/StatusBar";
+import SimpleSelect from '$ecomponents/SimpleSelect';
+import {Provider as AlertProvider} from '$ecomponents/Dialog/confirm/Alert';
 
 export default function MainAppComponent() {
   React.useEffect(()=>{

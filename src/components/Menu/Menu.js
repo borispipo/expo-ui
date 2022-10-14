@@ -1,6 +1,6 @@
 import React,{BaseComponent as AppComponent} from '$react';
-import View from "$components/View";
-import ScrollView  from "$components/ScrollView";
+import View from "$ecomponents/View";
+import ScrollView  from "$ecomponents/ScrollView";
 import {
   Platform,
   StyleSheet,
@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import PropTypes from "prop-types";
 import { withTheme,Surface,Portal} from 'react-native-paper';
-//import Surface from "$components/Surface";
+//import Surface from "$ecomponents/Surface";
 import { NativeModules} from 'react-native';
 import {defaultDecimal,extendObj} from "$utils";
 import theme,{StylePropTypes} from "$theme";

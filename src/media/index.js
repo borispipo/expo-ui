@@ -1,5 +1,5 @@
 import {isObj} from "$utils";
-import {notify} from "$components/Dialog";
+import {notify} from "$ecomponents/Dialog";
 import Camera from "./camera";
 import {isMobileNative} from "$platform";
 import React from "react";

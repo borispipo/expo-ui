@@ -1,7 +1,7 @@
 import {defaultObj} from "$utils";
 import {flattenStyle} from "$theme";
 import {Dimensions} from "react-native";
-import {splitActions} from "$components/AppBar/utils";
+import {splitActions} from "$ecomponents/AppBar/utils";
 
 const MIN_DIALOG_HEIGHT = 250;
 

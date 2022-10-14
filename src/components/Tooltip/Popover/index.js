@@ -3,8 +3,8 @@ import React, {useRef, useMemo, useState } from 'react';
 import PropTypes from "prop-types";
 import theme,{ StyleProps} from '$theme';
 import {defaultObj} from "$utils";
-import Label from "$components/Label";
-import View from "$components/View";
+import Label from "$ecomponents/Label";
+import View from "$ecomponents/View";
 import {
   Modal,
   Animated,

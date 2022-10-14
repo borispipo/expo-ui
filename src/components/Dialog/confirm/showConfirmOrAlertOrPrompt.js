@@ -1,9 +1,9 @@
 import {isDecimal,defaultObj,defaultStr,defaultVal} from "$utils";
 import Alert from "./Alert"
 import theme from "$theme";
-import Label from "$components/Label";
+import Label from "$ecomponents/Label";
 import React from "$react";
-import TextField from "$components/TextField";
+import TextField from "$ecomponents/TextField";
 import {View} from "react-native";
 import PropTypes from "prop-types";
 

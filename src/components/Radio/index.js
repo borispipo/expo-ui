@@ -1,5 +1,5 @@
 import { RadioButton } from 'react-native-paper';
-import View from "$components/View";
+import View from "$ecomponents/View";
 import React from "$react";
 import {isUndefined,defaultObj,defaultVal,defaultStr} from "$utils";
 import {isIos,isAndroid} from "$platform";
@@ -8,8 +8,8 @@ import { StyleSheet } from 'react-native';
 export const checkedStatus = 'checked';
 export const uncheckedStatus = 'unchecked';
 import PropTypes from "prop-types";
-import Tooltip from "$components/Tooltip";
-import HelperText from "$components/HelperText";
+import Tooltip from "$ecomponents/Tooltip";
+import HelperText from "$ecomponents/HelperText";
 export const leftPosition = 'leading';
 export const rightPosition = "trailing";
 

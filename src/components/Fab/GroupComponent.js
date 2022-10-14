@@ -6,12 +6,12 @@ import {
   Pressable,
   TouchableWithoutFeedback,
 } from 'react-native';
-import View from "$components/View";
+import View from "$ecomponents/View";
 import {FAB,Text,Card,withTheme} from "react-native-paper";
 import color from 'color';
 import PropTypes from "prop-types";
 import { StylePropTypes } from '$theme';
-import Action from "$components/Form/Action";
+import Action from "$ecomponents/Form/Action";
 import { disabledStyle,cursorNotAllowed } from '$theme';
 
 

@@ -1,6 +1,6 @@
 import React from "$react";
 import {defaultObj} from "$utils";;
-import View from "$components/View";
+import View from "$ecomponents/View";
 import { StyleSheet } from "react-native";
 
 const DialogFullPageFooter = React.forwardRef(({responsive,containerProps,children,isFullScreen,fullScreen,...rest},ref)=>{

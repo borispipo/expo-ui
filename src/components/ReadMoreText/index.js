@@ -1,7 +1,7 @@
 /***@see : https://github.com/expo/react-native-read-more-text */
 import React from "react";
 import { StyleSheet, Text} from "react-native";
-import View from "$components/View";
+import View from "$ecomponents/View";
 
 export default class ReadMore extends React.Component {
   state = {

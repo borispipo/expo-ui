@@ -1,4 +1,4 @@
-import AppBar from "$components/AppBar";
+import AppBar from "$ecomponents/AppBar";
 import React from "$react";
 import APP from "$app/instance";
 import { renderActions } from "./utils";

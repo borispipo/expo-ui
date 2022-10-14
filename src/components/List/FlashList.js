@@ -2,7 +2,7 @@ import React from "$react";
 import { FlashList } from "@shopify/flash-list";
 //import FlashList from "react-native-big-list";
 import CommonListComponent from "./Common";
-import View from "$components/View";
+import View from "$ecomponents/View";
 
 const FlashListComponent = React.forwardRef((props,ref)=>{
     const {testID} = props

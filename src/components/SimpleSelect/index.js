@@ -1,19 +1,19 @@
 import React from "$react";
 import {defaultObj,isDecimal,defaultStr,debounce,extendObj,defaultVal,defaultFunc} from "$utils";
-import TextField,{flatMode} from "$components/TextField";
+import TextField,{flatMode} from "$ecomponents/TextField";
 import {TouchableOpacity,Dimensions,StyleSheet} from "react-native";
 import { TouchableRipple} from "react-native-paper";
-import View from "$components/View";
-import Divider from "$components/Divider";
-import Menu from "$components/Menu/Menu";
+import View from "$ecomponents/View";
+import Divider from "$ecomponents/Divider";
+import Menu from "$ecomponents/Menu/Menu";
 import theme,{Colors,StylePropTypes} from "$theme";
-import List,{MIN_HEIGHT} from "$components/List";
-import Label from "$components/Label";
+import List,{MIN_HEIGHT} from "$ecomponents/List";
+import Label from "$ecomponents/Label";
 import PropTypes from "prop-types";
-import Icon from "$components/Icon";
+import Icon from "$ecomponents/Icon";
 import {isDesktopMedia} from "$platform/dimensions";
-import { matchOperators,getSearchTimeout,canAutoFocusSearchField} from "$components/Dropdown/utils";
-import Dialog from "$components/Dialog";
+import { matchOperators,getSearchTimeout,canAutoFocusSearchField} from "$ecomponents/Dropdown/utils";
+import Dialog from "$ecomponents/Dialog";
 
 const  SimpleSelect = React.forwardRef((props,ref)=>{
     let {style : customStyle,onMount,mode,showSearch,anchorContainerProps,renderText,contentContainerProps,withCheckedIcon,testID,selectionColor,dialogProps,onShow,anchor,onUnmont,controlled,onDismiss,visible:controlledVisible,selectedColor,inputProps,itemProps,itemContainerProps,label,listProps,editable,readOnly,text,filter,renderItem,itemValue,getItemValue,defaultValue,items:menuItems,onPress,onChange,disabled,...rest} = props;

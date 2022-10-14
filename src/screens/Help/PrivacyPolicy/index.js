@@ -1,9 +1,9 @@
-import View from "$components/View";
+import View from "$ecomponents/View";
 import {PRIVACY_POLICY} from "./routes";
 import title from "./title"
 import { GROUP_NAMES } from "../../utils";
-import Label from "$components/Label";
-import  Screen  from "$screen";
+import Label from "$ecomponents/Label";
+import  Screen  from "$escreen";
 
 export default function PrivacyPolicy(props){
     return <Screen 

@@ -4,15 +4,15 @@ import { TextInput as RNTextInput,KeyboardAvoidingView,StyleSheet} from "react-n
 import React from "$react";
 import theme,{Colors,DISABLED_OPACITY,READONLY_OPACITY} from "$theme";
 import PropTypes from "prop-types";
-import HelperText from "$components/HelperText";
-import Icon,{COPY_ICON} from "$components/Icon";
-import Label from "$components/Label";
+import HelperText from "$ecomponents/HelperText";
+import Icon,{COPY_ICON} from "$ecomponents/Icon";
+import Label from "$ecomponents/Label";
 import {isAndroid as _isAndroid,isMobileNative,isIos as _isIos,isWeb as _isWeb} from "$platform";
 import {isMobileMedia,isDesktopMedia} from "$platform/dimensions";
 import {keyboardTypes,FONT_SIZE,parseDecimal,HEIGHT,outlinedMode,modes,flatMode,normalMode,shadowMode} from "./utils";
 import {copyTextToClipboard} from "$app/clipboard/utils";
-import Surface from "$components/Surface";
-import View from "$components/View";
+import Surface from "$ecomponents/Surface";
+import View from "$ecomponents/View";
 const PADDING_HORIZONTAL_FLAT_MODE = 2;
 
 export const LINE_HEIGHT = 10;

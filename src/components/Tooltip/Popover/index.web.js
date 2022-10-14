@@ -3,7 +3,7 @@ import 'tippy.js/dist/tippy.css';
 import React from "$react";
 import {getMaxZindex} from "$utils/dom";
 import PropTypes from "prop-types";
-import Label from "$components/Label";
+import Label from "$ecomponents/Label";
 import { TIPPY_THEME } from '$theme/updateNative/utils';
 import {isDOMElement} from "$utils/dom";
 import {uniqid,defaultStr,defaultObj} from "$utils";

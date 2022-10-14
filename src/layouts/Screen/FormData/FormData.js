@@ -1,11 +1,11 @@
 import PropTypes from "prop-types";
-import FormDataActions from "$components/Form/FormData/FormDataActions";
+import FormDataActions from "$ecomponents/Form/FormData/FormDataActions";
 import React from "$react";
 import {defaultObj,isObj,defaultStr} from "$utils";
 import ScreenContainer from "../Screen";
 import {useRoute} from "$navigation/utils";
-import {Form as FormLoader} from "$components/ContentLoader";
-import HeavyScreen from "$components/HeavyScreen";
+import {Form as FormLoader} from "$ecomponents/ContentLoader";
+import HeavyScreen from "$ecomponents/HeavyScreen";
 import {goBack,getScreenProps} from "$navigation/utils";
 
 

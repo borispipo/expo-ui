@@ -1,12 +1,12 @@
 import React from '$react';
 import { StyleSheet,} from 'react-native';
-import View from "$components/View";
+import View from "$ecomponents/View";
 import theme,{Colors,ALPHA} from "$theme";
-import Icon from "$components/Icon"
+import Icon from "$ecomponents/Icon"
 import {defaultStr,defaultObj} from "$utils";
 import {TouchableRipple} from 'react-native-paper';
-import Divider from "$components/Divider";
-import Label from "$components/Label";
+import Divider from "$ecomponents/Divider";
+import Label from "$ecomponents/Label";
 import { MINIMIZED_ICON_SIZE,ICON_SIZE,getBackgroundColor } from '../utils';
 import PropTypes from "prop-types";
 

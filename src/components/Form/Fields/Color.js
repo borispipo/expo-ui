@@ -1,4 +1,4 @@
-import Color from "$components/Color";
+import Color from "$ecomponents/Color";
 import Field from "./Field";
 
 export default class FormColorField extends Field {

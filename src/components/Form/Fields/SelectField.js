@@ -1,5 +1,5 @@
 import Field from "./Field";
-import Dropdown from "$components/Dropdown";
+import Dropdown from "$ecomponents/Dropdown";
 import PropTypes from "prop-types";
 import {isObj} from "$utils";
 

@@ -2,7 +2,7 @@ import React from '$react';
 import { FlatList } from 'react-native';
 import { ScrollView,Dimensions } from 'react-native';
 import PropTypes from "prop-types";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import {isMobileNative} from "$platform";
 import {defaultStr,defaultObj} from "$utils";
 const isNative = isMobileNative();

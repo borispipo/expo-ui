@@ -1,4 +1,4 @@
-import Dialog from "$components/Dialog/Dialog";
+import Dialog from "$ecomponents/Dialog/Dialog";
 import FormDataActions from "./FormDataActions";
 import {defaultObj} from "$utils";
 import React from "$react";

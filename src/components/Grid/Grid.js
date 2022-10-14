@@ -4,7 +4,7 @@ import {grid} from "$theme";
 import {defaultStr} from "$utils";
 import PropTypes from "prop-types";
 import { StyleProp } from '$theme';
-import View from "$components/View";
+import View from "$ecomponents/View";
 
 const GridComponent = React.forwardRef((p,ref)=>{
     const {onPress,responsive,activeOpacity,onLongPress,flexGrow =1,flex:customFlex,style,onPressIn,col,onPressOut,...props} = p;

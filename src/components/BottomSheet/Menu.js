@@ -1,9 +1,9 @@
 import BottomSheet from "./Sheet";
 import {isMobileMedia} from "$platform/dimensions";
-import Menu,{renderItems} from "$components/Menu";
+import Menu,{renderItems} from "$ecomponents/Menu";
 import React from "$react";
 import {defaultObj,defaultDecimal,defaultStr,isDecimal,defaultBool} from "$utils";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import PropTypes from "prop-types";
 import {getContentHeight} from "./utils";
 

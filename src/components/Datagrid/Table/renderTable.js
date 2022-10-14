@@ -1,7 +1,7 @@
 require("./datagrid.css");
-let Filter = require("$components/Filter");
+let Filter = require("$ecomponents/Filter");
 let DatagridActions = require("$wcomponents/Datagrid/DatagridActions");
-let Tooltip = require("$components/Tooltip")
+let Tooltip = require("$ecomponents/Tooltip")
 import {FooterItem as Footer} from "./Footer";
 let ExportTable = require("$export-table")
 let RenderType = require("./RenderType");
@@ -18,9 +18,9 @@ const {
     TableColumn
   } = require("$ui");
   let DatagridTableRow= require("./renderTable/TableRow")
-  let Button= require("$components/Button")
-  let Icon = require("$components/Icon")
-  let {DocumentMenu,CheckboxListItem} = require("$components/Menu")
+  let Button= require("$ecomponents/Button")
+  let Icon = require("$ecomponents/Icon")
+  let {DocumentMenu,CheckboxListItem} = require("$ecomponents/Menu")
 /**** tous les évenèments du datagrid sont définies dans la props events qui represente un objet 
      contenant les différents évènements
      qu'ils s'agisse des évènements de ligne, de colonne, ....etc

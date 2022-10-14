@@ -5,7 +5,7 @@ import AnimatableImage from './AnimatableImage';
 import PropTypes from 'prop-types';
 import { ActivityIndicator } from 'react-native-paper';
 import theme from "$theme";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import {defaultStr} from "$utils";
 
 import { getImageSizeFitWidth, getImageSizeFitWidthFromCache } from './cache';

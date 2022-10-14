@@ -1,6 +1,6 @@
 import React from "$react";
 import APP from "$app";
-import Screen from "$layouts/Screen";
+import Screen from "$elayouts/Screen";
 
 export const screenName = "HOME";
 

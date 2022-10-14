@@ -1,12 +1,12 @@
 import {isPlainObj,defaultFunc,defaultStr,isObjOrArray,isObj,defaultObj} from "$utils";
 import {getWindowSizes,isMobileOrTabletMedia,isMobileMedia} from "$dimensions";
 import { StyleSheet } from "react-native";
-import Button from "$components/Button";
+import Button from "$ecomponents/Button";
 import React from "$react";
 import theme from "$theme"
-import Action from "$components/Form/Action";
-import Menu from "$components/Menu";
-import Icon,{ MORE_ICON } from "$components/Icon";
+import Action from "$ecomponents/Form/Action";
+import Menu from "$ecomponents/Menu";
+import Icon,{ MORE_ICON } from "$ecomponents/Icon";
 
 export const ACTION_ICON_SIZE = 30;
 

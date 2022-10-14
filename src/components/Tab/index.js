@@ -1,6 +1,6 @@
 import React from "$react";
 import {StyleSheet} from "react-native";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import TabItems from "./TabItems";
 import TabItem from "./TabItem";
 import TabContent from "./TabContent";

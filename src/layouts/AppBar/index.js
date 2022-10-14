@@ -1,10 +1,10 @@
-import AppBar from "$components/AppBar";
+import AppBar from "$ecomponents/AppBar";
 import { Appbar } from "react-native-paper";
 import React from "$react";
-import {MENU_ICON} from "$components/Icon";
+import {MENU_ICON} from "$ecomponents/Icon";
 import {defaultObj} from "$utils";
-import {useDrawer} from "$components/Drawer";
-import Icon from "$components/Icon";
+import {useDrawer} from "$ecomponents/Drawer";
+import Icon from "$ecomponents/Icon";
 
 export * from "./utils";
 

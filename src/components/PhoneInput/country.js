@@ -1,5 +1,5 @@
 import { find, orderBy } from 'lodash';
-import allCountries from "$components/Countries/resources/countries.json"
+import allCountries from "$ecomponents/Countries/resources/countries.json"
 
 class Country {
     constructor() {

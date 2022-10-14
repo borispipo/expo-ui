@@ -3,12 +3,12 @@
 import React from '$react';
 import {TouchableOpacity, StyleSheet} from 'react-native';
 import Dimensions from "$platform/dimensions";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import {defaultStr} from "$utils";
 import PropTypes from "prop-types";
 import {medias} from "$theme/grid";
 import theme from "$theme";
-import {Elevations} from "$components/Surface";
+import {Elevations} from "$ecomponents/Surface";
 
 export const totalSize = 12;
 

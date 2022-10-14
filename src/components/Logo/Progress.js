@@ -1,6 +1,6 @@
 import Logo from "./Logo";
-import View from "$components/View";
-import Label from "$components/Label";
+import View from "$ecomponents/View";
+import Label from "$ecomponents/Label";
 import { ActivityIndicator, Colors } from 'react-native-paper';
 import theme,{defaultDarkTheme} from "$theme";
 import {isIos} from "$platform";

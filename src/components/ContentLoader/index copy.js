@@ -1,6 +1,6 @@
 /**** see : https://github.com/danilowoz/react-content-loader */
 import {defaultObj} from "$utils";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import {StyleSheet,Dimensions,useWindowDimensions} from "react-native";
 import React from "react";
 import ContentLoaderF, {Facebook as CLFacebook,Instagram as CLInstagram} from './Loader';

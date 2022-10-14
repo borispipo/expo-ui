@@ -1,11 +1,11 @@
 import { StyleSheet,TouchableOpacity } from 'react-native'
-import View from "$components/View";
-import TextField,{shadowMode} from "$components/TextField";
+import View from "$ecomponents/View";
+import TextField,{shadowMode} from "$ecomponents/TextField";
 import ColorPicker from './ColorPicker';
 import theme,{Colors,DISABLED_OPACITY} from "$theme";
 import PropTypes from "prop-types";
 import React from "$react";
-import Dialog from "$components/Dialog";
+import Dialog from "$ecomponents/Dialog";
 import {isMobileOrTabletMedia} from "$platform/dimensions";
 import {defaultStr,defaultObj} from "$utils";
 

@@ -1,5 +1,5 @@
 import React from '$react';
-import View from "$components/View";
+import View from "$ecomponents/View";
 import PropTypes from "prop-types";
 
 export default function CardViewComponent (props) {

@@ -1,16 +1,16 @@
 import React from '$react';
-import View from "$components/View";
+import View from "$ecomponents/View";
 import {
   Animated,
   StyleSheet,
   Platform,
 } from 'react-native';
-import ScrollView  from "$components/ScrollView";
+import ScrollView  from "$ecomponents/ScrollView";
 import PropTypes from "prop-types";
 import theme,{StylePropTypes,Colors} from "$theme";
 import {isMobileNative,isMobileBrowser} from "$platform"
 import {defaultStr} from "$utils";
-import {Elevations} from "$components/Surface";
+import {Elevations} from "$ecomponents/Surface";
 
 const showScrollBarIndicator = !isMobileBrowser() && !isMobileNative();
 

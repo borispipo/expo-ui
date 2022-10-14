@@ -1,8 +1,8 @@
 import {uniqid,defaultStr,defaultObj} from "$utils";
 import {addClassName, removeClassName} from "$utils/dom";
 import theme from "$theme";
-import {MAX_WIDTH} from "$components/Dialog/utils";
-import {Elevations} from "$components/Surface";
+import {MAX_WIDTH} from "$ecomponents/Dialog/utils";
+import {Elevations} from "$ecomponents/Surface";
 import { StyleSheet } from "react-native";
 import {Dimensions} from "react-native";
 const domId = uniqid("alter-7-dom-id");

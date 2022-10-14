@@ -1,12 +1,12 @@
-import {FlashList,BigList} from "$components/List";
-import View from "$components/View";
+import {FlashList,BigList} from "$ecomponents/List";
+import View from "$ecomponents/View";
 import {defaultObj,defaultStr,debounce,isNumber,defaultVal} from "$utils";
 import PropTypes from "prop-types";
 export const DEFAULT_COLUMN_WIDTH = 60;
 import React from "$react";
-import Label from "$components/Label";
+import Label from "$ecomponents/Label";
 import { StyleSheet,ScrollView,Dimensions} from "react-native";
-import { getRowStyle } from "$components/Datagrid/utils";
+import { getRowStyle } from "$ecomponents/Datagrid/utils";
 import {isMobileNative} from "$platform";
 import theme from "$theme";
 const isSCrollingRef = React.createRef();

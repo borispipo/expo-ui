@@ -3,7 +3,7 @@ import { RecyclerListView, DataProvider, LayoutProvider } from "recyclerlistview
 import CommonListComponent from "./Common";
 import {defaultObj,defaultDecimal} from "$utils";
 import React from "$react";
-import Label from "$components/Label";
+import Label from "$ecomponents/Label";
 import {ActivityIndicator} from "react-native-paper";
 import PropTypes from "prop-types";
 

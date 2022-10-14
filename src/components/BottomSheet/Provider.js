@@ -1,4 +1,4 @@
-import {Menu} from "$components/BottomSheet";
+import {Menu} from "$ecomponents/BottomSheet";
 import React from "$react";
 import {defaultObj} from "$utils";
 

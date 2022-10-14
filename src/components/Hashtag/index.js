@@ -1,9 +1,9 @@
 import {isNonNullString,defaultObj} from "$utils";
 //import dataFileManager from "$database/dataFileManager";
 import {open as showPreloader,close as hidePreloader} from "$preloader";
-import Label from "$components/Label";
-import templates from "$components/Form/Fields/sprintfSelectors";
-import Tooltip from "$components/Tooltip";
+import Label from "$ecomponents/Label";
+import templates from "$ecomponents/Form/Fields/sprintfSelectors";
+import Tooltip from "$ecomponents/Tooltip";
 import { Pressable } from "react-native";
 
 /*** 

@@ -1,4 +1,4 @@
-import {showPrompt,notify} from "$components/Dialog";
+import {showPrompt,notify} from "$ecomponents/Dialog";
 import {defaultFunc,isNonNullString,defaultDecimal} from "$utils";
 import APP from "$app/instance";
 

@@ -2,7 +2,7 @@
 import React, { cloneElement } from 'react';
 import PropTypes from 'prop-types';
 import { Animated, I18nManager,Dimensions, PanResponder, StyleSheet, View } from 'react-native';
-import ScrollView  from "$components/ScrollView";
+import ScrollView  from "$ecomponents/ScrollView";
 import theme from "$theme";
 import DefaultControls from './Controls';
 import {defaultObj,defaultDecimal} from "$utils";

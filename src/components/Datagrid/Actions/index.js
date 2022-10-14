@@ -3,12 +3,12 @@ import Header from "./Header";
 import PropTypes from "prop-types";
 import {isFunction,defaultObj} from "$utils";
 import React from "$react";
-import {splitActions,renderSplitedActions} from "$components/AppBar/utils";
-import {MORE_ICON} from "$components/Icon/utils";
+import {splitActions,renderSplitedActions} from "$ecomponents/AppBar/utils";
+import {MORE_ICON} from "$ecomponents/Icon/utils";
 import theme from "$theme"
-import Button from "$components/Button";
+import Button from "$ecomponents/Button";
 import { StyleSheet } from "react-native";
-import Label from "$components/Label";
+import Label from "$ecomponents/Label";
 import APP from "$app/instance";
 import { useWindowDimensions } from "react-native";
 

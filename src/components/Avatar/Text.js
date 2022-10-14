@@ -1,6 +1,6 @@
 import React from '$react';
 import {Text,StyleSheet} from 'react-native';
-import View from "$components/View";
+import View from "$ecomponents/View";
 import PropTypes from 'prop-types';
 import {Colors,StylePropTypes} from "$theme";
 import {defaultStr,defaultNumber} from "$utils";

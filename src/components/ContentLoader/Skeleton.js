@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { Animated, StyleSheet} from "react-native";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import PropTypes from "prop-types";
 
 const Types = {

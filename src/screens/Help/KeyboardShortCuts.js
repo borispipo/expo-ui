@@ -1,10 +1,10 @@
-import shortcuts from "$components/Form/utils/keyboardShortcuts";
-import Screen from "$screen";
-import Grid from "$components/Grid";
-import View from "$components/View";
+import shortcuts from "$ecomponents/Form/utils/keyboardShortcuts";
+import Screen from "$escreen";
+import Grid from "$ecomponents/Grid";
+import View from "$ecomponents/View";
 import theme from "$theme";
-import Label from "$components/Label";
-import Tooltip from "$components/Tooltip";
+import Label from "$ecomponents/Label";
+import Tooltip from "$ecomponents/Tooltip";
 
 export default function keyboardShortcutsScreen (props){
     const borderStyle = {borderWidth:1,borderColor:theme.colors.divider};

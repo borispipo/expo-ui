@@ -1,10 +1,10 @@
 import React from "$react";
 import {StyleSheet} from "react-native";
 import {defaultStr} from "$utils";
-import Label from "$components/Label";
-import View from "$components/View";
+import Label from "$ecomponents/Label";
+import View from "$ecomponents/View";
 import theme from "$theme";
-import Surface from "$components/Surface";
+import Surface from "$ecomponents/Surface";
 
 export const selectedBackgroundColor = '#fee0eb';
 

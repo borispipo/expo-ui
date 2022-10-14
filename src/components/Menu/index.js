@@ -1,4 +1,4 @@
-import Icon from "$components/Icon";
+import Icon from "$ecomponents/Icon";
 import {defaultObj,isPlainObject,} from "$utils";
 import React from "$react";
 import {Pressable,StyleSheet} from "react-native";

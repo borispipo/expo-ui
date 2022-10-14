@@ -1,7 +1,7 @@
-import Icon from "$components/Icon";
+import Icon from "$ecomponents/Icon";
 import React from "$react";
 import sync from "$database/sync";
-//import SyncInfos from "$components/Data/SyncInfos";
+//import SyncInfos from "$ecomponents/Data/SyncInfos";
 
 export default {
     icon : 'cloud-sync',

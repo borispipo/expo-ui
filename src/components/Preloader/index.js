@@ -1,9 +1,9 @@
 import {ActivityIndicator} from "react-native";
-import Dialog from "$components/Dialog";
+import Dialog from "$ecomponents/Dialog";
 import {defaultVal,isObj,defaultBool,defaultObj,isObjOrArray,defaultStr,uniqid} from "$utils";
-import Label from "$components/Label";
+import Label from "$ecomponents/Label";
 import {StyleSheet} from "react-native";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import PropTypes from "prop-types";
 import React,{ createContext} from "$react";
 import {isIos} from "$platform";

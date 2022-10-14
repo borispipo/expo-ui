@@ -1,7 +1,7 @@
 import Elevations from './Elevations'
 import React from "$react";
 import theme from "$theme";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import PropTypes from "prop-types";
 
 const SurfaceComponent = React.forwardRef((props,ref)=>{

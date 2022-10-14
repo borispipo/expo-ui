@@ -1,5 +1,5 @@
 import * as React from "react";
-import {closeDrawer as close} from "$components/Drawer/utils";
+import {closeDrawer as close} from "$ecomponents/Drawer/utils";
 let drawerRef = null;
 
 

@@ -1,4 +1,4 @@
-import Fab from "$components/Fab";
+import Fab from "$ecomponents/Fab";
 import {isObj,defaultStr,defaultVal,defaultObj} from "$utils";
 import React from "$react";
 import { StyleSheet } from 'react-native';

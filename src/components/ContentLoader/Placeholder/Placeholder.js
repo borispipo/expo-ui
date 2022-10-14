@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet } from "react-native";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import { Raw } from "./animations/Raw";
 import { SIZES } from "./tokens";
 

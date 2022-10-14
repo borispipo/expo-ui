@@ -1,6 +1,6 @@
 import React from '$react';
 import {Platform,StyleSheet,TouchableWithoutFeedback,View} from 'react-native';
-import Label from "$components/Label";
+import Label from "$ecomponents/Label";
 import theme,{Colors,StyleProp} from "$theme";
 import PropTypes from "prop-types";
 import {defaultObj,defaultStr} from "$utils";

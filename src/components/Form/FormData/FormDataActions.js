@@ -1,5 +1,5 @@
 import FormData from "./FormData";
-import showConfirm from "$components/Dialog/confirm";
+import showConfirm from "$ecomponents/Dialog/confirm";
 import Dimensions from "$platform/dimensions";
 import {defaultStr,isObj,defaultObj,isNonNullString,defaultVal,defaultFunc} from "$utils";
 import React from "$react";

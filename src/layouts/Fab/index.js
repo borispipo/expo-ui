@@ -1,4 +1,4 @@
-import Fab from "$components/Fab";
+import Fab from "$ecomponents/Fab";
 import { StyleSheet } from "react-native";
 import actions from "./actions";
 import {isObjOrArray} from "$utils";

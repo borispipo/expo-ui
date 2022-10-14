@@ -9,12 +9,12 @@ import {
 import PropTypes from "prop-types";
 import theme,{StyleProp} from "$theme";
 //import Animated  from "react-native-reanimated";
-//import Animation,{OpacityAnimation} from "$components/Animations";
-import OpacityAnimation from "$components/Animations/OpacityAnimation";
+//import Animation,{OpacityAnimation} from "$ecomponents/Animations";
+import OpacityAnimation from "$ecomponents/Animations/OpacityAnimation";
 import { Platform } from "react-native";
 import {isWeb} from "$platform";
 import {isAndroid} from "$platform";
-import Portal from "$components/Portal";
+import Portal from "$ecomponents/Portal";
 import {
   getStatusBarHeight,
   getBottomSpace,

@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import {defaultVal,defaultStr,defaultBool,isDecimal,isObj,defaultObj,isNonNullString} from "$utils";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import {Text} from "react-native-paper";
 import { StyleSheet } from "react-native";
 import theme,{Colors,DISABLED_OPACITY,ALPHA,styles} from "$theme";

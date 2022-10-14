@@ -1,4 +1,4 @@
-import Switch from "$components/Switch";
+import Switch from "$ecomponents/Switch";
 import {defaultObj} from "$utils";
 import Field  from"./Field";
 import React from "react";

@@ -1,4 +1,4 @@
-import {Time} from "$components/Date";
+import {Time} from "$ecomponents/Date";
 import {defaultObj} from "$utils";
 import Field  from"./Field";
 import React from "react";

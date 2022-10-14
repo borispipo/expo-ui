@@ -1,14 +1,14 @@
 import * as React from 'react'
 import Types from 'prop-types';
 import {StyleSheet,View,TouchableOpacity,useWindowDimensions} from "react-native";
-import ScrollView  from "$components/ScrollView";
+import ScrollView  from "$ecomponents/ScrollView";
 import {Paragraph,Button,List } from "react-native-paper";
-import Portal from "$components/Portal";
+import Portal from "$ecomponents/Portal";
 import theme from "$theme";
 import {navigationRef,sanitizeName} from "$navigation/utils";
 import {isMobileNative} from "$platform";
-import Expandable from "$components/Expandable";
-import Label from "$components/Label";
+import Expandable from "$ecomponents/Expandable";
+import Label from "$ecomponents/Label";
 
 const homeRoute = sanitizeName("Home");
 import {isWeb} from "$platform";

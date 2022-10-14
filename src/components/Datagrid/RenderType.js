@@ -1,9 +1,9 @@
 import {get,set} from "./Common/session";
-import Icon from "$components/Icon";
-import {notify} from "$components/Dialog";
+import Icon from "$ecomponents/Icon";
+import {notify} from "$ecomponents/Dialog";
 import {isDesktopMedia} from "$platform/dimensions";
 import {defaultStr} from "$utils";
-import {Menu} from "$components/BottomSheet";
+import {Menu} from "$ecomponents/BottomSheet";
 import {accordionIcon,tableIcon,typeKey} from "./RenderTypes/utils";
 import rendersTypes from "./RenderTypes";;
 

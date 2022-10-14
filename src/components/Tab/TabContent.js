@@ -1,7 +1,7 @@
 import React from '$react';
 import {StyleSheet,} from 'react-native';
 import {defaultStr} from "$utils";
-import Swiper from "$components/Swiper";
+import Swiper from "$ecomponents/Swiper";
 import PropTypes from "prop-types";
 import { StylePropTypes } from '$theme';
 

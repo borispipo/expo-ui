@@ -4,10 +4,10 @@ import {defaultObj,isArray,isDecimal} from "$utils";
 import theme,{Colors,DISABLED_OPACITY} from "$theme";
 import {StyleSheet} from "react-native";
 import PropTypes from "prop-types";
-import Label from "$components/Label";
+import Label from "$ecomponents/Label";
 import Slider from "./Slider";
 import {isWeb} from "$platform";
-import HelperText from "$components/HelperText";
+import HelperText from "$ecomponents/HelperText";
 
 const prepareValue = ({value,defaultValue}) => isArray(defaultValue) && defaultValue.length? defaultValue : isArray(value) && value.length? value : defaultDecimal(defaultValue,value)
 

@@ -1,7 +1,7 @@
 import { PropTypes } from 'prop-types';
 import React from '$react';
 import {defaultObj} from "$utils";
-import View from "$components/View";
+import View from "$ecomponents/View";
 
 import {
   requireNativeComponent,

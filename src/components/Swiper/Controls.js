@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { StyleSheet, Text } from 'react-native';
-import View from "$components/View";
+import View from "$ecomponents/View";
 
 import { nodeType } from './nodeType';
 import { renderNode } from './renderNode';
-import Badge  from '$components/Badge';
-import Button  from '$components/Button';
+import Badge  from '$ecomponents/Badge';
+import Button  from '$ecomponents/Button';
 import theme from "$theme";
 
 const cellPositions = [

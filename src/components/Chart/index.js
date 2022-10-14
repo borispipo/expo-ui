@@ -3,7 +3,7 @@ import ApexCharts from 'apexcharts'
 import ReactApexChart from 'react-apexcharts';
 import React from "$react";
 import {defaultStr,uniqid,defaultObj} from "$utils";
-import View from "$components/View";
+import View from "$ecomponents/View";
 
 
 export const ChartComponent = React.forwardRef(({options,data,containerProps,containerId,...props},ref)=>{

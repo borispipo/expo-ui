@@ -9,12 +9,12 @@ import {
     I18nManager,
 } from 'react-native';
 import PropTypes from "prop-types";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import {defaultStr} from "$utils";
 import theme,{Colors} from "$theme";
 import {isMobileMedia} from "$platform/dimensions";
 import Preloader from "$preloader";
-import {Elevations} from "$components/Surface";
+import {Elevations} from "$ecomponents/Surface";
 
 const MIN_SWIPE_DISTANCE = 3;
 const DEVICE_WIDTH = parseFloat(Dimensions.get('window').width);

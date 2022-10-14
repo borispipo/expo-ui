@@ -1,7 +1,7 @@
-import View from "$components/View";
+import View from "$ecomponents/View";
 import {defaultObj,defaultBool} from "$utils";
-import Divider from "$components/Divider";
-import Label from "$components/Label";
+import Divider from "$ecomponents/Divider";
+import Label from "$ecomponents/Label";
 import theme,{Colors,tinyColor,ALPHA_OPACITY} from "$theme";
 export default function DrawerSection (props){
     let {children,divider,labelStyle,minimized,labelProps,dividerProps,label,text,...rest} = props;

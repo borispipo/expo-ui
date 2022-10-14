@@ -1,5 +1,5 @@
 {
-  "name": "ftc-expose-ui",
+  "name": "@fto-consult/expo-ui",
   "version": "1.0.0",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "index.js",

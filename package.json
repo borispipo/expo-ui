@@ -1,11 +1,11 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "index.js",
   "scripts": {
     "publish": "npm publish --access=public",
-    "unpublish": "npm -f unpublish @fto-consult/common"
+    "unpublish": "npm -f unpublish @fto-consult/expo-ui"
   },
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
     "@emotion/native": "^11.10.0",
     "@expo/metro-config": "^0.4.0",
     "@expo/webpack-config": "^0.17.2",
-    "@fto-consult/common": "^1.0.12",
+    "@fto-consult/common": "^1.0.13",
     "@gorhom/portal": "^1.0.14",
     "@react-native-async-storage/async-storage": "~1.17.3",
     "@react-native-community/netinfo": "9.3.0",

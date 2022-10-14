@@ -6,16 +6,15 @@ module.exports = function({config,isNext,nodeModulesPath,dir}){
     config.resolve.modules = [path.resolve(dir, 'node_modules'),path.resolve(root, 'node_modules'), 'node_modules',...nodeModulesPath,...config.resolve.modules];
     if(!isNext){
         config.module.rules.push({
-            test: /\.(js|jsx)$/,
+            test: /\.(js|jsx|ts|tsx)$/,
             include: [
                 dir,
-                path.resolve(root,"common"),
+                path.resolve(dir,"node_modules","@fto-consult"),
                 /(common)/
             ],
             exclude:[
                 path.resolve(dir,"node_modules"),
                 path.resolve(root,"node_modules"),
-                ...nodeModulesPath,
                 /node_modules[/\\](?!react-native-paper|react-native|react-native-vector-icons|react-native-safe-area-view)/,
                 /(node_modules)/
             ],

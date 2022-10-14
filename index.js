@@ -1,6 +1,6 @@
 import { registerRootComponent } from 'expo';
-import appConfig from "$app/config";
-require('dotenv').config();
+import appConfig from "$capp/config";
+//require('dotenv').config();
 
 const isObj = x=>typeof x =='object' && x && !Array.isArray(x);
 const defaultObj = x=> isObj(x)? x : {};
@@ -14,7 +14,8 @@ const defaultObj = x=> isObj(x)? x : {};
 export default function ExpoUIApp (options){
     options = defaultObj(options);
     const config = defaultObj(options.config);
-    console.log(config," is config heeeeeee");
     appConfig.current = config;
     registerRootComponent(require('./src/App').default);
 }
+
+ExpoUIApp();

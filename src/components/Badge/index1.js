@@ -1,7 +1,7 @@
 import {Badge} from "react-native-paper";
 import {StyleSheet} from "react-native";
 const defaultSize = 20;
-import {isNativeMobile} from "$cplatfrom";
+import {isNativeMobile} from "$cplatform";
 
 export default function BadgeComponent(props){
     let {size,style,...rest} = props;

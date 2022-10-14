@@ -1,6 +1,6 @@
 import React from "$react";
 import { Paragraph } from "react-native-paper";
-import {canTextBeSelectable} from "$cplatfrom";
+import {canTextBeSelectable} from "$cplatform";
 import {defaultObj,defaultStr,defaultNumber} from "$utils";
 import PropTypes from "prop-types";
 import theme from "$theme";

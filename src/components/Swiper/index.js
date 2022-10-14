@@ -6,7 +6,7 @@ import ScrollView  from "$ecomponents/ScrollView";
 import theme from "$theme";
 import DefaultControls from './Controls';
 import {defaultObj,defaultDecimal} from "$utils";
-import {isNativeMobile} from "$cplatfrom";
+import {isNativeMobile} from "$cplatform";
 const isNative = isNativeMobile();
 import { ActivityIndicator } from 'react-native-paper';
 

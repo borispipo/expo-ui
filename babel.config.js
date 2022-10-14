@@ -3,7 +3,7 @@ module.exports = function(api,opts) {
     const path = require("path");
     const dir = path.resolve(__dirname);
     api.cache(true);
-    alias = typeof opts.alias =='object' && opts.alias  || require("./babel.config.alias")({base:dir,platform:"expo"});
+    const alias =  require("./babel.config.alias")({base:dir,...opts,platform:"expo"});
     return {
       presets: [
         ['babel-preset-expo'],

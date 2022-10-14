@@ -1,4 +1,4 @@
-import {isMobileMedia,isTabletMedia,isDesktopMedia} from "$cplatfrom/dimensions";
+import {isMobileMedia,isTabletMedia,isDesktopMedia} from "$cplatform/dimensions";
 import theme,{Colors} from "$theme";
 
 export const getBackgroundColor = (backgroundColor)=> Colors.isValid(backgroundColor)? backgroundColor : Colors.darken(theme.colors.background,1);

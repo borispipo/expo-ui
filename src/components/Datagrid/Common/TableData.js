@@ -3,7 +3,7 @@ import {defaultObj,defaultStr,isNonNullString,isFunction,isPromise} from "$utils
 //import {mountDatabaseTable,unmountDatabaseTable,unlockTable,isTableLocked} from "$database/utils";
 import actions from "$actions";
 import PropTypes from "prop-types";
-import APP from "$app";
+import APP from "$capp";
 //import {getDataFunc} from "$database/getData";
 
 export default class CommonTableDatagrid extends CommonDatagrid{

@@ -6,12 +6,12 @@ import {Paragraph,Button,List } from "react-native-paper";
 import Portal from "$ecomponents/Portal";
 import theme from "$theme";
 import {navigationRef,sanitizeName} from "$enavigation/utils";
-import {isMobileNative} from "$cplatfrom";
+import {isMobileNative} from "$cplatform";
 import Expandable from "$ecomponents/Expandable";
 import Label from "$ecomponents/Label";
 
 const homeRoute = sanitizeName("Home");
-import {isWeb} from "$cplatfrom";
+import {isWeb} from "$cplatform";
 
 const ErrorMessage = React.forwardRef(function(props,ref){
   const { error,resetError,onGoBack, info } = props

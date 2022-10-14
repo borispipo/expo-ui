@@ -6,7 +6,7 @@ import theme,{Colors,DISABLED_OPACITY} from "$theme";
 import PropTypes from "prop-types";
 import React from "$react";
 import Dialog from "$ecomponents/Dialog";
-import {isMobileOrTabletMedia} from "$cplatfrom/dimensions";
+import {isMobileOrTabletMedia} from "$cplatform/dimensions";
 import {defaultStr,defaultObj} from "$utils";
 
 const ColorPickerComponent = React.forwardRef ((props,ref)=>{

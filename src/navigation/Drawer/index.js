@@ -2,7 +2,7 @@ import Drawer,{DrawerItems} from "$ecomponents/Drawer";
 import ProfilAvatar from "./ProfilAvatar";
 import React from "$react";
 import items,{isItemActive,refresh as refreshItems} from "./items";
-import APP from "$app/instance";
+import APP from "$capp/instance";
 import Auth from "$cauth";
 import Login from "$auth/components/Login";
 import {navigate} from "$enavigation/utils";

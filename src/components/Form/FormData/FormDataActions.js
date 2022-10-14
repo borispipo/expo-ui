@@ -1,9 +1,9 @@
 import FormData from "./FormData";
 import showConfirm from "$ecomponents/Dialog/confirm";
-import Dimensions from "$cplatfrom/dimensions";
+import Dimensions from "$cplatform/dimensions";
 import {defaultStr,isObj,defaultObj,isNonNullString,defaultVal,defaultFunc} from "$utils";
 import React from "$react";
-import {isWeb} from "$cplatfrom";
+import {isWeb} from "$cplatform";
 import PropTypes from "prop-types";
 
 

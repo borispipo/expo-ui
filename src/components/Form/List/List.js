@@ -6,7 +6,7 @@ import Datagrid from "$ecomponents/Datagrid";
 import PropTypes from "prop-types";
 import React,{Component as AppComponent} from "$react";
 import {isNonNullString,defaultStr,defaultObj,defaultArray,extendObj,isObjOrArray,isFunction,isStringNumber} from "$utils";
-import {isPhoneMedia} from "$cplatfrom/dimensions";
+import {isPhoneMedia} from "$cplatform/dimensions";
 import View from "$ecomponents/View";
 import {StyleSheet} from "react-native";
 import {List} from "react-native-paper";

@@ -4,7 +4,7 @@ import { UPPER_CASE } from "$src/lib/validator";
 import {isNonNullString,defaultStr} from "$utils";
 //mport {isDocUpdate} from "$database/utils";
 import React from "$react";
-import {copyTextToClipboard} from "$app/clipboard/utils";
+import {copyTextToClipboard} from "$capp/clipboard/utils";
 import Icon,{COPY_ICON} from "$ecomponents/Icon";
 import { ActivityIndicator } from "react-native-paper";
 import dbUniqid from "$database/plugins/uniqid";

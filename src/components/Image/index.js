@@ -8,7 +8,7 @@ let maxWidthDiff = 150, maxHeightDiff = 150;
 import {StyleSheet} from "react-native";
 import React from "$react";
 import PropTypes from "prop-types";
-import {isMobileNative} from "$cplatfrom";
+import {isMobileNative} from "$cplatform";
 //import Signature from "$ecomponents/Signature";
 import Label from "$ecomponents/Label";
 //import Editor from "./Editor";

@@ -4,7 +4,7 @@ import Label from "$ecomponents/Label";
 import theme,{Colors,StyleProp} from "$theme";
 import PropTypes from "prop-types";
 import {defaultObj,defaultStr} from "$utils";
-import {isIos,isAndroid,isWeb} from "$cplatfrom";
+import {isIos,isAndroid,isWeb} from "$cplatform";
 
 const AppbarContent = React.forwardRef(({
   color: titleColor,

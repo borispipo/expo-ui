@@ -1,5 +1,5 @@
 import {isObj,isNonNullString,isFunction,defaultObj,extendObj,defaultBool} from "$utils";
-import APP from "$app/instance";
+import APP from "$capp/instance";
 import {observable,addObserver,isObservable} from "$observable";
 
 let MANAGER = {

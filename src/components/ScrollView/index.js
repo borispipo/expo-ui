@@ -3,7 +3,7 @@ import { FlatList } from 'react-native';
 import { ScrollView,Dimensions } from 'react-native';
 import PropTypes from "prop-types";
 import View from "$ecomponents/View";
-import {isMobileNative} from "$cplatfrom";
+import {isMobileNative} from "$cplatform";
 import {defaultStr,defaultObj} from "$utils";
 const isNative = isMobileNative();
 

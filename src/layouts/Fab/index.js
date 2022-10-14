@@ -4,7 +4,7 @@ import actions from "./actions";
 import {isObjOrArray} from "$utils";
 import {removeFabRef,createFabRef} from "./utils";
 import PropTypes from "prop-types";
-import APP from "$app";
+import APP from "$capp";
 import React from "$react";
 import {sanitizeName} from "$escreens/utils";
 

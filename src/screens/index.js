@@ -3,7 +3,7 @@ import {sanitizeName,GROUP_NAMES} from "./utils";
 import mainScreens from "./mainScreens"
 import React from "$react";
 import { BackHandler } from "react-native";
-import APP from "$app";
+import APP from "$capp";
 import {useDrawer} from "$ecomponents/Drawer";
 import {navigationRef,getScreenProps,setRoute,setActiveNavigation,setScreenOptions,goBack} from "$enavigation/utils";
 

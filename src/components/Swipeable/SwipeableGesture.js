@@ -5,7 +5,7 @@ import {
   PanResponder
 } from 'react-native';
 import {defaultStr} from "$utils";
-import {isNativeMobile} from "$cplatfrom";
+import {isNativeMobile} from "$cplatform";
 
 const useNativeDriver = isNativeMobile();
 

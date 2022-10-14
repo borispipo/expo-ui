@@ -1,7 +1,4 @@
-import APP from "$app";
-import { screenName as aboutScreenName} from "$escreens/Help/About";
-import i18n from "$i18n";
-import theme from "$theme";
+import APP from "$capp";
 
 const refresh = (force)=>{
     const name = APP.getName();
@@ -26,11 +23,6 @@ const refresh = (force)=>{
                     icon : 'timeline-help',
                     label : name+", Mises à jour",
                 },*/
-                {
-                    icon : 'help',
-                    label : 'A propos de '+name,
-                    routeName : aboutScreenName,
-                }
             ]
         }
     ]

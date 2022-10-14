@@ -3,7 +3,7 @@ import {defaultObj,defaultArray,defaultStr,defaultDecimal,isNonNullString} from 
 import View from "$ecomponents/View";
 import { StyleSheet,Dimensions,Pressable } from "react-native";
 import ScrollView  from "$ecomponents/ScrollView";
-import {isMobileOrTabletMedia} from "$cplatfrom/dimensions";
+import {isMobileOrTabletMedia} from "$cplatform/dimensions";
 import DatagridActions from "../Actions";
 import {SELECTABLE_COLUMN_WIDTH,getRowStyle} from "../utils";
 import Icon,{MENU_ICON} from "$ecomponents/Icon";

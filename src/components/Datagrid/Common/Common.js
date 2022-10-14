@@ -1,6 +1,6 @@
 import theme from "$theme";
-import APP from "$app";
-import {isMobileOrTabletMedia,isSmallPhoneMedia} from "$cplatfrom/dimensions";
+import APP from "$capp";
+import {isMobileOrTabletMedia,isSmallPhoneMedia} from "$cplatform/dimensions";
 import PropTypes from "prop-types";
 import {Component as AppComponent} from "$react"
 import $session from "$session";
@@ -29,8 +29,8 @@ import Checkbox from "../Checkbox";
 import { TouchableRipple } from "react-native-paper";
 import { evalSingleValue } from "../Footer";
 import i18n from "$i18n";
-import { makePhoneCall,canMakePhoneCall as canMakeCall} from "$app/MakePhoneCall";
-import copyToClipboard from "$app/clipboard";
+import { makePhoneCall,canMakePhoneCall as canMakeCall} from "$capp/MakePhoneCall";
+import copyToClipboard from "$capp/clipboard";
 import { Pressable } from "react-native";
 
 export const arrayValueSeparator = ", ";

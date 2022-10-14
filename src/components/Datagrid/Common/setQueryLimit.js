@@ -1,6 +1,6 @@
 import {showPrompt,notify} from "$ecomponents/Dialog";
 import {defaultFunc,isNonNullString,defaultDecimal} from "$utils";
-import APP from "$app/instance";
+import APP from "$capp/instance";
 
 const setDatagridQueryLimit = (limit,successCB,errorCB)=>{
     successCB = defaultFunc(successCB);

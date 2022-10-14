@@ -15,8 +15,8 @@ export default function StartContent (props) {
         let {extra,onGetStarted} = props;
         extra = defaultObj(extra);
         const args = {...props,data:{}};
-        /*** en fait dans les paramètres d'initialisation, les extra options ont été passé par la fonction init de $app
-         * dans ces paramètres, une options onGetStarted a été définie dans le corps de la fonction init de $app afin que le Start exécute cette fonction une fois 
+        /*** en fait dans les paramètres d'initialisation, les extra options ont été passé par la fonction init de $capp
+         * dans ces paramètres, une options onGetStarted a été définie dans le corps de la fonction init de $capp afin que le Start exécute cette fonction une fois 
          * que l'utilisateur aura accepté les terms2Uses et les privacyPolicies
          */
         const hasG = typeof onGetStarted =='function' || typeof extra.onGetStarted =='function'? true : false;

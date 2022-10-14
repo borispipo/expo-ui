@@ -1,8 +1,8 @@
 import AppBar from "$ecomponents/AppBar";
 import React from "$react";
-import APP from "$app/instance";
+import APP from "$capp/instance";
 import { renderActions } from "./utils";
-import {isIos,isAndroid,isWeb} from "$cplatfrom";
+import {isIos,isAndroid,isWeb} from "$cplatform";
 
 const AppBarDialogComponent = React.forwardRef((props,ref)=>{
     const {actions,responsive,isFullScreen,fullScreen,actionsProps,...rest} = props;

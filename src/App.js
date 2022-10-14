@@ -1,5 +1,5 @@
 import '$session';
-import appConfig  from '$app/config';;
+import appConfig  from '$capp/config';
 import React from 'react';
 import  {updateTheme,defaultTheme} from "$theme";
 import { AppRegistry} from 'react-native';
@@ -11,9 +11,9 @@ import DropdownAlert from '$ecomponents/Dialog/DropdownAlert';
 import {notificationRef} from "$notify";
 import BottomSheetProvider from "$ecomponents/BottomSheet/Provider";
 import DialogProvider from "$ecomponents/Dialog/Provider";
-import { DialogProvider as FormDataDialogProvider } from './src/components/Form/FormData';
+import { DialogProvider as FormDataDialogProvider } from './components/Form/FormData';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { PreferencesContext } from './src/Preferences';
+import { PreferencesContext } from './Preferences';
 import {AuthProvider} from '$cauth';
 import {PortalProvider } from '$ecomponents/Portal';
 import ErrorBoundary from "$ecomponents/ErrorBoundary";

@@ -1,6 +1,6 @@
 import {IconButton } from "react-native-paper";
 import { Component } from "react";
-import {isNativeMobile} from "$cplatfrom";
+import {isNativeMobile} from "$cplatform";
 import {Image} from "react-native";
 import View from "$ecomponents/View";
 import Label from "$ecomponents/Label";

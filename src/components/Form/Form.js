@@ -6,7 +6,7 @@ import Action from "./Action";
 import View from "$ecomponents/View";
 import KeyboardAvoidingView from "./KeyboardAvoidingView";
 import { StyleSheet } from "react-native";
-import APP from "$app/instance";
+import APP from "$capp/instance";
 import PropTypes from "prop-types";
 
 const defaultComponentNode = View

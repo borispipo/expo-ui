@@ -18,7 +18,7 @@ import { withTheme,Surface,Portal} from 'react-native-paper';
 import { NativeModules} from 'react-native';
 import {defaultDecimal,extendObj} from "$utils";
 import theme,{StylePropTypes} from "$theme";
-import APP from "$app/instance";
+import APP from "$capp/instance";
 import MenuItem from "./Item";
 
 const RESIZE_PAGE = APP.EVENTS.RESIZE_PAGE;

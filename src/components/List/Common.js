@@ -4,7 +4,7 @@ import { prepareItems as customPrepareItems,getBToTopRef } from "./utils";
 import {grid,StylePropTypes} from "$theme";
 import PropTypes from "prop-types";
 import {defaultObj,defaultDecimal,defaultArray,defaultFunc} from "$utils";
-import {isMobileMedia} from "$cplatfrom/dimensions";
+import {isMobileMedia} from "$cplatform/dimensions";
 import BackToTop from "$ecomponents/BackToTop";
 import {FlatList,StyleSheet,View} from "react-native";
 import Label from "$ecomponents/Label";

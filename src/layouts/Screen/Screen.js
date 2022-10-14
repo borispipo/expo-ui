@@ -8,7 +8,7 @@ import View from "$ecomponents/View";
 import { useNavigation } from '$enavigation/utils';
 import Fab from "$elayouts/Fab";
 import {getScreenProps} from '$enavigation/utils';
-import APP from "$app";
+import APP from "$capp";
 import AppBar,{createAppBarRef} from "$elayouts/AppBar";
 import ErrorBoundary from "$ecomponents/ErrorBoundary";
 import Portal from "$ecomponents/Portal";

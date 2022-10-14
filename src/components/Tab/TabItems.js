@@ -8,7 +8,7 @@ import {
 import ScrollView  from "$ecomponents/ScrollView";
 import PropTypes from "prop-types";
 import theme,{StylePropTypes,Colors} from "$theme";
-import {isMobileNative,isMobileBrowser} from "$cplatfrom"
+import {isMobileNative,isMobileBrowser} from "$cplatform"
 import {defaultStr} from "$utils";
 import {Elevations} from "$ecomponents/Surface";
 

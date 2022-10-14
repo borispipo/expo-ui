@@ -1,4 +1,4 @@
-import APP from "$app/instance";
+import APP from "$capp/instance";
 import deviceProps from "./deviceProps";
 import Label from "$ecomponents/Label";
 import theme from "$theme";

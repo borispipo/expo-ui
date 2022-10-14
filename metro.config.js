@@ -1,1 +1,1 @@
-module.exports = require("./expo.config")();
+module.exports = require("./expo.metro.config")();

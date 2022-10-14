@@ -1,13 +1,13 @@
 import React from "$react"
 import { AppState,Linking,BackHandler,} from "react-native"
-import APP from "$app";
+import APP from "$capp";
 import {HOME as HOME_SCREEN_NAME} from "$escreens/Home/routes";
-import {AppStateService,trackIDLE,stop as stopIDLE} from "$app/idle";
+import {AppStateService,trackIDLE,stop as stopIDLE} from "$capp/idle";
 import { NavigationContainer} from '@react-navigation/native';
 import {navigationRef} from "$cnavigation/utils"
 import NetInfo from '$utils/NetInfo';
 import Auth from "$cauth";
-import {isNativeMobile} from "$cplatfrom";
+import {isNativeMobile} from "$cplatform";
 import Navigation from "$enavigation";
 import {set as setSession,get as getSession} from "$session";
 import { showConfirm } from "$ecomponents/Dialog";
@@ -15,8 +15,8 @@ import {close as closePreloader, isVisible as isPreloaderVisible} from "$preload
 import SplashScreen from "$ecomponents/SplashScreen";
 import {notify} from "$ecomponents/Dialog";
 import {decycle} from "$utils/json";
-import init from "$app/init";
-import { setIsInitialized} from "$app/utils";
+import init from "$capp/init";
+import { setIsInitialized} from "$capp/utils";
 
 let MAX_BACK_COUNT = 1;
 let countBack = 0;

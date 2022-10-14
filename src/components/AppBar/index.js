@@ -1,7 +1,7 @@
 import React from "$react"
 import { Appbar} from 'react-native-paper';
 import {defaultObj,defaultVal,defaultStr} from "$utils";
-import APP from "$app/instance"
+import APP from "$capp/instance"
 import {isSplitedActions,renderSplitedActions,splitActions,TITLE_FONT_SIZE} from "./utils";
 import theme,{Colors,flattenStyle} from "$theme";
 import {StyleSheet} from "react-native";

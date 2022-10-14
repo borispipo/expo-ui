@@ -1,6 +1,6 @@
 import {START} from "./routes";
 import Content from "./content"
-import {getName} from "$app";
+import {getName} from "$capp";
 import {GROUP_NAMES} from "../utils"
 export default function Start(props){
     return <Content 

@@ -2,7 +2,7 @@ import Select from "./Select";
 import LabelComponent from "$ecomponents/Label";
 import React from "$react";
 import {defaultObj,defaultVal} from "$utils";
-import {isMobileMedia} from "$cplatfrom/dimensions";
+import {isMobileMedia} from "$cplatform/dimensions";
 import TextFieldComponent from "$ecomponents/TextField";
 import { StyleSheet } from "react-native";
 

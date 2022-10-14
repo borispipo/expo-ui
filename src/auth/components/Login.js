@@ -8,7 +8,7 @@ import notify from "$notify";
 import {StyleSheet} from "react-native";
 import { useAuth } from "$cauth/AuthProvider";
 import Preloader from "$preloader";
-import Dimensions from "$cplatfrom/dimensions";
+import Dimensions from "$cplatform/dimensions";
 import theme from "$theme";
 import Label from "$ecomponents/Label";
 import View from "$ecomponents/View";
@@ -17,7 +17,7 @@ import Surface from "$ecomponents/Surface";
 import {Provider as DialogProvider} from "$ecomponents/Dialog";
 import Screen from "$escreen";
 import {getTitle} from "$escreens/Auth/utils";
-import {isWeb} from "$cplatfrom";
+import {isWeb} from "$cplatform";
 
 const WIDTH = 400;
 

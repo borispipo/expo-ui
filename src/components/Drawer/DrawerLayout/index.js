@@ -12,7 +12,7 @@ import PropTypes from "prop-types";
 import View from "$ecomponents/View";
 import {defaultStr} from "$utils";
 import theme,{Colors} from "$theme";
-import {isMobileMedia} from "$cplatfrom/dimensions";
+import {isMobileMedia} from "$cplatform/dimensions";
 import Preloader from "$preloader";
 import {Elevations} from "$ecomponents/Surface";
 

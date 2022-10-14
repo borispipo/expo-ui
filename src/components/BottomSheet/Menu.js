@@ -1,5 +1,5 @@
 import BottomSheet from "./Sheet";
-import {isMobileMedia} from "$cplatfrom/dimensions";
+import {isMobileMedia} from "$cplatform/dimensions";
 import Menu,{renderItems} from "$ecomponents/Menu";
 import React from "$react";
 import {defaultObj,defaultDecimal,defaultStr,isDecimal,defaultBool} from "$utils";

@@ -2,7 +2,7 @@ import { RadioButton } from 'react-native-paper';
 import View from "$ecomponents/View";
 import React from "$react";
 import {isUndefined,defaultObj,defaultVal,defaultStr} from "$utils";
-import {isIos,isAndroid} from "$cplatfrom";
+import {isIos,isAndroid} from "$cplatform";
 import theme,{Colors,DISABLED_OPACITY,ALPHA_OPACITY} from "$theme";
 import { StyleSheet } from 'react-native';
 export const checkedStatus = 'checked';

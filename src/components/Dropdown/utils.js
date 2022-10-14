@@ -1,5 +1,5 @@
-import {isMobileOrTabletMedia} from "$cplatfrom/dimensions";
-import {isNativeMobile} from "$cplatfrom";
+import {isMobileOrTabletMedia} from "$cplatform/dimensions";
+import {isNativeMobile} from "$cplatform";
 
 export const matchOperators = /[|\\{}()[\]^$+*?.]/g;
 

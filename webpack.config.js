@@ -1,10 +1,21 @@
+/**@see : https://www.npmjs.com/package/@expo/webpack-config/v/0.11.4 */
 const createExpoWebpackConfigAsync = require('@expo/webpack-config')
 // Expo CLI will await this method so you can optionally return a promise.
 module.exports = async function(env, argv) {
     const path = require("path");
     const dir = path.resolve(__dirname);
-    const config = await createExpoWebpackConfigAsync(env, argv);
-    // If you want to add a new alias to the config.
+    const config = await createExpoWebpackConfigAsync(
+      {
+        ...env,
+        babel: {
+          dangerouslyAddModulePathsToTranspile: [
+            // Ensure that all packages starting with @fto-consult are transpiled.
+            '@fto-consult',
+          ],
+        },
+      },
+      argv
+  );
     //config.resolve.alias['moduleA'] = 'moduleB';
   
     // Maybe you want to turn off compression in dev mode.

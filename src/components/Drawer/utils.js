@@ -1,4 +1,4 @@
-import {isMobileNative} from "$cplatfrom";
+import {isMobileNative} from "$cplatform";
 import {isDesktopMedia} from "$cdimensions";
 
 export * from "./DrawerItems/utils";

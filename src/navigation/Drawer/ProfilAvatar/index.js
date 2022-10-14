@@ -12,7 +12,7 @@ import Label from "$ecomponents/Label";
 import Icon from "$ecomponents/Icon";
 import {navigate} from "$enavigation/utils";
 import theme from "$theme";
-import {isMobileNative} from "$cplatfrom";
+import {isMobileNative} from "$cplatform";
 
 const UserProfileAvatarComponent = React.forwardRef(({drawerRef,...props},ref)=>{
     let u = defaultObj(Auth.getLoggedUser());

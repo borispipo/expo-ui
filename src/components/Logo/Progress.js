@@ -3,8 +3,8 @@ import View from "$ecomponents/View";
 import Label from "$ecomponents/Label";
 import { ActivityIndicator, Colors } from 'react-native-paper';
 import theme,{defaultDarkTheme} from "$theme";
-import {isIos} from "$cplatfrom";
-import appConfig from "$app/config";
+import {isIos} from "$cplatform";
+import appConfig from "$capp/config";
 
 export default function LogoProgress (props){
     let containerStyle = {width:(Logo.width?Logo.width:undefined),height:(Logo.height?(Logo.height+100):undefined),flex:1,alignItems:"center",justifyContent:"center"};

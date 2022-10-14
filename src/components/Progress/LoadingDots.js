@@ -1,7 +1,7 @@
 import React from 'react'
 import {  StyleSheet, Animated, Easing } from 'react-native';
 import View from "$ecomponents/View";
-import {isNativeMobile} from "$cplatfrom"; //boris fouomene
+import {isNativeMobile} from "$cplatform"; //boris fouomene
 const useNativeDriver = isNativeMobile();
 const SIZE = 16
 const MARGIN = 5

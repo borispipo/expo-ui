@@ -4,7 +4,7 @@ import PropTypes from "prop-types"
 import * as React from "react"
 import {Animated, StyleSheet } from "react-native";
 import View from "$ecomponents/View";
-import {isNativeMobile} from "$cplatfrom";
+import {isNativeMobile} from "$cplatform";
 import {defaultDecimal} from "$utils";
 import {LogoProgress} from "$ecomponents/Logo";
 import styles, {

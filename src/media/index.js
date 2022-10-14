@@ -1,7 +1,7 @@
 import {isObj} from "$utils";
 import {notify} from "$ecomponents/Dialog";
 import Camera from "./camera";
-import {isMobileNative} from "$platform";
+import {isMobileNative} from "$cplatfrom";
 import React from "react";
 
 let cameraRef = null;

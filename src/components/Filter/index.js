@@ -13,7 +13,7 @@ import {StyleSheet,View} from "react-native";
 import Icon from "$ecomponents/Icon";
 import React,{Component as AppComponent} from "$react";
 import theme from "$theme";
-import {isMobileMedia} from "$platform/dimensions";
+import {isMobileMedia} from "$cplatfrom/dimensions";
 import { ActivityIndicator } from "react-native-paper";
 import { getSessionData,setSessionData } from "./session";
 

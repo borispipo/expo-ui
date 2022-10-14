@@ -1,6 +1,6 @@
 import React from "$react";
 import {isNonNullString,defaultNumber,defaultStr,uniqid,defaultFunc,isValidEmail,isFunction} from "$utils";
-import {navigate} from "$navigation/utils";
+import {navigate} from "$enavigation/utils";
 import FormData from "$ecomponents/Form/FormData/FormData";
 import {getForm} from "$ecomponents/Form/utils";
 import Button from "$ecomponents/Button";
@@ -8,7 +8,7 @@ import notify from "$notify";
 import {StyleSheet} from "react-native";
 import { useAuth } from "$cauth/AuthProvider";
 import Preloader from "$preloader";
-import Dimensions from "$platform/dimensions";
+import Dimensions from "$cplatfrom/dimensions";
 import theme from "$theme";
 import Label from "$ecomponents/Label";
 import View from "$ecomponents/View";
@@ -16,8 +16,8 @@ import Avatar from "$ecomponents/Avatar";
 import Surface from "$ecomponents/Surface";
 import {Provider as DialogProvider} from "$ecomponents/Dialog";
 import Screen from "$escreen";
-import {getTitle} from "$screens/Auth/utils";
-import {isWeb} from "$platform";
+import {getTitle} from "$escreens/Auth/utils";
+import {isWeb} from "$cplatfrom";
 
 const WIDTH = 400;
 

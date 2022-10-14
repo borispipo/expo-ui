@@ -1,14 +1,14 @@
 import React from "$react"
 import { AppState,Linking,BackHandler,} from "react-native"
 import APP from "$app";
-import {HOME as HOME_SCREEN_NAME} from "$screens/Home/routes";
+import {HOME as HOME_SCREEN_NAME} from "$escreens/Home/routes";
 import {AppStateService,trackIDLE,stop as stopIDLE} from "$app/idle";
 import { NavigationContainer} from '@react-navigation/native';
 import {navigationRef} from "$cnavigation/utils"
 import NetInfo from '$utils/NetInfo';
 import Auth from "$cauth";
-import {isNativeMobile} from "$platform";
-import Navigation from "$navigation";
+import {isNativeMobile} from "$cplatfrom";
+import Navigation from "$enavigation";
 import {set as setSession,get as getSession} from "$session";
 import { showConfirm } from "$ecomponents/Dialog";
 import {close as closePreloader, isVisible as isPreloaderVisible} from "$preloader";

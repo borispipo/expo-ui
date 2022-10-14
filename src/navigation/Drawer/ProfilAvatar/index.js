@@ -10,9 +10,9 @@ import defaultSource from "./defaultAvatar";
 import Button from "$ecomponents/Button";
 import Label from "$ecomponents/Label";
 import Icon from "$ecomponents/Icon";
-import {navigate} from "$navigation/utils";
+import {navigate} from "$enavigation/utils";
 import theme from "$theme";
-import {isMobileNative} from "$platform";
+import {isMobileNative} from "$cplatfrom";
 
 const UserProfileAvatarComponent = React.forwardRef(({drawerRef,...props},ref)=>{
     let u = defaultObj(Auth.getLoggedUser());

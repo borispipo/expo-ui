@@ -5,7 +5,7 @@ import {Text} from "react-native-paper";
 import { StyleSheet } from "react-native";
 import theme,{Colors,DISABLED_OPACITY,ALPHA,styles} from "$theme";
 import React from "react";
-import {canTextBeSelectable} from "$platform/utils";
+import {canTextBeSelectable} from "$cplatfrom/utils";
 const defaultSelectable = canTextBeSelectable();
 
 export const EllipsizeMode = {'head':'head','middle':'middle', 'tail':'tail' , 'clip':'clip'}

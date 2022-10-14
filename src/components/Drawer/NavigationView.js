@@ -7,7 +7,7 @@ import DrawerHeader from "./DrawerHeader";
 import Icon from "$ecomponents/Icon";
 import theme,{flattenStyle} from "$theme";
 import {defaultObj} from "$utils";
-import {isMobileNative} from "$platform";
+import {isMobileNative} from "$cplatfrom";
 
 const DrawerNavigationViewComponent = React.forwardRef((props,ref)=>{
     const {context,toggleIcon,toggleIconTooltip,header:customHeader,isPermanent,drawerItemsProps,drawerType,drawerItems,drawerRef,setState,toggleIconProps,isLeftPosition,drawerWidth,minimizable,headerProps,isMinimized,drawerItemsContainerProps,content,} = props;

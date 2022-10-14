@@ -6,10 +6,10 @@ module.exports = (opts)=>{
     opts = typeof opts =='object' && opts ? opts : {};
     opts.platform = "expo";
     opts.assets = opts.assets || assets;
-    const alias = require("./common/babel.config.alias");
+    opts.base = opts.base || dir;
+    const alias = require("@fto-consult/common/babel.config.alias");
     const r = alias(opts);
     r["$expo"] = r["$expo-ui"] = expo;
-    r["$econtainers"] = path.resolve(expo,"containers");
     r["$ecomponents"] = path.resolve(expo,"components");
     r["$elayouts"] = path.resolve(expo,"layouts");
     r["$emedia"] = path.resolve(expo,"media");

@@ -12,8 +12,8 @@ import theme,{StyleProp} from "$theme";
 //import Animation,{OpacityAnimation} from "$ecomponents/Animations";
 import OpacityAnimation from "$ecomponents/Animations/OpacityAnimation";
 import { Platform } from "react-native";
-import {isWeb} from "$platform";
-import {isAndroid} from "$platform";
+import {isWeb} from "$cplatfrom";
+import {isAndroid} from "$cplatfrom";
 import Portal from "$ecomponents/Portal";
 import {
   getStatusBarHeight,

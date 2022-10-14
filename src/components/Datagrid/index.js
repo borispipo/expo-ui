@@ -1,6 +1,6 @@
 import Accordion,{ TableData as TableDataAccordion} from "./Accordion";
 import Table,{TableData as DatagridTableData} from "./Table";
-import {isDesktopMedia,isMobileMedia} from "$platform/dimensions";
+import {isDesktopMedia,isMobileMedia} from "$cplatfrom/dimensions";
 import {isFunction} from "$utils";
 import React from "$react";
 import {getRenderType} from "./utils";

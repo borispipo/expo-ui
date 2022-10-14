@@ -1,6 +1,6 @@
 export * from "./utils";
-import initScreens from "$screens";
-import {handleContent,sanitizeName} from '$screens';
+import initScreens from "$escreens";
+import {handleContent,sanitizeName} from '$escreens';
 import {Stack,setInitialRouteName } from "./utils";
 import React from "$react";
 import DrawerNavigator from "./Drawer";

@@ -1,6 +1,6 @@
 import theme from "$theme";
 import APP from "$app";
-import {isMobileOrTabletMedia,isSmallPhoneMedia} from "$platform/dimensions";
+import {isMobileOrTabletMedia,isSmallPhoneMedia} from "$cplatfrom/dimensions";
 import PropTypes from "prop-types";
 import {Component as AppComponent} from "$react"
 import $session from "$session";

@@ -1,4 +1,4 @@
-import {isIos} from "$platform";
+import {isIos} from "$cplatfrom";
 import {KeyboardAvoidingView,StyleSheet} from 'react-native';
 
 export default function KeyboardAvoidingViewComponent({ children,...rest }){

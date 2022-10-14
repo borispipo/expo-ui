@@ -1,5 +1,5 @@
 import {isPlainObj,defaultFunc,defaultStr,isObjOrArray,isObj,defaultObj} from "$utils";
-import {getWindowSizes,isMobileOrTabletMedia,isMobileMedia} from "$dimensions";
+import {getWindowSizes,isMobileOrTabletMedia,isMobileMedia} from "$cdimensions";
 import { StyleSheet } from "react-native";
 import Button from "$ecomponents/Button";
 import React from "$react";

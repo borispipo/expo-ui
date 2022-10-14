@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { findMatchedKey} from './keyEvents';
 import View from "$ecomponents/View";
-import {isWeb} from "$platform";
+import {isWeb} from "$cplatfrom";
 
 let exclusiveHandlers = [];
 

@@ -1,5 +1,5 @@
 import { Pressable } from "react-native";
-import { navigate } from "$navigation/utils";
+import { navigate } from "$enavigation/utils";
 import PropTypes from "prop-types";
 import {defaultStr} from "$utils";
 import React from "$react";

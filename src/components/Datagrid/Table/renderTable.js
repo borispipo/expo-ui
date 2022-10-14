@@ -7,7 +7,7 @@ let ExportTable = require("$export-table")
 let RenderType = require("./RenderType");
 let LocalFilter = require("./LocalFilter")
 let DBSelector = require("$database/dataFileManager/dbSelector");
-import {isMobileOrTabletMedia} from "$platform/dimensions";
+import {isMobileOrTabletMedia} from "$cplatfrom/dimensions";
 const {
     Checkbox,
     DataTable,

@@ -1,5 +1,5 @@
 import APP from "$app";
-import { screenName as aboutScreenName} from "$screens/Help/About";
+import { screenName as aboutScreenName} from "$escreens/Help/About";
 import i18n from "$i18n";
 import theme from "$theme";
 

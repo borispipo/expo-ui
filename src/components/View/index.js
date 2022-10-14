@@ -1,7 +1,7 @@
 import {View} from "react-native";
 import PropTypes from "prop-types";
 import React from "$react";
-import {isMobileNative} from "$platform";
+import {isMobileNative} from "$cplatfrom";
 import {debounce,isNumber} from "$utils";
 
 

@@ -1,9 +1,9 @@
 
 import {SIGN_IN} from "./routes"
 import Screen from "$escreen";
-import {GROUP_NAMES} from "$screens/utils";
+import {GROUP_NAMES} from "$escreens/utils";
 import Login from "$auth/components/Login";
-import {getScreenProps} from "$navigation/utils";
+import {getScreenProps} from "$enavigation/utils";
 import {getTitle} from "./utils";
 
 

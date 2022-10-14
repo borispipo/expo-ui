@@ -6,13 +6,13 @@ import Datagrid from "$ecomponents/Datagrid";
 import PropTypes from "prop-types";
 import React,{Component as AppComponent} from "$react";
 import {isNonNullString,defaultStr,defaultObj,defaultArray,extendObj,isObjOrArray,isFunction,isStringNumber} from "$utils";
-import {isPhoneMedia} from "$platform/dimensions";
+import {isPhoneMedia} from "$cplatfrom/dimensions";
 import View from "$ecomponents/View";
 import {StyleSheet} from "react-native";
 import {List} from "react-native-paper";
 import FlashList from "$ecomponents/List";
 import Surface from "$ecomponents/Surface";
-import {navigate} from "$navigation/utils";
+import {navigate} from "$enavigation/utils";
 import { handleBeforeSaveCallback } from "$ecomponents/Form/FormData/utils";
 import theme from "$theme";
 

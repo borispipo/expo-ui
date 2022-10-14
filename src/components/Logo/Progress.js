@@ -3,7 +3,7 @@ import View from "$ecomponents/View";
 import Label from "$ecomponents/Label";
 import { ActivityIndicator, Colors } from 'react-native-paper';
 import theme,{defaultDarkTheme} from "$theme";
-import {isIos} from "$platform";
+import {isIos} from "$cplatfrom";
 import appConfig from "$app/config";
 
 export default function LogoProgress (props){

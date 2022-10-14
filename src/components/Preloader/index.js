@@ -6,7 +6,7 @@ import {StyleSheet} from "react-native";
 import View from "$ecomponents/View";
 import PropTypes from "prop-types";
 import React,{ createContext} from "$react";
-import {isIos} from "$platform";
+import {isIos} from "$cplatfrom";
 import theme,{Colors} from "$theme";
 
 export const PRELOADERS = {};

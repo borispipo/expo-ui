@@ -10,8 +10,8 @@ import {Validator} from "$validator";
 import theme,{grid} from "$theme";
 import React from "$react";
 import {StyleSheet} from "react-native";
-import {isDevEnv} from "$platform";
-import {isMobileMedia} from "$platform/dimensions";
+import {isDevEnv} from "$cplatfrom";
+import {isMobileMedia} from "$cplatfrom/dimensions";
 import APP from "$app/instance";
 ///la combinaison à appliquer pour modifier le contenu textuel de la valeur
 let sanitizeKeyEvent = 'ctrl+m' //le type hashtag

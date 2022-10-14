@@ -1,7 +1,7 @@
 import {defaultObj,defaultStr} from "$utils";
 import PropTypes from "prop-types";
 import theme,{Colors} from "$theme";
-import {isIos} from "$platform";
+import {isIos} from "$cplatfrom";
 import React from "$react";
 import Icon from "./Icon";
 

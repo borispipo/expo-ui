@@ -1,7 +1,7 @@
 import {isNonNullString,isObj,defaultObj,isPromise,isFunction,defaultStr,isObjOrArray,defaultFunc} from "$utils";
 import notify from "$notify";
 import { getFormData } from "../utils/FormsManager";
-import {isMobileBrowser,isMobileNative} from "$platform";
+import {isMobileBrowser,isMobileNative} from "$cplatfrom";
 import { keyboardShortcuts as KeyboardShorts } from "../utils";
 
 export const keyboardShortcuts = {};

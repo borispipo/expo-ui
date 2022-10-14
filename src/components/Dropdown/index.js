@@ -6,8 +6,8 @@ import Divider from "$ecomponents/Divider";
 import React, {Fragment,Component as AppComponent} from "$react";
 import theme,{Colors} from "$theme";
 import Dialog from "$ecomponents/Dialog";
-import {isMobileOrTabletMedia} from "$platform/dimensions";
-import {isIos} from "$platform";
+import {isMobileOrTabletMedia} from "$cplatfrom/dimensions";
+import {isIos} from "$cplatfrom";
 import {defaultVal,defaultStr,defaultObj,defaultBool,defaultFunc,debounce,isNonNullString,compare as NCompare} from "$utils";
 import MenuComponent from "$ecomponents/Menu";
 import HelperText from "$ecomponents/HelperText";
@@ -20,7 +20,7 @@ import { ProgressBar,ActivityIndicator} from 'react-native-paper';
 import Menu from "$ecomponents/Menu/Menu";
 import Chip from "$ecomponents/Chip";
 import {Content as BottomSheet,Menu as BottomSheetMenu,getContentHeight} from "$ecomponents/BottomSheet";
-import {isWeb} from "$platform";
+import {isWeb} from "$cplatfrom";
 
 const _isIos = isIos();
 

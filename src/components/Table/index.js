@@ -7,7 +7,7 @@ import React from "$react";
 import Label from "$ecomponents/Label";
 import { StyleSheet,ScrollView,Dimensions} from "react-native";
 import { getRowStyle } from "$ecomponents/Datagrid/utils";
-import {isMobileNative} from "$platform";
+import {isMobileNative} from "$cplatfrom";
 import theme from "$theme";
 const isSCrollingRef = React.createRef();
 const scrollLists = (opts,refs)=>{

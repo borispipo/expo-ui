@@ -11,7 +11,7 @@ import List,{MIN_HEIGHT} from "$ecomponents/List";
 import Label from "$ecomponents/Label";
 import PropTypes from "prop-types";
 import Icon from "$ecomponents/Icon";
-import {isDesktopMedia} from "$platform/dimensions";
+import {isDesktopMedia} from "$cplatfrom/dimensions";
 import { matchOperators,getSearchTimeout,canAutoFocusSearchField} from "$ecomponents/Dropdown/utils";
 import Dialog from "$ecomponents/Dialog";
 

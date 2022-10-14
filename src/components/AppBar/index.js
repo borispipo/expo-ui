@@ -5,10 +5,10 @@ import APP from "$app/instance"
 import {isSplitedActions,renderSplitedActions,splitActions,TITLE_FONT_SIZE} from "./utils";
 import theme,{Colors,flattenStyle} from "$theme";
 import {StyleSheet} from "react-native";
-import {goBack as navGoBack} from "$navigation/utils";
+import {goBack as navGoBack} from "$enavigation/utils";
 import PropTypes from "prop-types";
 import { Dimensions,TouchableWithoutFeedback} from "react-native";
-import { useNavigation,useRoute,useScreenOptions } from "$navigation/utils";
+import { useNavigation,useRoute,useScreenOptions } from "$enavigation/utils";
 import Content from "./Content";
 import Icon from "$ecomponents/Icon";
 import {Elevations} from "$ecomponents/Surface";

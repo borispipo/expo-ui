@@ -6,7 +6,7 @@ import {removeFabRef,createFabRef} from "./utils";
 import PropTypes from "prop-types";
 import APP from "$app";
 import React from "$react";
-import {sanitizeName} from "$screens/utils";
+import {sanitizeName} from "$escreens/utils";
 
 export * from "./utils";
 

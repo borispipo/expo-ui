@@ -8,13 +8,13 @@ let maxWidthDiff = 150, maxHeightDiff = 150;
 import {StyleSheet} from "react-native";
 import React from "$react";
 import PropTypes from "prop-types";
-import {isMobileNative} from "$platform";
+import {isMobileNative} from "$cplatfrom";
 //import Signature from "$ecomponents/Signature";
 import Label from "$ecomponents/Label";
 //import Editor from "./Editor";
 
 
-import {pickImage,nonZeroMin,canTakePhoto,takePhoto} from "$media";
+import {pickImage,nonZeroMin,canTakePhoto,takePhoto} from "$emedia";
 import addPhoto from "$assets/add_photo.png";
 
 export const isAssets = (asset,staticAssets)=>{

@@ -1,4 +1,4 @@
-import { isRouteActive} from "$navigation/utils";
+import { isRouteActive} from "$enavigation/utils";
 import items from "./items";
 
 let CACHED_ITEMS = []

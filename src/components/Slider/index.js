@@ -6,7 +6,7 @@ import {StyleSheet} from "react-native";
 import PropTypes from "prop-types";
 import Label from "$ecomponents/Label";
 import Slider from "./Slider";
-import {isWeb} from "$platform";
+import {isWeb} from "$cplatfrom";
 import HelperText from "$ecomponents/HelperText";
 
 const prepareValue = ({value,defaultValue}) => isArray(defaultValue) && defaultValue.length? defaultValue : isArray(value) && value.length? value : defaultDecimal(defaultValue,value)

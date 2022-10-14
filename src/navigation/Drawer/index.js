@@ -5,7 +5,7 @@ import items,{isItemActive,refresh as refreshItems} from "./items";
 import APP from "$app/instance";
 import Auth from "$cauth";
 import Login from "$auth/components/Login";
-import {navigate} from "$navigation/utils";
+import {navigate} from "$enavigation/utils";
 
 const DrawerNavigator = React.forwardRef(({content,children,state,...props},ref)=>{
     const drawerRef = React.useRef(null);

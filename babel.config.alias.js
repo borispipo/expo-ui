@@ -15,7 +15,7 @@ module.exports = (opts)=>{
     r["$enavigation"] = path.resolve(expo,"navigation");
     r["$escreens"] = path.resolve(expo,"screens");
     r["$escreen"] = path.resolve(expo,"layouts/Screen");
-    r["$screens"] = r["$screens"] || path.resolve(expo,"screens");
+    r["$screens"] = r["$screens"] || r["$escreens"];
     r["$expo"] = r["$expo-ui"] = expo;
     r["$epreloader"] = path.resolve(expo,"components/Preloader");
     r["$eform"] = path.resolve(expo,"components","Form");

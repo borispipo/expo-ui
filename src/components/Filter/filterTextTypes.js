@@ -1,0 +1,1 @@
+export default ['text','number','email','search','tel','url','password',"id","idfield",'piecefield','piece'];

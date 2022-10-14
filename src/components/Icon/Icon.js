@@ -1,0 +1,52 @@
+//import MaterialIcon from "./MaterialCommunityIcon";
+import {defaultVal,defaultObj,defaultStr,isNonNullString} from "$utils";
+import PropTypes from "prop-types";
+import Tooltip from "$components/Tooltip";
+import theme,{flattenStyle,Colors} from "$theme";
+import React from "$react";
+import {IconButton} from "react-native-paper"
+
+const IconComponentRef = React.forwardRef((props,ref)=>{
+    let {icon,style,Component,button,color,name,...rest} = props;
+    icon = defaultVal(icon,name);
+    if(isNonNullString(icon)){
+        icon = icon.trim().ltrim("")
+    }
+    if(!icon && rest.source){
+        icon = rest.source;
+    }
+    if(icon){
+        rest.icon = icon;
+    }
+    if(!rest.icon) return null;
+    const flattenedStyle = flattenStyle(style);
+    return <Tooltip 
+        animated 
+        {...rest}  
+        color={Colors.isValid(color) ? color : Colors.isValid(flattenedStyle.color)? flattenedStyle.color : theme.colors.text} 
+        style = {[flattenedStyle,button === false ? {borderRadius:0}:null]}
+        Component={React.isComponent(Component)?Component:IconButton}
+        ref = {ref}
+    />
+});
+const IconComponent = theme.withStyles(IconComponentRef,{mode : 'normal'});
+IconComponent.propTypes = {
+    ...defaultObj(IconButton.propTypes),
+    name : defaultVal(IconButton.propTypes,PropTypes.string),
+    button : PropTypes.bool, //si c'est un icon button
+}
+
+IconComponent.displayName = "IconComponent";
+
+export default IconComponent;
+
+IconComponent.Avatar = React.forwardRef(({...props},ref)=>{
+    return <IconComponent
+        Component = {IconButton}
+        {...props}
+    />
+})
+IconComponent.Avatar.displayName = "IconComponent.Avatar";
+IconComponent.Avatar.propTypes = {
+    ...IconComponent.propTypes,
+}

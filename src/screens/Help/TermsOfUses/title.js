@@ -1,0 +1,1 @@
+export default  "CONTRAT DE LICENCE DU LOGICIEL"

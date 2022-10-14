@@ -1,0 +1,103 @@
+.ftc-dialog.dialog,
+.ftc-dialog.dialog .dialog-container,
+.ftc-dialog.ftc-dialog-fullscreen .dialog-container > .dialog-content-container{
+    overflow: hidden!important;
+    overflow-y: hidden!important;
+    overflow-x: hidden!important;
+    width: 100%;
+    height: 100%;
+    padding-left: 0px!important;
+    padding-right: 0px!important;
+    margin: 0px!important;
+}
+.ftc-dialog.dialog,
+.ftc-dialog.ftc-dialog-fullscreen .dialog-container{
+    width: 100%!important;
+    height: 100%!important;
+}
+.ftc-dialog.ftc-dialog-modal > .dialog-container {
+    display: flex!important;
+    flex-direction: column!important;
+    justify-content: center!important;
+    align-items: center!important;
+}
+.ftc-dialog.dialog .dialog-container > .dialog-content-container{
+    position: relative!important;
+    background-color: white;
+}
+.ftc-dialog.ftc-dialog-modal .dialog-container > .dialog-content-container {
+    max-width: 600px;
+    max-height: 80%;
+    padding: 0px!important;
+    margin: auto!important;
+    overflow-y: hidden!important;
+    overflow-x: hidden!important;
+    flex-grow:0!important;
+}
+
+.ftc-dialog.ftc-dialog-fullscreen > .dialog-container .dialog-content-container,
+.ftc-dialog.ftc-dialog-fullscreen > .dialog-container{
+    display:  block!important;
+    max-width: 100%!important;
+    max-height: 100%!important;
+}
+.ftc-dialog.ftc-dialog-fullscreen > .dialog-container {
+    padding-top: 56px;
+}
+.ftc-dialog.dialog > .dialog-container .dialog-content-container .dialog-content {
+    overflow: auto;
+    max-height: inherit;
+    max-width: inherit;
+    overflow-y: auto;
+    overflow-x: auto;
+    padding-bottom: 30px;
+}
+.ftc-dialog.dialog > .dialog-container .dialog-content-container .dialog-content > * {
+    padding-bottom: 30px;
+    padding-bottom: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+.ftc-dialog.ftc-dialog-modal > .dialog-container .dialog-content-container .dialog-content > *{
+    margin-top: 0px!important;
+}
+.ftc-dialog.dialog > .dialog-container .dialog-content-container .dialog-content.has-scrollbar > * {
+    padding-bottom: 50px!important;
+    display: block;
+}
+
+.ftc-dialog.ftc-dialog-modal .dialog-container > .dialog-content-container .dialog-header{
+    padding-top: 0;
+    padding-bottom: 0;
+    width: 100%;
+}
+.ftc-dialog.ftc-dialog-modal .dialog-container > .dialog-content-container .dialog-footer {
+    position: absolute!important;
+    right: 0;
+    bottom: 0;
+    top: auto!important;
+    left : auto!important;
+    padding: 0px!important;
+    padding-top: 5px!important;
+    padding-bottom: 5px!important;
+    margin: 0px!important;
+    margin-bottom: 0px!important;
+    background-color:inherit;
+    width: 100%!important;
+}
+
+.ftc-dialog.ftc-dialog-modal .dialog-container > .dialog-content-container .dialog-content .md-grid .md-cell{
+    width: 100%!important;
+    margin-left: auto!important;
+    margin-right: auto!important;
+}
+
+.ftc-dialog.ftc-dialog.ftc-dialog-fullscreen .dialog-container > .dialog-content-container .dialog-content{
+    max-height: 100%!important;
+    max-width: 100%!important;
+}
+
+.ftc-btn.ftc-dialog-action {
+    padding: 5px;
+    border-radius: 1px;
+}

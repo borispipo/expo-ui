@@ -1,0 +1,1 @@
+export const TERMS_OF_USES = "TERMS_OF_USES";

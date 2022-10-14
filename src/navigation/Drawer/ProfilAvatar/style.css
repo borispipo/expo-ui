@@ -1,0 +1,18 @@
+.profil-avatar-table{
+    margin-top: 0px;
+    padding-bottom: 0px;
+}
+
+.profil-avatar-table tr,
+.profil-avatar-table td{
+    vertical-align: middle!important;
+}
+.profil-avatar-table .profil-avatar-avatar{
+    padding-right: 7px;
+}
+
+.ftc-appbar .ftc-appbar-toolbar .ftc-appbar-action {
+    white-space: nowrap;
+    margin-right: 10px;
+    min-width: auto!important;
+}

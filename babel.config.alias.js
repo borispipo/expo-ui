@@ -20,7 +20,7 @@ module.exports = (opts)=>{
     r["$epreloader"] = path.resolve(expo,"components/Preloader");
     r["$eform"] = path.resolve(expo,"components","Form");
     r["$eform-data"] = path.resolve(expo,"components","Form","FormData");
-    r["$eform-manager"] = path.resolve(src,"components","Form/utils/FormManager");
+    r["$eform-manager"] = path.resolve(expo,"components","Form/utils/FormManager");
     if(typeof opts.mutator =='function'){
         opts.mutator(r);
     }

@@ -1,7 +1,7 @@
 import React from 'react'
 import Types from 'prop-types'
 import ErrorMessage from './ErrorMessage'
-import {open,close} from "$preloader";
+import {open,close} from "$epreloader";
 
 
 class ErrorBoundary extends React.Component {

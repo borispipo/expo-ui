@@ -13,7 +13,7 @@ import View from "$ecomponents/View";
 import {defaultStr} from "$utils";
 import theme,{Colors} from "$theme";
 import {isMobileMedia} from "$cplatform/dimensions";
-import Preloader from "$preloader";
+import Preloader from "$epreloader";
 import {Elevations} from "$ecomponents/Surface";
 
 const MIN_SWIPE_DISTANCE = 3;

@@ -9,7 +9,7 @@ import theme,{Colors,flattenStyle} from "$theme";
 import DrawerItems from './DrawerItems';
 import {isDesktopMedia} from "$cplatform/dimensions";
 import {isMobileNative} from "$cplatform";
-import {open,close} from "$preloader";
+import {open,close} from "$epreloader";
 import {DRAWER_POSITIONS,DRAWER_TYPES,MINIMIZED_WIDTH,DRAWER_WIDTH,MINIMIZED_ICON_SIZE,ICON_SIZE} from './utils';
 import Icon,{MENU_ICON} from "$ecomponents/Icon";
 import apiSession from "./session";

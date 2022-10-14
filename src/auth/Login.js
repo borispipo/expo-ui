@@ -7,7 +7,7 @@ import Button from "$ecomponents/Button";
 import notify from "$notify";
 import {StyleSheet} from "react-native";
 import { useAuth } from "$cauth/AuthProvider";
-import Preloader from "$preloader";
+import Preloader from "$epreloader";
 import Dimensions from "$cplatform/dimensions";
 import theme from "$theme";
 import Label from "$ecomponents/Label";

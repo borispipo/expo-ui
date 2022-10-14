@@ -17,6 +17,10 @@ module.exports = (opts)=>{
     r["$escreen"] = path.resolve(expo,"layouts/Screen");
     r["$screens"] = r["$screens"] || path.resolve(expo,"screens");
     r["$expo"] = r["$expo-ui"] = expo;
+    r["$epreloader"] = path.resolve(expo,"components/Preloader");
+    r["$eform"] = path.resolve(expo,"components","Form");
+    r["$eform-data"] = path.resolve(expo,"components","Form","FormData");
+    r["$eform-manager"] = path.resolve(src,"components","Form/utils/FormManager");
     if(typeof opts.mutator =='function'){
         opts.mutator(r);
     }

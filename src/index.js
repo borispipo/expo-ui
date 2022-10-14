@@ -10,7 +10,7 @@ import {isNativeMobile} from "$cplatform";
 import Navigation from "$enavigation";
 import {set as setSession,get as getSession} from "$session";
 import { showConfirm } from "$ecomponents/Dialog";
-import {close as closePreloader, isVisible as isPreloaderVisible} from "$preloader";
+import {close as closePreloader, isVisible as isPreloaderVisible} from "$epreloader";
 import SplashScreen from "$ecomponents/SplashScreen";
 import {notify} from "$ecomponents/Dialog";
 import {decycle} from "$utils/json";

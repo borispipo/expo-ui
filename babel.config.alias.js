@@ -7,6 +7,8 @@ module.exports = (opts)=>{
     opts.platform = "expo";
     opts.assets = opts.assets || assets;
     opts.base = opts.base || dir;
+    opts.withPouchDB = opts.withPouchDB !== false && opts.withPouchdb !== false ? true : false;
+    delete opts.withPouchdb;
     const r = require("@fto-consult/common/babel.config.alias")(opts);
     r["$eauth"] = path.resolve(expo,"auth");
     r["$ecomponents"] = r["$expo-components"] = path.resolve(expo,"components");

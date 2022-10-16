@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "index.js",
   "scripts": {
@@ -82,6 +82,7 @@
     "google-libphonenumber": "^3.2.31",
     "parent-package-json": "^2.0.1",
     "prop-types": "^15.8.1",
+    "react-apexcharts": "^1.4.0",
     "react-content-loader": "^6.2.0",
     "react-dom": "18.0.0",
     "react-native": "0.69.6",

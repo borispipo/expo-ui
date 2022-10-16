@@ -23,6 +23,8 @@ module.exports = (opts)=>{
     r["$eform-data"] = path.resolve(expo,"components","Form","FormData");
     r["$eform-manager"] = path.resolve(expo,"components","Form/utils/FormManager");
     r["$echart"] = path.resolve(expo,"components","Chart");
+    r["$efile-system"] = path.resolve(expo,"media","file-system");
+    r["$eAssets"] = path.resolve(expo,"media","Assets");
     if(!r["$screen"]){
         r["$screen"] = r["$escreen"];
     }
@@ -34,6 +36,9 @@ module.exports = (opts)=>{
     }
     if(!r["$chart"]){
         r["$chart"] = r["$echart"];
+    }
+    if(!r["$file-system"]){
+        r["$file-system"] = r["$efile-system"];
     }
     if(typeof opts.mutator =='function'){
         opts.mutator(r);

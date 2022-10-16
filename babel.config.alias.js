@@ -10,6 +10,7 @@ module.exports = (opts)=>{
     const r = require("@fto-consult/common/babel.config.alias")(opts);
     r["$eauth"] = path.resolve(expo,"auth");
     r["$ecomponents"] = r["$expo-components"] = path.resolve(expo,"components");
+    r["$components"] = r["$components"] || r["$ecomponents"];
     r["$elayouts"] = path.resolve(expo,"layouts");
     r["$emedia"] = path.resolve(expo,"media");
     r["$enavigation"] = path.resolve(expo,"navigation");

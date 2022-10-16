@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "index.js",
   "scripts": {
@@ -67,6 +67,7 @@
     "@react-navigation/native": "^6.0.13",
     "@react-navigation/native-stack": "^6.9.1",
     "@shopify/flash-list": "1.1.0",
+    "babel-plugin-inline-dotenv": "^1.7.0",
     "babel-plugin-root-import": "^6.6.0",
     "babel-plugin-transform-inline-environment-variables": "^0.4.4",
     "circular-dependency-plugin": "^5.2.2",

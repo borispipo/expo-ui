@@ -5,6 +5,7 @@ module.exports = async function(env, argv,opts) {
     const path = require("path");
     const dir = path.resolve(__dirname);
     opts = typeof opts =="object" && opts ? opts : {};
+    const transpileModules = Array.isArray(opts.transpileModules)? opts.transpileModules : [];
     const config = await createExpoWebpackConfigAsync(
       {
         ...env,
@@ -12,6 +13,7 @@ module.exports = async function(env, argv,opts) {
           dangerouslyAddModulePathsToTranspile: [
             // Ensure that all packages starting with @fto-consult are transpiled.
             '@fto-consult',
+            ...transpileModules,
           ],
         },
       },

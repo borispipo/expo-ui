@@ -1,10 +1,8 @@
 import '$session';
-import appConfig  from '$capp/config';
 import React from 'react';
 import  {updateTheme,defaultTheme} from "$theme";
-import { AppRegistry} from 'react-native';
 import {Provider as PaperProvider } from 'react-native-paper';
-import App from './index';
+import Index from './index';
 import {Portal } from 'react-native-paper';
 import {PreloaderProvider} from "$epreloader";
 import DropdownAlert from '$ecomponents/Dialog/DropdownAlert';
@@ -23,43 +21,47 @@ import StatusBar from "$ecomponents/StatusBar";
 import SimpleSelect from '$ecomponents/SimpleSelect';
 import {Provider as AlertProvider} from '$ecomponents/Dialog/confirm/Alert';
 
-export default function MainAppComponent() {
-  React.useEffect(()=>{
-      return ()=>{}
-  },[])
-  const [theme,setTheme] = React.useState(updateTheme(defaultTheme));
-  const preferences = React.useMemo(()=>({
-      updateTheme : (customTheme,persist)=>{
-        setTheme(updateTheme(customTheme));
-      },
-      theme,
-  }),[theme]);
-  return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-        <PaperProvider theme={theme}>
-          <SafeAreaProvider>
-            <AuthProvider>
-                <PortalProvider>
-                  <Portal.Host>
-                      <ErrorBoundary>
-                            <StatusBar/>
-                            <PreferencesContext.Provider value={preferences}>
-                                  <DropdownAlert ref={notificationRef}/> 
-                                  <PreloaderProvider/>   
-                                      <DialogProvider responsive/>
-                                      <AlertProvider SimpleSelect={SimpleSelect}/>
-                                      <FormDataDialogProvider/>  
-                                      <App theme={theme}/>
-                                      <ErrorBoundaryProvider/>
-                                    <BottomSheetProvider/>
-                            </PreferencesContext.Provider>  
-                      </ErrorBoundary>
-                  </Portal.Host>
-                </PortalProvider>
-              </AuthProvider>
-          </SafeAreaProvider>
-        </PaperProvider>
-    </GestureHandlerRootView>
-  );
-}
-AppRegistry.registerComponent(appConfig.name || appConfig.id, () => MainAppComponent);
+export default function getIndex(options){
+  const {App} = defaultObj(options);
+  const child = <Index theme={theme}/>;
+  const children = typeof App =='function'? App({children:child}) : child;
+  return function MainIndexComponent() {
+    React.useEffect(()=>{
+        return ()=>{}
+    },[])
+    const [theme,setTheme] = React.useState(updateTheme(defaultTheme));
+    const preferences = React.useMemo(()=>({
+        updateTheme : (customTheme,persist)=>{
+          setTheme(updateTheme(customTheme));
+        },
+        theme,
+    }),[theme]);
+    return (
+      <GestureHandlerRootView style={{ flex: 1 }}>
+          <PaperProvider theme={theme}>
+            <SafeAreaProvider>
+              <AuthProvider>
+                  <PortalProvider>
+                    <Portal.Host>
+                        <ErrorBoundary>
+                              <StatusBar/>
+                              <PreferencesContext.Provider value={preferences}>
+                                    <DropdownAlert ref={notificationRef}/> 
+                                    <PreloaderProvider/>   
+                                        <DialogProvider responsive/>
+                                        <AlertProvider SimpleSelect={SimpleSelect}/>
+                                        <FormDataDialogProvider/>  
+                                        {children}
+                                        <ErrorBoundaryProvider/>
+                                      <BottomSheetProvider/>
+                              </PreferencesContext.Provider>  
+                        </ErrorBoundary>
+                    </Portal.Host>
+                  </PortalProvider>
+                </AuthProvider>
+            </SafeAreaProvider>
+          </PaperProvider>
+      </GestureHandlerRootView>
+    );
+  }
+};

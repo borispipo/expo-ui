@@ -14,5 +14,5 @@ export default function ExpoUIApp (options){
     options = defaultObj(options);
     const config = defaultObj(options.config);
     appConfig.current = config;
-    registerRootComponent(require('./src/App').default);
+    registerRootComponent(require('./src/App').default(options));
 }

@@ -22,6 +22,15 @@ module.exports = (opts)=>{
     r["$eform"] = path.resolve(expo,"components","Form");
     r["$eform-data"] = path.resolve(expo,"components","Form","FormData");
     r["$eform-manager"] = path.resolve(expo,"components","Form/utils/FormManager");
+    if(!r["$screen"]){
+        r["$screen"] = r["$escreen"];
+    }
+    if(!r["$preloader"]){
+        r["$preloader"] = r["$epreloader"];
+    }
+    if(!r["$enotify"]){
+        r["$enotify"] = r["$cnotify"];
+    }
     if(typeof opts.mutator =='function'){
         opts.mutator(r);
     }

@@ -62,4 +62,4 @@ export default function MainAppComponent() {
     </GestureHandlerRootView>
   );
 }
-AppRegistry.registerComponent(appConfig.name || appConfig.id, () => Main);
+AppRegistry.registerComponent(appConfig.name || appConfig.id, () => MainAppComponent);

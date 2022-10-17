@@ -7,7 +7,7 @@ import {navigationRef} from "$cnavigation"
 import NetInfo from '$utils/NetInfo';
 import Auth from "$cauth";
 import {isNativeMobile} from "$cplatform";
-import Navigation from "$enavigation";
+import Navigation from "./navigation";
 import {set as setSession,get as getSession} from "$session";
 import { showConfirm } from "$ecomponents/Dialog";
 import {close as closePreloader, isVisible as isPreloaderVisible} from "$epreloader";

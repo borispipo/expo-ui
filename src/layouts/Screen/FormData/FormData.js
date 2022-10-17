@@ -3,10 +3,10 @@ import FormDataActions from "$ecomponents/Form/FormData/FormDataActions";
 import React from "$react";
 import {defaultObj,isObj,defaultStr} from "$utils";
 import ScreenContainer from "../Screen";
-import {useRoute} from "$enavigation/utils";
+import {useRoute} from "$cnavigation";
 import {Form as FormLoader} from "$ecomponents/ContentLoader";
 import HeavyScreen from "$ecomponents/HeavyScreen";
-import {goBack,getScreenProps} from "$enavigation/utils";
+import {goBack,getScreenProps} from "$cnavigation";
 
 
 export default class FormDataLayout extends FormDataActions {

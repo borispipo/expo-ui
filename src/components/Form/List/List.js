@@ -12,7 +12,7 @@ import {StyleSheet} from "react-native";
 import {List} from "react-native-paper";
 import FlashList from "$ecomponents/List";
 import Surface from "$ecomponents/Surface";
-import {navigate} from "$enavigation/utils";
+import {navigate} from "$cnavigation";
 import { handleBeforeSaveCallback } from "$ecomponents/Form/FormData/utils";
 import theme from "$theme";
 

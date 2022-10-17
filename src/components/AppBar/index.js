@@ -5,10 +5,9 @@ import APP from "$capp/instance"
 import {isSplitedActions,renderSplitedActions,splitActions,TITLE_FONT_SIZE} from "./utils";
 import theme,{Colors,flattenStyle} from "$theme";
 import {StyleSheet} from "react-native";
-import {goBack as navGoBack} from "$enavigation/utils";
+import {goBack as navGoBack,useNavigation,useRoute,useScreenOptions } from "$cnavigation";
 import PropTypes from "prop-types";
 import { Dimensions,TouchableWithoutFeedback} from "react-native";
-import { useNavigation,useRoute,useScreenOptions } from "$enavigation/utils";
 import Content from "./Content";
 import Icon from "$ecomponents/Icon";
 import {Elevations} from "$ecomponents/Surface";

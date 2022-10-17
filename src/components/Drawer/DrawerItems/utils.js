@@ -1,4 +1,4 @@
-import {navigate} from "$enavigation/utils";
+import {navigate} from "$cnavigation";
 import {defaultObj,isPromise,isObj,isNonNullString,isFunction} from "$utils";
 import {open as openPreloader,close as closePreloader} from "$epreloader";
 import React from "$react";

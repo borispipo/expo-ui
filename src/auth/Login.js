@@ -1,6 +1,6 @@
 import React from "$react";
 import {isNonNullString,defaultNumber,defaultStr,uniqid,extendObj,isFunction} from "$utils";
-import {navigate} from "$enavigation/utils";
+import {navigate} from "$cnavigation";
 import FormData from "$ecomponents/Form/FormData/FormData";
 import {getForm} from "$ecomponents/Form/utils";
 import Button from "$ecomponents/Button";

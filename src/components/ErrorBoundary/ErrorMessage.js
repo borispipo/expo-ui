@@ -1,12 +1,11 @@
 import * as React from 'react'
 import Types from 'prop-types';
-import {StyleSheet,View,TouchableOpacity,useWindowDimensions} from "react-native";
+import {StyleSheet,View,useWindowDimensions} from "react-native";
 import ScrollView  from "$ecomponents/ScrollView";
 import {Paragraph,Button,List } from "react-native-paper";
 import Portal from "$ecomponents/Portal";
 import theme from "$theme";
-import {navigationRef,sanitizeName} from "$enavigation/utils";
-import {isMobileNative} from "$cplatform";
+import {navigationRef,sanitizeName} from "$cnavigation";
 import Expandable from "$ecomponents/Expandable";
 import Label from "$ecomponents/Label";
 

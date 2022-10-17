@@ -12,7 +12,7 @@ import DialogProvider from "$ecomponents/Dialog/Provider";
 import { DialogProvider as FormDataDialogProvider } from '$eform/FormData';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { PreferencesContext } from './Preferences';
-import {AuthProvider} from '$cauth';
+import {AuthProvider} from '$eauth';
 import {PortalProvider } from '$ecomponents/Portal';
 import ErrorBoundary from "$ecomponents/ErrorBoundary";
 import ErrorBoundaryProvider from "$ecomponents/ErrorBoundary/Provider";

@@ -1,4 +1,4 @@
-export {sanitizeName} from "$cnavigation/utils";
+export {sanitizeName} from "$cnavigation";
 /**** les groupes d'écrans stack de l'application
  *  un écran peut appartenir à un seul ou plusieur groupe. cependant, le groupe préviée prend la priorité.
  * Ainsi, un écran ne peut être a la fois être public et privée. si tel est le cas, le groupe privée emporte

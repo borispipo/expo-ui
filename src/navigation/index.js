@@ -1,7 +1,6 @@
-export * from "./utils";
 import initScreens from "$escreens";
 import {handleContent,sanitizeName} from '$escreens';
-import {Stack,setInitialRouteName } from "./utils";
+import {Stack,setInitialRouteName } from "$cnavigation";
 import React from "$react";
 import DrawerNavigator from "./Drawer";
 
@@ -43,3 +42,5 @@ export default function NavigationComponent (props){
             </Stack.Navigator> }
     </DrawerNavigator>
 }
+
+export * from "$cnavigation";

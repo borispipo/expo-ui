@@ -10,7 +10,7 @@ import defaultSource from "./defaultAvatar";
 import Button from "$ecomponents/Button";
 import Label from "$ecomponents/Label";
 import Icon from "$ecomponents/Icon";
-import {navigate} from "$enavigation/utils";
+import {navigate} from "$cnavigation";
 import theme from "$theme";
 import {isMobileNative} from "$cplatform";
 
@@ -34,7 +34,6 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,...props},ref)=>
                         return navigate({
                             //routeName : screenName,
                             params : {
-                                code : defaultStr(u.code),
                                 user : u,
                             }
                         })
@@ -49,7 +48,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,...props},ref)=>
                 }
             }
         ];
-      let pseudo = defaultStr(u.code);
+      let pseudo = defaultStr(u.code,u.pseudo,u.email);
       let pT = pseudo;
       if(pseudo.length > 8){
           pT = pseudo.substring(0,7)+".."
@@ -80,7 +79,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,...props},ref)=>
                                 } else {
                                     u.avatar = dataURL;
                                 }
-                                Auth.upsertUser({code:u.code,avatar:u.avatar},false);
+                                Auth.upsertUser({...u,avatar:u.avatar},false);
                             }
                         }
                         />}
@@ -96,7 +95,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,...props},ref)=>
                         }}
                     >
                     <View style={styles.labelContainer}>
-                        <Label splitText style={{color:theme.colors.primaryOnSurface}}>{u.code}</Label>
+                        <Label splitText style={{color:theme.colors.primaryOnSurface}}>{pseudo}</Label>
                         <Label splitText style={{fontSize:12,color:theme.colors.secondaryOnSurface,marginTop:6}}>
                             {u.label}
                         </Label>

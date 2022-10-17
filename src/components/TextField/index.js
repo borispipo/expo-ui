@@ -300,6 +300,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
         ellipsizeMode : "head",
         testID : testID+"_Input",
         keyboardAppearance : theme.isDark()? 'dark': 'default',
+        caretHidden : false,
         ...props,
         innerRef,
         placeholder : (isFocused || isShadowMode || isNormalMode) && labelText ? "":placeholder,

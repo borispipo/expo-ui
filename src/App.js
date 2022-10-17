@@ -23,8 +23,6 @@ import {Provider as AlertProvider} from '$ecomponents/Dialog/confirm/Alert';
 
 export default function getIndex(options){
   const {App} = defaultObj(options);
-  const child = <Index theme={theme}/>;
-  const children = typeof App =='function'? App({children:child}) : child;
   return function MainIndexComponent() {
     React.useEffect(()=>{
         return ()=>{}
@@ -36,6 +34,8 @@ export default function getIndex(options){
         },
         theme,
     }),[theme]);
+    const child = <Index theme={theme}/>;
+    const children = typeof App =='function'? App({children:child}) : child;
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
           <PaperProvider theme={theme}>

@@ -59,14 +59,7 @@ export default function LoginComponent(props){
         }
     }
     
-    React.useEffect(()=>{
-        Preloader.closeAll();
-    },[]);
-    React.useEffect(()=>{
-        if(typeof loginProps.focusField =='function'){
-            return loginProps.focusField({...state,focusField,nextButtonRef,data:getData()})
-        }
-    },[state.step]);
+    
     if(withPortal){
         appBarProps = defaultObj(appBarProps);
         appBarProps.backAction = false;
@@ -79,19 +72,28 @@ export default function LoginComponent(props){
         }
     },[withPortal])
     const getProps = typeof getLoginProps =='function'? getLoginProps : x=>null;
-    const {header,children,...loginProps} = defaultObj(getProps({
+    const {header,children,data:loginData,validate,keyboardEvents,onSuccess:onLoginSuccess,canSubmit:canSubmitForm,onStepChange,...loginProps} = defaultObj(getProps({
         ...state,
         data : getData(),
-        focusField,
         state,
         formName,
         setState,
         nextButtonRef,
     }));
+    React.useEffect(()=>{
+        Preloader.closeAll();
+    },[]);
+    const prevStep = React.usePrevious(state.step);
+    React.useEffect(()=>{
+        /*** lorsque le state du composant change */
+        if(typeof onStepChange =='function'){
+            return onStepChange({...state,previousStep:prevStep,focusField,nextButtonRef,data:getData()})
+        }
+    },[state.step]);
     /****la fonction à utiliser pour vérifier si l'on peut envoyer les données pour connextion
      * par défaut, on envoie les données lorssqu'on est à l'étappe 2
      * **/
-    const canSubmit = typeof loginProps.canSubmit =='function'? loginProps.canSubmit : ({step})=>step >= 2;
+    const canSubmit = typeof canSubmitForm =='function'? canSubmitForm : ({step})=>step >= 2;
     const goToNext = ()=>{
         let step = state.step;
         let data = getData();
@@ -102,8 +104,8 @@ export default function LoginComponent(props){
             return;
         }
         const args = {data,form,step,nextButtonRef};
-        if(typeof loginProps.validate =='function'){
-            const s = loginProps.validate(args);
+        if(typeof validate =='function'){
+            const s = validate(args);
             if(s === false) return;
             if(isNonNullString(s)){
                 notifyUser(s);
@@ -113,7 +115,7 @@ export default function LoginComponent(props){
         if(canSubmit(args) && step > 1){
             Preloader.open("vérification ...");
             return auth.signIn(data).then((a)=>{
-                if(typeof loginProps.onSuccess =='function' && loginProps.onSuccess(a)=== false) return;
+                if(typeof onLoginSuccess =='function' && onLoginSuccess(a)=== false) return;
                 if(isFunction(onSuccess)){
                     onSuccess(true);
                 } else {
@@ -147,13 +149,13 @@ export default function LoginComponent(props){
                     {...loginProps}
                     formProps = {{
                         keyboardEvents : {
-                            ...defaultObj(loginProps.keyboardEvents),
+                            ...defaultObj(keyboardEvents),
                             enter : ({formInstance})=>{
                                 goToNext();
                             }
                         }
                     }}
-                    data = {extendObj(props.data,loginProps.data)}
+                    data = {extendObj(props.data,loginData)}
                 >
                     <View testID={testID+"_ButtonsContainer"} style={[styles.buttonWrapper]}>
                         <Button 

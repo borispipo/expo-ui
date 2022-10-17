@@ -49,6 +49,10 @@ module.exports = (opts)=>{
     if(!r["$drawerItems"]){
         r["$drawerItems"] = path.resolve(expo,"navigation","Drawer","items","default")
     }
+    ///si l'alias $navigation n'a pas été définie par défaut, alors celui cet allias prendra la même valeur que celle de $envigation
+    if(r["$navigation"] == r["$cnavigation"]){
+        r["$navigation"] = r["$enavigation"];
+    }
     if(typeof opts.mutator =='function'){
         opts.mutator(r);
     }

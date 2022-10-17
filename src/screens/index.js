@@ -5,7 +5,7 @@ import React from "$react";
 import { BackHandler } from "react-native";
 import APP from "$capp";
 import {useDrawer} from "$ecomponents/Drawer";
-import {navigationRef,getScreenProps,setRoute,setActiveNavigation,setScreenOptions,goBack} from "$enavigation/utils";
+import {navigationRef,getScreenProps,setRoute,setActiveNavigation,setScreenOptions,goBack} from "$cnavigation";
 
 export * from "./utils";
 

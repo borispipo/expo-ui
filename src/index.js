@@ -3,7 +3,7 @@ import { AppState,Linking,BackHandler,} from "react-native"
 import APP from "$capp";
 import {AppStateService,trackIDLE,stop as stopIDLE} from "$capp/idle";
 import { NavigationContainer} from '@react-navigation/native';
-import {navigationRef} from "$cnavigation/utils"
+import {navigationRef} from "$cnavigation"
 import NetInfo from '$utils/NetInfo';
 import Auth from "$cauth";
 import {isNativeMobile} from "$cplatform";

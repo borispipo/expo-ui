@@ -53,6 +53,9 @@ module.exports = (opts)=>{
     if(r["$navigation"] == r["$cnavigation"]){
         r["$navigation"] = r["$enavigation"];
     }
+    if(r["$loginComponent"] == r["$cloginComponent"]){
+        r["$loginComponent"] = path.resolve(expo,"auth","Login");
+    }
     if(typeof opts.mutator =='function'){
         opts.mutator(r);
     }

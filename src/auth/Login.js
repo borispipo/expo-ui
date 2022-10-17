@@ -18,6 +18,7 @@ import {Provider as DialogProvider} from "$ecomponents/Dialog";
 import Screen from "$escreen";
 import {getTitle} from "$escreens/Auth/utils";
 import {isWeb} from "$cplatform";
+import getLoginProps from "$getLoginProps";
 
 const WIDTH = 400;
 
@@ -62,8 +63,8 @@ export default function LoginComponent(props){
         Preloader.closeAll();
     },[]);
     React.useEffect(()=>{
-        if(typeof formProps.focusField =='function'){
-            return formProps.focusField({...state,focusField,nextButtonRef,data:getData()})
+        if(typeof loginProps.focusField =='function'){
+            return loginProps.focusField({...state,focusField,nextButtonRef,data:getData()})
         }
     },[state.step]);
     if(withPortal){
@@ -77,18 +78,20 @@ export default function LoginComponent(props){
             },1000)
         }
     },[withPortal])
-    const formProps = defaultObj(LoginComponent.getProps(LoginComponent.getProps({
+    const getProps = typeof getLoginProps =='function'? getLoginProps : x=>null;
+    const {header,children,...loginProps} = defaultObj(getProps({
         ...state,
         data : getData(),
         focusField,
         state,
+        formName,
         setState,
         nextButtonRef,
-    })));
+    }));
     /****la fonction à utiliser pour vérifier si l'on peut envoyer les données pour connextion
      * par défaut, on envoie les données lorssqu'on est à l'étappe 2
      * **/
-    const canSubmit = typeof formProps.canSubmit =='function'? formProps.canSubmit : ({step})=>step >= 2;
+    const canSubmit = typeof loginProps.canSubmit =='function'? loginProps.canSubmit : ({step})=>step >= 2;
     const goToNext = ()=>{
         let step = state.step;
         let data = getData();
@@ -99,8 +102,8 @@ export default function LoginComponent(props){
             return;
         }
         const args = {data,form,step,nextButtonRef};
-        if(typeof formProps.validate =='function'){
-            const s = formProps.validate(args);
+        if(typeof loginProps.validate =='function'){
+            const s = loginProps.validate(args);
             if(s === false) return;
             if(isNonNullString(s)){
                 notifyUser(s);
@@ -110,7 +113,7 @@ export default function LoginComponent(props){
         if(canSubmit(args) && step > 1){
             Preloader.open("vérification ...");
             return auth.signIn(data).then((a)=>{
-                if(typeof formProps.onSuccess =='function' && formProps.onSuccess(a)=== false) return;
+                if(typeof loginProps.onSuccess =='function' && loginProps.onSuccess(a)=== false) return;
                 if(isFunction(onSuccess)){
                     onSuccess(true);
                 } else {
@@ -138,18 +141,19 @@ export default function LoginComponent(props){
                     header = {<View style = {[styles.header]}>
                         <Avatar testID={testID+"_Avatar"} size={50} secondary icon = 'lock'/>
                         <Label testID={testID+"_HeaderText"} bool style={{color:theme.colors.primaryOnSurface,fontSize:18,paddingTop:10}}>Connectez vous SVP</Label>
+                        {React.isValidElement(header)? header : null}
                     </View>}
                     responsive  = {false}
-                    {...formProps}
+                    {...loginProps}
                     formProps = {{
                         keyboardEvents : {
-                            ...defaultObj(formProps.keyboardEvents),
+                            ...defaultObj(loginProps.keyboardEvents),
                             enter : ({formInstance})=>{
                                 goToNext();
                             }
                         }
                     }}
-                    data = {extendObj(props.data,formProps.data)}
+                    data = {extendObj(props.data,loginProps.data)}
                 >
                     <View testID={testID+"_ButtonsContainer"} style={[styles.buttonWrapper]}>
                         <Button 
@@ -179,20 +183,12 @@ export default function LoginComponent(props){
                         </Button> : null}
                     </View>
                 </FormData>
+                {React.isValidElement(children) ? children : null}
             </Surface>
         </Surface>
     </Wrapper>;
 }   
 
-/**** cette fonction est utilisée, pour modifier dynamiquement les champs et les props de connexion au formulaire */
-LoginComponent.getProps = ({data,step,state,nextButtonRef})=>{
-    return {
-        ///les champ à utiliser pour l'authentification de l'utilisateur
-        fields : {
-        
-        }
-    }
-}
 
 const updateMediaQueryStyle = ()=>{
     const isSmallPhone = Dimensions.isSmallPhoneMedia(),isTablet = Dimensions.isTabletMedia(),

@@ -25,6 +25,6 @@ module.exports = function({config,isNext,nodeModulesPath,base,dir}){
             }
         });
     }
-    config.plugins.push(require("./circular-dependencies"));
+    config.plugins.push(require("@fto-consult/common/circular-dependencies"));
     return config;
 }

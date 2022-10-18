@@ -28,20 +28,22 @@ export default function LoginComponent(props){
     testID = defaultStr(testID,"RN_Auth.LoginComponent");
     formName = React.useRef(uniqid(defaultStr(formName,"login-formname"))).current;
     const nextButtonRef = React.useRef(null);
+    const previousButtonRef = React.useRef(null);
     const dialogProviderRef = React.useRef(null);
     const backgroundColor = theme.colors.surface;
     const Wrapper = withPortal ? Screen  : View;
+    const _getForm = x=> getForm(formName);
     
     const auth = useAuth();
     const notifyUser = (message)=> notify.error({message,position:'top'})
     const [state,setState] = React.useState({
         step : defaultNumber(step,1),
+        data : defaultObj(props.data),
     });
-    const _getForm = x=> getForm(formName);
     const getData = ()=>{
         const form = _getForm();
         if(form && form.getData){
-            return form.getData();
+            return extendObj(state.data,form.getData());
         }
         return defaultObj(props.data);
     }
@@ -72,13 +74,14 @@ export default function LoginComponent(props){
         }
     },[withPortal])
     const getProps = typeof getLoginProps =='function'? getLoginProps : x=>null;
-    const {header,children,data:loginData,validate,keyboardEvents,onSuccess:onLoginSuccess,canSubmit:canSubmitForm,onStepChange,...loginProps} = defaultObj(getProps({
+    const {header,children,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,canSubmit:canSubmitForm,onStepChange,...loginProps} = defaultObj(getProps({
         ...state,
-        data : getData(),
-        state,
+        getForm,
+        getData,
+        focusField,
         formName,
-        setState,
         nextButtonRef,
+        previousButtonRef,
     }));
     React.useEffect(()=>{
         Preloader.closeAll();
@@ -87,7 +90,7 @@ export default function LoginComponent(props){
     React.useEffect(()=>{
         /*** lorsque le state du composant change */
         if(typeof onStepChange =='function'){
-            return onStepChange({...state,previousStep:prevStep,focusField,nextButtonRef,data:getData()})
+            return onStepChange({...state,previousStep:prevStep,focusField,nextButtonRef})
         }
     },[state.step]);
     /****la fonction à utiliser pour vérifier si l'on peut envoyer les données pour connextion
@@ -96,16 +99,15 @@ export default function LoginComponent(props){
     const canSubmit = typeof canSubmitForm =='function'? canSubmitForm : ({step})=>step >= 2;
     const goToNext = ()=>{
         let step = state.step;
-        let data = getData();
-        data.code = defaultStr(data.code, state.code);
+        const data = getData();
         const form = _getForm();
         if(!form){
             notifyUser("Impossible de valider le formulaire car celui-ci semble invalide")
             return;
         }
-        const args = {data,form,step,nextButtonRef};
-        if(typeof validate =='function'){
-            const s = validate(args);
+        const args = {data,form,step,nextButtonRef,previousButtonRef};
+        if(typeof canGoToNext =='function'){
+            const s = canGoToNext(args);
             if(s === false) return;
             if(isNonNullString(s)){
                 notifyUser(s);
@@ -155,7 +157,7 @@ export default function LoginComponent(props){
                             }
                         }
                     }}
-                    data = {extendObj(props.data,loginData)}
+                    data = {extendObj(state.data,loginData)}
                 >
                     <View testID={testID+"_ButtonsContainer"} style={[styles.buttonWrapper]}>
                         <Button 
@@ -167,12 +169,12 @@ export default function LoginComponent(props){
                             onPress = {goToNext}
                             icon = {state.step == 1? 'arrow-right':'login'}
                             surface
-                            disabled = {!isNonNullString(state.code)}
                         >
                             {state.step == 1? 'Suivant' : 'Connexion' }
                         </Button>
                         {state.step>=2 ? <Button 
                             onPress = {goToFirstStep}
+                            ref = {previousButtonRef}
                             mode = "contained"
                             rounded
                             raised

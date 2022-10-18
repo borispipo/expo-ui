@@ -3,17 +3,18 @@ import { Component } from "react";
 import {isNativeMobile} from "$cplatform";
 import {Image} from "react-native";
 import View from "$ecomponents/View";
-import Label from "$ecomponents/Label";
+import React from "$react";
 import theme,{remToPixel,Colors,flattenStyle} from '$theme';
 import {StyleSheet} from "react-native";
 import source from "$assets/logo.png";
 import {defaultStr} from "$utils";
+import LogoComponent from "$logoComponent";
 
 export const height = 150;
 export const width = undefined;//300;
 export default class Logo extends Component {
     render(props){
-        let {icon,color,style,testID,text} = this.props;
+        let {icon,color,style,testID,logo,text} = this.props;
         testID = defaultStr(testID,"RN_LogoComponent");
         const styles = getStyle(style,color);
         return <View testID={testID} style={styles.container}> 
@@ -28,12 +29,7 @@ export default class Logo extends Component {
                     )}
                 />}
             </View> : null}
-            {text !== false ? <View testID={testID+"_Content"} style={styles.logoContent}>
-                <Label style={styles.firstText}>XPose</Label>
-                <Label style={styles.secondText}>F</Label>
-                <Label style={styles.thirdText}>T</Label>
-                <Label style={styles.fourthText}>C</Label>
-            </View> : null}
+            {text !== false  && logo !== false ? (React.isValidElement(LogoComponent)? LogoComponent : React.isComponent(LogoComponent)? <LogoComponent {...props} style={styles.logoContent} testID={testID+"_Content"} styles={styles}/> : null) : null}
         </View>
     }
     
@@ -44,10 +40,9 @@ const getStyle = (style,color)=>{
     return  {
         ...styles,
         container : flattenStyle([styles.container,cColor,style]),
-        firstText : flattenStyle([styles.text,cColor]),
-        secondText : flattenStyle([styles.text,styles.secondText,cColor]),
-        thirdText : flattenStyle([styles.text,cColor,styles.thirdText]),
-        fourthText : flattenStyle([styles.text,cColor])
+        firstText : flattenStyle([styles.medium,cColor]),
+        large : flattenStyle([styles.medium,styles.large,cColor]),
+        small : flattenStyle([styles.medium,cColor,styles.small]),
     };
 }
 
@@ -73,24 +68,22 @@ const styles = StyleSheet.create({
     },  
     logoContent : {
         position:"relative",
-        //width : 160,
-        //flex : 2,
         flexDirection : "row",
         alignItems : "center",
         justifyContent : "flex-start"
     },
-    secondText : {
-        fontSize : remToPixel(5),
-        alignItems : "flex-start",
-        justifyContent : "center",
-        marginTop: 0//isNativeMobile() ? -5 : 0
-    },
-    thirdText : {
+    small : {
         fontSize:remToPixel(2.5),
         marginLeft:isNativeMobile()? -25 : -20
     },
-    text : {
+    medium : {
         fontSize:remToPixel(3),
+    },
+    large : {
+        fontSize : remToPixel(5),
+        alignItems : "flex-start",
+        justifyContent : "center",
+        marginTop: 0
     },
 })
 

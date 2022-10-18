@@ -123,7 +123,7 @@ export default function LoginComponent(props){
             return auth.signIn(data).then((a)=>{
                 if(typeof onLoginSuccess =='function' && onLoginSuccess(a)=== false) return;
                 if(isFunction(onSuccess)){
-                    onSuccess(true);
+                    onSuccess(data);
                 } else {
                     navigate("Home");
                 } 

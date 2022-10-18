@@ -18,6 +18,7 @@ module.exports = (opts)=>{
     r["$enavigation"] = path.resolve(expo,"navigation");
     r["$escreens"] = path.resolve(expo,"screens");
     r["$escreen"] = path.resolve(expo,"layouts/Screen");
+    r["$eassets"] = path.resolve(dir,"assets");
 
     ///pour personnaliser les écrans de l'application, il suffit de redefinir l'alis $screens, pointant vers le repertoire racine des écrans personnalisés
     ///cependant, ce repertoire doit contenir un fichier mainScreens.js qui contient la liste de tous les écrans de lapplicaiton
@@ -60,6 +61,13 @@ module.exports = (opts)=>{
     if(r["$loginComponent"] == r["$cloginComponent"]){
         r["$loginComponent"] = path.resolve(expo,"auth","Login");
     }
+
+    /*** alias pour le composant logo par défaut :  */
+    r["$elogoComponent"] = path.resolve(expo,"components","Logo","defaultComponent");
+    if(!r["$logoComponent"]){
+        r["$logoComponent"] = r["$elogoComponent"];
+    }
+
     if(typeof opts.mutator =='function'){
         opts.mutator(r);
     }

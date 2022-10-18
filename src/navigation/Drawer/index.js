@@ -49,7 +49,7 @@ const DrawerNavigator = React.forwardRef(({content,children,state,...props},ref)
     if(!isLoggedIn) {
         return <Login withPortal
             onSuccess = {(data)=>{
-                console.log(data," is logged in heinn");
+                setIsLoggedIn(true);
             }}
         />
     }

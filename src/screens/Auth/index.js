@@ -1,7 +1,6 @@
 
-import {SIGN_IN} from "./routes"
+import {SIGN_IN} from "$cauth/routes"
 import Screen from "$escreen";
-import {GROUP_NAMES} from "$escreens/utils";
 import Login from "$eauth/Login";
 import {getScreenProps} from "$cnavigation";
 import {getTitle} from "./utils";
@@ -24,7 +23,7 @@ function AuthSignInScreen(_props){
 }
 
 AuthSignInScreen.screenName = SIGN_IN;
-AuthSignInScreen.groupName = GROUP_NAMES.PUBLIC;
+AuthSignInScreen.authRequired = false;
 AuthSignInScreen.modal = true;
 AuthSignInScreen.allowDrawer = false;
 

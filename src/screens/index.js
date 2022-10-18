@@ -12,7 +12,6 @@ export * from "./utils";
 export const SCREEN_OPTIONS = {};
 
 
-
 export const handleScreen = ({Screen,Factory,ModalFactory,result,useTheme,filter,index})=>{
     result = defaultObj(result);
     result.screens = defaultObj(result.screens);
@@ -41,9 +40,9 @@ export const handleScreen = ({Screen,Factory,ModalFactory,result,useTheme,filter
                 return null;
             }
             ///le groupe d'écran par défaut
-            let groupName = defaultStr(Screen.groupName,GROUP_NAMES.DEFAULT).toUpperCase().trim();
+            let groupName = Screen.Start ||Screen.start ? GROUP_NAMES.START : authRequired === false ? GROUP_NAMES.PUBLIC : GROUP_NAMES.PRIVATE;
             if(!GROUP_NAMES[groupName]){
-                groupName = GROUP_NAMES.DEFAULT
+                groupName = GROUP_NAMES.PRIVATE;
             }
             if(!authRequired){
                 groupName = groupName || GROUP_NAMES.PUBLIC;
@@ -179,7 +178,7 @@ export const handleContent = ({screens,hasGetStarted,state,Factory})=>{
     Object.map(screens,(screens,groupName)=>{
         if(!Array.isArray(screens)) return null;
         if(hasGetStarted === false){
-          if(groupName == GROUP_NAMES.INSTALL){
+          if(groupName == GROUP_NAMES.START){
               content.push(<Factory.Group key={groupName}>
                 {screens}
               </Factory.Group>)

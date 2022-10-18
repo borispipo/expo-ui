@@ -15,10 +15,12 @@ import View from "$ecomponents/View";
 import Avatar from "$ecomponents/Avatar";
 import Surface from "$ecomponents/Surface";
 import {Provider as DialogProvider} from "$ecomponents/Dialog";
-import Screen from "$escreen";
+import ScreenWithoutAuthContainer from "$escreen/ScreenWithoutAuthContainer";
 import {getTitle} from "$escreens/Auth/utils";
 import {isWeb} from "$cplatform";
+
 import getLoginProps from "$getLoginProps";
+const getProps = typeof getLoginProps =='function'? getLoginProps : x=>null;
 
 const WIDTH = 400;
 
@@ -31,7 +33,7 @@ export default function LoginComponent(props){
     const previousButtonRef = React.useRef(null);
     const dialogProviderRef = React.useRef(null);
     const backgroundColor = theme.colors.surface;
-    const Wrapper = withPortal ? Screen  : View;
+    const Wrapper = withPortal ? ScreenWithoutAuthContainer  : View;
     const _getForm = x=> getForm(formName);
     
     const auth = useAuth();
@@ -43,13 +45,12 @@ export default function LoginComponent(props){
     const getData = ()=>{
         const form = _getForm();
         if(form && form.getData){
-            return extendObj(state.data,form.getData());
+            return extendObj({},state.data,form.getData());
         }
         return defaultObj(props.data);
     }
     const goToFirstStep = ()=>{
-        const data = getData();
-        setState({...state,step:1,data});
+        setState({...state,step:1,data:getData()});
     }
     const focusField = (fieldName)=>{
         const form = _getForm();
@@ -73,9 +74,9 @@ export default function LoginComponent(props){
             },1000)
         }
     },[withPortal])
-    const getProps = typeof getLoginProps =='function'? getLoginProps : x=>null;
     const {header,children,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,canSubmit:canSubmitForm,onStepChange,...loginProps} = defaultObj(getProps({
         ...state,
+        state,
         getForm,
         getData,
         focusField,
@@ -105,7 +106,10 @@ export default function LoginComponent(props){
             notifyUser("Impossible de valider le formulaire car celui-ci semble invalide")
             return;
         }
-        const args = {data,form,step,nextButtonRef,previousButtonRef};
+        const args = {data,form,state,step,nextButtonRef,previousButtonRef};
+        if(nextButtonRef.current && nextButtonRef.current.isDisabled()){
+            return;
+        }
         if(typeof canGoToNext =='function'){
             const s = canGoToNext(args);
             if(s === false) return;
@@ -127,7 +131,7 @@ export default function LoginComponent(props){
                 Preloader.close();
             })
         } else {
-            setState({...state,step:step+1,...data})
+            setState({...state,step:step+1,data})
         }
     }
     

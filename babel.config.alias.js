@@ -18,7 +18,11 @@ module.exports = (opts)=>{
     r["$enavigation"] = path.resolve(expo,"navigation");
     r["$escreens"] = path.resolve(expo,"screens");
     r["$escreen"] = path.resolve(expo,"layouts/Screen");
+
+    ///pour personnaliser les écrans de l'application, il suffit de redefinir l'alis $screens, pointant vers le repertoire racine des écrans personnalisés
+    ///cependant, ce repertoire doit contenir un fichier mainScreens.js qui contient la liste de tous les écrans de lapplicaiton
     r["$screens"] = r["$screens"] || r["$escreens"];
+    
     r["$expo"] = r["$expo-ui"] = expo;
     r["$epreloader"] = path.resolve(expo,"components/Preloader");
     r["$eform"] = path.resolve(expo,"components","Form");

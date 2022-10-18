@@ -24,7 +24,7 @@ module.exports = function(api,opts) {
       ],
       plugins : [
         ["inline-dotenv",inlineDovOptions],
-        ['babel-plugin-root-import', {"paths": alias}],
+        ["module-resolver", {"alias": alias}],
         ['react-native-reanimated/plugin'],
         ['transform-inline-environment-variables'],
       ],

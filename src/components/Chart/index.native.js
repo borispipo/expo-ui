@@ -1,5 +1,5 @@
 import FileSystem from "$file-system";
-import appexChartCode from "./appexchart.3.5.js.text";
+import appexChartCode from "./appexchart.3.5.html";
 import React from "$react";
 import WebView from "$ecomponents/WebView";
 import HTMLView from '$ecomponents/Html/View';
@@ -7,8 +7,6 @@ import {defaultStr,uniqid} from "$utils";
 import View from "$ecomponents/View";
 
 let appexchartJSString = null;
-
-
 
 export const ChartComponent = React.forwardRef(({options,containerId,...props},ref)=>{
     const containerIdRef = React.useRef(defaultStr(containerId,uniqid("chart-container-id")))

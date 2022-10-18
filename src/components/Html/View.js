@@ -1,7 +1,7 @@
 /***@see : https://github.com/jsdf/react-native-htmlview */
 import React, {PureComponent} from 'react';
 import PropTypes from 'prop-types';
-import htmlToElement from './htmlToElement';
+import htmlToElement from './HtmlToElement';
 import {Linking, Platform, StyleSheet, View} from 'react-native';
 import {StyleProp} from "$theme";
 

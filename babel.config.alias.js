@@ -71,6 +71,7 @@ module.exports = (opts)=>{
     if(typeof opts.mutator =='function'){
         opts.mutator(r);
     }
+    return r;
     const aliases = [];
     for(let i in r){
         aliases.push({

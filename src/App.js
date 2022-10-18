@@ -20,6 +20,7 @@ import {GestureHandlerRootView} from "react-native-gesture-handler";
 import StatusBar from "$ecomponents/StatusBar";
 import SimpleSelect from '$ecomponents/SimpleSelect';
 import {Provider as AlertProvider} from '$ecomponents/Dialog/confirm/Alert';
+import APP from "$app";
 
 export default function getIndex(options){
   const {App} = defaultObj(options);
@@ -35,7 +36,7 @@ export default function getIndex(options){
         theme,
     }),[theme]);
     const child = <Index theme={theme}/>;
-    const children = typeof App =='function'? App({children:child}) : child;
+    const children = typeof App =='function'? App({children:child,APP}) : child;
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
           <PaperProvider theme={theme}>

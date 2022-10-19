@@ -6,10 +6,23 @@ const fs = require("fs");
 const path = require("path");
 const dir = path.resolve(__dirname)
 let devExpoUIPath = path.resolve(dir);
-const parentPackage = require("./parent-package");
-if(parentPackage){
-    console.log(parentPackage," is parent packag path heinn")
+const lookupForExpoUIPath = ()=>{
+    let level = 4; //jusqu'à 4 niveaux
+    let expoUIPath= null;
+    let rootPath = path.resolve(dir);
+    while(level>0 && !expoUIPath){
+        rootPath = path.resolve(rootPath,"..");
+        const p = path.resolve(rootPath,"expo-ui");
+        if(fs.existsSync(p) && fs.existsSync(path.resolve(rootPath,"node_modules") && fs.existsSync(path.resolve(rootPath,"src")))){
+            expoUIPath = p;
+            break;
+        }
+        level = level-1;
+    }
+    console.log("has lookup ",expoUIPath);
+    return expoUIPath;
 }
+lookupForExpoUIPath();
 ///retourne le chemin vers le package @expo-ui
 module.exports = (()=>{
     const isDev = fs.existsSync(devExpoUIPath) && fs.existsSync(path.resolve(devExpoUIPath,"babel.config.alias.js"))

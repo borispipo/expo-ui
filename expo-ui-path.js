@@ -11,12 +11,12 @@ const lookupForExpoUIPath = ()=>{
     let expoUIPath= null;
     let rootPath = path.resolve(dir);
     while(level>0 && !expoUIPath){
-        rootPath = path.resolve(rootPath,"..");
         const p = path.resolve(rootPath,"expo-ui");
         if(fs.existsSync(p) && fs.existsSync(path.resolve(rootPath,"node_modules") && fs.existsSync(path.resolve(rootPath,"src")))){
             expoUIPath = p;
             break;
         }
+        rootPath = path.resolve(rootPath,"..");
         level = level-1;
     }
     console.log("has lookup ",expoUIPath);

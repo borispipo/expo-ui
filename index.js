@@ -1,11 +1,5 @@
 import { registerRootComponent } from 'expo';
-const expoPath = (require("./expo-ui-production-path")+"/").replace("//","/");
-const appConfigPath = expoPath+"node_modules/@fto-consult/common/src/app/config";
-console.log(expoPath," is expo path found heinnnnn ",appConfigPath," and expo app is ",expoPath+'src/App');
-const appConfig = require (appConfigPath);
 
-const isObj = x=>typeof x =='object' && x && !Array.isArray(x);
-const defaultObj = x=> isObj(x)? x : {};
 
 /**** initialise l'application expoUI avec les paramètres de configuration
  * les options sont de la forme : 
@@ -13,9 +7,16 @@ const defaultObj = x=> isObj(x)? x : {};
  *      config {object}, le fichier de configuration de l'application
  * }
  */
-export default function registerExpoUIApp (options){
-    options = defaultObj(options);
+export default function ExpoUIApp (options){
+    const expoUIPath = require("./expo-ui-production-path");
+    if(expoUIPath && !expoUIPath.includes("@fto-consult/")){
+        const path = (expoUIPath+"/").replace("//","/")+"src/index";
+        console.log("found local expo-ui dev index path at ",expoUIPath," is expo ui path heinn and path is ",path);
+        return require(`${path}`)(options);
+    }
+    const appConfig = require("$capp/config").default;
+    options = options && typeof options =='object' && !Array.isArray(options)? options : {};
     const config = defaultObj(options.config);
     appConfig.current = config;
-    registerRootComponent(require(expoPath+'src/App').default(options));
+    registerRootComponent(require('./src/App').default(options));
 }

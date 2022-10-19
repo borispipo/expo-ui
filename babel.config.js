@@ -7,7 +7,15 @@ module.exports = function(api,opts) {
     const dir = path.resolve(__dirname);
     api.cache(true);
     const inlineDovOptions = {};
-    if(environmentPath && typeof environmentPath =='string' && fs.existsSync(environmentPath)){
+    const options = {base:dir,...opts,platform:"expo"};
+    /*** par défaut, les variables d'environnements sont stockés dans le fichier .env situé à la racine du projet, référencée par la prop base  */
+    if(!environmentPath || typeof environmentPath !== 'string'){
+      const baseStr = typeof options.base =='string' && fs.existsSync(options.base)? options.base : typeof options.dir =='string' && fs.existsSync(options.dir)? options.dir : dir;
+      environmentPath = path.resolve(baseStr,".env");
+    } else {
+      environmentPath = "";
+    }
+    if(environmentPath && fs.existsSync(environmentPath)){
       // File ".env" will be created or overwritten by default.
       try {
         fs.copyFileSync(environmentPath, path.resolve(dir,'.env'));
@@ -16,7 +24,7 @@ module.exports = function(api,opts) {
         inlineDovOptions.path = environmentPath;
       }
     }
-    const alias =  require("./babel.config.alias")({base:dir,...opts,platform:"expo"});
+    const alias =  require("./babel.config.alias")(options);
     return {
       presets: [
         ['babel-preset-expo'],

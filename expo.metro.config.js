@@ -1,5 +1,6 @@
 const { getDefaultConfig } = require('@expo/metro-config');
 const path = require("path");
+const isCaseSensitive = require("./is-os-case-sensitive");
 module.exports = (opts)=>{
   opts = opts && typeof opts =='object'? opts : {};
   let {dir,nodeModulesPaths,assetExts,sourceExts} = opts;
@@ -8,11 +9,10 @@ module.exports = (opts)=>{
   sourceExts= Array.isArray(sourceExts)?sourceExts : [];
   dir = dir || path.resolve(__dirname);
   const projectRoot = path.resolve(dir);
-  const workspaceRoot = path.resolve(projectRoot, '../..');
-  const config = getDefaultConfig(projectRoot);
   const localDir = path.resolve(__dirname);
+  const config = getDefaultConfig(projectRoot);
   config.watchFolders = [projectRoot];
-  if(dir !== localDir){
+  if(projectRoot !== localDir){
     config.watchFolders.push(localDir);
   }
   config.resolver.assetExts = [
@@ -23,9 +23,27 @@ module.exports = (opts)=>{
   ];
   config.resolver.sourceExts = [
       ...config.resolver.sourceExts,
-      ...sourceExts,
+      ...sourceExts,"txt",
       'jsx', 'js','tsx',
   ]
+  const allNodePaths = [
+    path.resolve(projectRoot, 'node_modules'),
+    path.resolve(localDir, 'node_modules'),
+    ...nodeModulesPaths,
+  ];
+  const existingNodesPath= {},nPaths = [];
+  allNodePaths.map(p=>{
+    if(!p || typeof p !='string') return;
+    if(isCaseSensitive){
+      p = p.toLocaleLowerCase();
+    }
+    if(!existingNodesPath[p]){
+      existingNodesPath[p] = true;
+      nPaths.push(p);
+    }
+  });
+  
+  config.resolver.nodeModulesPaths = nPaths;
   // 3. Force Metro to resolve (sub)dependencies only from the `nodeModulesPaths`
   config.resolver.disableHierarchicalLookup = true;
   return config;

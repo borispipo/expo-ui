@@ -72,13 +72,4 @@ module.exports = (opts)=>{
         opts.mutator(r);
     }
     return r;
-    const aliases = [];
-    for(let i in r){
-        aliases.push({
-            root: r[i],
-            rootPathPrefix: i,
-            rootPathSuffix: '',
-        })
-    }
-    return aliases;
 }

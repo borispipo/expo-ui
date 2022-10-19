@@ -2,7 +2,6 @@ import FileSystem from "$file-system";
 import appexChartCode from "./appexchart.3.5.html";
 import React from "$react";
 import WebView from "$ecomponents/WebView";
-import HTMLView from '$ecomponents/Html/View';
 import {defaultStr,uniqid} from "$utils";
 import View from "$ecomponents/View";
 

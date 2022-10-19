@@ -45,7 +45,7 @@ const DrawerNavigator = React.forwardRef(({content,children,state,...props},ref)
     React.useEffect(()=>{
         if(prevIsLoggedIn === isLoggedIn) return;
         navigate("Home");
-    },[isLoggedIn])
+    },[isLoggedIn]);
     if(!isLoggedIn) {
         return <Login withPortal
             onSuccess = {(data)=>{

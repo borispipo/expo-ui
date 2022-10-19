@@ -1,5 +1,6 @@
 import React from "$react"
-import { AppState,Linking,BackHandler,} from "react-native"
+import { AppState,BackHandler,} from "react-native";
+import * as Linking from 'expo-linking';
 import APP from "$capp";
 import {AppStateService,trackIDLE,stop as stopIDLE} from "$capp/idle";
 import { NavigationContainer} from '@react-navigation/native';
@@ -31,10 +32,10 @@ const NAVIGATION_PERSISTENCE_KEY = 'NAVIGATION_STATE';
 function App(props) {
   AppStateService.init();
   const [initialState, setInitialState] = React.useState(undefined);
-  const appReadyRef = React.useRef(false);
+  const appReadyRef = React.useRef(true);
   const [state,setState] = React.useState({
      isLoading : true,
-     isInitialized:false,
+     isInitialized:true,
   });
   React.useEffect(() => {
     const restoreState = () => {
@@ -99,17 +100,16 @@ function App(props) {
        APP.setOnlineState(state);
     });
     NetInfo.fetch().catch((e)=>{});
-    restoreState().then(()=>{
-      init().then(()=>{
-        if(Auth.isLoggedIn()){
-          Auth.loginUser(false);
-        }
-        setState({
-          ...state,isInitialized:true,isLoading : false,
-        });  
-      }).catch((e)=>{
-          setState({...state,isInitialized:true,isLoading : false});
-      });
+    init().then(()=>{
+      if(Auth.isLoggedIn()){
+        Auth.loginUser(false);
+      }
+      setState({
+        ...state,isInitialized:true,isLoading : false,
+      });  
+    }).catch((e)=>{
+        console.error(e," initializing app")
+        setState({...state,isInitialized:true,isLoading : false});
     });
 
     const Events = {}

@@ -12,17 +12,19 @@ const lookupForExpoUIPath = ()=>{
     let rootPath = path.resolve(dir);
     while(level>0 && !expoUIPath){
         const p = path.resolve(rootPath,"expo-ui");
-        if(fs.existsSync(p) && fs.existsSync(path.resolve(rootPath,"node_modules") && fs.existsSync(path.resolve(rootPath,"src")))){
+        const nPath = path.resolve(rootPath,"node_modules");
+        const srcPath = path.resolve(rootPath,"src");
+        const babelPath = path.resolve(rootPath,"babel.config.js");
+        if(fs.existsSync(p) && fs.existsSync(nPath) && fs.existsSync(srcPath) && fs.existsSync(babelPath)){
             expoUIPath = p;
-            break;
+            return expoUIPath;
         }
         rootPath = path.resolve(rootPath,"..");
         level = level-1;
     }
-    console.log("has lookup ",expoUIPath);
     return expoUIPath;
 }
-lookupForExpoUIPath();
+console.log(lookupForExpoUIPath()," is lookup path");
 ///retourne le chemin vers le package @expo-ui
 module.exports = (()=>{
     const isDev = fs.existsSync(devExpoUIPath) && fs.existsSync(path.resolve(devExpoUIPath,"babel.config.alias.js"))

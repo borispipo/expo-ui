@@ -1,5 +1,8 @@
 import { registerRootComponent } from 'expo';
-import appConfig from "$capp/config";
+const expoPath = (require("./expo-ui-production-path")+"/").replace("//","/");
+const appConfigPath = expoPath+"node_modules/@fto-consult/common/src/app/config";
+console.log(expoPath," is expo path found heinnnnn ",appConfigPath," and expo app is ",expoPath+'src/App');
+const appConfig = require (appConfigPath);
 
 const isObj = x=>typeof x =='object' && x && !Array.isArray(x);
 const defaultObj = x=> isObj(x)? x : {};
@@ -14,5 +17,5 @@ export default function registerExpoUIApp (options){
     options = defaultObj(options);
     const config = defaultObj(options.config);
     appConfig.current = config;
-    registerRootComponent(require('./src/App').default(options));
+    registerRootComponent(require(expoPath+'src/App').default(options));
 }

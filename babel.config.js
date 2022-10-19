@@ -1,7 +1,7 @@
 module.exports = function(api,opts) {
     const script = require("./expo-ui-current-script")(__filename);
     if(script){
-      console.log("has found local babel.config.js on expo-ui dev path ",script);
+      console.log("found local babel.config.js on expo-ui dev path at ",script);
       return require(script)(api,opts);
     }
     opts = typeof opts =='object' && opts ? opts : {};

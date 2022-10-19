@@ -3,10 +3,10 @@
 // license that can be found in the LICENSE file.
 
 /**** cette fonction a pour rôle de retourner le package parent à celui ci */
-module.exports = ()=>{
+module.exports = (()=>{
     const pathToParent = require("parent-package-json")(); // Will return false if no parent exists
     if (pathToParent !== false) {
         return pathToParent.path;
     }
     return "";
-}
+})();

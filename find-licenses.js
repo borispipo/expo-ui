@@ -53,7 +53,7 @@ const findLicences = (_path)=> new Promise((resolve,reject)=>{
     }
     resolve(openLibraries);
 })
-const parentPath = require("./parent-package")();
+const parentPath = require("./parent-package");
 Promise.all([
     parentPath ? path.resolve(path.dirname(parentPath)): findLicences(dir),
 ]).then(()=>{

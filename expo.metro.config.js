@@ -2,6 +2,11 @@ const { getDefaultConfig } = require('@expo/metro-config');
 const path = require("path");
 const isCaseSensitive = require("./is-os-case-sensitive");
 module.exports = (opts)=>{
+  const script = require("./expo-ui-current-script")(__filename);
+  if(script){
+    console.log("has found local metro-config dev file path",script);
+    return require(script)(opts);
+  }
   opts = opts && typeof opts =='object'? opts : {};
   let {dir,nodeModulesPaths,assetExts,sourceExts} = opts;
   nodeModulesPaths = Array.isArray(nodeModulesPaths)? nodeModulesPaths : [];

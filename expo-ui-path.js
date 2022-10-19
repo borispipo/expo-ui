@@ -5,7 +5,6 @@
 const fs = require("fs");
 const path = require("path");
 const dir = path.resolve(__dirname)
-let devExpoUIPath = path.resolve(dir);
 const lookupForExpoUIPath = ()=>{
     let level = 4; //jusqu'à 4 niveaux
     let expoUIPath= null;
@@ -24,23 +23,14 @@ const lookupForExpoUIPath = ()=>{
     }
     return expoUIPath;
 }
-console.log(lookupForExpoUIPath()," is lookup path");
 ///retourne le chemin vers le package @expo-ui
 module.exports = (()=>{
-    const isDev = fs.existsSync(devExpoUIPath) && fs.existsSync(path.resolve(devExpoUIPath,"babel.config.alias.js"))
-    && fs.existsSync(path.resolve(devExpoUIPath,"src"));
     const isDevFile = path.resolve(dir,"expo-ui-production-path.js");
-    const expoUIPath = isDev ? "./expo-ui" : "@fto-consult/expo-ui"
+    const expoUIPath = lookupForExpoUIPath();
     try {
         var writeStream = fs.createWriteStream(isDevFile);
-        writeStream.write("module.exports=\""+expoUIPath+"\";");
+        writeStream.write("module.exports=\""+(expoUIPath||"@fto-consult/expo-ui")+"\";");
         writeStream.end();
-    } catch{
-        if(fs.existsSync(isDevFile)){
-            try {
-                fs.rmSync(isDevFile);
-            } catch{}
-        }
-    }
+    } catch{}
     return expoUIPath;
 })();

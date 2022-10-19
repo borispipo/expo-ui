@@ -2,11 +2,6 @@
 const createExpoWebpackConfigAsync = require('@expo/webpack-config')
 // Expo CLI will await this method so you can optionally return a promise.
 module.exports = async function(env, argv,opts) {
-    const script = require("./expo-ui-current-script")(__filename);
-    if(script){
-      console.log("found local webpack.config.js on expo-ui dev path at ",script);
-      return require(script)(env, argv,opts);
-    }
     const path = require("path");
     const dir = path.resolve(__dirname);
     const fs = require("fs");

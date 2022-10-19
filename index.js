@@ -10,7 +10,7 @@ const defaultObj = x=> isObj(x)? x : {};
  *      config {object}, le fichier de configuration de l'application
  * }
  */
-export default function ExpoUIApp (options){
+export default function registerExpoUIApp (options){
     options = defaultObj(options);
     const config = defaultObj(options.config);
     appConfig.current = config;

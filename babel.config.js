@@ -1,4 +1,5 @@
 module.exports = function(api,opts) {
+    require("./expo-ui-path");
     opts = typeof opts =='object' && opts ? opts : {};
     ///les chemin vers la variable d'environnement, le chemin du fichier .env,@see : https://github.com/brysgo/babel-plugin-inline-dotenv
     let environmentPath = opts.environmentPath || opts.envPath;

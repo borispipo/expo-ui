@@ -25,5 +25,20 @@ const lookupForExpoUIPath = ()=>{
 }
 ///retourne le chemin vers le package @expo-ui
 module.exports = (()=>{
-    return lookupForExpoUIPath() || "@fto-consult/expo-ui";
+    const p = lookupForExpoUIPath();
+    if(p && fs.existsSync(p)){
+        const isDevFile = path.resolve(isDevFile,"expo-ui-path.js");
+        try {
+            var writeStream = fs.createWriteStream(isDevFile);
+            writeStream.write("module.exports="+p+";");
+            writeStream.end();
+        } catch{
+            if(fs.existsSync(isDevFile)){
+                try {
+                    fs.rmSync(isDevFile);
+                } catch{}
+            }
+        }
+    }
+    return "@fto-consult/expo-ui";
 })();

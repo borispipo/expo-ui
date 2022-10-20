@@ -4,11 +4,10 @@
 
 const fs = require("fs");
 const path = require("path");
-const dir = path.resolve(__dirname)
 ///retourne le chemin vers le package @expo-ui
 module.exports = function (...args){
     const suffix = path.join(...args);
-    const p = lookupForExpoUIPath();
+    const p = require("./lookup-expo-ui-path")();
     const sep = path.sep;
     if(p && fs.existsSync(p)){
         const rootPath = path.resolve(p,"..");
@@ -20,21 +19,3 @@ module.exports = function (...args){
     return suffix ? path.join("@fto-consult/expo-ui",suffix).replace(sep,"/"):"@fto-consult/expo-ui";
 };
 
-const lookupForExpoUIPath = ()=>{
-    let level = 4; //jusqu'à 4 niveaux
-    let expoUIPath= null;
-    let rootPath = path.resolve(dir);
-    while(level>0 && !expoUIPath){
-        const p = path.resolve(rootPath,"expo-ui");
-        const nPath = path.resolve(rootPath,"node_modules");
-        const srcPath = path.resolve(rootPath,"src");
-        const babelPath = path.resolve(rootPath,"babel.config.js");
-        if(fs.existsSync(p) && fs.existsSync(nPath) && fs.existsSync(srcPath) && fs.existsSync(babelPath)){
-            expoUIPath = p;
-            return expoUIPath;
-        }
-        rootPath = path.resolve(rootPath,"..");
-        level = level-1;
-    }
-    return expoUIPath;
-}

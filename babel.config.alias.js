@@ -1,7 +1,6 @@
 const path = require("path");
 module.exports = (opts)=>{
     const dir = path.resolve(__dirname);
-    const expo = path.resolve(dir,"src");
     const assets = path.resolve(dir,"assets");
     opts = typeof opts =='object' && opts ? opts : {};
     opts.platform = "expo";
@@ -9,7 +8,10 @@ module.exports = (opts)=>{
     opts.base = opts.base || dir;
     opts.withPouchDB = opts.withPouchDB !== false && opts.withPouchdb !== false ? true : false;
     delete opts.withPouchdb;
-    const r = require("@fto-consult/common/babel.config.alias")(opts);
+    const src = path.resolve(opts.base);
+    const expo = require("./lookup-expo-ui-path")()?path.resolve(src,"..","expo-ui") : path.resolve(dir,"src");
+    console.log(expo," is expo heee ",`${expo/node_modules}/babel.config.alias`);
+    const r = require(`${expo/node_modules}/babel.config.alias`)(opts);
     r["$eauth"] = path.resolve(expo,"auth");
     r["$ecomponents"] = r["$expo-components"] = path.resolve(expo,"components");
     r["$components"] = r["$components"] || r["$ecomponents"];
@@ -67,7 +69,6 @@ module.exports = (opts)=>{
     if(!r["$logoComponent"]){
         r["$logoComponent"] = r["$elogoComponent"];
     }
-
     if(typeof opts.mutator =='function'){
         opts.mutator(r);
     }

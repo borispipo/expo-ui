@@ -7,19 +7,20 @@ const path = require("path");
 const dir = path.resolve(__dirname)
 ///retourne le chemin vers le package @expo-ui
 module.exports = function (...args){
-    const suffix = path.resolve(...args);
+    const suffix = path.join(...args);
     console.log("suffix is suffix heinn ",suffix)
     const p = lookupForExpoUIPath();
+    const sep = path.sep;
     if(p && fs.existsSync(p)){
         const rPath = path.resolve(p,"..");
         const src = path.resolve(rPath,"src");
         if(fs.existsSync(src) && fs.existsSync((path.resolve(rPath,"babel.config.js")))){
-            const expoUIPath = path.resolve(p,"expo-ui-path.js");
+            const expoUIPath = path.resolve(rootPath,"expo-ui-path.js");
             try {
-                var writeStream = fs.createWriteStream(rPath);
-                writeStream.write("module.exports=\""+(p.replace(path.sep,(path.sep+path.sep)))+(path.sep+path.sep)+"\";");
+                var writeStream = fs.createWriteStream(expoUIPath);
+                writeStream.write("module.exports=\""+(p.replace(sep,(sep+sep)))+(sep+sep)+"\";");
                 writeStream.end();
-                return path.resolve(p,suffix);
+                return path.resolve(p,suffix).replace(sep,(sep+sep));
             } catch{
                 if(fs.existsSync(expoUIPath)){
                     try {
@@ -29,7 +30,7 @@ module.exports = function (...args){
             }
         }
     }
-    return path.resolve("@fto-consult/expo-ui",suffix);
+    return suffix ? path.join("@fto-consult/expo-ui",suffix).replace(sep,"/"):"@fto-consult/expo-ui";
 };
 
 const lookupForExpoUIPath = ()=>{

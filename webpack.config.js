@@ -2,19 +2,8 @@
 const createExpoWebpackConfigAsync = require('@expo/webpack-config')
 // Expo CLI will await this method so you can optionally return a promise.
 module.exports = async function(env, argv,opts) {
-    require("./expo-ui-path");
     const path = require("path");
     const dir = path.resolve(__dirname);
-    const fs = require("fs");
-    const fileName = path.basename(__filename);
-    const expoUIPath = require("./expo-ui-path");;
-    if(expoUIPath){
-       const eP = path.resolve(expoUIPath,fileName);
-       if(fs.existsSync(eP) && eP != __filename){
-          console.log("***** loading webpack config",eP,"babel config file")
-          return require(ep)(env,argv,opts);
-       }
-    }
     opts = typeof opts =="object" && opts ? opts : {};
     const transpileModules = Array.isArray(opts.transpileModules)? opts.transpileModules : [];
     const config = await createExpoWebpackConfigAsync(

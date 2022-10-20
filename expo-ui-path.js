@@ -5,6 +5,39 @@
 const fs = require("fs");
 const path = require("path");
 const dir = path.resolve(__dirname)
+///retourne le chemin vers le package @expo-ui
+module.exports = function (){
+    const arguments = Array.prototype.slice.call(arguments,0);
+    let suffix = "";
+    arguments.map(a=>{
+        if(typeof a =='string' && a){
+            suffix+=(suffix?(path.resolve(suffix,a)):a);
+        }
+    });
+    console.log("suffix is suffix heinn ",suffix)
+    const p = lookupForExpoUIPath();
+    if(p && fs.existsSync(p)){
+        const rPath = path.resolve(p,"..");
+        const src = path.resolve(rPath,"src");
+        if(fs.existsSync(src) && fs.existsSync((path.resolve(rPath,"babel.config.js")))){
+            const expoUIPath = path.resolve(p,"expo-ui-path.js");
+            try {
+                var writeStream = fs.createWriteStream(rPath);
+                writeStream.write("module.exports=\""+(p.replace(path.sep,(path.sep+path.sep)))+(path.sep+path.sep)+"\";");
+                writeStream.end();
+                return path.resolve(p,suffix);
+            } catch{
+                if(fs.existsSync(expoUIPath)){
+                    try {
+                        fs.rmSync(expoUIPath);
+                    } catch{}
+                }
+            }
+        }
+    }
+    return path.resolve("@fto-consult/expo-ui",suffix);
+};
+
 const lookupForExpoUIPath = ()=>{
     let level = 4; //jusqu'à 4 niveaux
     let expoUIPath= null;
@@ -23,22 +56,3 @@ const lookupForExpoUIPath = ()=>{
     }
     return expoUIPath;
 }
-///retourne le chemin vers le package @expo-ui
-module.exports = (()=>{
-    const p = lookupForExpoUIPath();
-    if(p && fs.existsSync(p)){
-        const expoUIPath = path.resolve(p,"expo-ui-path.js");
-        try {
-            var writeStream = fs.createWriteStream(expoUIPath);
-            writeStream.write("module.exports="+p+";");
-            writeStream.end();
-        } catch{
-            if(fs.existsSync(expoUIPath)){
-                try {
-                    fs.rmSync(expoUIPath);
-                } catch{}
-            }
-        }
-    }
-    return "@fto-consult/expo-ui";
-})();

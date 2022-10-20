@@ -6,13 +6,8 @@ const fs = require("fs");
 const path = require("path");
 const dir = path.resolve(__dirname)
 ///retourne le chemin vers le package @expo-ui
-module.exports = function ([...args]){
-    let suffix = "";
-    args.map(a=>{
-        if(typeof a =='string' && a){
-            suffix+=(suffix?(path.resolve(suffix,a)):a);
-        }
-    });
+module.exports = function (...args){
+    const suffix = path.resolve(args);
     console.log("suffix is suffix heinn ",suffix)
     const p = lookupForExpoUIPath();
     if(p && fs.existsSync(p)){

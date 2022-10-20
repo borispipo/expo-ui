@@ -25,7 +25,6 @@ module.exports = function(api,opts) {
       }
     }
     const alias =  require("./babel.config.alias")(options);
-    console.log("showing alias ",alias);
     return {
       presets: [
         ['babel-preset-expo'],

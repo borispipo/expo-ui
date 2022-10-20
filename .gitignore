@@ -17,3 +17,4 @@ web-build/
 package-lock.json
 package-lock.json
 expo-ui-production-path.js
+expo-ui-build-path.js

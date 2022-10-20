@@ -14,10 +14,10 @@ module.exports = function (...args){
         const rootPath = path.resolve(p,"..");
         const src = path.resolve(rootPath,"src");
         if(fs.existsSync(src) && fs.existsSync((path.resolve(rootPath,"babel.config.js")))){
-            const expoUIPath = path.resolve(rootPath,"expo-ui-path.js");
+            const expoUIPath = path.resolve(rootPath,"expo-ui-build-path.js");
             try {
                 var writeStream = fs.createWriteStream(expoUIPath);
-                writeStream.write("module.exports=\""+(p.replace(sep,(sep+sep)))+(sep+sep)+"\";");
+                writeStream.write("module.exports=\"./expo-ui/\";");
                 writeStream.end();
                 return path.resolve(p,suffix).replace(sep,(sep+sep));
             } catch{

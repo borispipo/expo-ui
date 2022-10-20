@@ -8,10 +8,8 @@ module.exports = (opts)=>{
     opts.base = opts.base || dir;
     opts.withPouchDB = opts.withPouchDB !== false && opts.withPouchdb !== false ? true : false;
     delete opts.withPouchdb;
-    const src = path.resolve(opts.base,"src");
-    const expo = require("./lookup-expo-ui-path")()?path.resolve(src,"..","expo-ui") : src;
-    console.log(expo," is expo heee ",`${expo}/node_modules/common/babel.config.alias`);
-    const r = require(`${expo}/node_modules/common/babel.config.alias`)(opts);
+    const r = require(`@fto-consult/common/babel.config.alias`)(opts);
+    const expo = require("./lookup-expo-ui-path")()?path.resolve(r.$src,"..","expo-ui","src") : path.resolve(dir,"src");
     r["$eauth"] = path.resolve(expo,"auth");
     r["$ecomponents"] = r["$expo-components"] = path.resolve(expo,"components");
     r["$components"] = r["$components"] || r["$ecomponents"];
@@ -72,5 +70,7 @@ module.exports = (opts)=>{
     if(typeof opts.mutator =='function'){
         opts.mutator(r);
     }
+    ///le chemin racine du projet expo-ui
+    r["$expo-ui-root-path"] = path.resolve(expo,"..");
     return r;
 }

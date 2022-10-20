@@ -27,15 +27,15 @@ const lookupForExpoUIPath = ()=>{
 module.exports = (()=>{
     const p = lookupForExpoUIPath();
     if(p && fs.existsSync(p)){
-        const isDevFile = path.resolve(isDevFile,"expo-ui-path.js");
+        const expoUIPath = path.resolve(p,"expo-ui-path.js");
         try {
-            var writeStream = fs.createWriteStream(isDevFile);
+            var writeStream = fs.createWriteStream(expoUIPath);
             writeStream.write("module.exports="+p+";");
             writeStream.end();
         } catch{
-            if(fs.existsSync(isDevFile)){
+            if(fs.existsSync(expoUIPath)){
                 try {
-                    fs.rmSync(isDevFile);
+                    fs.rmSync(expoUIPath);
                 } catch{}
             }
         }

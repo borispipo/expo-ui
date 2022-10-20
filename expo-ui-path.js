@@ -8,13 +8,12 @@ const dir = path.resolve(__dirname)
 ///retourne le chemin vers le package @expo-ui
 module.exports = function (...args){
     const suffix = path.join(...args);
-    console.log("suffix is suffix heinn ",suffix)
     const p = lookupForExpoUIPath();
     const sep = path.sep;
     if(p && fs.existsSync(p)){
-        const rPath = path.resolve(p,"..");
-        const src = path.resolve(rPath,"src");
-        if(fs.existsSync(src) && fs.existsSync((path.resolve(rPath,"babel.config.js")))){
+        const rootPath = path.resolve(p,"..");
+        const src = path.resolve(rootPath,"src");
+        if(fs.existsSync(src) && fs.existsSync((path.resolve(rootPath,"babel.config.js")))){
             const expoUIPath = path.resolve(rootPath,"expo-ui-path.js");
             try {
                 var writeStream = fs.createWriteStream(expoUIPath);

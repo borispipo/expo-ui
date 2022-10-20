@@ -14,19 +14,7 @@ module.exports = function (...args){
         const rootPath = path.resolve(p,"..");
         const src = path.resolve(rootPath,"src");
         if(fs.existsSync(src) && fs.existsSync((path.resolve(rootPath,"babel.config.js")))){
-            const expoUIPath = path.resolve(rootPath,"expo-ui-build-path.js");
-            try {
-                var writeStream = fs.createWriteStream(expoUIPath);
-                writeStream.write("module.exports=\"./expo-ui/\";");
-                writeStream.end();
-                return path.resolve(p,suffix).replace(sep,(sep+sep));
-            } catch{
-                if(fs.existsSync(expoUIPath)){
-                    try {
-                        fs.rmSync(expoUIPath);
-                    } catch{}
-                }
-            }
+            return path.resolve(p,suffix).replace(sep,(sep+sep));
         }
     }
     return suffix ? path.join("@fto-consult/expo-ui",suffix).replace(sep,"/"):"@fto-consult/expo-ui";

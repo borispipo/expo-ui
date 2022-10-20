@@ -8,8 +8,8 @@ module.exports = (opts)=>{
     opts.base = opts.base || dir;
     opts.withPouchDB = opts.withPouchDB !== false && opts.withPouchdb !== false ? true : false;
     delete opts.withPouchdb;
-    const src = path.resolve(opts.base);
-    const expo = require("./lookup-expo-ui-path")()?path.resolve(src,"..","expo-ui") : path.resolve(dir,"src");
+    const src = path.resolve(opts.base,"src");
+    const expo = require("./lookup-expo-ui-path")()?path.resolve(src,"..","expo-ui") : src;
     console.log(expo," is expo heee ",`${expo}/node_modules/common/babel.config.alias`);
     const r = require(`${expo}/node_modules/common/babel.config.alias`)(opts);
     r["$eauth"] = path.resolve(expo,"auth");

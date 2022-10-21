@@ -1,3 +1,7 @@
+// Copyright 2022 @fto-consult/Boris Fouomene. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 import WebView from "./Component";
 import {defaultStr} from "$utils";
 import React from "$react";
@@ -7,7 +11,9 @@ import FileSystem from "$file-system";
 
 const  WebViewComponent = React.forwardRef(({children,source,style,testID,...props},ref)=>{
     testID = defaultStr(testID,"RN_WebviewComponent");
-    return <WebView ref={ref} {...props} 
+    return <WebView  
+        ref={ref}
+         {...props} 
         testID = {testID} 
         style={[{backgroundColor:'transparent'},style]}
         source = {defaultObj(source)}

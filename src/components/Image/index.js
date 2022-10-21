@@ -15,7 +15,7 @@ import Label from "$ecomponents/Label";
 
 
 import {pickImage,nonZeroMin,canTakePhoto,takePhoto} from "$emedia";
-import addPhoto from "$assets/add_photo.png";
+import addPhoto from "$eassets/add_photo.png";
 
 export const isAssets = (asset,staticAssets)=>{
     return isObj(asset) && isDecimal(asset.width) && isDecimal(asset.height) && isNonNullString(asset.uri) && (staticAssets ? asset.uri.contains("/static/"):true);

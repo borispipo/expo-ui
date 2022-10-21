@@ -4,7 +4,7 @@ module.exports = (opts)=>{
     const assets = path.resolve(dir,"assets");
     opts = typeof opts =='object' && opts ? opts : {};
     opts.platform = "expo";
-    opts.assets = opts.assets || assets;
+    opts.assets = opts.assets || opts.alias && typeof opts.alias =='object' && opts.alias.$assets || assets;
     opts.base = opts.base || dir;
     opts.withPouchDB = opts.withPouchDB !== false && opts.withPouchdb !== false ? true : false;
     delete opts.withPouchdb;

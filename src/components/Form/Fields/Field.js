@@ -777,7 +777,7 @@ export default class Field extends AppComponent {
         const isFilter = this.isFilter();
         rest = defaultObj(rest);
         data = defaultObj(data);
-        label = defaultVal(label,text);
+        this.label = label = defaultVal(label,text);
         rest.name = this.name;
         rest.label = label;
         rest.data = data;

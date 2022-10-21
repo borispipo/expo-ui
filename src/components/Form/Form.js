@@ -29,7 +29,6 @@ export default class FormComponent extends React.AppComponent {
         this.resetFields = this.resetFields.bind(this);
         this.getData = this.getData.bind(this);
         Forms.trigger("mount",props.name,this);
-        
     }
     getErrorText(){
         return defaultStr(this.___errorText);

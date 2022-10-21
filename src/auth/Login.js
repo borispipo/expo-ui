@@ -1,5 +1,5 @@
 import React from "$react";
-import {isNonNullString,defaultNumber,defaultStr,uniqid,extendObj,isFunction} from "$utils";
+import {isNonNullString,isObj,defaultNumber,defaultStr,uniqid,extendObj,isFunction} from "$utils";
 import {navigate} from "$cnavigation";
 import FormData from "$ecomponents/Form/FormData/FormData";
 import {getForm} from "$ecomponents/Form/utils";
@@ -37,7 +37,12 @@ export default function LoginComponent(props){
     const _getForm = x=> getForm(formName);
     
     const auth = useAuth();
-    const notifyUser = (message)=> notify.error({message,position:'top'})
+    const notifyUser = (message,title)=> {
+        if(isObj(message)){
+            return notify.error({...message,position:'top'})
+        } else if(typeof message =='object') return false;
+        return notify.error({message,title,position:'top'});
+    }
     const [state,setState] = React.useState({
         step : defaultNumber(step,1),
         data : defaultObj(props.data),
@@ -77,6 +82,9 @@ export default function LoginComponent(props){
     const {header,children,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,canSubmit:canSubmitForm,onStepChange,...loginProps} = defaultObj(getProps({
         ...state,
         state,
+        showError : notifyUser,
+        notifyUser,
+        notify,
         getForm,
         getData,
         focusField,
@@ -118,18 +126,24 @@ export default function LoginComponent(props){
                 return
             }
         }
-        if(canSubmit(args) && step > 1){
-            Preloader.open("vérification ...");
-            return auth.signIn(data).then((a)=>{
-                if(typeof onLoginSuccess =='function' && onLoginSuccess(a)=== false) return;
-                if(isFunction(onSuccess)){
-                    onSuccess(data);
-                } else {
-                    navigate("Home");
-                } 
-            }).finally(()=>{
-                Preloader.close();
-            })
+        if(step > 1){
+            if(!form.isValid()){
+                notifyUser(form.getErrorText());
+                return;
+            }
+            if(canSubmit(args)){
+                Preloader.open("vérification ...");
+                return auth.signIn(data).then((a)=>{
+                    if(typeof onLoginSuccess =='function' && onLoginSuccess(a)=== false) return;
+                    if(isFunction(onSuccess)){
+                        onSuccess(data);
+                    } else {
+                        navigate("Home");
+                    } 
+                }).finally(()=>{
+                    Preloader.close();
+                })
+            }
         } else {
             setState({...state,step:step+1,data})
         }

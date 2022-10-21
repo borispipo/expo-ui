@@ -7,6 +7,7 @@ import theme from "$theme"
 import Action from "$ecomponents/Form/Action";
 import Menu from "$ecomponents/Menu";
 import Icon,{ MORE_ICON } from "$ecomponents/Icon";
+import {isAllowedFromStr} from "$cauth/perms";
 
 export const ACTION_ICON_SIZE = 30;
 
@@ -91,7 +92,9 @@ export const splitActions = (args)=>{
         let cEl = null;
         if(!React.isValidElement(act)&& isPlainObj(act)){
             let {label,perm,text,...action} = act;
-            if(typeof perm =='function' && perm(args) === false){
+            if(isNonNullString(perm) && !isAllowedFromStr(perm)){
+                continue;
+            } else if(typeof perm =='function' && perm(args) === false){
                 continue;
             }
             action = {...defaultObj(action)};
@@ -131,7 +134,7 @@ export const splitActions = (args)=>{
     }
     if(isPlainObj(cancelButton) && !React.isValidElement(cancelButton)){
         let {label,perm,text,...action} = cancelButton;
-        let canAddCancelBtn = typeof perm =='function' ? perm(args)  : true;
+        let canAddCancelBtn = isNonNullString(perm) ? isAllowedFromStr(perm) : typeof perm =='function' ? perm(args)  : true;
         if(canAddCancelBtn && (text||label)){
             action = {...defaultObj(action)};
             action.label = defaultVal(label,text)

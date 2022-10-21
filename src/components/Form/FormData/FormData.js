@@ -25,7 +25,7 @@ export default class FormDataComponent extends AppComponent{
                 value : x=> formName,
             },
             isAllowed : {
-                value : true
+                value : isNonNullString(this.props.perm) ? Auth.isAllowedFromStr(this.props.perm) : true
             },
         });
     }

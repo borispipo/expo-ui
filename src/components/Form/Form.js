@@ -104,6 +104,9 @@ export default class FormComponent extends React.AppComponent {
             testID,
             ...rest
         } = this.props;
+        if(isNonNullString(perm) && !Auth.isAllowedFromStr(perm)){
+                return null;
+        }
         rest = defaultObj(rest);
         const ComponentNode = defaultVal(Component,defaultComponentNode);
         testID = defaultStr(testID,"RN_FormComponent");

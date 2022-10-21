@@ -1,5 +1,4 @@
 import {isIos} from "$cplatform";
-import theme,{Colors} from "$theme";
 
 export const BACK_ICON = isIos() ? "chevron-left" : "arrow-left";
 

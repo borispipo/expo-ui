@@ -1,12 +1,9 @@
-import {IconButton } from "react-native-paper";
 import { Component } from "react";
 import {isNativeMobile} from "$cplatform";
-import {Image} from "react-native";
 import View from "$ecomponents/View";
 import React from "$react";
 import theme,{remToPixel,Colors,flattenStyle} from '$theme';
 import {StyleSheet} from "react-native";
-import source from "$assets/logo.png";
 import {defaultStr} from "$utils";
 import LogoComponent from "$logoComponent";
 
@@ -17,19 +14,22 @@ export default class Logo extends Component {
         let {icon,color,style,testID,logo,text} = this.props;
         testID = defaultStr(testID,"RN_LogoComponent");
         const styles = getStyle(style,color);
+        let logoImage = null,img,txt=null,hasTwice = false;
+        if(LogoComponent){
+            hasTwice = React.isComponent(LogoComponent.Image) && React.isComponent(LogoComponent.Text);
+            if(!hasTwice){
+                logoImage = React.isValidElement(LogoComponent)? LogoComponent : React.isComponent(LogoComponent)? <LogoComponent {...props} style={styles.logoContent} testID={testID+"_Content"} styles={styles}/> : null;
+            } else {
+                img = icon !== false ? <View testID={testID+"_ContentContainer"} style={styles.logoImage}>
+                    <LogoComponent.Image styles={styles}/>
+                </View> : null;
+                txt = text !== false ? <LogoComponent.Text style={styles.logoContent} styles={styles}/> : null;
+            }
+        }
         return <View testID={testID} style={styles.container}> 
-            {icon !== false ? <View testID={testID+"_ContentContainer"} style={styles.logoImage}>
-                {<IconButton testID={testID+"_IconButton"} style={styles.logoImageContent} 
-                    size={50}
-                    icon={() => (
-                        <Image
-                          source={source}
-                          style={{ width: 50, height: 50}}
-                        />
-                    )}
-                />}
-            </View> : null}
-            {text !== false  && logo !== false ? (React.isValidElement(LogoComponent)? LogoComponent : React.isComponent(LogoComponent)? <LogoComponent {...props} style={styles.logoContent} testID={testID+"_Content"} styles={styles}/> : null) : null}
+            {hasTwice ? img : null}
+            {hasTwice? txt : null}
+            {!hasTwice ? logoImage : null}
         </View>
     }
     

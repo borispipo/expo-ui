@@ -3,14 +3,14 @@ import {
   StyleSheet,
 } from 'react-native';
 import {TouchableRipple} from "react-native-paper";
-import Icon from './Icon';
-import CrossFadeIcon from './CrossFadeIcon';
+import CrossFadeIcon from 'react-native-paper/lib/commonjs/components/CrossFadeIcon';
 import Surface from '$ecomponents/Surface';
+import { IconButton } from 'react-native-paper';
 import PropTypes from "prop-types";
 import theme,{StyleProp,Colors} from "$theme";
-import {defaultStr,isNonNullString} from "$utils";
+import {defaultStr} from "$utils";
 
-const IconButton = ({
+const IconButtonComponent = ({
   icon,
   iconColor: customIconColor,
   containerColor,
@@ -26,7 +26,7 @@ const IconButton = ({
   testID,
   ...rest
 }) => {
-  const IconComponent = animated ? CrossFadeIcon : Icon;
+  const IconComponent = animated ? CrossFadeIcon : IconButton;
   testID = defaultStr(testID,"RN_IconButtonComponent");
   containerProps = defaultObj(containerProps);
   const containerStyle = StyleSheet.flatten(containerProps.style) || {};
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   },
 });
 
-IconButton.propTypes = {
+IconButtonComponent.propTypes = {
     /**
    * Icon to display.
    */
@@ -152,4 +152,4 @@ IconButton.propTypes = {
   style : StyleProp,
   ref : PropTypes.object,
 }
-export default theme.withStyles(IconButton,{displayName:"IconButtonComponent"});
+export default theme.withStyles(IconButtonComponent,{displayName:"IconButtonComponent"});

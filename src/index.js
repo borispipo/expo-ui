@@ -99,7 +99,9 @@ function App(props) {
     const unsubscribeNetInfo = NetInfo.addEventListener(state => {
        APP.setOnlineState(state);
     });
-    NetInfo.fetch().catch((e)=>{});
+    NetInfo.fetch().catch((e)=>{
+      console.log(e," is net info heinn")
+    });
     init().then(()=>{
       if(Auth.isLoggedIn()){
         Auth.loginUser(false);

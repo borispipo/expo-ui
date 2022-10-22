@@ -98,7 +98,7 @@ const DialogComponent = React.forwardRef((props,ref)=>{
     context.isClosed = x=> !visible ? true : false;
     const isDimissable = defaultBool(dismissable,false);
     const handleBack = (args,force)=>{
-        args = {...React.getOnPressArgs(args),context,props};
+        args = {...React.getOnPressArgs(args),isProvider,isFullScreen:isFullScreenDialog(),isPreloader,context,props};
         if(typeof onBackActionPress =='function' && onBackActionPress(args) === false) return true;
         if(typeof backActionProps.onPress =='function' && backActionProps.onPress(args)=== false) return true;
         if(force === false && !isDimissable) return true;

@@ -75,7 +75,7 @@ export default class FormDataActionComponent extends FormData {
             }
             return this.close();
         }
-        if(this.showConfirmOnCancel()){
+        if(this.showConfirmOnCancel() && (args.isProvider!==true && !args.isFullScreen)){
             showConfirm({
                 title : defaultStr(this.getConfirmTitle(),'Annuler L\'opération en cours'),
                 message : "Voulez vous annuler l'opération en cours?",

@@ -7,8 +7,8 @@ import Checkbox from "./Checkbox";
 //import PieceField from "./PieceField";
 import Slider from "./Slider";
 import ColorPicker from "./Color";
-//import Date from "./Date";
-//import Time from "./Time";
+import Date from "./Date";
+import Time from "./Time";
 import Image from "./Image";
 import Tel from "./Tel";
 import SelectCountry from "./SelectCountry";
@@ -25,8 +25,8 @@ export default {
     //,PieceField
     ,Slider
     ,ColorPicker
-    //,Date
-    //,Time
+    ,Date
+    ,Time
     ,Image
     ,Tel
     ,Html
@@ -44,8 +44,8 @@ export {
     ,Slider
     ,ColorPicker
     ,ColorPicker as Color
-    //,Date
-    //,Time
+    ,Date
+    ,Time
     ,Image
     ,Tel
     ,Html

@@ -12,8 +12,8 @@ module.exports = function lookupForExpoUIPath (){
         const p = path.resolve(rootPath,"expo-ui");
         const nPath = path.resolve(rootPath,"node_modules");
         const srcPath = path.resolve(rootPath,"src");
-        const babelPath = path.resolve(rootPath,"babel.config.js");
-        if(fs.existsSync(p) && fs.existsSync(nPath) && fs.existsSync(srcPath) && fs.existsSync(babelPath)){
+        const metroPath = path.resolve(rootPath,"metro.config.js");
+        if(fs.existsSync(p) && fs.existsSync(nPath) && fs.existsSync(srcPath) && fs.existsSync(metroPath)){
             expoUIPath = p;
             return expoUIPath;
         }

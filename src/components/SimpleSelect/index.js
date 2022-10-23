@@ -361,6 +361,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
                     {...listProps}
                     getItemLayout = {getItemLayout}
                     ref = {listRef}
+                    contentContainerStyle = {[{backgroundColor:theme.colors.surface},listProps.contentContainerStyle]}
                     style = {[listProps.style]}
                     prepareItems = {false}
                     items = {renderingItems}

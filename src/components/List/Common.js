@@ -1,7 +1,7 @@
 
 import React from "$react";
 import { prepareItems as customPrepareItems,getBToTopRef } from "./utils";
-import {grid,StylePropTypes} from "$theme";
+import theme,{grid,StylePropTypes} from "$theme";
 import PropTypes from "prop-types";
 import {defaultObj,defaultDecimal,defaultArray,defaultFunc} from "$utils";
 import {isMobileMedia} from "$cplatform/dimensions";
@@ -159,7 +159,7 @@ const CommonListComponent = React.forwardRef((props,ref)=>{
     const restP = numColumns > 1 && isFlatList ? {
         columnWrapperStyle : [styles.columnWrapperStyle,props.columnWrapperStyle]
     } : {};
-    return <View {...containerProps} style={[styles.container,containerProps.style]}>
+    return <View {...containerProps} style={[{backgroundColor:theme.colors.surface},styles.container,containerProps.style]}>
         <Component
             onEndReachedThreshold={0}
             scrollEventThrottle={16}

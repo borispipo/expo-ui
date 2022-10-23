@@ -1075,6 +1075,7 @@ class DropdownComponent extends AppComponent {
                         {...listProps}
                         ref = {this.listRef}
                         responsive = {false}
+                        contentContainerStyle = {[{backgroundColor:theme.colors.surface},listProps.contentContainerStyle]}
                         style = {[listProps.style]}
                         prepareItems = {false}
                         items = {renderingItems} 

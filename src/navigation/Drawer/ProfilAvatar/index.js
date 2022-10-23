@@ -3,10 +3,10 @@ import i18n from "$i18n"
 import Auth from "$cauth";
 import Menu from "$ecomponents/Menu";
 import React from "$react";
-import Tooltip from "$ecomponents/Tooltip";
+import { screenName } from "$escreens/Auth/Profile";
 import Image from "$ecomponents/Image";
 import { StyleSheet,View} from "react-native";
-import defaultSource from "./defaultAvatar";
+import avatarProps from "$eauth/avatarProps";
 import Button from "$ecomponents/Button";
 import Label from "$ecomponents/Label";
 import Icon from "$ecomponents/Icon";
@@ -32,7 +32,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,...props},ref)=>
                 onPress : (a)=>{
                     closeDrawer(()=>{
                         return navigate({
-                            //routeName : screenName,
+                            routeName : screenName,
                             params : {
                                 user : u,
                             }
@@ -48,17 +48,16 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,...props},ref)=>
                 }
             }
         ];
-      let pseudo = defaultStr(u.code,u.pseudo,u.email);
-      let pT = pseudo;
-      if(pseudo.length > 8){
-          pT = pseudo.substring(0,7)+".."
-      }
-      pseudo = <Tooltip title={defaultStr(u.label)+" ["+pseudo+"]"}>{pT}</Tooltip>;
+      let pseudo = defaultStr(u.code,u.pseudo,u.email)
+      const label = defaultStr(u.label,u.name,u.fullName,u.userName)
+      //let pT = pseudo;
+      //pseudo = <Tooltip uppserCase={false} title={defaultStr(u.label)+" ["+pseudo+"]"}>{pT}</Tooltip>;
       return <View ref ={ref}>
             <Menu
              anchor = { (aProps)=>{
                 return <Button
                         normal
+                        upperCase = {false}
                         disableRipple
                         {...aProps}
                         style = {[styles.container]}
@@ -69,7 +68,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,...props},ref)=>
                             style = {styles.itemLeft}
                             testID = {"RN_ProfilAvatar_Avatar"}
                             editable
-                            defaultSource ={defaultSource}
+                            defaultSource ={avatarProps.defaultSrc}
                             onChange = {({dataURL})=>{
                                 if(u.avatar === dataURL) {
                                     return;
@@ -97,7 +96,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,...props},ref)=>
                     <View style={styles.labelContainer}>
                         <Label splitText style={{color:theme.colors.primaryOnSurface}}>{pseudo}</Label>
                         <Label splitText style={{fontSize:12,color:theme.colors.secondaryOnSurface,marginTop:6}}>
-                            {u.label}
+                            {label}
                         </Label>
                     </View>
                     </Button>
@@ -120,6 +119,7 @@ const styles = StyleSheet.create({
         flexDirection : 'column',
         paddingRight : 5,
         maxWidth : 130,
+        minWidth : 100,
     },
     pseudo : {
         flexDirection : "row",

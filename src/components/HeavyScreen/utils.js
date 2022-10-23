@@ -1,6 +1,7 @@
 import React from "$react";
 import {InteractionManager} from "react-native";
 /**** options, les options lié à la transition */
+export const AFTER_INTERACTIONS_TIMEOUT = 10;
 export const useAfterInteractions =  (options) => {
 	const [areInteractionsComplete, setInteractionsComplete] = React.useState(false)
     if(isNumber(options)){

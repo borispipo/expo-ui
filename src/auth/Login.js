@@ -35,6 +35,7 @@ export default function LoginComponent(props){
     const backgroundColor = theme.colors.surface;
     const Wrapper = withPortal ? ScreenWithoutAuthContainer  : View;
     const _getForm = x=> getForm(formName);
+    const isMounted = React.useIsMounted();
     
     const auth = useAuth();
     const notifyUser = (message,title)=> {
@@ -43,10 +44,15 @@ export default function LoginComponent(props){
         } else if(typeof message =='object') return false;
         return notify.error({message,title,position:'top'});
     }
-    const [state,setState] = React.useState({
+    const [state,_setState] = React.useState({
         step : defaultNumber(step,1),
         data : defaultObj(props.data),
     });
+    const setState = (state2)=>{
+        if(!isMounted()) return;
+        state2 = isObj(state2)? state2 : {};
+        return _setState({...state,...state2});
+    }
     const getData = ()=>{
         const form = _getForm();
         if(form && form.getData){
@@ -79,8 +85,9 @@ export default function LoginComponent(props){
             },1000)
         }
     },[withPortal])
-    const {header,children,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,canSubmit:canSubmitForm,onStepChange,...loginProps} = defaultObj(getProps({
+    const {header,children,initialize,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,canSubmit:canSubmitForm,onStepChange,...loginProps} = defaultObj(getProps({
         ...state,
+        setState,
         state,
         showError : notifyUser,
         notifyUser,
@@ -93,6 +100,10 @@ export default function LoginComponent(props){
         previousButtonRef,
     }));
     React.useEffect(()=>{
+        /*** pour initializer les cordonnées du composant login */
+        if(typeof initialize =='function'){
+            initialize();
+        }
         Preloader.closeAll();
     },[]);
     const prevStep = React.usePrevious(state.step);
@@ -120,11 +131,16 @@ export default function LoginComponent(props){
         }
         if(typeof canGoToNext =='function'){
             const s = canGoToNext(args);
-            if(s === false) return;
+            if(s === false) {
+                nextButtonRef.current?.disable();
+                return;
+            }
             if(isNonNullString(s)){
                 notifyUser(s);
+                nextButtonRef.current?.disable();
                 return
             }
+            nextButtonRef.current?.enable();
         }
         if(step > 1){
             if(!form.isValid()){

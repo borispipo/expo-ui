@@ -1,7 +1,7 @@
 import {isObj} from "$utils";
-import {notify} from "$ecomponents/Dialog";
+import {notify} from "$components/Dialog";
 import Camera from "./camera";
-import {isMobileNative} from "$cplatform";
+import {isMobileNative} from "$platform";
 import React from "react";
 
 let cameraRef = null;
@@ -16,11 +16,7 @@ export const createCameraRef = ()=>{
     return ref;
 }
 
-const ImagePicker = {
-    MediaTypeOptions : {},
-    mediaTypes : {},
-};
-///import * as ImagePicker from 'expo-image-picker';
+import * as ImagePicker from 'expo-image-picker';
 
 export const MEDIA_TYPES = {
     ALL : ImagePicker.MediaTypeOptions.All,

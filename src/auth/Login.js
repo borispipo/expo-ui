@@ -85,7 +85,7 @@ export default function LoginComponent(props){
             },1000)
         }
     },[withPortal])
-    const {header,children,initialize,autoClosePreloader,contentTop,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,canSubmit:canSubmitForm,onStepChange,...loginProps} = defaultObj(getProps({
+    const {header,children,initialize,contentTop,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,canSubmit:canSubmitForm,onStepChange,...loginProps} = defaultObj(getProps({
         ...state,
         setState,
         state,

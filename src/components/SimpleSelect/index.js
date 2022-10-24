@@ -14,6 +14,7 @@ import Icon from "$ecomponents/Icon";
 import {isDesktopMedia} from "$cplatform/dimensions";
 import { matchOperators,getSearchTimeout,canAutoFocusSearchField} from "$ecomponents/Dropdown/utils";
 import Dialog from "$ecomponents/Dialog";
+import stableHash from "stable-hash";
 
 const  SimpleSelect = React.forwardRef((props,ref)=>{
     let {style : customStyle,onMount,mode,showSearch,anchorContainerProps,renderText,contentContainerProps,withCheckedIcon,testID,selectionColor,dialogProps,onShow,anchor,onUnmont,controlled,onDismiss,visible:controlledVisible,selectedColor,inputProps,itemProps,itemContainerProps,label,listProps,editable,readOnly,text,filter,renderItem,itemValue,getItemValue,defaultValue,items:menuItems,onPress,onChange,disabled,...rest} = props;
@@ -21,6 +22,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
     const [state,setState] = React.useState({
         value : defaultValue !== undefined? defaultValue:undefined,
         visible : controlled?undefined:false,
+        items : [],
         layout : {
             height: 0,
             width: 0,
@@ -30,6 +32,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
     const inputLayout = state.layout;
     const prevLayout = React.usePrevious(inputLayout);
     filter = defaultFunc(filter,x=>true);
+    const {items} = state;
     const value = state.value,
     visible = controlled? controlledVisible : state.visible;
     compare = defaultFunc(compare,(a,b)=> a === b);
@@ -64,9 +67,12 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
     renderText = typeof renderText ==='function'? renderText : ({item,content,index})=>{
         return React.getTextContent(content);
     }
+    const prevMenuItems = React.usePrevious(menuItems,stableHash);
     const prepareItems = React.useCallback(()=>{
         const items = [];
         selectedRef.current = null;
+        let currentSelectedValue = value;
+        const isValueDifferent = !compare(defaultValue,value);
         Object.map(menuItems,(item,index,_index)=>{
             if(React.isValidElement(item) || !filter({items:menuItems,item,_index,index})) return null;
             const backupItem = item;
@@ -82,21 +88,33 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
             }
             const mItem = {item:backupItem,value:itValue,index,_index};
             let content = renderItem ? renderItem({item:backupItem,index,_index,value:itValue}) : defaultVal(label,text,code);
+            const rText = renderText(mItem);
+            if(!content && typeof content != "number"){
+                content = rText;
+            }
             if(isDecimal(content)) content+="";
             if(!React.isValidElement(content,true)) return null;
             mItem.content = content;
-            mItem.textContent = renderText(mItem);
-            if(isSelected(itValue,index)){
+            mItem.textContent = rText;
+            if(isValueDifferent && itValue !== undefined && compare(defaultValue,itValue)){
+                selectedRef.current = mItem;
+                currentSelectedValue = defaultValue;
+
+            } else if(isSelected(itValue,index)){
                 selectedRef.current = mItem;
             }
             items.push(mItem);
-        })
-        setItems(items);
-    },[menuItems])
-    const [items,setItems] = React.useStateIfMounted([]);
+        });
+        setState({...state,value:currentSelectedValue,items});
+    },[stableHash(menuItems)])
     React.useEffect(()=>{
-        prepareItems();
-    },[menuItems]);
+        if(defaultValue == value && menuItems == prevMenuItems) return;
+        if(menuItems != prevMenuItems){
+            prepareItems();
+        } else {
+            selectValue(defaultValue);
+        }
+    },[menuItems,defaultValue]);
     
     const context = {};
     const selectValue = context.selectValue = context.setValue = (defaultValue)=>{
@@ -108,14 +126,12 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
                 break;
             }
         }
-        if(selectedRef.current){
+        if(selectedRef.current !== undefined){
             setState({...state,value:defaultValue});
         }
     }
     context.getValue = ()=> value;
-    React.useEffect(()=>{
-        selectValue(defaultValue);
-    },[defaultValue])
+    
     React.useEffect(()=>{
         if((value !== undefined || prevValue !== undefined) && compare(value,prevValue)) return;
         if(onChange){

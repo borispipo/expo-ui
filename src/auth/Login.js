@@ -61,7 +61,7 @@ export default function LoginComponent(props){
         return defaultObj(props.data);
     }
     const goToFirstStep = ()=>{
-        setState({...state,step:1,data:getData()});
+        setState({step:1,data:getData()});
     }
     const focusField = (fieldName)=>{
         const form = _getForm();
@@ -85,7 +85,7 @@ export default function LoginComponent(props){
             },1000)
         }
     },[withPortal])
-    const {header,children,initialize,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,canSubmit:canSubmitForm,onStepChange,...loginProps} = defaultObj(getProps({
+    const {header,children,initialize,contentTop,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,canSubmit:canSubmitForm,onStepChange,...loginProps} = defaultObj(getProps({
         ...state,
         setState,
         state,
@@ -125,6 +125,10 @@ export default function LoginComponent(props){
             notifyUser("Impossible de valider le formulaire car celui-ci semble invalide")
             return;
         }
+        if(!form.isValid()){
+            notifyUser(form.getErrorText());
+            return;
+        }
         const args = {data,form,state,step,nextButtonRef,previousButtonRef};
         if(nextButtonRef.current && nextButtonRef.current.isDisabled()){
             return;
@@ -143,10 +147,6 @@ export default function LoginComponent(props){
             nextButtonRef.current?.enable();
         }
         if(step > 1){
-            if(!form.isValid()){
-                notifyUser(form.getErrorText());
-                return;
-            }
             if(canSubmit(args)){
                 Preloader.open("vérification ...");
                 return auth.signIn(data).then((a)=>{
@@ -193,33 +193,36 @@ export default function LoginComponent(props){
                     }}
                     data = {extendObj(state.data,loginData)}
                 >
-                    <View testID={testID+"_ButtonsContainer"} style={[styles.buttonWrapper]}>
-                        <Button 
-                            ref = {nextButtonRef}
-                            primary
-                            mode = "contained"
-                            rounded
-                            style = {styles.button}
-                            onPress = {goToNext}
-                            icon = {state.step == 1? 'arrow-right':'login'}
-                            surface
-                        >
-                            {state.step == 1? 'Suivant' : 'Connexion' }
-                        </Button>
-                        {state.step>=2 ? <Button 
-                            onPress = {goToFirstStep}
-                            ref = {previousButtonRef}
-                            mode = "contained"
-                            rounded
-                            raised
-                            style = {styles.button}
-                            secondary
-                            surface
-                            icon = {'arrow-left'}
-                        >
-                            Précédent
-                        </Button> : null}
-                    </View>
+                    <>
+                        {React.isValidElement(contentTop)? contentTop : null}
+                        {Object.size(loginProps.fields,true)?<View testID={testID+"_ButtonsContainer"} style={[styles.buttonWrapper]}>
+                            <Button 
+                                ref = {nextButtonRef}
+                                primary
+                                mode = "contained"
+                                rounded
+                                style = {styles.button}
+                                onPress = {goToNext}
+                                icon = {state.step == 1? 'arrow-right':'login'}
+                                surface
+                            >
+                                {state.step == 1? 'Suivant' : 'Connexion' }
+                            </Button>
+                            {state.step>=2 ? <Button 
+                                onPress = {goToFirstStep}
+                                ref = {previousButtonRef}
+                                mode = "contained"
+                                rounded
+                                raised
+                                style = {styles.button}
+                                secondary
+                                surface
+                                icon = {'arrow-left'}
+                            >
+                                Précédent
+                            </Button> : null}
+                        </View> : null}
+                    </>
                 </FormData>
                 {React.isValidElement(children) ? children : null}
             </Surface>

@@ -394,7 +394,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
     right = typeof right ==='function'?right(iconProps) : right;
     left = typeof left =='function'? left(iconProps) : left;
     let hasRight = React.isValidElement(right),hasLeft = React.isValidElement(left);
-    enableCopy = enableCopy !== false ? true : false;
+    enableCopy = enableCopy ? true : false;
     fieldToCopy = defaultStr(fieldToCopy).toLowerCase().trim();
     if(isEditable ||  isFilter || defaultStr(contentContainerProps.pointerEvents).toLowerCase().contains("none")){
         enableCopy = false;

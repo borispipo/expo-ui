@@ -85,7 +85,7 @@ export default function LoginComponent(props){
             },1000)
         }
     },[withPortal])
-    const {header,children,initialize,contentTop,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,canSubmit:canSubmitForm,onStepChange,...loginProps} = defaultObj(getProps({
+    const {header,children,initialize,autoClosePreloader,contentTop,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,canSubmit:canSubmitForm,onStepChange,...loginProps} = defaultObj(getProps({
         ...state,
         setState,
         state,
@@ -100,11 +100,11 @@ export default function LoginComponent(props){
         previousButtonRef,
     }));
     React.useEffect(()=>{
+        Preloader.closeAll();
         /*** pour initializer les cordonnées du composant login */
         if(typeof initialize =='function'){
             initialize();
         }
-        Preloader.closeAll();
     },[]);
     const prevStep = React.usePrevious(state.step);
     React.useEffect(()=>{

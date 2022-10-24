@@ -20,13 +20,13 @@ module.exports = (opts)=>{
     r["$emainScreens"] = path.resolve(expo,"screens","mainScreens");
     ///les screens principaux de l'application
     r["$mainScreens"] = r["$mainScreens"] || r["$emainScreens"];
-    r["$escreen"] = path.resolve(expo,"layouts/Screen");
+    r["$escreen"] = r["$eScreen"] = path.resolve(expo,"layouts/Screen");
     r["$eassets"] = path.resolve(dir,"assets");
     r["$ethemeSelectorComponent"] = path.resolve(expo,"auth","ThemeSelector");
     /*** le composant permettant de sélectionner un theme utilisateur */
     r["$themeSelectorComponent"] = r["$themeSelectorComponent"] || r["$ethemeSelectorComponent"];
 
-
+    r["$Screen"] = r["$Screen"] || r["$eScreen"];
     ///pour personnaliser les écrans de l'application, il suffit de redefinir l'alis $screens, pointant vers le repertoire racine des écrans personnalisés
     ///cependant, ce repertoire doit contenir un fichier mainScreens.js qui contient la liste de tous les écrans de lapplicaiton
     r["$screens"] = r["$screens"] || r["$escreens"];

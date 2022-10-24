@@ -9,7 +9,6 @@ import appConfig from "$capp/config";
  */
 export default function ExpoUIApp (options){
     options = options && typeof options =='object' && !Array.isArray(options)? options : {};
-    const config = defaultObj(options.config);
-    appConfig.current = config;
+    appConfig.current = options.config;
     registerRootComponent(require('./src/App').default(options));
 }

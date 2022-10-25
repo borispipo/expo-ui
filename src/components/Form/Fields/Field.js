@@ -555,7 +555,7 @@ export default class Field extends AppComponent {
             args.context = this;
             return this.props.mediaQueryUpdateNativeProps(args);
         }
-        const hasTextFieldModeChanged = this.state.textFieldMode !== theme.textFieldMode && this.state.isMobile !== isMobile;
+        const hasTextFieldModeChanged = true;// = this.state.textFieldMode !== theme.textFieldMode && this.state.isMobile !== isMobile;
         if(this.props.responsive === false && !hasTextFieldModeChanged) return;
         if((hasTextFieldModeChanged)){
             this.setState({isMobile,textFieldMode:theme.textFieldMode});

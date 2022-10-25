@@ -17,7 +17,7 @@ import PropTypes from "prop-types";
 const white = "white",black = "black";
 
 const ButtonComponent = React.forwardRef(({
-  disabled,
+  disabled:customDisabled,
   compact,
   mode = 'text',
   dark,
@@ -86,7 +86,7 @@ const ButtonComponent = React.forwardRef(({
 
   const [state,setState] = React.useState({
      isLoading : typeof loading =='boolean'? loading : false,
-     isDisabled : typeof disabled =='boolean'? disabled : false,
+     isDisabled : typeof customDisabled =='boolean'? customDisabled : false,
   });
   const {isLoading,isDisabled} = state;
   const setIsLoading = (loading)=>{
@@ -114,16 +114,16 @@ const ButtonComponent = React.forwardRef(({
      }
   }
   React.useEffect(()=>{
-      if(typeof disabled !=='boolean' && typeof loading !== 'boolean') return;
-      if(typeof loading =='boolean' && loading == isLoading && typeof disabled =='boolean' && disabled === isDisabled){
+      if(typeof customDisabled !=='boolean' && typeof loading !== 'boolean') return;
+      if(typeof loading =='boolean' && loading == isLoading && typeof customDisabled =='boolean' && customDisabled === isDisabled){
           return;
       }
       setState({
         ...state,
         isLoading : typeof loading =='boolean' ? loading : state.isLoading,
-        isDisabled : typeof disabled =='boolean' ? disabled : state.isDisabled,
+        isDisabled : typeof customDisabled =='boolean' ? customDisabled : state.isDisabled,
       });
-  },[loading,disabled]);
+  },[loading,customDisabled]);
     
   const handlePressOut = () => {
     if (hasElevation) {
@@ -139,7 +139,7 @@ const ButtonComponent = React.forwardRef(({
   containerProps = defaultObj(containerProps);
   style = StyleSheet.flatten(style) || {};
   labelStyle = StyleSheet.flatten([labelStyle]);
-  disabled = isDisabled || isLoading;
+  const disabled = isDisabled || isLoading;
   let textColor = Colors.isValid(buttonColor)?buttonColor : Colors.isValid(labelStyle.color) ? labelStyle.color : Colors.isValid(style.color)? style.color  : theme.colors.primary,
     borderWidth;
     const restButtonStyle = {

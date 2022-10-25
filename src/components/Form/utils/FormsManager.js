@@ -24,6 +24,7 @@ if(!isObj(APP.FormsManager)){
         formObject._fields = defaultObj(formObject._fields);
         formObject._actions= defaultObj(formObject._actions);
         APP.FormsManager.forms[formName] = formObject;
+        APP.trigger("MOUNT_FORM",formName);
     }).on("unmount",(formName)=>{
         delete APP.FormsManager.forms[formName];
     }).on("registerField",(fieldName,formName,fieldObj)=>{

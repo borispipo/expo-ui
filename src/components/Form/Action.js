@@ -1,11 +1,12 @@
 import React from "$react";
 import PropTypes from "prop-types";
-import Button from "$ecomponents/Button";
+import Button from "$components/Button";
 import notify from "$notify";
 import FormsManager from "./utils/FormsManager";
 import {uniqid} from "$utils";
 import { getFormInstance } from "./utils/FormsManager";
 import {flattenStyle} from "$theme";
+import APP from "$capp/instance";
 
 const FormActionComponent = React.forwardRef(({
     formName,disabled:customDisabled,
@@ -30,6 +31,13 @@ const FormActionComponent = React.forwardRef(({
         if(!isMounted()) return;
         setState({...state,disabled:true})
     }
+    let _disabled = disabled;
+    if(!disabled && formName){
+        const f = getFormInstance(formName);
+        if(!f || (!f.isValid || !f.isValid())){
+            _disabled = true;
+        }
+    }
     context.isDisabled = x=> disabled ? true : false;
     context.isEnabled = x=> !context.isDisabled();
     context.toggleStatus = () =>{
@@ -50,19 +58,19 @@ const FormActionComponent = React.forwardRef(({
     React.setRef(ref,context);
     React.useEffect(()=>{
         FormsManager.trigger("mountAction",formName,context);
+        const onMountForm = (nFormNmae)=>{
+            if(nFormNmae == formName){
+                context.toggleStatus();
+            }
+        };
+        APP.on("MOUNT_FORM",onMountForm);
         context.toggleStatus();
         return ()=>{
             React.setRef(ref,null);
             FormsManager.trigger("unmountAction",formName,id);
+            APP.off("MOUNT_FORM",onMountForm);
         }
     },[]);
-    let _disabled = disabled;
-    if(!disabled && formName){
-        const f = getFormInstance(formName);
-        if(!f || (!f.isValid || !f.isValid())){
-            _disabled = true;
-        }
-    }
     const props = {
         ...rest,
         ...componentProps,
@@ -93,7 +101,7 @@ const FormActionComponent = React.forwardRef(({
     delete props.formName;
     delete props.isAction;
     delete props.formName;
-    return <Component ref={innerRef}  {...props}>{children}</Component>
+    return <Component  ref = {innerRef} {...props}>{children}</Component>
 });
 
 

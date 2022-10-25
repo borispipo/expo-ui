@@ -127,9 +127,7 @@ export const handleScreen = ({Screen,Factory,ModalFactory,result,useTheme,filter
                     },[]);
                     setScreenOptions(options);
                     const allowDrawer = typeof options.allowDrawer ==='boolean'? options.allowDrawer : typeof Screen.allowDrawer =='boolean'? Screen.allowDrawer : Screen.isModalScreen == true ? false : true;
-                    return <>
-                        <Screen authRequired={authRequired||allowDrawer} backAction={Screen.isModalScreen} modal={Screen.isModalScreen} allowDrawer={allowDrawer} withDrawer = {allowDrawer !== false ? true : false} {...props} screenName={sanitizedName} extra ={defaultObj(extra)} options={options} />
-                    </>
+                    return <Screen authRequired={authRequired||allowDrawer} backAction={Screen.isModalScreen} modal={Screen.isModalScreen} allowDrawer={allowDrawer} withDrawer = {allowDrawer !== false ? true : false} {...props} screenName={sanitizedName} extra ={defaultObj(extra)} options={options} />
                 }}
             </ScreenComponent>)
         } else {

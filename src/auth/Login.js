@@ -182,8 +182,10 @@ export default function LoginComponent(props){
                     style = {[styles.formData,{backgroundColor}]}
                     header = {<View style = {[styles.header]}>
                         <Avatar testID={testID+"_Avatar"} size={50} secondary icon = 'lock'/>
-                        <Label testID={testID+"_HeaderText"} bool style={{color:theme.colors.primaryOnSurface,fontSize:18,paddingTop:10}}>Connectez vous SVP</Label>
-                        {React.isValidElement(header)? header : null}
+                        {
+                            React.isValidElement(header)? header : 
+                            <Label testID={testID+"_HeaderText"} bool style={{color:theme.colors.primaryOnSurface,fontSize:18,paddingTop:10}}>Connectez vous SVP</Label>
+                        }
                     </View>}
                     responsive  = {false}
                     {...loginProps}

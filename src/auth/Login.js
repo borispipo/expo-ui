@@ -85,7 +85,7 @@ export default function LoginComponent(props){
             },1000)
         }
     },[withPortal])
-    const {header,children,initialize,contentTop,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,canSubmit:canSubmitForm,onStepChange,...loginProps} = defaultObj(getProps({
+    const {header,children,initialize,contentTop,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,mutateData,canSubmit:canSubmitForm,onStepChange,...loginProps} = defaultObj(getProps({
         ...state,
         setState,
         state,
@@ -129,7 +129,7 @@ export default function LoginComponent(props){
             notifyUser(form.getErrorText());
             return;
         }
-        const args = {data,form,state,step,nextButtonRef,previousButtonRef};
+        const args = {...state,data,form,state,step,setState,nextButtonRef,previousButtonRef};
         if(nextButtonRef.current && nextButtonRef.current.isDisabled()){
             return;
         }
@@ -148,6 +148,10 @@ export default function LoginComponent(props){
         }
         if(step > 1){
             if(canSubmit(args)){
+                ///pour modifier automatiquement la données à mettre à jour
+                if(typeof mutateData =='function'){
+                    mutateData(data);
+                }
                 Preloader.open("vérification ...");
                 return auth.signIn(data).then((a)=>{
                     if(typeof onLoginSuccess =='function' && onLoginSuccess(a)=== false) return;

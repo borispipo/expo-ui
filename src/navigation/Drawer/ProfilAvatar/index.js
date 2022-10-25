@@ -49,7 +49,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,...props},ref)=>
             }
         ];
       let pseudo = defaultStr(u.code,u.pseudo,u.email)
-      const label = defaultStr(u.label,u.name,u.fullName,u.userName)
+      const label = defaultStr(u.label,u.name,u.fullName,u.userName,user.email)
       //let pT = pseudo;
       //pseudo = <Tooltip uppserCase={false} title={defaultStr(u.label)+" ["+pseudo+"]"}>{pT}</Tooltip>;
       return <View ref ={ref}>

@@ -13,7 +13,7 @@ import PropTypes from "prop-types";
 /** 
  * update by @borisFouomene. for usage, @see : https://callstack.github.io/react-native-paper/drawer-item.html
  */
-const DrawerItem = ({icon,iconProps,borderRadius,color,minimized,contentContainerProps,labelProps,contentProps,label,
+const DrawerItem = ({icon,iconProps,borderRadius,color,minimized,contentContainerProps,labelProps,contentProps,label,text,
     active,style,onPress,accessibilityLabel,isExpandable,right,divider, dividerProps,
     testID,
     left,
@@ -30,7 +30,7 @@ const DrawerItem = ({icon,iconProps,borderRadius,color,minimized,contentContaine
   contentProps = defaultObj(contentProps);
   labelProps = defaultObj(labelProps);
   iconProps = defaultObj(iconProps);
-  label = defaultVal(label,children);
+  label = defaultVal(label,text,children);
   if(!label && !icon) return null;
   const rProps = {};
   if(active){

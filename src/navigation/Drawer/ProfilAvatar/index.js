@@ -44,7 +44,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,...props},ref)=>
                 label : i18n.lang("logout",'Déconnexion'),
                 icon : "logout",
                 onPress : (a)=>{
-                    closeDrawer(Auth.logout);
+                    closeDrawer(Auth.signOut);
                 }
             }
         ];

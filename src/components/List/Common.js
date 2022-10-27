@@ -222,7 +222,7 @@ CommonListComponent.propTypes = {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      minHeight : 300,
+      minHeight : 100,
     },
     columnWrapperStyle : {
         flex : 1,

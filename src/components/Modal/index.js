@@ -11,6 +11,7 @@ import theme,{StyleProp} from "$theme";
 //import Animated  from "react-native-reanimated";
 //import Animation,{OpacityAnimation} from "$ecomponents/Animations";
 import OpacityAnimation from "$ecomponents/Animations/OpacityAnimation";
+import { Surface } from "react-native-paper";
 import { Platform } from "react-native";
 import {isWeb} from "$cplatform";
 import {isAndroid} from "$cplatform";
@@ -104,7 +105,7 @@ const ModalComponent = React.forwardRef((props,ref)=>{
     const Anim = animate !== false ? OpacityAnimation  : View;
     const wrapperProps = animate !== false ? {enteringCallback:callback,exitingCallback:callback} : {};
     return !visible?null: <Portal>
-      <Animated.View
+      <Anim
         ref={ref}
         testID={'RN__ModalComponent'}
         {...rest}
@@ -113,6 +114,9 @@ const ModalComponent = React.forwardRef((props,ref)=>{
         accessibilityLiveRegion="polite"
         onAccessibilityEscape={hideModal}
         style = {[styles.modal,rest.style]}
+        animationType = {animationType}
+        animationDuration = {animationDuration}
+        animationPosition = {animationPosition}
       >
           <TouchableWithoutFeedback
             accessibilityLabel={overlayAccessibilityLabel}
@@ -132,19 +136,17 @@ const ModalComponent = React.forwardRef((props,ref)=>{
               ]}
             />
           </TouchableWithoutFeedback>
-          <Anim testID="RN__ModalComponent__ContentContainer"
+          <Surface testID="RN__ModalComponent__ContentContainer"
+              elevation = {5}
               {...contentContainerProps}
               {...wrapperProps}
-              animationType = {animationType}
-              animationDuration = {animationDuration}
-              animationPosition = {animationPosition}
               ref = {contentContainerRef}
-              style={[styles.contentContainer,{ marginTop: TOP_INSET, marginBottom: BOTTOM_INSET },contentContainerProps.style]}
+              style={[styles.contentContainer,{ marginTop: TOP_INSET, marginBottom: BOTTOM_INSET,backgroundColor:'transparent' },contentContainerProps.style]}
               pointerEvents="box-none"
           >
             {children}  
-          </Anim>
-      </Animated.View>
+          </Surface>
+      </Anim>
     </Portal>
 });
 

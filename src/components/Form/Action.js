@@ -85,6 +85,7 @@ const FormActionComponent = React.forwardRef(({
                 return;
             }
             const args = React.getOnPressArgs(event);
+            //console.log(args," is argggggg ",onPress)
             if(!onPress) return;
             const formInstance = getFormInstance(formName);
             if(!formInstance || typeof formInstance.isValid != 'function' && isObj(formInstance.props)) return;

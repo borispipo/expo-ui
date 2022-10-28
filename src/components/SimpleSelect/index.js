@@ -253,6 +253,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
         pointerEvents,
         value,
         autoHeight : false,
+        ...rest,
         onPress : context.open.bind(context),
         ...selectedObj,
     }) : 
@@ -261,6 +262,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
             useReadOnlyOpacity = {false}
             affix = {false}
             mode = {mode}
+            {...rest}
             {...inputProps}
             label = {defaultVal(label,text,inputProps.label)}
             editable = {false}

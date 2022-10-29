@@ -20,6 +20,7 @@ import {defaultDecimal,extendObj} from "$utils";
 import theme,{StylePropTypes} from "$theme";
 import APP from "$app/instance";
 import MenuItem from "./Item";
+import {isWeb} from "$platform";
 
 const RESIZE_PAGE = APP.EVENTS.RESIZE_PAGE;
 
@@ -277,7 +278,6 @@ class _Menu extends AppComponent {
     } = this.props;
     const testID = defaultStr(this.props.testID,"RN_MainMenuComponent");
     const {
-      rendered1,
       menuLayout,
       anchorLayout,
       opacityAnimation,
@@ -389,12 +389,10 @@ class _Menu extends AppComponent {
 
     // Scrollable menu max height
     if(handleScroll){
-      scrollableMenuHeight =
-      scrollableMenuHeight > windowLayout.height - 2 * SCREEN_INDENT
+      scrollableMenuHeight = scrollableMenuHeight > windowLayout.height - 2 * SCREEN_INDENT
         ? windowLayout.height - 2 * SCREEN_INDENT
         : scrollableMenuHeight;
     }
-
     // _Menu is typically positioned below the element that generates it
     // So first check if it fits below the anchor (expands downwards)
     if (
@@ -475,7 +473,8 @@ class _Menu extends AppComponent {
     if(positionStyle.top < SCREEN_INDENT){
       positionStyle.top = SCREEN_INDENT;
     }
-    
+    const maxMenuHeight = windowLayout.height - top - SCREEN_INDENT;
+    const contentContainerStyle = maxMenuHeight > SCREEN_INDENT ? {maxHeight:maxMenuHeight} : undefined;
     return (
       <View
         testID = {testID}
@@ -521,8 +520,7 @@ class _Menu extends AppComponent {
                     ]
                   }
                 >
-                  {(scrollableMenuHeight && (
-                    <ScrollView testID={testID+"_ScrollView"}>{children}</ScrollView>
+                  {((scrollableMenuHeight|| contentContainerStyle) && (<ScrollView contentContainerStyle={contentContainerStyle} testID={testID+"_ScrollView"}>{children}</ScrollView>
                   )) || children}
                 </Surface>
               </Animated.View>

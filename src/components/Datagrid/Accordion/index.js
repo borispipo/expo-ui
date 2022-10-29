@@ -28,7 +28,6 @@ import {getRowStyle,styles as rStyles} from "../utils";
 import Avatar from "$ecomponents/Avatar";
 import {defaultObj,isOb,isNonNullString} from "$utils";
 import PropTypes from "prop-types";
-import ActivityIndicator from "$ecomponents/ActivityIndicator";
 
 const DatagridFactory = (Factory)=>{
     Factory = Factory || CommonDatagrid;
@@ -127,6 +126,9 @@ const DatagridFactory = (Factory)=>{
                 }
                 rowProps = defaultObj(renderedContent.rowProps);
                 avatarProps.color = color;
+                if(typeof avatarContent =='function'){
+                    avatarContent = avatarContent({...avatarProps,suffix:index,testID:testID+"_Avatar"})
+                }
                 if(isNonNullString(avatarContent)){
                     let src = undefined;
                     let avatarSuffix = index;
@@ -212,19 +214,19 @@ const DatagridFactory = (Factory)=>{
             return INFINITE_SCROLL_PAGE_SIZE;
         }
         scrollToEnd(){
-            if(!this._isMounted()) return;
+            if(!this._isMounted() || !this.canScrollTo()) return;
             if(this.listRef.current && this.listRef.current.scrollToEnd){
                 this.listRef.current.scrollToEnd();
             }
         }
         scrollToTop(opts){
-            if(!this._isMounted()) return;
+            if(!this._isMounted() || !this.canScrollTo()) return;
             if(this.listRef.current && this.listRef.current.scrollToTop){
                 this.listRef.current.scrollToTop(defaultObj(opts));
             }
         }
         scrollToIndex(index){
-            if(!this._isMounted()) return;
+            if(!this._isMounted() || !this.canScrollTo()) return;
             index = typeof index =='number'? index : 0;
             if(this.listRef.current && this.listRef.current.scrollToIndex){
                 this.listRef.current.scrollToIndex({index});
@@ -318,6 +320,7 @@ const DatagridFactory = (Factory)=>{
                 testID,
                 renderEmpty,
             } = this.props
+            const hasData = this.state.data.length ? true : false;
             testID = defaultStr(testID,"RN_DatagridAccordion");
             backToTopProps = defaultObj(backToTopProps);
             accordionProps = defaultObj(accordionProps);
@@ -494,12 +497,12 @@ const DatagridFactory = (Factory)=>{
                                         ,text : (showFooter?'Masquer/Ligne des totaux':'Afficher/Ligne des totaux')
                                     }:null,
                                     ...restItems,
-                                    {
+                                    this.canScrollTo() &&  {
                                         text : 'Retour en haut',
                                         icon : "arrow-up-bold",
                                         onPress : this.scrollToTop.bind(this)
                                     },
-                                    {
+                                    this.canScrollTo() && {
                                         text : 'Aller à la dernière ligne',
                                         icon : "arrow-down-bold",
                                         onPress : this.scrollToEnd.bind(this)
@@ -533,7 +536,6 @@ const DatagridFactory = (Factory)=>{
                     </View>
             </ScrollView>
         </View>  
-        const hasData = this.state.data.length ? true : false;
         renderEmpty = defaultFunc(accordionProps.renderEmpty,renderEmpty,x=>null)
         return <View testID={testID+"_Container"} pointerEvents={pointerEvents} style={[styles.container]} collapsable={false}>
                 { <View testID={testID+"_ContentContainer"} style={[this.bindResizeEvents()?{height:this.renderedListHeight}:undefined]}> 

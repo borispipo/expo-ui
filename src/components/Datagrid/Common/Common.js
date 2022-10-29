@@ -1,25 +1,22 @@
 import theme from "$theme";
 import APP from "$capp";
-import {isMobileOrTabletMedia,isSmallPhoneMedia} from "$cplatform/dimensions";
+import {isMobileOrTabletMedia} from "$cplatform/dimensions";
 import PropTypes from "prop-types";
 import {Component as AppComponent} from "$react"
 import $session from "$session";
 import Auth from "$cauth";
-import Button from "$ecomponents/Button";
 import Tooltip from "$ecomponents/Tooltip";
 import setQueryLimit from "./setQueryLimit";
 import {notify,showConfirm} from "$ecomponents/Dialog";
 import Label from "$ecomponents/Label";
 import Image from "$ecomponents/Image";
 import Icon,{COPY_ICON} from "$ecomponents/Icon";
-//import TableLink from "$containers/TableLink";
-//import filterUtils from "$ccomponents/Filter/utils";
+import filterUtils from "$ecomponents/Filter/utils";
 import Hashtag from "$ecomponents/Hashtag";
-import {sortBy,extendObj,isObjOrArray,defaultNumber,defaultStr,isFunction,defaultBool,defaultArray,defaultObj,isNonNullString,defaultDecimal} from "$utils";
+import {sortBy,isDecimal,extendObj,isObjOrArray,defaultNumber,defaultStr,isFunction,defaultBool,defaultArray,defaultObj,isNonNullString,defaultDecimal} from "$utils";
 import {Datagrid as DatagridContentLoader} from "$ecomponents/ContentLoader";
 import React from "$react";
 import DateLib from "$lib/date";
-//import dataFileManager from "$database/dataFileManager";
 import Filter,{canHandleFilter} from "$ecomponents/Filter";
 import {CHECKED_ICON_NAME} from "$ecomponents/Checkbox";
 import { COLUMN_WIDTH,DATE_COLUMN_WIDTH } from "../utils";
@@ -29,13 +26,13 @@ import Checkbox from "../Checkbox";
 import { TouchableRipple } from "react-native-paper";
 import { evalSingleValue } from "../Footer";
 import i18n from "$i18n";
-import { makePhoneCall,canMakePhoneCall as canMakeCall} from "$capp/MakePhoneCall";
+import { makePhoneCall,canMakePhoneCall as canMakeCall} from "$makePhoneCall";
 import copyToClipboard from "$capp/clipboard";
 import { Pressable } from "react-native";
 
 export const arrayValueSeparator = ", ";
 
-const databaseArgs = {};
+const dataSourceArgs = {};
 export const footerFieldName = "dgrid-fters-fields";
 
 
@@ -500,7 +497,7 @@ export default class CommonDatagridComponent extends AppComponent {
     getActionsArgs(selected){
         const r = isObj(selected)? selected : {};
         const ret = {
-            ...databaseArgs,
+            ...dataSourceArgs,
             selected : defaultBool(selected,false),
             ...r,
             isMobile : isMobileOrTabletMedia(),
@@ -544,7 +541,9 @@ export default class CommonDatagridComponent extends AppComponent {
             return r
         };
         let selectedR = this.props.selectedRowsActions;
-        let sArgs = this.getActionsArgs(true);
+        const sArgs = this.getActionsArgs(true);
+        sArgs.size = sArgs.selectedRowsCount = Object.size(sArgs.selectedRows);
+        sArgs.selectedRowsKeys = Object.keys(sArgs.selectedRows);
         if(isFunction(selectedR)) {
             selectedR = selectedR.call(this,sArgs)
         }
@@ -904,10 +903,11 @@ export default class CommonDatagridComponent extends AppComponent {
             if(!visible){
                 colProps.style.display = 'none';
             }
+            const title = header.text = header.text || header.label || header.title||header.field
             visibleColumnsNames[header.field] = visible ? true : false;
             visibleColumns.push({
                 onPress : ()=>{this.toggleColumnVisibility(header.field);return false},
-                title : header.text||header.title||header.field,
+                title : title,
                 icon : visible?CHECKED_ICON_NAME : null,
             });
             restCol.field = header.field;
@@ -1247,23 +1247,28 @@ export default class CommonDatagridComponent extends AppComponent {
         this.refresh(true);
     }
     setQueryLimit(){
-        this.currentDatagridQueryLimit = this.getSessionData("databaseQueryLimit");
+        if(!this.canHandleQueryLimit()) return;
+        this.currentDatagridQueryLimit = this.getSessionData("dataSourceQueryLimit");
         setQueryLimit(this.currentDatagridQueryLimit,(limit)=>{
-            this.setSessionData("databaseQueryLimit",limit)
+            this.setSessionData("dataSourceQueryLimit",limit)
             notify.success("Le nombre maximal d'élément a été définit à la valeur "+(limit==0?" infinit ":limit.formatNumber())+". Cette valeur sera prise en compte à la prochaine réactualisation du tableau")
         });
     }
     
     canSetQueryLimit(){
-        return isDecimal(this.props.queryLimit) && (this.props.queryLimit >=0) ? false : true;
+        return this.canHandleQueryLimit() && isDecimal(this.props.queryLimit) && (this.props.queryLimit >=0) ? false : true;
     }
     getQueryLimit(){
         if(isDecimal(this.props.queryLimit) && (this.props.queryLimit >=0)) return this.props.queryLimit 
-        let sLimit = this.getSessionData("databaseQueryLimit");
+        let sLimit = this.getSessionData("dataSourceQueryLimit");
         if(isDecimal(sLimit) && sLimit >= 0) return sLimit;
         return 0;
     }
+    canHandleQueryLimit(){
+        return true;
+    }
     renderQueryLimit(content){
+        if(!this.canHandleQueryLimit()) return null;
         let cLImit = this.getQueryLimit();
         if(cLImit == 0) cLImit = " infinit"
         let s = "";
@@ -1444,6 +1449,9 @@ export default class CommonDatagridComponent extends AppComponent {
             </>
         </TouchableRipple>
     }
+    canScrollTo(){
+        return this.state.data.length? true :false;
+    }
     renderSelectableCheckboxCell(props){
         const {containerProps} = props;
         if(isObj(containerProps)){
@@ -1502,24 +1510,15 @@ export default class CommonDatagridComponent extends AppComponent {
         
         renderArgs.extra = extra;
         renderArgs.item = rowData;
+        const defaultValue = renderArgs.defaultValue = renderArgs.value = rowData[columnField];
         let key = this.getRowKey(rowData,rowIndex)+"-"+columnField,isTagRender = defaultStr(columnDef.table).toLowerCase().contains("tags");
         if(isObj(columnDef.datagrid) && isFunction(columnDef.datagrid.render)){
             _render = columnDef.datagrid.render.call(this,renderArgs);
         } else if(isFunction(columnDef.multiplicater)){
             _render = defaultDecimal(columnDef.multiplicater({...renderArgs,value:rowData[columnField]}),rowData[columnField]);
         } else {
-             _render = rowData[columnField];
+             _render = defaultValue;
              let _type = defaultStr(columnDef.type).trim().toLowerCase();
-             if(false && _type == 'datafile' && !isFunction(columnDef.render)){
-                 columnDef.render = ({rowData,columnField})=>{
-                     let v = rowData[columnField];
-                     let dF = dataFileManager.get(v);
-                     if(dF){
-                         return dF.code.toUpperCase();
-                     }
-                     return isNonNullString(v)? v.toUpperCase() : isArray(v)? v.join(arrayValueSeparator): v;
-                 }
-             }
              if(defaultStr(columnDef.format).toLowerCase() === 'hashtag'){
                 _render = <Hashtag>{_render}</Hashtag>
              } else if(typeof columnDef.render === "function"){
@@ -1539,32 +1538,6 @@ export default class CommonDatagridComponent extends AppComponent {
                  if(val === checkedValue){
                      _render = checkedLabel;
                  } else _render = uncheckedLabel;
-             } else if(false && arrayValueExists(['piece','selecttabledata','id'],_type)){
-                let _id = rowData[columnField];
-                if(isNonNullString(_id)){
-                    let tableName = defaultStr(columnDef.tableName,columnDef.table).toUpperCase();
-                    let dbName = defaultStr(columnDef.dbName);
-                    if(!dataFileManager.isCommon(dbName) && (columnField == 'code' || _type =='piece')){
-                        dbName = defaultStr(rowData.dbId,dbName);
-                        tableName = defaultStr(rowData.table,tableName)
-                    }
-                    dbName = dataFileManager.sanitizeName(dbName,tableName);
-                    let pref = "";
-                    if(_type !=='piece'){
-                        pref = (tableName+"/").rtrim("/")+"/";
-                        _id = pref+_id.ltrim(pref);
-                    } 
-                    if(rowData[columnField+"FoundInDB"] === false){
-                        let fTitle = "Cet élément n'existe pas en base car n'a pas été trouvé dans un fichier";
-                        _render = <Button icon={"database-remove"} title={fTitle}>
-                            {rowData[columnField]}
-                        </Button> 
-                    } else {
-                        /*_render = <TableLink dbName={dbName} tableName = {tableName} _id = {
-                            _id
-                        }>{rowData[columnField]}</TableLink>*/
-                    }              
-                }
              } else if((_type.contains('select'))){
                  let v1 = rowData[columnField];
                  _render = v1;
@@ -1678,19 +1651,6 @@ export default class CommonDatagridComponent extends AppComponent {
 }
 
 export const ProgressBar = CommonDatagridComponent.LinesProgressBar;
-
-///cette fonction permet de retourner le nom de la base de données à utiliser pour la récupération des données
-export const getDBName = CommonDatagridComponent.getDBName = (arg)=>{
-    if(isNonNullString(arg)){
-        arg = {dbName:arg};
-    }
-    arg = defaultObj(arg);
-    let {dbName} = arg;
-    if(typeof (dbName) =='function'){
-        dbName = dbName(arg)
-    }
-    return defaultStr(dbName);
-}
 
 CommonDatagridComponent.getDefaultPreloader = (props)=>{
     return <Preloader {...defaultObj(props)}/>
@@ -1864,3 +1824,16 @@ const styles = StyleSheet.create({
         //width : 27,
     },
 })
+
+/**** cette fonction permet de retourner le nom de la source de données à utiliser pour l'exécution de la requête */
+export const getDataSource = CommonDatagridComponent.getDataSource = (arg)=>{
+    if(isNonNullString(arg)){
+        arg = {dataSource:arg};
+    }
+    arg = defaultObj(arg);
+    let {dataSource} = arg;
+    if(typeof (dataSource) =='function'){
+        dataSource = dataSource(arg)
+    }
+    return defaultStr(dataSource);
+}

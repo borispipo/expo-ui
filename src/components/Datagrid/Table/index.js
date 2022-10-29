@@ -103,21 +103,25 @@ const DatagridFactory = (Factory)=>{
             return super.updateLayout(e);
         }
         scrollToEnd(){
+            if(!this.canScrollTo()) return;
             if(this.listRef.current && this.listRef.current.scrollToEnd){
                 return this.listRef.current.scrollToEnd();
             }
         }
         scrollToLeft(){
+            if(!this.canScrollTo()) return;
             if(this.listRef.current && this.listRef.current.scrollToLeft){
                 return this.listRef.current.scrollToLeft();
             }
         }
         scrollToTop(opts){
+            if(!this.canScrollTo()) return;
             if(this.listRef.current && this.listRef.current.scrollToTop){
                 return this.listRef.current.scrollToTop(opts);
             }
         }
         scrollToIndex(index){
+            if(!this.canScrollTo()) return;
             index = typeof index =='number'? index : 0;
             if(this.listRef.current && this.listRef.current.scrollToIndex){
                 this.listRef.current.scrollToIndex({index});
@@ -296,17 +300,17 @@ const DatagridFactory = (Factory)=>{
                                 testID={testID+"_HeaderMenus"}
                                 anchor={(props)=>(<Icon {...props} icon={'axis-z-arrow'}/>)} 
                                 items = {[
-                                    {
+                                    this.canScrollTo() && {
                                         text : 'Retour en haut',
                                         icon : "arrow-up-bold",
                                         onPress : this.scrollToTop.bind(this)
                                     },
-                                    {
+                                    this.canScrollTo() &&{
                                         text : 'Retour A gauche',
                                         icon : "arrow-up-bold",
                                         onPress : this.scrollToLeft.bind(this)
                                     },
-                                    {
+                                    this.canScrollTo() &&{
                                         text : 'Aller à la dernière ligne',
                                         icon : "arrow-down-bold",
                                         onPress : this.scrollToEnd.bind(this)

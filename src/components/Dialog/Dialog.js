@@ -52,6 +52,7 @@ const DialogComponent = React.forwardRef((props,ref)=>{
         onAlertRequestClose,
         isFormData,
         isPreloader,
+        borderRadius,
      ...modalProps
     } = props;
      withScrollView = typeof withScrollView =='boolean'? withScrollView : false;
@@ -161,9 +162,13 @@ const DialogComponent = React.forwardRef((props,ref)=>{
     const testID = defaultStr(modalProps.testID,"RN_DialogComponent");
     const maxHeight = getMaxHeight(),maxWidth = getMaxWidth();
     const backgroundColor = theme.surfaceBackgroundColor;
+    borderRadius = fullScreen || !isMobileNative() || isPreloader ? 0 : typeof borderRadius =='number'? borderRadius : 7*theme.roundness;
     const fullScreenStyle = fullScreen ? {width:dimensions.width,height:dimensions.height,marginHorizontal:0,paddingHorizontal:0}: {
         maxWidth,
         maxHeight,
+        borderRadius,
+        paddingTop : borderRadius,
+        paddingBottom : borderRadius,
     };
     const alertContentStyle = isAlert ? {paddingHorizontal:15} : null;
     content = <Surface ref={contentRef} testID = {testID+"_Content11"} {...contentProps} style={[fullScreen? {flex:1}:{maxWidth,maxHeight:maxHeight-Math.min(SCREEN_INDENT*2+50,100)},isPreloader && {paddingHorizontal:10},{backgroundColor},alertContentStyle,contentProps.style]}>

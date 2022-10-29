@@ -159,7 +159,7 @@ const CommonListComponent = React.forwardRef((props,ref)=>{
     const restP = numColumns > 1 && isFlatList ? {
         columnWrapperStyle : [styles.columnWrapperStyle,props.columnWrapperStyle]
     } : {};
-    return <View {...containerProps} style={[{backgroundColor:theme.colors.surface},styles.container,containerProps.style]}>
+    return <View {...containerProps} style={[styles.container,containerProps.style]}>
         <Component
             onEndReachedThreshold={0}
             scrollEventThrottle={16}

@@ -11,7 +11,7 @@ export * from "./Common";
 const DatagridMainComponent = React.forwardRef((props,ref)=>{
     const isDesk = isDesktopMedia();
     const isMob = isMobileMedia();
-    const [isTableData] = React.useStateIfMounted(defaultStr(props.tableName,props.table) || typeof props.fetchData ==='function' || props.isTableData?true : false);
+    const [isTableData] = React.useState(defaultStr(props.tableName,props.table) || typeof props.fetchData ==='function' || props.isTableData?true : false);
     const TableComponent = isTableData ? DatagridTableData : Table;
     const AccordionComponent = isTableData ? TableDataAccordion : Accordion;
     let Component = TableComponent;

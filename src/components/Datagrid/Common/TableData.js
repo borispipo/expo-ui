@@ -1,34 +1,24 @@
 import CommonDatagrid from "./Common";
-import {defaultObj,defaultStr,isNonNullString,isFunction,isPromise} from "$utils";
-//import {mountDatabaseTable,unmountDatabaseTable,unlockTable,isTableLocked} from "$database/utils";
+import {defaultObj,extendObj,defaultStr,isNonNullString,isFunction,isPromise} from "$utils";
 import actions from "$actions";
 import PropTypes from "prop-types";
-import APP from "$capp";
-//import {getDataFunc} from "$database/getData";
 
 export default class CommonTableDatagrid extends CommonDatagrid{
     constructor(props){
         super(props);
         let {
-            data,
             tableName,
             table,
-            dbName,
-            server,
+            dataSource,
         } = props;
-        dbName = CommonDatagrid.getDBName({...props,server,dbName,context:this});
+        dataSource = CommonDatagrid.getDataSource({...props,dataSource,context:this});
         tableName = defaultStr(tableName,table).toUpperCase();
         if(tableName){
             Object.defineProperties(this,{
                 tableName : {value:tableName,override:false,writable:false}
             })
         }
-        if(isNonNullString(tableName)){
-            data = defaultVal(data,dbName+'['+tableName+']');
-            unlockTable(tableName);
-            mountDatabaseTable(tableName,dbName);
-        }
-        this.INITIAL_STATE.fetchData = defaultVal(this.props.fetchData,data);
+        this.INITIAL_STATE.fetchData = defaultVal(this.props.fetchData);
         let isPv = this.isPivotDatagrid();
         if(isPv){
             isPv = this.props.dbSelector !== false;
@@ -38,9 +28,9 @@ export default class CommonTableDatagrid extends CommonDatagrid{
             ['table','tableName'].map((tb,idx)=>{
                 dbSelectorProps[tb] = defaultStr(this.props[tb],dbSelectorProps[tb]);
             });
-            this.setSessionData({selectedDatabases:this.currentDatabases});
+            this.setSessionData({selectedDataSources:this.currentDataSources});
         } else {
-            this.currentDatabases = Object.toArray(this.currentDatabases);
+            this.currentDataSources = Object.toArray(this.currentDataSources);
         }
         this.state.isLoading = true;
     }
@@ -48,9 +38,6 @@ export default class CommonTableDatagrid extends CommonDatagrid{
     /*** lorsque la données est modifiée */
     onUpsertData =(arg) =>{
         if(!this._isMounted()) return;
-        if(isTableLocked(this.tableName)) {
-            return;
-        }
         this.isDataJustComeToUpsert = true; ///on empêche d'afficher le progress bar
         this.fetchData(true).finally(()=>{
             this.isDataJustComeToUpsert = undefined;
@@ -59,38 +46,29 @@ export default class CommonTableDatagrid extends CommonDatagrid{
 
     componentDidMount(){
         super.componentDidMount();
-        APP.extend(this._events,{
+        extendObj(this._events,{
             onUpsertData : this.onUpsertData.bind(this),
         });
-        if(isNonNullString(this.tableName)){
-            APP.on(actions.upsert(this.tableName),this._events.onUpsertData)
-            APP.on(actions.onRemove(this.tableName),this._events.onUpsertData)
-        }
         this.fetchData(true);
     }
 
     componentWillUnmount(){
         super.componentWillUnmount();
-        if(isNonNullString(this.tableName)){
-            unmountDatabaseTable(this.tableName);
-            APP.off(actions.upsert(this.tableName),this._events.onUpsertData);
-            APP.off(actions.onRemove(this.tableName),this._events.onUpsertData);
-        }
         this.clearEvents();
         this.setSelectedRows();
     }
 
-    onChangeDatabases(args){
-        let {databases,server} = args;
-        this.currentDatabases = databases;
-        if(JSON.stringify({databases:this.previousDatabases}) != JSON.stringify({databases})){
+    onChangeDataSources(args){
+        let {dataSources,server} = args;
+        this.currentDataSources = dataSources;
+        if(JSON.stringify({dataSources:this.previousDataSources}) != JSON.stringify({dataSources})){
             if(isObj(this.props.dbSelectorProps) && isFunction(this.props.dbSelectorProps.onChange)){
                 args.datagridContext = this;
                 this.props.dbSelectorProps.onChange(args);
             }
             this.refresh(true);
         } 
-        this.previousDatabases = databases;
+        this.previousDataSources = dataSources;
         this.previousServer = server;
     }
     refresh (force,cb){
@@ -112,7 +90,7 @@ export default class CommonTableDatagrid extends CommonDatagrid{
     }
     /**** retourne la liste des items, utile lorsqu'une s'agit d'une fonction 
         Lorsque data est une chaine de caractère, alors elle doit être sous la forme recommandée par la function 
-        getDataFunc de l'object database
+        getDataFunc de l'object dataSource
         la props data, peut être une chaine de caractère contenant le nom de la base et de la bd de travail de l'application
         example common[articles], dans ce cas, la fonction fetchData, aura pour rôle de chercher toutes les données qui match
         la table dans la base common.
@@ -160,9 +138,9 @@ export default class CommonTableDatagrid extends CommonDatagrid{
                 fetchOptions = defaultObj(fetchOptions);
                 fetchOptions.selector = defaultObj(fetchOptions.selector);
                 fetchOptions.selector.$and = defaultArray(fetchOptions.selector.$and);
-                fetchOptions.databases = this.currentDatabases;
-                fetchOptions = APP.extend(true,true,{},{selector : this.getFilters()},fetchOptions,this.filtersSelectors);
-                fetchOptions.databases = this.currentDatabases;
+                fetchOptions.dataSources = this.currentDataSources;
+                fetchOptions = extendObj(true,true,{},{selector : this.getFilters()},fetchOptions,this.filtersSelectors);
+                fetchOptions.dataSources = this.currentDataSources;
                 let limit = this.getQueryLimit();
                 if(limit > 0 && !this.isPivotDatagrid()){
                     fetchOptions.limit = limit;
@@ -172,13 +150,9 @@ export default class CommonTableDatagrid extends CommonDatagrid{
                     }
                 }
                 if(isFunction(this.props.fetchData)){
-                    //fetchOptions.limit = defaultNumber(fetchOptions.limit,100);
                     /**** l'on peut définir la props fetchData, qui est la fonction appelée pour la recherche des données */
                     fetchData = this.props.fetchData.call(this,fetchOptions);
                 }
-                if(isNonNullString(fetchData)) {
-                    //fetchData = getDataFunc(fetchData,fetchOptions);
-                } 
                 fetchData = isFunction(fetchData)? fetchData.call(this,fetchOptions) : fetchData;
                 this.updateProgress({isLoading:true},()=>{
                     if(isPromise(fetchData)){

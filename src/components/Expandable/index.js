@@ -1,7 +1,7 @@
 import {Colors} from "$theme";
 import React from 'react';
 import View from "$ecomponents/View";
-import {StyleSheet,TouchableWithoutFeedback} from 'react-native';
+import {StyleSheet,TouchableWithoutFeedback,ScrollView} from 'react-native';
 import {withTheme,TouchableRipple} from "react-native-paper"
 import Label from "$ecomponents/Label";
 import Icon from "$ecomponents/Icon"
@@ -42,6 +42,8 @@ const ExpandableComponent = React.forwardRef(({
   containerProps,
   autoMountChildren = false,
   expandIconPosition,
+  withScrollView = false,
+  scrollViewProps,
   ...props
 },ref) => {
   props = defaultObj(props);
@@ -88,6 +90,12 @@ const ExpandableComponent = React.forwardRef(({
     right = null;
   }
   testID = defaultStr(testID,"RN_ExpandableComponent");
+  if(withScrollView){
+    scrollViewProps = Object.assign({},scrollViewProps);
+    children = <ScrollView vertical style={[{flex:1}]} {...scrollViewProps} testID={testID+"_ScrollView"}>
+        {children}
+    </ScrollView>
+  }
   const expandIcon = showExpandIcon !== false ? <Icon
     color={titleColor}
     size={24}  
@@ -151,7 +159,8 @@ const ExpandableComponent = React.forwardRef(({
             </View>
           </TouchableWithoutFeedback>
         {(autoMountChildren !== false || isExpanded) ? <View testID={testID+'_Content'} {...contentProps} 
-          style={[styles.children,contentProps.style,!isExpanded && {opacity:0,height:0}]}>
+          style={[{maxWidth:'100%'},styles.children,contentProps.style,!isExpanded && {opacity:0,height:0}]}
+        >
             {children}
         </View> : null}
       </Surface>
@@ -217,6 +226,7 @@ ExpandableComponent.propTypes = {
     expandIconPosition : PropTypes.oneOf([
       'left','right'
     ]),
+    withScrollView : PropTypes.bool,///si le contenu sera rendu avec le scrollView
     autoMountChildren : PropTypes.bool,///si les enfants du composant seront montés mais masqués et lorsqu'on cliquera sur toggle ceux-ci seront affichés
     leftProps : PropTypes.object, ///les props à paser à la vue qui rend le contenu gouche
     rightProps : PropTypes.object, ///les props à passer à la vue qui rend le contenu droit

@@ -34,7 +34,9 @@ module.exports = (opts)=>{
     r["$expo"] = r["$expo-ui"] = expo;
     r["$epreloader"] = path.resolve(expo,"components/Preloader");
     r["$eform"] = path.resolve(expo,"components","Form");
-    r["$eform-data"] = path.resolve(expo,"components","Form","FormData");
+    r["$form"] = r["$form"] || r["$eform"];
+    r["$eform-data"] = r["$eformData"]= path.resolve(expo,"components","Form","FormData");
+    r["$formData"] = r["$formData"] || r["$eformData"];
     r["$eform-manager"] = path.resolve(expo,"components","Form/utils/FormManager");
     r["$echart"] = path.resolve(expo,"components","Chart");
     r["$efile-system"] = path.resolve(expo,"media","file-system");

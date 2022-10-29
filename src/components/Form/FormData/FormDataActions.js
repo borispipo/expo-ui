@@ -55,7 +55,7 @@ export default class FormDataActionComponent extends FormData {
         }
         appBarProps.isEditing = isEditing;
         if(appBarProps.subtitle !== false && this.props.subtitle !== false && mainProps.subtitle !== false){
-            appBarProps.subtitle = subtitle = defaultVal(appBarProps.subtitle,subtitle);
+            appBarProps.subtitle = subtitle = defaultVal(appBarProps.subtitle,this.props.subtitle,subtitle);
         }
         return appBarProps;
     }

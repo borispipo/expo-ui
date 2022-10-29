@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from '$react'
 
 import {useInputFormat,compareTwoDates,locale as defaultLocale,toDateObj} from "../utils";
 import TextInputWithMask from './TextInputMask'
@@ -34,6 +34,7 @@ const DatePickerInput = React.forwardRef(({
     withModal = true,
     withDateFormatInLabel = true,
     right:customRight,
+    left : customLeft,
     helperText,
     format,
     disabled,readOnly,editable
@@ -42,6 +43,7 @@ const DatePickerInput = React.forwardRef(({
     style,
     anchorProps,
     render_filter,
+    calendarIconBefore = false, //si l'icone calendar sera en position left où non
     ...rest
   },ref)=>{
   inputMode = defaultStr(inputMode,"start");
@@ -104,10 +106,14 @@ const DatePickerInput = React.forwardRef(({
   anchorProps = defaultObj(anchorProps);
   label = defaultStr(label,text);
   customRight = React.isValidElement(customRight) || typeof customRight =='function'? customRight : null;
-  let right = null;
+  let right = customRight,left = customLeft, isIconLeft = calendarIconBefore;
   if(withModal){
-      right = (props)=>{
+      const customLOrR = isIconLeft ? customLeft : customRight;
+      const leftOrRight = (props)=>{
+        let c = typeof customLOrR =='function'? customLOrR(props): customLOrR;
+        c = React.isValidElement(c)? c : null;
         return <>
+            {isIconLeft ? c : null}
             <Icon
             {...anchorProps}
             {...props}
@@ -119,10 +125,15 @@ const DatePickerInput = React.forwardRef(({
             hasTVPreferredFocus={undefined}
             tvParallaxProperties={undefined}
           />
-          {typeof customRight =='function'? customRight(props): customRight}
+          {!isIconLeft ? c : null}
         </>
       }
-  } else right = customRight;
+      if(isIconLeft){
+         left = leftOrRight;
+      } else {
+        right = leftOrRight;
+      }
+  }
   const onConfirm = (date,updateVisibility) => {
     const vDate = validateDate(date);
     const inputDate = !vDate.error ? date : state.inputDate;
@@ -149,6 +160,7 @@ const DatePickerInput = React.forwardRef(({
           style = {[styles.input,style]}
           editable = {editable}
           disabled = {disabled}
+          left = {left}
           right = {right}
           pointerEvents = {isEditable?"auto":"none"}
           ref={ref}
@@ -250,4 +262,5 @@ const styles = StyleSheet.create({
 DatePickerInput.propTypes = {
   onChange : PropTypes.func,
   anchorProps : PropTypes.object,///les props à appliquer à l'icone date permettant de sélectionner la date 
+  calendarIconBefore : PropTypes.bool,///la position de l'icone calendrier pour la sélection de la date
 }

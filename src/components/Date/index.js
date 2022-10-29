@@ -1,4 +1,4 @@
-import PickerInput from "./PickerInput";
+import PickerInput from "./DatePickerInput";
 
 export * from "./utils";
 
@@ -9,3 +9,5 @@ export default DateComponent;
 
 
 export {default as Time} from "./Time";
+
+export {default as DateTime} from "./DateTime";

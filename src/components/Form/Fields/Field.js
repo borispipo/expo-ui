@@ -567,8 +567,11 @@ export default class Field extends AppComponent {
         let form = this.getForm();
         if(!this.canValidate) return; 
         let {keyboardEvents,onKeyEvent} = this.props;
-        let formInstance = this.getForm();
-        let arg = {key,event,context:this,isFormField:true,formInstance};
+        const formInstance = this.getForm();
+        const arg = {key,event,formInstance,field:this.name,formName:this.getFormName(),value:this.getValidRule(),validValue:this.getValidValue(),context:this,isFormField:true,data:{},formInstance};
+        if(formInstance ){
+            arg.data = formInstance.getData();
+        }
         let handler = undefined;
         if(isObj(keyboardEvents)){
             handler = keyboardEvents[key];
@@ -584,16 +587,19 @@ export default class Field extends AppComponent {
         }
         handler = undefined;
         if(formInstance && isObj(formInstance.props)){
-            let pIP = formInstance.props;
-            if(isObj(pIP.keyboardEvents)){
-                handler = pIP.keyboardEvents[key];
+            const formInstanceProps = formInstance.props;
+            if(key =='enter' && isFunction(formInstanceProps.onEnterKeyPress) && formInstance.isValid()){
+                if(formInstanceProps.onEnterKeyPress.call(this,arg) === false) return;
+            }
+            if(isObj(formInstanceProps.keyboardEvents)){
+                handler = formInstanceProps.keyboardEvents[key];
                 if(isFunction(handler)) handler.call(this,arg);
             }
             if(!isFunction(handler)){    
-                if(isFunction(pIP.keyboardEvents)){
-                    handler = pIP.keyboardEvents;
-                } if(isFunction(pIP.onKeyEvent)){
-                    handler = pIP.onKeyEvent;
+                if(isFunction(formInstanceProps.keyboardEvents)){
+                    handler = formInstanceProps.keyboardEvents;
+                } if(isFunction(formInstanceProps.onKeyEvent)){
+                    handler = formInstanceProps.onKeyEvent;
                 }
                 if(isFunction(handler)) handler.call(this,arg);
             }

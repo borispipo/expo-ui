@@ -101,6 +101,7 @@ export default class FormComponent extends React.AppComponent {
             onNoValidateField,
             onKeyEvent,
             keyboardEvents,
+            onEnterKeyPress,
             testID,
             ...rest
         } = this.props;
@@ -210,6 +211,7 @@ FormComponent.propTypes = {
         PropTypes.object,
         PropTypes.func,
     ]),
+    onEnterKeyPress : PropTypes.func, ///Lorsque l'on table la touche entrée du clavier
     onKeyEvent : PropTypes.func/*** l'évènement global appelé lorsqu'on clique sur une champ de la form */,
 }
 

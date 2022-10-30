@@ -42,7 +42,6 @@ export const getThemeFieldProps = (props,ref)=>{
     const isUserActive = loggedUser.code == user.code && user.code ? true : false;
     const userTheme = defaultObj(user.theme);
     const userThemeName = defaultStr(userTheme.name,defaultTheme.name);
-    console.log(userThemeName," is utheme name")
     const isDark = theme.isDark() || theme.isDarkUI();
     const defTheme = isDark ? {...defaultDarkTheme.colors,dark:true} : {...defaultLightTheme.colors,dark:false};
     const itemsRef = React.useRef({...defaultObj(user.customThemes),...getColors()});

@@ -7,7 +7,7 @@ import Label from "$ecomponents/Label";
 import Auth,{login} from "$cauth";
 import View from "$ecomponents/View";
 import { StyleSheet } from "react-native";
-import {colors as defaultColors,defaultThemeName} from "$theme/defaultTheme";
+import defaultTheme,{getColors} from "$theme/defaultTheme";
 import theme,{defaultDarkTheme,Colors,defaultLightTheme} from "$theme";
 import Provider from "$ecomponents/Form/FormData/DialogProvider";
 import Dropdown from "$ecomponents/Dropdown";
@@ -41,10 +41,11 @@ export const getThemeFieldProps = (props,ref)=>{
     user = defaultObj(user,loggedUser);
     const isUserActive = loggedUser.code == user.code && user.code ? true : false;
     const userTheme = defaultObj(user.theme);
-    const userThemeName = defaultStr(userTheme.name,defaultThemeName);
+    const userThemeName = defaultStr(userTheme.name,defaultTheme.name);
+    console.log(userThemeName," is utheme name")
     const isDark = theme.isDark() || theme.isDarkUI();
     const defTheme = isDark ? {...defaultDarkTheme.colors,dark:true} : {...defaultLightTheme.colors,dark:false};
-    const itemsRef = React.useRef({...defaultObj(user.customThemes),...defaultColors});
+    const itemsRef = React.useRef({...defaultObj(user.customThemes),...getColors()});
     const showThemeExplorer = (data)=>{
         data = defaultObj(data,defTheme);
         fields.name.disabled = ({data})=> data && isNonNullString(data.name);

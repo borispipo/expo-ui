@@ -67,7 +67,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,...props},ref)=>
                         onLongPress = {()=>{
                             appConfig.setDeviceName().then((r)=>{
                                 if(deviceNameRef.current && deviceNameRef.current.update){
-                                    deviceNameRef.current.update(r);
+                                    deviceNameRef.current.update(r?("["+r+"]"):"");
                                 }
                             });
                         }}
@@ -108,7 +108,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,...props},ref)=>
                         <Label splitText style={{fontSize:12,color:theme.colors.secondaryOnSurface,marginTop:6}}>
                             {label}
                         </Label>
-                        {deviceName && <Label.withRef textBold splitText title={"Identifiant unique de l'application, installé sur cet appareil"} ref={deviceNameRef} secondary style={{fontSize:11}}>
+                        {deviceName && <Label.withRef textBold splitText title={"Identifiant unique de l'application, installé sur cet appareil"} ref={deviceNameRef} secondary style={{fontSize:10}}>
                             [{deviceName}]
                         </Label.withRef> || null}
                     </View>

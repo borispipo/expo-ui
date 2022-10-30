@@ -65,14 +65,14 @@ export default function getIndex(options){
                         <ErrorBoundary>
                               <StatusBar/>
                               <PreferencesContext.Provider value={preferences}>
-                                    <DropdownAlert ref={notificationRef}/> 
-                                    <PreloaderProvider/>   
-                                        <DialogProvider responsive/>
-                                        <AlertProvider SimpleSelect={SimpleSelect}/>
-                                        <FormDataDialogProvider/>  
-                                        {children}
-                                        <ErrorBoundaryProvider/>
-                                      <BottomSheetProvider/>
+                                <DropdownAlert ref={notificationRef}/> 
+                                <PreloaderProvider/>   
+                                <DialogProvider responsive/>
+                                <AlertProvider SimpleSelect={SimpleSelect}/>
+                                <FormDataDialogProvider/>  
+                                {children}
+                                <ErrorBoundaryProvider/>
+                                <BottomSheetProvider/>
                               </PreferencesContext.Provider>  
                         </ErrorBoundary>
                     </Portal.Host>

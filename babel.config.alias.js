@@ -80,6 +80,6 @@ module.exports = (opts)=>{
         opts.mutator(r);
     }
     ///le chemin racine du projet expo-ui
-    r["$expo-ui-root-path"] = path.resolve(expo,"..");
+    r["$expo-ui-root-path"] = r["$expo-ui-root"]= path.resolve(expo,"..");
     return r;
 }

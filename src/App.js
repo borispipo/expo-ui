@@ -7,7 +7,7 @@ import Index from './index';
 import {Portal } from 'react-native-paper';
 import {PreloaderProvider} from "$epreloader";
 import DropdownAlert from '$ecomponents/Dialog/DropdownAlert';
-import {notificationRef} from "$notify";
+import notify, {notificationRef} from "$notify";
 import BottomSheetProvider from "$ecomponents/BottomSheet/Provider";
 import DialogProvider from "$ecomponents/Dialog/Provider";
 import { DialogProvider as FormDataDialogProvider } from '$eform/FormData';
@@ -22,6 +22,10 @@ import StatusBar from "$ecomponents/StatusBar";
 import SimpleSelect from '$ecomponents/SimpleSelect';
 import {Provider as AlertProvider} from '$ecomponents/Dialog/confirm/Alert';
 import APP from "$app";
+import {isMobileNative} from "$cplatform";
+import {setDeviceNameRef} from "$capp";
+import appConfig from "$capp/config";
+import {showPrompt} from "$components/Dialog/confirm";
 
 export default function getIndex(options){
   const {App,onMount,onUnmount,preferences:appPreferences} = defaultObj(options);
@@ -80,3 +84,31 @@ export default function getIndex(options){
     );
   }
 };
+
+setDeviceNameRef.current = ()=>{
+  return new Promise((resolve,reject)=>{
+    showPrompt({
+      title : 'ID unique pour l\'appareil',
+      maxLength :  30,
+      defaultValue : appConfig.getDeviceName(),
+      yes : 'Définir',
+      placeholder : isMobileNative()? "":'Entrer une valeur unique sans espace SVP',
+      no : 'Annuler',
+      onSuccess : ({value})=>{
+        let message = null;
+        if(!value || value.contains(" ")){
+          message = "Merci d'entrer une valeur non nulle ne contenant pas d'espace";
+        }
+        if(value.length > 30){
+          message = "la valeur entrée doit avoir au plus 30 caractères";
+        }
+        if(message){
+          notify.error(message);
+          return reject({message})
+        }
+        resolve(value);
+        notify.success("la valeur ["+value+"] a été définie comme identifiant unique pour l'application instalée sur cet appareil");
+      }
+    })
+  })
+}

@@ -13,9 +13,11 @@ import Icon from "$ecomponents/Icon";
 import {navigate} from "$cnavigation";
 import theme from "$theme";
 import {isMobileNative} from "$cplatform";
-
+import appConfig from "$capp/config";
 const UserProfileAvatarComponent = React.forwardRef(({drawerRef,...props},ref)=>{
     let u = defaultObj(Auth.getLoggedUser());
+    const deviceNameRef = React.useRef(null);
+    const deviceName = appConfig.deviceName;
     props = defaultObj(props);
     const closeDrawer = cb => {
         if(drawerRef && drawerRef.current && drawerRef.current.close){
@@ -59,8 +61,16 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,...props},ref)=>
                         normal
                         upperCase = {false}
                         disableRipple
+                        title = {"Pressez longtemps pour définir un identifiant unique pour l'appareil"}
                         {...aProps}
                         style = {[styles.container]}
+                        onLongPress = {()=>{
+                            appConfig.setDeviceName().then((r)=>{
+                                if(deviceNameRef.current && deviceNameRef.current.update){
+                                    deviceNameRef.current.update(r);
+                                }
+                            });
+                        }}
                         left={props1 => <Image
                             {...props} 
                             {...props1}
@@ -98,6 +108,9 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,...props},ref)=>
                         <Label splitText style={{fontSize:12,color:theme.colors.secondaryOnSurface,marginTop:6}}>
                             {label}
                         </Label>
+                        {deviceName && <Label.withRef textBold splitText title={"Identifiant unique de l'application, installé sur cet appareil"} ref={deviceNameRef} secondary style={{fontSize:11}}>
+                            [{deviceName}]
+                        </Label.withRef> || null}
                     </View>
                     </Button>
             } }  

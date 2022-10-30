@@ -101,32 +101,9 @@ export const TextField = TextInput;
 
 WeightUnit.displayName = "WeightUnitInlineIndicatorComponent";
 
-
-
 export const Text = React.forwardRef((props,ref)=>{
-    const [state,setState] = React.useStateIfMounted({
-        children : props.children,
-    });
-    const context = {
-        update : (props)=>{
-            if(React.isValidElement(props,true)){
-                return setState({...state,children:props})
-            } else if(isObj(props)){
-                return setState({...state,...props})
-            }
-        }
-    }
-    React.useEffect(()=>{
-        setState({...state,children:props.children})
-    },[props.children]);
-    React.setRef(ref,context);
-    React.useEffect(()=>{
-        return ()=>{
-            React.setRef(ref,null);
-        }
-    },[]);
-    return <LabelComponent {...props} {...state} style={[styles.text,props.style,state.style]}/>
-})
+    return <LabelComponent.withRef ref={ref} {...props} {...state} style={[styles.text,props.style]}/>
+});
 
 export const Label = Text;
 

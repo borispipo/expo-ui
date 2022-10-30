@@ -102,3 +102,32 @@ LabelComponentExported.propTypes = {
 }
 
 export default LabelComponentExported;
+
+LabelComponentExported.withRef = React.forwardRef((props,ref)=>{
+    const [state,setState] = React.useStateIfMounted({
+        children : props.children,
+    });
+    const context = {
+        update : (props)=>{
+            if(React.isValidElement(props,true)){
+                return setState({...state,children:props})
+            } else if(isObj(props)){
+                return setState({...state,...props})
+            }
+        }
+    }
+    React.useEffect(()=>{
+        setState({...state,children:props.children})
+    },[props.children]);
+    React.setRef(ref,context);
+    React.useEffect(()=>{
+        return ()=>{
+            React.setRef(ref,null);
+        }
+    },[]);
+    return <LabelComponent {...props} {...state} style={[props.style,state.style]}/>
+})
+
+LabelComponentExported.withRef.displayName = "LabelComponent.Dynamic";
+
+LabelComponentExported.WithRef = LabelComponentExported.withRef;

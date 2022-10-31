@@ -85,7 +85,7 @@ export default function getIndex(options){
   }
 };
 
-setDeviceNameRef.current = ()=>{
+setDeviceIdRef.current = ()=>{
   return new Promise((resolve,reject)=>{
     showPrompt({
       title : 'ID unique pour l\'appareil',

@@ -23,7 +23,7 @@ import SimpleSelect from '$ecomponents/SimpleSelect';
 import {Provider as AlertProvider} from '$ecomponents/Dialog/confirm/Alert';
 import APP from "$app";
 import {isMobileNative} from "$cplatform";
-import {setDeviceNameRef} from "$capp";
+import {setDeviceIdRef} from "$capp";
 import appConfig from "$capp/config";
 import {showPrompt} from "$components/Dialog/confirm";
 

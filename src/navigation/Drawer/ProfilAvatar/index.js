@@ -65,7 +65,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,...props},ref)=>
                         {...aProps}
                         style = {[styles.container]}
                         onLongPress = {()=>{
-                            appConfig.setDeviceName().then((r)=>{
+                            appConfig.setDeviceId().then((r)=>{
                                 if(deviceNameRef.current && deviceNameRef.current.update){
                                     deviceNameRef.current.update(r?("["+r+"]"):"");
                                 }

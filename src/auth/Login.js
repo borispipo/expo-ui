@@ -18,6 +18,7 @@ import {Provider as DialogProvider} from "$ecomponents/Dialog";
 import ScreenWithoutAuthContainer from "$escreen/ScreenWithoutAuthContainer";
 import {getTitle} from "$escreens/Auth/utils";
 import {isWeb} from "$cplatform";
+import ProviderSelector from "./ProviderSelector";
 
 import getLoginProps from "$getLoginProps";
 const getProps = typeof getLoginProps =='function'? getLoginProps : x=>null;
@@ -97,6 +98,7 @@ export default function LoginComponent(props){
         focusField,
         formName,
         nextButtonRef,
+        ProviderSelector,
         previousButtonRef,
     }));
     React.useEffect(()=>{

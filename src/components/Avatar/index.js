@@ -6,6 +6,8 @@ import React from "react";
 import Text from "./Text";
 import theme from "$theme";
 import AvatarImage from "./Image";
+import { Pressable } from "react-native";
+import Tooltip from "$components/Tooltip";
 
 const defaultSize = 40;
 
@@ -17,10 +19,11 @@ const defaultSize = 40;
  */
 const AvatarComponent = React.forwardRef((props,ref)=>{
     let Component = undefined;
-    let {image,icon,testID,color,src,useSuffix,suffix,size,children,label,source,text,...rest} = props;
+    let {image,icon,testID,color,title,toolip,src,onPress,containerProps,useSuffix,suffix,size,children,label,source,text,...rest} = props;
     label = defaultVal(label,text,children);
 	if(typeof label =='number') label = label+"";
     rest = defaultObj(rest);
+    containerProps = defaultObj(containerProps);
     size = defaultDecimal(size,defaultSize)
     let cProps = {size};
     if(source || image || src){
@@ -52,14 +55,16 @@ const AvatarComponent = React.forwardRef((props,ref)=>{
         style.backgroundColor = color;
         style.color = Colors.getContrast(color);
     }
-    return <Component
-        {...rest}
-        {...cProps}
-        ref={ref}
-        testID = {defaultStr(testID,"RN_AvatarComponent")}
-        style = {style}
-        size= {size}
-    />
+    const c = <Component
+            {...rest}
+            {...cProps}
+            ref={ref}
+            title = {onPress?null : defaultVal(toolip,title)}
+            testID = {defaultStr(testID,"RN_AvatarComponent")}
+            style = {style}
+            size= {size}
+        />;
+    return onPress ?  <Tooltip title={title} toolip={toolip} Component = {Pressable} testID={testID+"_Container"} {...containerProps} onPress={onPress}>{c}</Tooltip> : c;
 });
 
 AvatarComponent.displayName = "AvatarComponent";

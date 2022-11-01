@@ -174,7 +174,7 @@ export default class CommonTableDatagrid extends CommonDatagrid{
                         })
                     } else {
                         let data = !isPromise(fetchData)? Object.toArray(fetchData) : [];
-                        if(data.length <=0) data = this.state.data;
+                        ///if(data.length <=0) data = this.state.data;
                         return this.resolveFetchedDataPromise({cb,data,force}).then((data)=>{
                             resolve(data);
                         }).catch((e)=>{

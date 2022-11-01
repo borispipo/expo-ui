@@ -68,6 +68,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
         return React.getTextContent(content);
     }
     const prevMenuItems = React.usePrevious(menuItems,stableHash);
+    const areItemsEquals = prevMenuItems == menuItems;//JSON.stringify(prevMenuItems) == JSON.stringify(menuItems);
     const prepareItems = React.useCallback(()=>{
         const items = [];
         selectedRef.current = null;
@@ -108,8 +109,8 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
         setState({...state,value:currentSelectedValue,items});
     },[stableHash(menuItems)])
     React.useEffect(()=>{
-        if(defaultValue == value && menuItems == prevMenuItems) return;
-        if(menuItems != prevMenuItems){
+        if(compare(defaultValue == value) && areItemsEquals) return;
+        if(!areItemsEquals){
             prepareItems();
         } else {
             selectValue(defaultValue);
@@ -133,7 +134,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
     context.getValue = ()=> value;
     
     React.useEffect(()=>{
-        if((value !== undefined || prevValue !== undefined) && compare(value,prevValue)) return;
+        if(compare(value,prevValue)) return;
         if(onChange){
             onChange(defaultObj(selectedRef.current));
         }

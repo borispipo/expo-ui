@@ -170,6 +170,17 @@ export default function LoginComponent(props){
             setState({...state,step:step+1,data})
         }
     }
+    const loginFields = {};
+    let hasLoginFields = false;
+    Object.map(loginProps.fields,(field,i)=>{
+        if(isObj(field)){
+            if(typeof field.step ==='number' && field.step !== state.step){}
+            else {
+                loginFields[i] = Object.clone(field);
+                loginFields[i].autoFocus = !!loginFields[i].autoFocusOnStep;    
+            }
+        }
+    });
     const withScrollView = typeof customWithScrollView =='boolean'? customWithScrollView : true;
     const Wrapper = withPortal ? ScreenWithoutAuthContainer  : withScrollView ? ScrollView: View;
     const wrapperProps = withPortal ? {appBarProps,authRequired:false,title:loginTitle,withScrollView} : { style:styles.wrapper};
@@ -192,6 +203,7 @@ export default function LoginComponent(props){
                     </View>}
                     responsive  = {false}
                     {...loginProps}
+                    fields = {loginFields}
                     formProps = {{
                         keyboardEvents : {
                             ...defaultObj(keyboardEvents),
@@ -204,7 +216,7 @@ export default function LoginComponent(props){
                 >
                     <>
                         {React.isValidElement(contentTop)? contentTop : null}
-                        {Object.size(loginProps.fields,true)?<View testID={testID+"_ButtonsContainer"} style={[styles.buttonWrapper]}>
+                        {hasLoginFields?<View testID={testID+"_ButtonsContainer"} style={[styles.buttonWrapper]}>
                             <Button 
                                 ref = {nextButtonRef}
                                 primary

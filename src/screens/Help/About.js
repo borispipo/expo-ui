@@ -86,7 +86,7 @@ export default function HelpScreen(props){
                     <Label primary textBold style={theme.styles.mv05} >{appConfig.name+", Notes de mise à jour."}</Label>
                 </Link>
             </View>
-            {openLibraries ? <View style={[theme.styles.w100]}>
+            {Object.size(openLibraries,true) ? <View style={[theme.styles.w100]}>
                 <Expandable
                     title = {"A propos des librairies tiers"}
                     titleProps = {{style:theme.styles.ph1}}

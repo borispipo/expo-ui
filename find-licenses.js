@@ -83,7 +83,7 @@ module.exports = (options)=>{
         for(let i in  s){
             content[s[i]] = openLibraries[s[i]]
         }
-        fs.writeFileSync(outputPath, "export default "+JSON.stringify(content));
+        fs.writeFileSync(outputPath, "module.exports = "+JSON.stringify(content)+";");
     } else {
         return ({
             error : true,

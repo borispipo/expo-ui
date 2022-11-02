@@ -5,6 +5,7 @@ import Link from "./Link";
 import Content from "$TermsOfUses";
 import {getScreenProps} from "$cnavigation";
 import {extendObj} from "$utils";
+import React from "$react";
 
 export default function TermsOfUses(p){
     const props = getScreenProps(p);

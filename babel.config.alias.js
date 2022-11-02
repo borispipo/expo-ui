@@ -81,5 +81,22 @@ module.exports = (opts)=>{
     }
     ///le chemin racine du projet expo-ui
     r["$expo-ui-root-path"] = r["$expo-ui-root"]= path.resolve(expo,"..");
+
+    const HelpScreen = path.resolve(r["$escreens"],"Help");
+    /*** alias des termsOfUses */
+    if(!r.$TermsOfUses){
+        r.$TermsOfUses = path.resolve(HelpScreen,"TermsOfUses","content")
+    }
+    /*** alias des privacyPolicy */
+    if(!r.$PrivacyPolicy){
+        r.$PrivacyPolicy = path.resolve(HelpScreen,"PrivacyPolicy","content")
+    }
+    ///on génère les librairies open sources utilisées par l'application
+    const root = path.resolve(r.$src,"..");
+    const outputPath = path.resolve(HelpScreen,"openLibraries.js");
+    require("./find-licenses")({
+        paths : [root,r["$expo-ui-root-path"]],
+        outputPath
+    });
     return r;
 }

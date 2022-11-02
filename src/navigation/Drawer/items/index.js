@@ -7,6 +7,7 @@ import "$cutils";
 import APP from "$capp";
 ///les items du drawer
 import items from "$drawerItems";
+import { screenName as aboutScreenName} from "$escreens/Help/About";
 
 export const getItems = (force)=>{
     const name = APP.getName();
@@ -25,16 +26,18 @@ export const getItems = (force)=>{
             r.push(item);
         }
     })
+    r.push({divider:true});
     r.push({
         key : 'dataHelp',
         label : 'Aide',
         section : true,
         divider : false,
         items : [
-            /*{
-                icon : 'timeline-help',
-                label : name+", Mises à jour",
-            },*/
+            {
+                icon : 'help',
+                label : 'A propos de '+name,
+                routeName : aboutScreenName,
+            }
         ]
     });
     return r;

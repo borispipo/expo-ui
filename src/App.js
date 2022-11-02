@@ -90,7 +90,7 @@ setDeviceIdRef.current = ()=>{
     showPrompt({
       title : 'ID unique pour l\'appareil',
       maxLength :  30,
-      defaultValue : appConfig.getDeviceName(),
+      defaultValue : appConfig.getDeviceId(),
       yes : 'Définir',
       placeholder : isMobileNative()? "":'Entrer une valeur unique sans espace SVP',
       no : 'Annuler',

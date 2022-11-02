@@ -12,7 +12,7 @@ import AppBarDialog from "./AppBarDialog";
 import DialogActions from "./DialogActions";
 import DialogTitle from './DialogTitle';
 import {MAX_WIDTH,SCREEN_INDENT,MIN_HEIGHT} from "./utils";
-import {isMobileOrTabletMedia} from "$cplatform/dimensions"; 
+import {isMobileOrTabletMedia,isMobileMedia} from "$cplatform/dimensions"; 
 import Platform,{isMobileNative} from "$cplatform";
 import Portal from "$ecomponents/Portal";
 import Icon,{BACK_ICON} from "$ecomponents/Icon";
@@ -162,13 +162,14 @@ const DialogComponent = React.forwardRef((props,ref)=>{
     const testID = defaultStr(modalProps.testID,"RN_DialogComponent");
     const maxHeight = getMaxHeight(),maxWidth = getMaxWidth();
     const backgroundColor = theme.surfaceBackgroundColor;
-    borderRadius = fullScreen || !isMobileNative() || isPreloader ? 0 : typeof borderRadius =='number'? borderRadius : 7*theme.roundness;
+    borderRadius = fullScreen  || !(isMobileNative() || isMobileMedia()) || isPreloader ? 0 : typeof borderRadius =='number'? borderRadius : 5*theme.roundness;
     const fullScreenStyle = fullScreen ? {width:dimensions.width,height:dimensions.height,marginHorizontal:0,paddingHorizontal:0}: {
         maxWidth,
         maxHeight,
         borderRadius,
-        paddingTop : borderRadius,
-        paddingBottom : borderRadius,
+        paddingLeft : borderRadius,
+        paddingRight : borderRadius,
+        paddingVertical : 10,
     };
     const alertContentStyle = isAlert ? {paddingHorizontal:15} : null;
     content = <Surface ref={contentRef} testID = {testID+"_Content11"} {...contentProps} style={[fullScreen? {flex:1}:{maxWidth,maxHeight:maxHeight-Math.min(SCREEN_INDENT*2+50,100)},isPreloader && {paddingHorizontal:10},{backgroundColor},alertContentStyle,contentProps.style]}>

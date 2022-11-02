@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
         justifyContent : "center",
         alignItems : "center",
         flexDirection : "row",
-        height,
+        maxHeight:height,
         width,
     },
     logoImage : {

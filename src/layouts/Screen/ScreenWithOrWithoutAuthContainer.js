@@ -11,7 +11,7 @@ import APP from "$capp";
 import AppBar,{createAppBarRef} from "$elayouts/AppBar";
 import ErrorBoundary from "$ecomponents/ErrorBoundary";
 import Portal from "$ecomponents/Portal";
-import theme from "$theme";
+import theme,{StyleProp} from "$theme";
 import StatusBar from "$ecomponents/StatusBar";
 
 const getDefaultTitle = (nTitle,returnStr)=>{
@@ -168,11 +168,11 @@ const styles = StyleSheet.create({
 MainScreenScreenWithOrWithoutAuthContainer.propTypes = {
   children: PropTypes.any,
   withScrollView : PropTypes.bool,
-  style:PropTypes.object,
+  style:StyleProp,
   appBarProps : PropTypes.object,
   elevation : PropTypes.number,
   //appBar : PropTypes.bool,
-  contentContainerStyle : PropTypes.object,
+  contentContainerStyle : StyleProp,
   withFab : PropTypes.bool,
   withDrawer : PropTypes.bool,//si l'on doit afficher un drawer dans le contenu
   fabProps : PropTypes.object,

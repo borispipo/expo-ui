@@ -19,6 +19,7 @@ import ScreenWithoutAuthContainer from "$escreen/ScreenWithoutAuthContainer";
 import {getTitle} from "$escreens/Auth/utils";
 import {isWeb} from "$cplatform";
 import ProviderSelector from "./ProviderSelector";
+import { ScrollView } from "react-native";
 
 import getLoginProps from "$getLoginProps";
 const getProps = typeof getLoginProps =='function'? getLoginProps : x=>null;
@@ -34,7 +35,6 @@ export default function LoginComponent(props){
     const previousButtonRef = React.useRef(null);
     const dialogProviderRef = React.useRef(null);
     const backgroundColor = theme.colors.surface;
-    const Wrapper = withPortal ? ScreenWithoutAuthContainer  : View;
     const _getForm = x=> getForm(formName);
     const isMounted = React.useIsMounted();
     
@@ -88,6 +88,7 @@ export default function LoginComponent(props){
     },[withPortal])
     const {header,children,initialize,contentTop,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,mutateData,canSubmit:canSubmitForm,onStepChange,...loginProps} = defaultObj(getProps({
         ...state,
+        withScrollView:customerWithScrollView,
         setState,
         state,
         showError : notifyUser,
@@ -170,8 +171,9 @@ export default function LoginComponent(props){
             setState({...state,step:step+1,data})
         }
     }
-    
-    const wrapperProps = withPortal ? {appBarProps,authRequired:false,title:loginTitle} : { style:styles.wrapper};
+    const withScrollView = typeof customerWithScrollView =='boolean'? customerWithScrollView : true;
+    const Wrapper = withPortal ? ScreenWithoutAuthContainer  : withScrollView ? ScrollView: View;
+    const wrapperProps = withPortal ? {appBarProps,authRequired:false,title:loginTitle,withScrollView} : { style:styles.wrapper};
     return <Wrapper testID = {testID+"_Wrapper" }{...wrapperProps}>
         <DialogProvider ref={dialogProviderRef}/>
         <Surface style={[styles.container,{backgroundColor}]} testID={testID}>

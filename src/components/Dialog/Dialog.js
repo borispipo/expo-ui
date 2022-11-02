@@ -169,7 +169,7 @@ const DialogComponent = React.forwardRef((props,ref)=>{
         borderRadius,
         paddingLeft : borderRadius,
         paddingRight : borderRadius,
-        paddingVertical : 10,
+        paddingVertical : borderRadius?10:0,
     };
     const alertContentStyle = isAlert ? {paddingHorizontal:15} : null;
     content = <Surface ref={contentRef} testID = {testID+"_Content11"} {...contentProps} style={[fullScreen? {flex:1}:{maxWidth,maxHeight:maxHeight-Math.min(SCREEN_INDENT*2+50,100)},isPreloader && {paddingHorizontal:10},{backgroundColor},alertContentStyle,contentProps.style]}>

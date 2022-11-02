@@ -59,44 +59,46 @@ export default function HelpScreen(props){
         }
     }
     const gridPadding = 5;
-    const gridStyles = [{width:40,padding:gridPadding},{width:'60%',padding:gridPadding},{width:60,padding:gridPadding},{width:40,padding:gridPadding}];
-    const borderStyle = {borderColor:theme.colors.divider,borderWidth:1};
-    return <Screen withScrollView title={title} {...props}>
-        <View style={[theme.styles.alignItemsCenter,theme.styles.w100,theme.styles.p1]}>
-            <Logo  style={{marginRight:10}}/>
+    const gridStyles = [{width:40,padding:gridPadding},{width:'60%',padding:gridPadding},{width:60,padding:gridPadding},{width:60,padding:gridPadding}];
+    const borderStyle = {borderColor:theme.colors.divider,borderWidth:1,justifyContent:'space-between'};
+    const testID = defaultStr(props.testID,"RN_HelpAboutScreenComponent")
+    return <Screen  withScrollView title={title} {...props} testID={testID+"_Screen"}>
+        <View testID={testID+"_Container"} style={[theme.styles.alignItemsCenter,theme.styles.justifyContentCenter,theme.styles.flex1,theme.styles.w100,theme.styles.p1]}>
+            <Logo  testID={testID+"_Logo"} style={{marginRight:10}}/>
             {getReleaseText()}
-            <Divider style={[theme.styles.mv1]}/>
-            <View style = {[theme.styles.row]}>
+            <Divider testID={testID+"_Divider1"} style={[theme.styles.mv1]}/>
+            <View testID={testID+"_IconText"} style = {[theme.styles.row]}>
                 {icon && iconText ? <Icon name={icon} primary title={"Ce périférique est "+iconText} /> : null}
             </View>
-            <View style={theme.styles.pb2}>
+            <View testID={testID+"_DeviceInfos"} style={theme.styles.pb2}>
                 {deviceInfo}
             </View>
-            <View>
-                <Label style={theme.styles.p05}>{appConfig.copyright}</Label>
-                <AutoLink style={[theme.styles.row]}
+            <View testID={testID}>
+                <Label testID={testID+"_CopyRight"} style={theme.styles.p05}>{appConfig.copyright}</Label>
+                {appConfig.devMail? <AutoLink testID={testID+"_Email"} style={[theme.styles.row]}
                     email = {appConfig.devMail} 
                 >
                     <Label>Nous contacter : </Label>
                     <Label primary textBold>{appConfig.devMail}</Label>
-                </AutoLink>
-                <TermsOfUsesLink style={theme.styles.mv05} children="CONTRAT DE LICENCE."/>
-                <PrivacyPolicyLink style={theme.styles.mv05} children="POLITIQUE DE CONFIDENTIALITE."/>
+                </AutoLink>:null}
+                <TermsOfUsesLink testID={testID+"_TemrsOfUsesLink"} style={theme.styles.mv05} children="CONTRAT DE LICENCE."/>
+                <PrivacyPolicyLink testID={testID+"_PrivacyPolicyLink"} style={theme.styles.mv05} children="POLITIQUE DE CONFIDENTIALITE."/>
                 <Link routeName={"releaseNotes"}>
                     <Label primary textBold style={theme.styles.mv05} >{appConfig.name+", Notes de mise à jour."}</Label>
                 </Link>
             </View>
             {Object.size(openLibraries,true) ? <View style={[theme.styles.w100]}>
                 <Expandable
+                    testID={testID+"_OpenLibraries"}
                     title = {"A propos des librairies tiers"}
                     titleProps = {{style:theme.styles.ph1}}
                     style = {{backgroundColor:'transparent'}}
                 >
-                    <View style={[theme.styles.row,theme.styles.flexWrap]}>
-                        <Label primary textBold>{appConfig.name+"   "}</Label>
+                    <View testID={testID+"_OpenLibraries_Header"} style={[theme.styles.row,theme.styles.flexWrap]}>
+                        <Label testID={testID+"_OpenLibraries_HeaderLabel"} primary textBold>{appConfig.name+"   "}</Label>
                         <Label>est bâti sur un ensemble d'outils et librairies open Source</Label>
                     </View>
-                    <View style={[theme.styles.w100,theme.styles.pv1]}>
+                    <View testID={testID+"_OpenLibrariesContent"} style={[theme.styles.w100,theme.styles.pv1]}>
                         <Grid.Row style={borderStyle}>
                             <Label style={gridStyles[0]} textBold>#</Label>
                             <Label style={gridStyles[1]} textBold>Librairie/Outil</Label>

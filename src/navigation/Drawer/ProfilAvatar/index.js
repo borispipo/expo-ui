@@ -14,6 +14,7 @@ import {navigate} from "$cnavigation";
 import theme from "$theme";
 import {isMobileNative} from "$cplatform";
 import appConfig from "$capp/config";
+import Preloader from "$preloader";
 const UserProfileAvatarComponent = React.forwardRef(({drawerRef,...props},ref)=>{
     let u = defaultObj(Auth.getLoggedUser());
     const deviceNameRef = React.useRef(null);
@@ -46,7 +47,10 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,...props},ref)=>
                 label : i18n.lang("logout",'Déconnexion'),
                 icon : "logout",
                 onPress : (a)=>{
-                    closeDrawer(Auth.signOut);
+                    closeDrawer(()=>{
+                        Preloader.open("Déconnexion en cours...");
+                        Auth.signOut().finally(Preloader.close)
+                    });
                 }
             }
         ];

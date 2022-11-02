@@ -86,9 +86,8 @@ export default function LoginComponent(props){
             },1000)
         }
     },[withPortal])
-    const {header,children,initialize,contentTop,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,mutateData,canSubmit:canSubmitForm,onStepChange,...loginProps} = defaultObj(getProps({
+    const {header,withScrollView:customWithScrollView,children,initialize,contentTop,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,mutateData,canSubmit:canSubmitForm,onStepChange,...loginProps} = defaultObj(getProps({
         ...state,
-        withScrollView:customerWithScrollView,
         setState,
         state,
         showError : notifyUser,
@@ -171,7 +170,7 @@ export default function LoginComponent(props){
             setState({...state,step:step+1,data})
         }
     }
-    const withScrollView = typeof customerWithScrollView =='boolean'? customerWithScrollView : true;
+    const withScrollView = typeof customWithScrollView =='boolean'? customWithScrollView : true;
     const Wrapper = withPortal ? ScreenWithoutAuthContainer  : withScrollView ? ScrollView: View;
     const wrapperProps = withPortal ? {appBarProps,authRequired:false,title:loginTitle,withScrollView} : { style:styles.wrapper};
     return <Wrapper testID = {testID+"_Wrapper" }{...wrapperProps}>

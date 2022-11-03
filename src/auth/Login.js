@@ -177,6 +177,7 @@ export default function LoginComponent(props){
             if(typeof field.step ==='number' && field.step !== state.step){}
             else {
                 loginFields[i] = Object.clone(field);
+                hasLoginFields = true;
                 loginFields[i].autoFocus = !!loginFields[i].autoFocusOnStep;    
             }
         }

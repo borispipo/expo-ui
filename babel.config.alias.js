@@ -84,18 +84,21 @@ module.exports = (opts)=>{
 
     const HelpScreen = path.resolve(r["$escreens"],"Help");
     /*** alias des termsOfUses */
+    r.$eTermsOfUses = path.resolve(HelpScreen,"TermsOfUses","content");
     if(!r.$TermsOfUses){
-        r.$TermsOfUses = path.resolve(HelpScreen,"TermsOfUses","content")
+        r.$TermsOfUses = r.$eTermsOfUses;
     }
     /*** alias des privacyPolicy */
+    r.$ePrivacyPolicy = path.resolve(HelpScreen,"PrivacyPolicy","content");
     if(!r.$PrivacyPolicy){
-        r.$PrivacyPolicy = path.resolve(HelpScreen,"PrivacyPolicy","content")
+        r.$PrivacyPolicy = r.$ePrivacyPolicy;
     }
     ///on génère les librairies open sources utilisées par l'application
     const root = path.resolve(r.$src,"..");
     const outputPath = path.resolve(HelpScreen,"openLibraries.js");
     require("./find-licenses")({
         paths : [root,r["$expo-ui-root-path"]],
+        nodeModulesPath : path.resolve(root,"node_modules"),
         outputPath
     });
     return r;

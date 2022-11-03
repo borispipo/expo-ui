@@ -13,11 +13,14 @@ function isValidUrl(str) {
     return !!pattern.test(str);
   }
 
-const  loopPackages = (packages,projectPath)=>{
+const  loopPackages = (packages,projectPath,nodeModulesPath)=>{
     if(!isObj(packages)) return;
-    let p = path.resolve(projectPath,"node_modules");
+    nodeModulesPath = typeof nodeModulesPath =='string' && nodeModulesPath ? nodeModulesPath : "";
+    const p = path.resolve(projectPath,"node_modules");
     for(let i in packages){
-        let packagePath = path.resolve(p,i,"package.json");
+        const packageRootPath = fs.existsSync(path.resolve(p,i))? path.resolve(p,i) : nodeModulesPath && fs.existsSync(path.resolve(nodeModulesPath,i)) ? path.resolve(nodeModulesPath,i) : null;
+        if(!packageRootPath) continue;
+        const packagePath = path.resolve(packageRootPath,"package.json");
         if(fs.existsSync(packagePath)){
             try {
                 let package = require(packagePath);
@@ -44,14 +47,14 @@ const  loopPackages = (packages,projectPath)=>{
     }
 }
 
-const findLicences = (projectPath)=> {
+const findLicences = (projectPath,nodeModulesPath)=> {
     if(projectPath && typeof projectPath =='string' && fs.existsSync(projectPath)){
         const packagePath = path.resolve(projectPath,"package.json");
         if(fs.existsSync(packagePath)){
             const packages = require(packagePath);
             if(isObj(packages)){                
-                loopPackages(packages.devDependencies,projectPath);
-                loopPackages(packages.dependencies,projectPath);
+                loopPackages(packages.devDependencies,projectPath,nodeModulesPath);
+                loopPackages(packages.dependencies,projectPath,nodeModulesPath);
             }
         }
     }
@@ -61,18 +64,18 @@ module.exports = (options)=>{
     if(!options || typeof options !='object'){
         options = {};
     }
-    const {outputPath} = options;
+    const {outputPath,nodeModulesPath} = options;
     const outputDir = outputPath && typeof outputPath =='string' && path.dirname(outputPath) || '';
     if(outputDir && fs.existsSync(outputDir)){
         openLibraries = {};
         if(Array.isArray(options.paths)){
             options.paths.map((p)=>{
                 if(p && typeof p =='string' && fs.existsSync(p)){
-                    findLicences(p)
+                    findLicences(p,nodeModulesPath)
                 }
             })
         } else {
-            findLicences(options.path)
+            findLicences(options.path,nodeModulesPath)
         }
         const s = Object.keys(openLibraries).sort((a,b)=>{
             if (a.toLowerCase() < b.toLowerCase()) return -1;

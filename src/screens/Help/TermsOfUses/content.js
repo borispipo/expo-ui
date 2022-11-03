@@ -6,8 +6,8 @@ import Label from "$components/Label";
 
 export default function ContentTermsOfUses (){
     return <Label primary style={{fontSize:15,fontWeight:'bold',padding:10}}>
-        Pour définir modifier le contenu de la police de sécurité, il suffit de déclarer dans les alias, l'alias 
-        $TermsOfUses prointant dans un fichier javascript dans lequel vous exportez par défaut, soit un composant React
-        où encore un élément react valide, qui remplacera ledit contenu
+        Pour modifier le contenu des Termes et contrat d'utilisation, il suffit de déclarer dans les alias, l'alias 
+        $TermsOfUses prointant vers un fichier javascript dans lequel on exporte par défaut, soit un composant React
+        où encore un élément react valide dont le rendu remplacera ledit contenu.
     </Label>
 }

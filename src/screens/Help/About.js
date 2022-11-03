@@ -74,7 +74,7 @@ export default function HelpScreen(props){
                 {deviceInfo}
             </View>
             <View testID={testID}>
-                <Label testID={testID+"_CopyRight"} style={theme.styles.p05}>{appConfig.copyright}</Label>
+                <Label testID={testID+"_CopyRight"} style={theme.styles.pv05}>{appConfig.copyright}</Label>
                 {appConfig.devMail? <AutoLink testID={testID+"_Email"} style={[theme.styles.row]}
                     email = {appConfig.devMail} 
                 >

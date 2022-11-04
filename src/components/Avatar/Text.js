@@ -1,5 +1,5 @@
 import React from '$react';
-import {Text,StyleSheet} from 'react-native';
+import {Text,StyleSheet,Pressable} from 'react-native';
 import View from "$ecomponents/View";
 import PropTypes from 'prop-types';
 import {Colors,StylePropTypes} from "$theme";
@@ -16,9 +16,12 @@ const AvatarTextComponent = (props) => {
     labelStyle,
     children,
     style : customStyle,
+    onPress:customOnPress,
+    testID : customTestID,
   } = props;
   const containerProps = defaultObj(customContainerProps);
   const size = defaultNumber(customSize,defaultSize);
+  const testID = defaultStr(customTestID,"RN_AvatarComponent.Text");
   const style = Object.assign({},StyleSheet.flatten(customStyle));
   let label = defaultStr(customLabel,children);
   if(!label) return null;
@@ -40,9 +43,12 @@ const AvatarTextComponent = (props) => {
     height: size,
     width: size,
   };
+  const onPress = typeof customOnPress =='function' ? customOnPress : undefined;
+  const C = onPress? Pressable : View;
   return (
-    <View  pointerEvents='none' {...containerProps} style={[styles.container,style,containerProps.style,textContainerStyle,{borderRadius:size/2}]}>
+    <C testID={testID+"_Container"} pointerEvents={onPress?"auto":'none'} {...containerProps} style={[styles.container,style,containerProps.style,textContainerStyle,{borderRadius:size/2}]}>
       { <Text
+        testID={testID}
         style={[{
           color: color,
           fontSize: size / 2.5,
@@ -51,7 +57,7 @@ const AvatarTextComponent = (props) => {
       >
         {l}
       </Text>}
-    </View>
+    </C>
   );
 };
 
@@ -59,7 +65,7 @@ AvatarTextComponent.propTypes = {
   label: PropTypes.string,
   size: PropTypes.number,
   color: PropTypes.string,
-  labelStyle: PropTypes.object,
+  labelStyle: StylePropTypes,
   style: StylePropTypes,
 };
 

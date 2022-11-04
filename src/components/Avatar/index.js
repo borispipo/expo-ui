@@ -24,7 +24,8 @@ const AvatarComponent = React.forwardRef((props,ref)=>{
 	if(typeof label =='number') label = label+"";
     rest = defaultObj(rest);
     containerProps = defaultObj(containerProps);
-    size = defaultDecimal(size,defaultSize)
+    size = defaultDecimal(size,defaultSize);
+    let handleOnPress = false;
     let cProps = {size};
     if(source || image || src){
         Component = AvatarImage;
@@ -32,6 +33,7 @@ const AvatarComponent = React.forwardRef((props,ref)=>{
     } else if(icon){
         Component = Avatar.Icon;
         cProps.icon = icon;
+        handleOnPress = true;
     } else if(label){
         cProps.label = label;
         cProps.pointerEvents = "none";
@@ -59,12 +61,13 @@ const AvatarComponent = React.forwardRef((props,ref)=>{
             {...rest}
             {...cProps}
             ref={ref}
+            onPress = {!handleOnPress && onPress ? onPress : undefined}
             title = {onPress?null : defaultVal(toolip,title)}
             testID = {defaultStr(testID,"RN_AvatarComponent")}
             style = {style}
             size= {size}
         />;
-    return onPress ?  <Tooltip title={title} toolip={toolip} Component = {Pressable} testID={testID+"_Container"} {...containerProps} onPress={onPress}>{c}</Tooltip> : c;
+    return onPress && handleOnPress ?  <Tooltip title={title} toolip={toolip} Component = {Pressable} testID={testID+"_Container"} {...containerProps} onPress={onPress}>{c}</Tooltip> : c;
 });
 
 AvatarComponent.displayName = "AvatarComponent";

@@ -59,7 +59,7 @@ class DropdownComponent extends AppComponent {
                     if(React.isValidElement(item,true) || isDecimal(item) || typeof item =='boolean') return item;
                     if(isObj(item) ) {
                         const itemLabel = this.props.itemLabel;
-                        if(isNonNullString(itemLabel) && item.hasOwnProperty(itemLabel)) return item[itemLabel];
+                        if(isNonNullString(itemLabel) && item.hasOwnProperty(itemLabel)) return defaultStr(item[itemLabel]);
                         if(isNonNullString(item.label)) return item.label;
                         return defaultStr(item.text,item[index]);
                     }

@@ -1586,7 +1586,7 @@ export default class CommonDatagridComponent extends AppComponent {
                  columnDef.src = rowData[columnField];
                  _render = <Image {...columnDef}/>
              } 
-             if(!_render){
+             if(_render === undefined){
                  _render = rowData[columnField];
              }
              if(columnDef.type =="password" && isNonNullString(_render)){
@@ -1635,6 +1635,9 @@ export default class CommonDatagridComponent extends AppComponent {
              let Component = defaultVal(renderProps.Component,Label);
              delete renderProps.Component;
              _render = <Component {...renderProps}>{_render}</Component>
+         }
+         if(typeof _render =='boolean'){
+            _render = _render ? "Oui" : "Non";
          }
          if(typeof _render ==='string' || typeof _render =='decimal'){
              _render = <Label selectable>{_render}</Label>

@@ -278,6 +278,9 @@ const DatagridFactory = (Factory)=>{
                         callArgs.columnDef = columnDef;
                         callArgs.columnField = columnField;
                         let ret = this.renderRowCell(callArgs);
+                        if(typeof ret =='number'){
+                            ret = ret+"";
+                        }
                         if(isNonNullString(ret)){
                             ret = ret.trim();
                         }

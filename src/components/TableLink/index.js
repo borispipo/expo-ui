@@ -4,13 +4,13 @@
 /****Le composant TableLink est utilisé pour les liens cliquable vers les tables de données */
 import {TouchableOpacity,StyleSheet} from "react-native";
 import React from "$react";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import PropTypes from "prop-types";
-import Label from "$components/Label";
+import Label from "$ecomponents/Label";
 import {defaultStr,isPromise,defaultObj} from "$utils";
 import {open as openPreloader,close as closePreloader} from "$preloader";
 import {styles as _styles} from "$theme";
-import Tooltip from "$components/Tooltip";
+import Tooltip from "$ecomponents/Tooltip";
 
 const TableLinKComponent = React.forwardRef((props,ref)=>{
     let {disabled,labelProps,server,containerProps,testID,Component,routeName,routeParams,component,_id,primary,triggerProps,onPress,children, ...rest} = props;

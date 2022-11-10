@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "1.5.13",
+  "version": "1.5.14",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "index.js",
   "scripts": {
@@ -61,7 +61,7 @@
     "@expo/html-elements": "^0.2.0",
     "@expo/metro-config": "^0.4.0",
     "@expo/webpack-config": "^0.17.2",
-    "@fto-consult/common": "^1.9.7",
+    "@fto-consult/common": "^1.9.8",
     "@gorhom/portal": "^1.0.14",
     "@react-native-async-storage/async-storage": "~1.17.3",
     "@react-native-community/datetimepicker": "6.2.0",
@@ -83,6 +83,7 @@
     "expo-web-browser": "~11.0.0",
     "google-libphonenumber": "^3.2.31",
     "htmlparser2-without-node-native": "^3.9.2",
+    "mongo-parse": "^2.1.0",
     "parent-package-json": "^2.0.1",
     "prop-types": "^15.8.1",
     "react-apexcharts": "^1.4.0",

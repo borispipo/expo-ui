@@ -135,12 +135,13 @@ export default class CommonTableDatagrid extends CommonDatagrid{
                     return this.resolveFetchedDataPromise({cb,data:this.INITIAL_STATE.data}).then(resolve).catch(reject)
                 }
                 let fetchData  = this.INITIAL_STATE.fetchData;
-                fetchOptions = defaultObj(fetchOptions);
+                fetchOptions = isObj(fetchOptions)?Object.clone(fetchOptions):{};
                 fetchOptions.selector = defaultObj(fetchOptions.selector);
-                fetchOptions.selector.$and = defaultArray(fetchOptions.selector.$and);
                 fetchOptions.dataSources = this.currentDataSources;
-                fetchOptions = extendObj(true,true,{},{selector : this.getFilters()},fetchOptions,this.filtersSelectors);
+                const fetchFilters = this.getFilters();
+                fetchOptions = extendObj(true,true,{},fetchOptions,{selector : fetchFilters});
                 fetchOptions.dataSources = this.currentDataSources;
+                fetchOptions.sort = this.state.sort;
                 let limit = this.getQueryLimit();
                 if(limit > 0 && !this.isPivotDatagrid()){
                     fetchOptions.limit = limit;

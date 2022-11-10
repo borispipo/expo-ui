@@ -17,7 +17,7 @@ import {sortBy,isDecimal,extendObj,isObjOrArray,defaultNumber,defaultStr,isFunct
 import {Datagrid as DatagridContentLoader} from "$ecomponents/ContentLoader";
 import React from "$react";
 import DateLib from "$lib/date";
-import Filter,{canHandleFilter} from "$ecomponents/Filter";
+import Filter,{canHandleFilter,prepareFilters} from "$ecomponents/Filter";
 import {CHECKED_ICON_NAME} from "$ecomponents/Checkbox";
 import { COLUMN_WIDTH,DATE_COLUMN_WIDTH } from "../utils";
 import { StyleSheet,Dimensions,useWindowDimensions} from "react-native";
@@ -29,6 +29,7 @@ import i18n from "$i18n";
 import { makePhoneCall,canMakePhoneCall as canMakeCall} from "$makePhoneCall";
 import copyToClipboard from "$capp/clipboard";
 import { Pressable } from "react-native";
+import appConfig from "$capp/config";
 
 export const arrayValueSeparator = ", ";
 
@@ -94,13 +95,13 @@ export default class CommonDatagridComponent extends AppComponent {
                 value : uniqid(footerFieldName),override:false, writable: false
             },
         }) 
-        if(!isNonNullString(this.state.sort.column)){
-            this.state.sort.column = "date";
-        }
+        
         this.state.sort.dir = defaultStr(this.state.sort.dir,this.state.sort.column == "date"?"desc":'asc')
         this.hasColumnsHalreadyInitialized = false;
         this.initColumns(props.columns);
-        
+        if(!isNonNullString(this.state.sort.column) && "date" in this.state.columns){
+            this.state.sort.column = "date";
+        }
         this.INITIAL_STATE = {
             data,
             sort : this.state.sort
@@ -1171,41 +1172,14 @@ export default class CommonDatagridComponent extends AppComponent {
         }
         return this.doFilter(arg);
     }
+    ///si les filtres devront être convertis au format SQL
+    willConvertFiltersToSQL(){
+        return !!defaultVal(this.props.convertFiltersToSQL,appConfig.get("convertDatagridFiltersToSQL"));;
+    }
     getFilters(){
-        let filters = {}
         this.filters = extendObj(true,{},this.filteredValues,this.filters)
-        for(let i in this.filters){
-            let f = this.filters[i];
-            if(!this.canHandleFilterVal(f)) {
-                continue;
-            }
-            f.field = defaultStr(f.field,i);
-            if(f.action =="$today"){
-                f.operator = "$and";
-                f.action = "$eq"
-            }
-            filters[f.operator] = defaultArray(filters[f.operator]);
-            let ob = {};
-            ob[f.field] = {}
-            if(f.action == "$period"){
-                let sp = defaultStr(f.value);
-                if(sp){
-                    sp = sp.split("=>");
-                    if(DateLib.isValidSQLDate(sp[0]) && DateLib.isValidSQLDate(sp[1])){
-                        filters[f.operator].push({
-                            [f.field] : {$gte:sp[0]}
-                        })
-                        filters[f.operator].push({
-                            [f.field] : {$lte:sp[1]}
-                        })        
-                    }
-                }
-            } else {
-                ob[f.field][f.action] = f.value;
-                filters[f.operator].push(ob)
-            }
-        }
-        return filters;
+        const preparedFilters = prepareFilters(this.filters,{filter:this.canHandleFilterVal.bind(this),convertToSQL:this.willConvertFiltersToSQL()});
+        return preparedFilters;
     }
     fetchData(){}
     /****  Filtre le tableau */
@@ -1665,6 +1639,8 @@ CommonDatagridComponent.propTypes = {
         PropTypes.object,
         PropTypes.func,
     ]),
+    /*** si les filtres de données seront convertis au format SQL avant d'effectuer la requête distante */
+    convertFiltersToSQL : PropTypes.bool,
     isLoading : PropTypes.bool,///si les données sont en train d'être chargées
     session : PropTypes.bool, /// si les données de sessions seront persistées
     exportTableProps : PropTypes.oneOfType([

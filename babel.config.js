@@ -33,8 +33,9 @@ module.exports = function(api,opts) {
       plugins : [
         ["inline-dotenv",inlineDovOptions],
         ["module-resolver", {"alias": alias}],
-        ['react-native-reanimated/plugin'],
+        ['@babel/plugin-proposal-export-namespace-from'],
         ['transform-inline-environment-variables'],
+        ['react-native-reanimated/plugin'],
       ],
     };
   };

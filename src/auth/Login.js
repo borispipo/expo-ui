@@ -178,7 +178,9 @@ export default function LoginComponent(props){
             else {
                 loginFields[i] = Object.clone(field);
                 hasLoginFields = true;
-                loginFields[i].autoFocus = !!loginFields[i].autoFocusOnStep;    
+                if("autoFocusOnStep" in loginFields[i]){
+                    loginFields[i].autoFocus = !!loginFields[i].autoFocusOnStep;    
+                }
             }
         }
     });

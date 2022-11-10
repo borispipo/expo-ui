@@ -13,7 +13,6 @@ module.exports = async function(env, argv,opts) {
           dangerouslyAddModulePathsToTranspile: [
             // Ensure that all packages starting with @fto-consult are transpiled.
             '@fto-consult',
-            'react-native-reanimated',
             ...transpileModules,
           ],
         },

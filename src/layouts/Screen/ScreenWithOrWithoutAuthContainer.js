@@ -69,7 +69,7 @@ export default function MainScreenScreenWithOrWithoutAuthContainer(props) {
   ];
   options = defaultObj(options);
   appBarProps = defaultObj(appBarProps)
-  title = defaultVal(appBarProps.title,options.title,title);
+  title = defaultVal(title,appBarProps.title,options.title);
   subtitle = defaultVal(appBarProps.subtitle,options.subtitle,subtitle);
   const appBarRef = createAppBarRef();
   const navigation = useNavigation();

@@ -13,19 +13,22 @@ import {styles as _styles} from "$theme";
 import Tooltip from "$ecomponents/Tooltip";
 
 const TableLinKComponent = React.forwardRef((props,ref)=>{
-    let {disabled,labelProps,server,containerProps,testID,Component,routeName,routeParams,component,_id,primary,triggerProps,onPress,children, ...rest} = props;
+    let {disabled,labelProps,server,containerProps,id,columnDef,tableName,data,testID,Component,routeName,routeParams,component,primary,triggerProps,onPress,children, ...rest} = props;
     testID = defaultStr(testID,"RN_TableDataLinkContainer")
+    tableName = defaultStr(tableName).trim();
     rest = defaultObj(rest);
     containerProps = defaultObj(containerProps)
     labelProps = defaultObj(labelProps);
-    _id = defaultStr(_id);
-    if(!_id){
+    columnDef = defaultObj(columnDef);
+    data = defaultObj(data);
+    id = defaultStr(id);
+    if(!id){
         disabled = true;
     }
-    const pointerEvents = disabled || !_id? 'none' : 'auto';
+    const pointerEvents = disabled || !id? 'none' : 'auto';
     const onPressLink = (event)=>{
         React.stopEventPropagation(event);
-        const r = typeof onPress =='function'? onPress(event) : undefined;
+        const r = typeof onPress =='function'? onPress({...React.getOnPressArgs(event),...columnDef,tableName,table:tableName,data,id,value:id,}) : undefined;
         if(isPromise(r)){
             openPreloader("traitement de la requête...");
             r.finally(closePreloader);
@@ -49,7 +52,7 @@ TableLinKComponent.propTypes = {
     ///les props à utiliser pour afficher la table de données en cas de click sur le lien
     triggerProps : PropTypes.object,
     /*** l'id de la données à récupérer en cas de clic sur le lien */
-    _id : PropTypes.string.isRequired,
+    id : PropTypes.string,
     routeName : PropTypes.string,///la route via laquelle on devra naviguer
     routeParam : PropTypes.object,///les props à passer à la route en question
     children : PropTypes.node

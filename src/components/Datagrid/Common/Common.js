@@ -29,6 +29,7 @@ import i18n from "$i18n";
 import { makePhoneCall,canMakePhoneCall as canMakeCall} from "$makePhoneCall";
 import copyToClipboard from "$capp/clipboard";
 import { Pressable } from "react-native";
+import TableLink from "$TableLink";
 import appConfig from "$capp/config";
 
 export const arrayValueSeparator = ", ";
@@ -1512,6 +1513,22 @@ export default class CommonDatagridComponent extends AppComponent {
                  if(val === checkedValue){
                      _render = checkedLabel;
                  } else _render = uncheckedLabel;
+             }
+             ///le lien vers le table data se fait via une colonne de type selecttabledata ou select_tabledata ou potant l'une des propriétés foreignKeyTable ou linkToTable de type chaine de caractère non nulle
+             else if(arrayValueExists(['piece','selecttabledata','id'],_type) || isNonNullString(columnDef.linkToTable) || isNonNullString(columnDef.foreignKeyTable)){
+                let tableName = defaultStr(columnDef.linkToTable && columnDef.linkToTable,columnDef.foreignKeyTable && columnDef.foreignKeyTable,columnDef.tableName,columnDef.table).toUpperCase();
+                const id = rowData[columnField]?.toString();
+                if(isNonNullString(id)){
+                    _render = <TableLink 
+                        tableName = {tableName} 
+                        id = {id}
+                        data = {rowData}
+                        columnDef = {columnDef}
+                        columnField = {columnField}
+                    >
+                        {rowData[columnField]}
+                    </TableLink>             
+                }
              } else if((_type.contains('select'))){
                  let v1 = rowData[columnField];
                  _render = v1;

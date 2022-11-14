@@ -12,6 +12,8 @@ module.exports = (opts)=>{
     const expo = require("./lookup-expo-ui-path")()?path.resolve(r.$src,"..","expo-ui","src") : path.resolve(dir,"src");
     r["$eauth"] = path.resolve(expo,"auth");
     r["$ecomponents"] = r["$expo-components"] = path.resolve(expo,"components");
+    r["$etableLink"] = r["$eTableLink"] = path.resolve(r["$ecomponents"],"TableLink");
+    r.$tableLink = r.$TableLink = r.$tableLink || r.$TableLink || path.resolve(r.$etableLink,"default");
     r["$components"] = r["$components"] || r["$ecomponents"];
     r["$elayouts"] = path.resolve(expo,"layouts");
     r["$emedia"] = path.resolve(expo,"media");

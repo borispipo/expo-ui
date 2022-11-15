@@ -85,7 +85,7 @@ export const getThemeFieldProps = (props,ref)=>{
                     open((isEditing?"Modification ":"Enregistrement ")+"du thème...");
                     Auth.upsertUser(user,false).then(()=>{
                         if(Auth.getLoggedUserCode() == user.code){
-                            login(user,true);
+                            login(user,false);
                         }
                         if(ref && ref.current && ref.current.refresh){
                             ref.current.refresh(true);

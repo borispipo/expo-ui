@@ -1,4 +1,3 @@
-import {isMobileNative} from "$cplatform";
 import {isDesktopMedia} from "$cdimensions";
 
 export * from "./DrawerItems/utils";
@@ -7,7 +6,7 @@ let activeItem = null;
 export const getActiveItem = x=> activeItem;
 export {default as session} from "./session";
 
-export const DRAWER_WIDTH = isMobileNative()?300:280;
+export const DRAWER_WIDTH = !isDesktopMedia()?305:280;
 
 export const MINIMIZED_WIDTH = 85;
 
@@ -35,5 +34,5 @@ export const setActiveItem = (item,toogleActiveItem)=> {
 }
 
 
-export const canBeMinimizedOrPermanent = x=> /*!isMobileNative() && */isDesktopMedia() ? true : false;
+export const canBeMinimizedOrPermanent = x=> isDesktopMedia() ? true : false;
 

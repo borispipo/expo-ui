@@ -13,7 +13,6 @@ import Icon from "$ecomponents/Icon";
 import {navigate} from "$cnavigation";
 import theme from "$theme";
 import {isMobileNative} from "$cplatform";
-import {isDesktopMedia} from "$cdimensions";
 import appConfig from "$capp/config";
 import Preloader from "$preloader";
 const UserProfileAvatarComponent = React.forwardRef(({drawerRef,...props},ref)=>{
@@ -108,7 +107,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,...props},ref)=>
                             />
                         }}
                     >
-                    <View style={[styles.labelContainer,!isDesktopMedia && {maxWidth:150}]}>
+                    <View style={styles.labelContainer}>
                         <Label splitText style={{color:theme.colors.primaryOnSurface}}>{pseudo}</Label>
                         <Label splitText style={{fontSize:12,color:theme.colors.secondaryOnSurface,marginTop:6}}>
                             {label}
@@ -136,7 +135,7 @@ const styles = StyleSheet.create({
     labelContainer : {
         flexDirection : 'column',
         paddingRight : 5,
-        maxWidth : 130,
+        maxWidth : 150,
         minWidth : 100,
     },
     pseudo : {

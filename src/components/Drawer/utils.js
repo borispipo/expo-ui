@@ -6,7 +6,7 @@ let activeItem = null;
 export const getActiveItem = x=> activeItem;
 export {default as session} from "./session";
 
-export const DRAWER_WIDTH = !isDesktopMedia()?305:280;
+export const DRAWER_WIDTH = 300;
 
 export const MINIMIZED_WIDTH = 85;
 

@@ -2,6 +2,7 @@ import CommonDatagrid from "./Common";
 import {defaultObj,extendObj,defaultStr,isNonNullString,isFunction,isPromise} from "$utils";
 import actions from "$actions";
 import PropTypes from "prop-types";
+import stableHash from "stable-hash";
 
 export default class CommonTableDatagrid extends CommonDatagrid{
     constructor(props){
@@ -13,12 +14,12 @@ export default class CommonTableDatagrid extends CommonDatagrid{
         } = props;
         dataSource = CommonDatagrid.getDataSource({...props,dataSource,context:this});
         tableName = defaultStr(tableName,table).toUpperCase();
+        this.prepareFetchData();
         if(tableName){
             Object.defineProperties(this,{
                 tableName : {value:tableName,override:false,writable:false}
             })
         }
-        this.INITIAL_STATE.fetchData = defaultVal(this.props.fetchData);
         let isPv = this.isPivotDatagrid();
         if(isPv){
             isPv = this.props.dbSelector !== false;
@@ -34,7 +35,9 @@ export default class CommonTableDatagrid extends CommonDatagrid{
         }
         this.state.isLoading = true;
     }
-
+    prepareFetchData(fetchData){
+        this.INITIAL_STATE.fetchData = defaultVal(fetchData,this.props.fetchData);
+    }
     /*** lorsque la données est modifiée */
     onUpsertData =(arg) =>{
         if(!this._isMounted()) return;
@@ -57,7 +60,9 @@ export default class CommonTableDatagrid extends CommonDatagrid{
         this.clearEvents();
         this.setSelectedRows();
     }
-
+    isTableData(){
+        return true;
+    }
     onChangeDataSources(args){
         let {dataSources,server} = args;
         this.currentDataSources = dataSources;

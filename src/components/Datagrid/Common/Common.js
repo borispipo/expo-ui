@@ -31,6 +31,7 @@ import copyToClipboard from "$capp/clipboard";
 import { Pressable } from "react-native";
 import TableLink from "$TableLink";
 import appConfig from "$capp/config";
+import stableHash from "stable-hash"
 
 export const arrayValueSeparator = ", ";
 
@@ -1369,8 +1370,11 @@ export default class CommonDatagridComponent extends AppComponent {
             }
         },isObj(p) && typeof p.force ==='boolean'?p.force : !this.state.isReady)
     }
+    isTableData(){
+        return false;
+    }
     UNSAFE_componentWillReceiveProps(nextProps){
-        if('data' in nextProps && isObjOrArray(nextProps.data)){
+        if(!this.isTableData() && 'data' in nextProps && isObjOrArray(nextProps.data) && nextProps.data != this.state.data && (stableHash(nextProps.data) != stableHash(this.state.data))){
             this.prepareData({data:nextProps.data,force:true},(state)=>{
                 this.setState(state)
             });

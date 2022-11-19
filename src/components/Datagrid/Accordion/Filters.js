@@ -17,7 +17,6 @@ let windowWidth = Dimensions.get("window").width;
 const FiltersAccordionComponent = React.forwardRef((props,ref)=>{
     const {filters,isLoading,filteredColumns,children,filterTitle:customFilterTitle,visible:customVisible,orOperator,andOperator,onToggleFilters,context:customContext,...restProps} = props;
     const context = defaultObj(customContext);
-    const filtersValuesRef = React.useRef({});
     const [state,setState] = React.useState({
         visible : defaultBool(customVisible,false),
         visibleColumns : defaultObj(filteredColumns),
@@ -55,8 +54,7 @@ const FiltersAccordionComponent = React.forwardRef((props,ref)=>{
                     }}
                 />)
                 if(!visible) return;
-                const fOp = defaultObj(filtersValuesRef.current[key]);
-                let defVal = isObj(filtersValuesRef.current[key]) ? filtersValuesRef.current[key].defaultValue : "";
+                let defVal = filter.defaultValue;
                 if(typeof defVal !== 'string' && typeof defVal !=='boolean'){
                     if(Array.isArray(defVal)){
                         defVal = "["+defVal.join(",")+"]";
@@ -69,13 +67,11 @@ const FiltersAccordionComponent = React.forwardRef((props,ref)=>{
                 mainFilterTitle +=(content.length?",":"")+"\n"+defaultStr(filter.label,filter.text,filter.field)+" : "+defVal+""
                 content.push(<Filter
                         {...filter}
-                        {...fOp}
                         dynamicRendered
                         isLoading = {isLoading && filteredRef.current[key] ? true : false}
                         orOperator = {defaultBool(orOperator,filter.orOperator,true)}
                         andOperator = {defaultBool(andOperator,filter.andOperator,true)}
                         onChange = {(arg)=>{
-                            filtersValuesRef.current[key] = getFilterStateValues(arg);
                             const canHandle = canHandleFilter(arg);
                             if(filteredRef.current[key] !== canHandle){
                                 if(canHandle){
@@ -90,7 +86,6 @@ const FiltersAccordionComponent = React.forwardRef((props,ref)=>{
                             }
                         }}
                         withBottomSheet
-                        //style = {[styles.filter,filter.style]}
                         containerProps = {{...containerProps}}
                         inputProps = {{containerProps}}
                     />)

@@ -170,7 +170,7 @@ export default class Filter extends AppComponent {
       if(!isObjOrArray(value) && (isNullOrEmpty(value,true) || value ==='undefined') ){
           value = undefined;
       }
-      let originalValue = value;
+      let originValue = value;
       const type = defaultStr(this.props.type).toLowerCase().trim();
       value = parseDecimal(value,type);
       if(action =="$today"){
@@ -215,7 +215,7 @@ export default class Filter extends AppComponent {
                 }
              }
           }
-          this.props.onChange({...this.getStateValues(),value,originValue:originalValue,originalValue,field:this.props.field,action,operator,selector,originAction,context:this});
+          this.props.onChange({...this.getStateValues(),value,originValue:originValue,originValue,field:this.props.field,action,operator,selector,originAction,context:this});
       }
   }
   componentDidUpdate (){

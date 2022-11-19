@@ -245,7 +245,7 @@ const DatagridFactory = (Factory)=>{
         getMaxSelectedRows(){
             return isMobileMedia()? 30 : 50;
         }
-        renderFilter(props,headerFilters){
+        prepareFilter(props,headerFilters){
             return headerFilters.push(props);
         }
         showFilters(){

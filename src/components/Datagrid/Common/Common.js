@@ -116,10 +116,10 @@ export default class CommonDatagridComponent extends AppComponent {
             if(isPlainObject(f)){
                 this.filters[v] = f;
                 this.filters[v].field = defaultStr(f.field,v);
-                this.filters[v].originalValue = defaultVal(this.filters[v].originalValue,f.defaultValue,f.value)
+                this.filters[v].originValue = defaultVal(this.filters[v].originValue,f.defaultValue,f.value)
             } else {
                 this.filters[v] = {
-                    originalValue : f,
+                    originValue : f,
                     field : v
                 }
             }
@@ -846,7 +846,9 @@ export default class CommonDatagridComponent extends AppComponent {
             if(removeFocus) document.body.click();
         });
    }
+   prepareFilter(props,filteredColumns){
 
+   }
    renderFilter(props){
        return <Filter {...props}/>
    }
@@ -885,7 +887,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 width,
                 ...restCol
             } = header;
-            restCol = defaultObj(restCol);
+            restCol = Object.clone(defaultObj(restCol));
             let colFilter = defaultVal(restCol.filter,true);
             field = header.field = defaultStr(header.field,field,headerIndex);
             delete restCol.filter;
@@ -900,7 +902,7 @@ export default class CommonDatagridComponent extends AppComponent {
             }
             totalWidths +=width;
             widths[header.field] = width;
-            let colProps = {id,key}
+            const colProps = {id,key}
             colProps.key = isNonNullString(key)?key : (header.field||("datagrid-column-header-"+headerIndex))
             colProps.style = Object.assign({},StyleSheet.flatten(restCol.style));
             if(!visible){
@@ -938,7 +940,7 @@ export default class CommonDatagridComponent extends AppComponent {
             const sortedProps =  isColumnSorted ? {...sortedColumn} : {};
             let filterProps = {};
             if(colFilter){
-                let fCol = {...defaultObj(this.filters[header.field])}
+                const fCol = defaultObj(this.filters[header.field]);
                 this.filters[header.field] = fCol;
                 delete restCol.sortable;
                 filterProps = {
@@ -949,14 +951,14 @@ export default class CommonDatagridComponent extends AppComponent {
                     andOperator : filterAndOperator,
                     searchIconTooltip : 'Filtre',
                     searchIcon : 'filter_list',  
-                    defaultValue : fCol.originalValue,
+                    defaultValue : fCol.originValue,
                     name : header.field,
                     onClearFilter : this.onClearFilter.bind(this),
                     onChange : this.onFilterChange.bind(this),
                     operator : fCol.operator,
                     action : defaultStr(fCol.originAction,fCol.action),
                 };
-                this.renderFilter(filterProps,headerFilters); 
+                this.prepareFilter(filterProps,headerFilters); 
             }
             this.prepareColumn({
                 visible,
@@ -1130,7 +1132,7 @@ export default class CommonDatagridComponent extends AppComponent {
             if(!isObj(f)) return;
             defValue = undefined;
             if(f.type =="select") defValue = [];
-            filters[i] = {...f,value:defValue,defaultValue:defValue,originalValue:defValue}
+            filters[i] = {...f,value:defValue,defaultValue:defValue,originValue:defValue}
         })
         this.filters = filters;
         this.refresh(true);
@@ -1156,7 +1158,7 @@ export default class CommonDatagridComponent extends AppComponent {
         field = defaultStr(field,name);
         if(field){
             let v = defaultStr(type).toLowerCase() == "select"? []:undefined
-            this.filters[field] = {value:v,defaultValue:v,originalValue:v,originValue:v}
+            this.filters[field] = {value:v,defaultValue:v,originValue:v,originValue:v}
             this.doFilter({value:v,field,force:true})
         }
     }
@@ -1166,11 +1168,20 @@ export default class CommonDatagridComponent extends AppComponent {
     }
     onFilterChange(arg){
         this.filteredValues = defaultObj(this.filteredValues);
-        let {field,operator,action,value} = defaultObj(arg);        
+        let {field,operator,originAction,action,value} = defaultObj(arg);     
+        const filters = this.preparedColumns.filters;   
         if(isNonNullString(field) && isNonNullString(operator) && isNonNullString(action)){
             this.filteredValues[field] = {
                 operator,action,value,field
             }
+            Object.map(filters,(filter)=>{
+                if(isObj(filter) && filter.field == field){
+                    filter.originValue = filter.defaultValue = arg.defaultValue;
+                    filter.operator = operator;
+                    filter.action = defaultStr(originAction,action);
+                }
+            });
+            
         }
         return this.doFilter(arg);
     }

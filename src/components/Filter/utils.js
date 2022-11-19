@@ -164,6 +164,10 @@ export const matchPouchDBOperator = (operator,value)=>{
           return {operator:"$lt",value}
         case "LTE":
           return {operator:"$lte",value}
+        case "IN":
+            return {operator:"$in",value}
+        case "NOT IN":
+            return {operator:"$in",value}
     }
   }
 
@@ -486,6 +490,7 @@ const operatorsMap = {
     $gte: '>=',
     $ne: '!=',
     $in: 'IN',
+    $nin : 'NOT IN',
     $eq: '=',
     $regex : "LIKE"
   }

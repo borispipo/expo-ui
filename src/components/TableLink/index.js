@@ -13,9 +13,9 @@ import {styles as _styles} from "$theme";
 import Tooltip from "$ecomponents/Tooltip";
 
 const TableLinKComponent = React.forwardRef((props,ref)=>{
-    let {disabled,labelProps,server,containerProps,id,columnDef,tableName,data,testID,Component,routeName,routeParams,component,primary,triggerProps,onPress,children, ...rest} = props;
+    let {disabled,labelProps,server,containerProps,id,columnDef,tableName,table:customTable,data,testID,Component,routeName,routeParams,component,primary,triggerProps,onPress,children, ...rest} = props;
     testID = defaultStr(testID,"RN_TableDataLinkContainer")
-    tableName = defaultStr(tableName).trim();
+    tableName = defaultStr(tableName,customTable).trim();
     rest = defaultObj(rest);
     containerProps = defaultObj(containerProps)
     labelProps = defaultObj(labelProps);

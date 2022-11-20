@@ -40,6 +40,7 @@ const _operators = {
    '$or' : 'Ou', //Array	Matches if any of the selectors in the array match. All selectors must use the same index.
 }
   
+/***** Coposant Filter, pour les filtres de données */
 export default class Filter extends AppComponent {
   constructor(props) {
     super(props);
@@ -81,7 +82,7 @@ export default class Filter extends AppComponent {
     })
     extendObj(this.state,{
         ...this.initFiltersOp(),
-        manualRun : false,
+        manualRun : this.getSessionManualRunValue(),
     });
     this.autobind();
   }
@@ -95,13 +96,15 @@ export default class Filter extends AppComponent {
         };
      })
   }
+  getSessionManualRunValue(){
+    return getSessionData(manualRunKey) ? true : false
+  }
   willRunManually (){
      return this.state.manualRun;
-     return getSessionData(manualRunKey) ? true : false
   }
   toggleManualRun(){
-    //setSessionData(manualRunKey,this.willRunManually()?0:1);
     this.setState({manualRun:!this.state.manualRun},()=>{
+       setSessionData(manualRunKey,this.state.manualRun?0:1);
        if(!this.willRunManually()){
          this.fireValueChanged(true);
        }
@@ -150,7 +153,7 @@ export default class Filter extends AppComponent {
     } else if(type == 'select'){
         actions = _inActions;
         defaultAct = "$in";
-    } else if(type == 'date') {
+    } else if(type == 'date' || type =='datetime') {
       actions = {$today:"Aujourd'hui",$prevWeek:"Semaine passée",$week:'Cette semaine',$month:'Ce mois',$period:"Période", ...actions}  
     } else if(type !== 'date2time' && type !== 'time' && type !== 'number' && type !== 'decimal'){
         actions = regexActions;
@@ -358,6 +361,7 @@ export default class Filter extends AppComponent {
       ref,
       data,
       testID,
+      filterContainerProps,
       ...rest
     } = {...this.props,...this.filterProps};
      const type = this.type;
@@ -439,7 +443,7 @@ export default class Filter extends AppComponent {
         <Menu 
              testID = {testID+"_Menu"}
              sheet = {withBottomSheet}
-             anchor = {(props)=><Icon {...props} {...anchorProps} primary={hasFilterVal} icon={hasFilterVal?'filter-menu':'filter-plus'}/>}
+             anchor = {(props)=><Icon {...props} {...anchorProps} style={[theme.styles.noPadding,theme.styles.mt0,theme.styles.mb0,theme.styles.ml0,props.style,anchorProps.style]} primary={hasFilterVal} icon={hasFilterVal?'filter-menu':'filter-plus'}/>}
              items = {[
                     {
                       text : !isMob ? 'Options' : ("Options de filtre ["+label+"]"),
@@ -502,15 +506,21 @@ export default class Filter extends AppComponent {
             ]}
         />
      </>
-     rest.containerProps = defaultObj(this.props.containerProps,rest.containerProps);
+     const containerProps = defaultObj(this.props.containerProps,rest.containerProps);
+     delete rest.containerProps;
      rest.onValidate = this.onFilterValidate.bind(this);
      const Component = this.Component;
-     return <Component
-        {...rest}
-        name = {this.name}
-        testID = {testID}
-        ref = {React.mergeRefs(this.searchFilter,ref)}
-    /> 
+     const responsiveProps = Object.assign({},responsiveProps);
+     responsiveProps.style = [theme.styles.w100,responsiveProps.style]
+     return <View testID={testID+"_FilterContainer"} {...containerProps} style={[theme.styles.w100,containerProps.style]}>
+        <Component
+          {...rest}
+          responsiveProps = {responsiveProps}
+          name = {this.name}
+          testID = {testID}
+          ref = {React.mergeRefs(this.searchFilter,ref)}
+      /> 
+     </View>
  }
 }
 

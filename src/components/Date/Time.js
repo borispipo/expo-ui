@@ -15,21 +15,21 @@ const compareTimeState = (a,b,ignoreVisible)=>{
     if(ignoreVisible !== true && a.visible !== b.visible) return false;
     return a.hours === b.hours && a.minutes === b.minutes;
   }
-  const parseTime = (value,useSeconds)=>{
+  const parseTime = (value,withSeconds)=>{
     if(!isNonNullString(value)) return undefined;
     let split = value.trim().split(":");
     let ret = {
       hours:parseInt(split[0]) || 0,
       minutes : parseInt(split[1]) || 0,
     };
-    if(useSeconds !== false){
+    if(withSeconds !== false){
        ret.seconds = parseInt(split[2]) || 0;
     }
     ret.date = getDate(ret.hours,ret.minutes,ret.seconds);
-    ret.value = timeToString(ret,useSeconds);
+    ret.value = timeToString(ret,withSeconds);
     return ret;
   }
-  const timeToString = (value,useSeconds)=>{
+  const timeToString = (value,withSeconds)=>{
      if(!isObj(value)) return undefined;
      let {hours,minutes,seconds} = value;
      if(hours ===undefined && minutes === undefined) return undefined;
@@ -38,31 +38,33 @@ const compareTimeState = (a,b,ignoreVisible)=>{
      seconds = defaultDecimal(seconds);
      const d = new Date(0, 0, 0, hours, minutes,seconds);
      value = d.toSQLTime();
-     if(useSeconds !== false){
+     if(withSeconds !== false){
        return value;
      }
      return value.substring(0,5);
   }
   export default function TimePickerComponent (props){
-    let {right:customRight,upper,anchorProps,dialogProps,withLabel,containerProps,mode,onChange,useSeconds,cancelLabel,confirmLabel,label,text,upperCase,defaultValue,disabled,editable,withModal,readOnly,...rest} = props;
+    let {right:customRight,upper,anchorProps,dialogProps,withLabel,containerProps,mode,onChange,withSeconds,cancelLabel,confirmLabel,label,text,upperCase,defaultValue,disabled,editable,withModal,readOnly,...rest} = props;
     rest = defaultObj(rest);
     const isEditable = disabled !== true && readOnly !== true && editable !== false?true : false;
     withModal = defaultBool(withModal,true);
     if(!isEditable){
        withModal = false;
     }
-    useSeconds = defaultBool(useSeconds,false);
+    withSeconds = defaultBool(withSeconds,true);
     const prevDefaultValue = React.usePrevious(defaultValue);
     const [state,setState] = React.useStateIfMounted({
         visible : false,
-        ...parseTime(defaultValue,useSeconds),
+        ...parseTime(defaultValue,withSeconds),
     })
     const prevState = React.usePrevious(state,compareTimeState)
-    label = withLabel !== false ? defaultStr(label,text)+" (HH:MM"+(useSeconds !== false?":SS":"")+")":"";
+    const formatLabel = "HH:MM"+(withSeconds !== false?":SS":"");
+    label = withLabel !== false ? defaultStr(label,text)+"("+formatLabel+")":"";
     dialogProps = defaultObj(dialogProps);
     const onConfirm = ({ hours, minutes }) => {
-      const value = hours !== undefined && minutes !== undefined ? timeToString({seconds:state.seconds,hours,minutes},useSeconds):undefined; 
-      setState({visible:false,seconds:value ? state.seconds:undefined,hours,minutes,value,date:value ? getDate(hours,minutes,useSeconds !== false ? seconds : 0):undefined})
+      const seconds = withSeconds ? state.seconds : 0;
+      const value = hours !== undefined && minutes !== undefined ? timeToString({seconds,hours,minutes},withSeconds):undefined; 
+      setState({visible:false,seconds:value ? seconds:undefined,hours,minutes,value,date:value ? getDate(hours,minutes,seconds):undefined})
     };
     anchorProps = defaultObj(anchorProps);
     customRight = React.isValidElement(customRight) || typeof customRight =='function'? customRight : null;
@@ -76,6 +78,7 @@ const compareTimeState = (a,b,ignoreVisible)=>{
                   setState({...state,visible:true});
               }}
               {...props}
+              style = {[props.style,anchorProps.style]}
               />
            {typeof customRight =='function'? customRight(props): customRight}  
           </>
@@ -83,7 +86,7 @@ const compareTimeState = (a,b,ignoreVisible)=>{
    } else right = customRight;
     React.useEffect(()=>{
       if(prevDefaultValue !== defaultValue){
-        const s = {...state,...parseTime(defaultValue,useSeconds)};
+        const s = {...state,...parseTime(defaultValue,withSeconds)};
         if(!defaultValue){
           s.hours = s.value = s.minutes = s.seconds = s.date = undefined;
         }
@@ -92,7 +95,7 @@ const compareTimeState = (a,b,ignoreVisible)=>{
     },[defaultValue]);
     React.useEffect(()=>{
         if(compareTimeState(state,prevState,true)) return;
-        const value = isNumber(state.hours) && isNumber(state.minutes)? timeToString(state,useSeconds) : undefined;
+        const value = isNumber(state.hours) && isNumber(state.minutes)? timeToString(state,withSeconds) : undefined;
         if(onChange){
            onChange({...state,visible:undefined,value});
         }
@@ -104,7 +107,9 @@ const compareTimeState = (a,b,ignoreVisible)=>{
       setState({...state,visible:false})
     }
     containerProps = defaultObj(containerProps);
-    mode = theme.textFieldMode;
+    if(!disabled){
+      containerProps.style = [containerProps.style,{opacity:1}]
+    }
     return <>
       <TouchableRipple {...containerProps} 
         disabled = {!isEditable}
@@ -113,14 +118,17 @@ const compareTimeState = (a,b,ignoreVisible)=>{
         rippleColor={containerProps.rippleColor}
       >
           <TextField
+          mode = {mode||theme.textFieldMode}
           {...rest}
-          mode = {mode}
           label = {label}
           right = {right}
           disabled = {disabled}
           editable = {false}
+          handleOpacity = {false}
+          style = {[rest.style,!disabled && {opacity:1,color:theme.colors.text}]}
           contentContainerProps = {{...defaultObj(rest.contentContainerProps),pointerEvents:'auto'}}
           defaultValue = {state.value}
+          placeholder = {formatLabel}
         />
       </TouchableRipple>
       {withModal && <TimePickerModal
@@ -150,5 +158,5 @@ const compareTimeState = (a,b,ignoreVisible)=>{
     dialogProps : PropTypes.shape({
       ...defaultObj(TimePickerModal.propTypes)
     }),
-    useSeconds : PropTypes.bool, //si les sécondes devrons être utilisées
+    withSeconds : PropTypes.bool, //si les sécondes devrons être utilisées
   }

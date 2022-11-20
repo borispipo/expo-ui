@@ -11,6 +11,7 @@ import TextField from "$ecomponents/TextField";
 import Icon from "$ecomponents/Icon";
 import {StyleSheet,View} from "react-native";
 import DatePickerModal from '../DatePickerModal'
+import "../i18n";
 
 const validMinDate = (date,minDate)=>{
    if(!minDate || !date) return true;
@@ -55,6 +56,7 @@ const DatePickerInput = React.forwardRef(({
     visible : false
   })
   const inputFormat = useInputFormat(locale)
+  const inputFormatLabel = i18n.lang(inputFormat);
   const prevInputDate = React.usePrevious(state.inputDate,compareTwoDates)
   const formattedValue = !state.inputDate ? undefined : DateLib.format(state.inputDate,inputFormat.toLowerCase());
   const onDismiss = () => {
@@ -148,10 +150,10 @@ const DatePickerInput = React.forwardRef(({
     if(compareTwoDates(state.inputDate,prevInputDate) || state.errorText) return;
     if(onChange){
         const date = state.inputDate ? DateLib.toSQLDate(state.inputDate): undefined;
-        onChange({dateObject:state.inputDate,date,sqlDate:date,value:date})
+        onChange({dateObject:state.inputDate,date:state.inputDate,sqlDate:date,value:date})
     }
   },[state])
-  const labelText = render_filter ? label : withLabel!==false ? getLabel({ label, inputFormat, withDateFormatInLabel }):"";
+  const labelText = render_filter ? label : withLabel!==false ? getLabel({ label, inputFormat:inputFormatLabel, withDateFormatInLabel }):"";
   return (
     <>
         <TextField
@@ -166,8 +168,8 @@ const DatePickerInput = React.forwardRef(({
           ref={ref}
           label={labelText}
           defaultValue={formattedValue}
+          placeholder={inputFormatLabel}
           keyboardType={'number-pad'}
-          placeholder={inputFormat}
           mask={inputFormat}
           keyboardAppearance={theme.dark ? 'dark' : 'default'}
           error={hasError}
@@ -176,6 +178,7 @@ const DatePickerInput = React.forwardRef(({
               return <TextInputWithMask
                 {...inputProps}
                 locale = {locale}
+                placeholder={inputFormatLabel}
                 value = {formattedValue}
                 style = {[inputProps.style,styles.input,style]}
                 onChangeText={(date) => {

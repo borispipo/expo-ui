@@ -8,6 +8,7 @@ import Checkbox from "./Checkbox";
 import Slider from "./Slider";
 import ColorPicker from "./Color";
 import Date from "./Date";
+import DateTime from "./DateTime";
 import Time from "./Time";
 import Image from "./Image";
 import Tel from "./Tel";
@@ -26,6 +27,7 @@ export default {
     ,Slider
     ,ColorPicker
     ,Date
+    ,DateTime
     ,Time
     ,Image
     ,Tel

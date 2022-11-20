@@ -15,6 +15,8 @@ const componentTypes =  {
     selectcountry : Fields.SelectCountry,
     date : Fields.Date,
     time : Fields.Time,
+    datetime  : Fields.DateTime,
+    date2time : Fields.DateTime,
     checkbox : Fields.Checkbox,
     slider : Fields.Slider,
     color : Fields.ColorPicker,
@@ -92,8 +94,8 @@ export const getFilterComponentProps = (_props)=>{
         props = pR;
         props.items = [{code:checkedValue,label:checkedLabel},{code:uncheckedValue,label:uncheckedLabel}];
         component = Fields.SelectField;
-    } else if(type == "date" || type =="time"){
-        component = type === 'date'? Fields.Date : Fields.Time;
+    } else if(type == "date" || type =="time" || type =='datetime'){
+        component = type == 'datetime' ? Fields.DateTime : type === 'date'? Fields.Date : Fields.Time;
     }  else if(type == 'color' || type =='colorpicker') {
         component = Fields.ColorPicker;
     } else {

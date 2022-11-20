@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { findMatchedKey} from './keyEvents';
 import View from "$ecomponents/View";
 import {isWeb} from "$cplatform";
+import {StyleSheet} from "react-native";
 
 let exclusiveHandlers = [];
 
@@ -90,7 +91,7 @@ export default class KeyboardEventHandler extends React.Component {
       children = children(events);
     }
     if(!React.isValidElement(children)) return null;
-    return <View {...rest} ref={React.mergeRefs(this.childRef,innerRef)}>
+    return <View {...rest} style={[styles.content,rest.style]} ref={React.mergeRefs(this.childRef,innerRef)}>
       {children}
     </View>
   }
@@ -113,3 +114,10 @@ KeyboardEventHandler.defaultProps = {
   handleEventType: undefined,
   onKeyEvent: () => null,
 };
+
+const styles = StyleSheet.create({
+  content : {
+     maxWidth : '100%',
+     position : 'relative'
+  }
+})

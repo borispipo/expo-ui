@@ -20,11 +20,14 @@ const IconComponentRef = React.forwardRef((props,ref)=>{
     }
     if(!rest.icon) return null;
     const flattenedStyle = flattenStyle(style);
+    if(button === false){
+        flattenedStyle.borderRadius = 0;
+    }
     return <Tooltip 
         animated 
         {...rest}  
         color={Colors.isValid(color) ? color : Colors.isValid(flattenedStyle.color)? flattenedStyle.color : theme.colors.text} 
-        style = {[flattenedStyle,button === false ? {borderRadius:0}:null]}
+        style = {flattenedStyle}
         Component={React.isComponent(Component)?Component:IconButton}
         ref = {ref}
     />

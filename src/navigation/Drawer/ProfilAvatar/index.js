@@ -54,10 +54,9 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,...props},ref)=>
                 }
             }
         ];
-      let pseudo = defaultStr(u.code,u.pseudo,u.email)
-      const label = defaultStr(u.label,u.name,u.fullName,u.userName,u.email)
-      //let pT = pseudo;
-      //pseudo = <Tooltip uppserCase={false} title={defaultStr(u.label)+" ["+pseudo+"]"}>{pT}</Tooltip>;
+      const userPseudo = Auth.getUserPseudo();
+      const pseudo = defaultStr(userPseudo,Auth.getUserEmail(),Auth.getUserCode());
+      const label = defaultStr(Auth.getUserFullName(),userPseudo)
       return <View ref ={ref}>
             <Menu
              anchor = { (aProps)=>{

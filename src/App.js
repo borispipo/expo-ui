@@ -26,6 +26,12 @@ import {isMobileNative} from "$cplatform";
 import {setDeviceIdRef} from "$capp";
 import appConfig from "$capp/config";
 import {showPrompt} from "$components/Dialog/confirm";
+import * as Utils from "$utils";
+Object.map(Utils,(v,i)=>{
+  if(typeof v =='function' && typeof window !='undefined' && window && !window[i]){
+     window[i] = v;
+  }
+})
 
 export default function getIndex(options){
   const {App,onMount,onUnmount,preferences:appPreferences} = defaultObj(options);

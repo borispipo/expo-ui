@@ -386,7 +386,9 @@ export const prepareFilters = (filtersToPrepare,opts)=>{
             let sp = defaultStr(f.value);
             if(sp){
                 sp = sp.split("=>");
-                if(DateLib.isValidSQLDate(sp[0]) && DateLib.isValidSQLDate(sp[1])){
+                const isValid1 = DateLib.isValidSQLDate(sp[0]) || DateLib.isValidSQLDateTime(sp[0]);
+                const isValid2 = DateLib.isValidSQLDate(sp[1]) || DateLib.isValidSQLDateTime(sp[1]);
+                if(isValid1 && isValid2){
                     filters[f.operator].push({
                         [f.field] : {$gte:sp[0]}
                     })

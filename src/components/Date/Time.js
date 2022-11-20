@@ -7,15 +7,15 @@ import PropTypes from "prop-types";
 import theme,{styles} from "$theme";
 import { locale } from "./utils";
 import { TouchableRipple } from "react-native-paper";
-const getDate = (hours,minutes,seconds)=>{
+export const getDate = (hours,minutes,seconds)=>{
     return new Date(2000, 1, 1, defaultDecimal(hours), defaultDecimal(minutes),defaultDecimal(seconds))
 }
-const compareTimeState = (a,b,ignoreVisible)=>{ 
+export const compareTimeState = (a,b,ignoreVisible)=>{ 
     if(!a || !b) return false;
     if(ignoreVisible !== true && a.visible !== b.visible) return false;
     return a.hours === b.hours && a.minutes === b.minutes;
   }
-  const parseTime = (value,withSeconds)=>{
+export const parseTime = (value,withSeconds)=>{
     if(!isNonNullString(value)) return undefined;
     let split = value.trim().split(":");
     let ret = {
@@ -29,7 +29,7 @@ const compareTimeState = (a,b,ignoreVisible)=>{
     ret.value = timeToString(ret,withSeconds);
     return ret;
   }
-  const timeToString = (value,withSeconds)=>{
+export const timeToString = (value,withSeconds)=>{
      if(!isObj(value)) return undefined;
      let {hours,minutes,seconds} = value;
      if(hours ===undefined && minutes === undefined) return undefined;
@@ -43,7 +43,7 @@ const compareTimeState = (a,b,ignoreVisible)=>{
      }
      return value.substring(0,5);
   }
-  export default function TimePickerComponent (props){
+export default function TimePickerComponent (props){
     let {right:customRight,upper,anchorProps,dialogProps,withLabel,containerProps,mode,onChange,withSeconds,cancelLabel,confirmLabel,label,text,upperCase,defaultValue,disabled,editable,withModal,readOnly,...rest} = props;
     rest = defaultObj(rest);
     const isEditable = disabled !== true && readOnly !== true && editable !== false?true : false;

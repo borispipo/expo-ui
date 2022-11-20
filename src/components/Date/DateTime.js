@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 import Date from "./DatePickerInput";
-import Time from "./Time";
+import Time,{parseTime} from "./Time";
 import React from "$react";
 import PropTypes from "prop-types";
 import {defaultObj,isNumber,defaultNumber,defaultStr,defaultBool,isNonNullString} from "$utils";
@@ -17,8 +17,7 @@ export default function DateTimePickerComponent({left,withSeconds,right,format,d
     testID = defaultStr(testID,"RN_DateTimeComponent")
     const anchorTimeProps = defaultObj(timeProps.anchorProps);
     const timePropsContainerProps = defaultObj(timeProps.containerProps);
-    const defaultValueRef = React.useRef(toDateObj(defaultValue,format));
-    const dateObj = defaultValueRef.current;
+    const dateObj = toDateObj(defaultValue);
     if(isNonNullString(format)){
         format = format.trim().split(" ");
         if(!isNonNullString(dateFormat)){
@@ -28,9 +27,18 @@ export default function DateTimePickerComponent({left,withSeconds,right,format,d
             timeFormat = format[1].trim();
         }
     }
-    const changeDateArgsRef = React.useRef({});
-    const changedTimeArgsRef = React.useRef({});
+    const changeDateArgsRef = React.useRef({
+        date : dateObj,
+    });
+    const getTimeValue = (date)=>{
+        date = DateLib.isValid(date)? date : new Date();
+        const sqlTime = date.toSQLTimeFormat();
+        return sqlTime.substring(0,withSeconds ?sqlTime.length :5);
+    }
+    const timeDefaultValue = getTimeValue(dateObj);
+    const changedTimeArgsRef = React.useRef({...defaultObj(parseTime(timeDefaultValue,withSeconds))});
     withSeconds = defaultBool(timeProps.withSeconds,withSeconds,true);
+
     const maxWidth = 120;//withSeconds ? 120 : 120;
     const callOnChange = ()=>{
         if(onChange){
@@ -40,11 +48,12 @@ export default function DateTimePickerComponent({left,withSeconds,right,format,d
             const date = dObj.date;
             date.setHours(tObj.hours);
             date.setMinutes(tObj.minutes);
-            date.setSeconds(defaultNumber(tObj.seconds))
+            date.setSeconds(withSeconds?defaultNumber(tObj.seconds):0);
+            const sqlDate = date.toSQLDateFormat();
             const sqlTime = date.toSQLTimeFormat();
-            const time = sqlTime.substring(0,withSeconds ?sqlTime.length :5);
+            const time = getTimeValue(date);
             const value = date.toFormat(defaultStr(dateFormat,DateLib.SQLDateFormat))+" "+time;
-            const args = {...dObj,...tObj,dateObject:date,date,sqlDateTime:date.toSQLDateTimeFormat(),value,sqlTime,time};
+            const args = {...dObj,...tObj,dateObject:date,sqlDate,date,sqlDateTime:date.toSQLDateTimeFormat(),value,sqlTime,time};
             onChange(args);
         }
     }
@@ -67,7 +76,7 @@ export default function DateTimePickerComponent({left,withSeconds,right,format,d
             const r = typeof right =='function'? right(p): React.isValidElement(right)? right : null;
             return <>
                 <Time 
-                    defaultValue = {dateObj}
+                    defaultValue = {timeDefaultValue}
                     disabled = {disabled}
                     readOnly = {readOnly}       
                     testID={testID+"_Time"}    

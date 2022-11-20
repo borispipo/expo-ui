@@ -1,5 +1,11 @@
-import { registerRootComponent } from 'expo';
+import { registerRootComponent } from "expo";
+import {Platform } from 'react-native';
+import { createRoot } from 'react-dom/client';
 import appConfig from "$capp/config";
+import { activateKeepAwake } from 'expo-keep-awake';
+if (__DEV__) {
+    activateKeepAwake();
+}
 
 /**** initialise l'application expoUI avec les paramètres de configuration
  * les options sont de la forme : 
@@ -10,5 +16,11 @@ import appConfig from "$capp/config";
 export default function ExpoUIApp (options){
     options = options && typeof options =='object' && !Array.isArray(options)? options : {};
     appConfig.current = options.config;
-    registerRootComponent(require('./src/App').default(options));
+    const App = require('./src/App').default(options);
+    if (Platform.OS === "web") {
+        const root = createRoot(document.getElementById("root") ?? document.getElementById("main"));
+        root.render(<App />);
+    } else {
+        registerRootComponent(App);
+    }
 }

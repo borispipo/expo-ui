@@ -4,7 +4,7 @@ import DateLib from "$lib/date";
 import {isNonNullString,defaultStr,isNullOrEmpty,debounce,uniqid} from "$utils";
 import {regexParser,regexActions,getFilterStateValues} from "./utils";
 import {parseDecimal} from "$ecomponents/TextField";
-import FormDialog from "$ecomponents/Form/FormData/Dialog";
+import notify from "$notify";
 import PropTypes from "prop-types";
 import {extendObj} from "$utils";
 import {getFilterComponentProps} from "$ecomponents/Form/FormData/componentsTypes"
@@ -39,6 +39,14 @@ const _inActions = {
 const _operators = {
    '$and' : 'Et', //Array	Matches if all the selectors in the array match.
    '$or' : 'Ou', //Array	Matches if any of the selectors in the array match. All selectors must use the same index.
+}
+
+const periodActions = {
+  $today:"Aujourd'hui",
+  $prevWeek:"Semaine passée",
+  $week:'Cette semaine',
+  $month:'Ce mois',
+  $period:"Période"
 }
   
 /***** Coposant Filter, pour les filtres de données */
@@ -155,7 +163,7 @@ export default class Filter extends AppComponent {
         actions = _inActions;
         defaultAct = "$in";
     } else if(type == 'date' || type =='datetime') {
-      actions = {$today:"Aujourd'hui",$prevWeek:"Semaine passée",$week:'Cette semaine',$month:'Ce mois',$period:"Période", ...actions}  
+      actions = {...periodActions, ...actions}  
     } else if(type !== 'date2time' && type !== 'time' && type !== 'number' && type !== 'decimal'){
         actions = regexActions;
         defaultAct = '$regexcontains';
@@ -241,38 +249,41 @@ export default class Filter extends AppComponent {
         }    
       })
   }
+  isDateTime(){
+    const t =  defaultStr(this.type,this.props.type);
+    return t.contains("date") && t.contains("time");
+  }
   showPeriodSelector (success){
-    let split = defaultStr(this.props.defaultValue).split("=>");
-    let start = new Date().toFormat("yyyy-mm-dd"),
-       end = start;
-     if(DateLib.isValidSQLDate(split[0])){
+    const defaultValue = defaultStr(this.state.defaultValue).trim();
+    let split = defaultValue.split("=>");
+    let isDateTime = this.isDateTime();
+    let start = isDateTime ? new Date().toSQLDateTimeFormat() : new Date().toSQLDateFormat(), end = start;
+    
+     if(DateLib.isValidSQLDateTime(split[0]) || DateLib.isValidSQLDate(split[0])){
         start = split[0];
      }
-     if(DateLib.isValidSQLDate(split[1])){
+     if(DateLib.isValidSQLDateTime(split[1]) || DateLib.isValidSQLDate(split[1])){
         end = split[1];
      }
-    const type = this.type.contains("date")? this.type : "date";
+    const type = isDateTime? "datetime" : "date";
     DialogProvider.open({
+        subtitle : false,
         fields : {
            start : {type,text:'Du',defaultValue:start},
            end : {type,text:'Au',defaultValue:end}
         },
         title :"Définir une période ["+defaultStr(this.props.label,this.props.text)+"]",
+        cancelButton  : true,
         actions : {
-          no : {
-            text : 'Annuler',
-            icon : 'cancel',
-            isFormAction : false,
-            onPress : ()=>{
-              DialogProvider.close();
-            }
-         },
          yes : {
               text : 'Définir',
               icon : "check"
           },
         },
         onSuccess : ({data})=>{
+            if(data.start && data.end && data.start> data.end){
+                return notify.error("La date de fin doit être supérieure à la date de début");
+            }
             console.log(data," is dataa")
            if(isFunction(success)){
               success(data.start+"=>"+data.end);
@@ -293,7 +304,7 @@ export default class Filter extends AppComponent {
           this.runAction({value:d,action});
       })
     } else if(action =="$today"){
-        return this.runAction({value:new Date().toDateFormat(dateFormat),action})
+        return this.runAction({value:new Date().resetHours().resetMinutes().resetSeconds().toFormat(dateFormat),action})
     } else if(act.startsWith("$") && (act.contains("week") || act.contains("month"))){
       let diff = undefined;
       const currentDate = new Date();
@@ -435,6 +446,8 @@ export default class Filter extends AppComponent {
      if(isFunction(filter)){
          rest.filter = filter;
      }
+     const isPeriodAction = this.state.actions && periodActions[this.state.action]
+     const ignoreDefaultValue = isPeriodAction && isNonNullString(defaultValue) && defaultValue.contains("=>");
      rest.defaultValue = defaultValue;
      rest.disabled = rest.readOnly = rest.affix = false;
      rest.editable = true;
@@ -498,9 +511,14 @@ export default class Filter extends AppComponent {
                             
                          } else if((action =="$period" || (act.startsWith("$") && (act.contains("week") || act.contains("month"))))){
                            let sp = defaultValue.split("=>");
-                           if(DateLib.isValidSQLDate(sp[0]) && DateLib.isValidSQLDate(sp[1])){
-                               x = "Du "+defaultStr(DateLib.format(sp[0],DateLib.defaultDateFormat),sp[0])+" au "+defaultStr(DateLib.format(sp[1],DateLib.defaultDateFormat),sp[1]);
-                               hasS = true;      
+                           x = DateLib.formatDatePeriod(defaultValue,this.isDateTime());
+                           if(!x){
+                            if((DateLib.isValidSQLDate(sp[0])|| DateLib.isValidSQLDateTime(sp[0])) && (DateLib.isValidSQLDate(sp[1]) || DateLib.isValidSQLDateTime(sp[1]))){
+                                x = "Du "+defaultStr(DateLib.format(sp[0],DateLib.defaultDateFormat),sp[0])+" au "+defaultStr(DateLib.format(sp[1],DateLib.defaultDateFormat),sp[1]);
+                                hasS = true;      
+                            }
+                           } else {
+                            hasS = true; 
                            }
                           }
 
@@ -524,10 +542,15 @@ export default class Filter extends AppComponent {
      const Component = this.Component;
      const responsiveProps = Object.assign({},responsiveProps);
      responsiveProps.style = [theme.styles.w100,responsiveProps.style]
+     if(ignoreDefaultValue) {
+        rest.isPeriodAction = true;
+     }
      return <View testID={testID+"_FilterContainer"} {...containerProps} style={[theme.styles.w100,containerProps.style]}>
         <Component
           {...rest}
+          readOnly = {ignoreDefaultValue}
           responsiveProps = {responsiveProps}
+          isFilter
           name = {this.name}
           testID = {testID}
           ref = {React.mergeRefs(this.searchFilter,ref)}

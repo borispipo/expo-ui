@@ -10,8 +10,22 @@ import {defaultObj,isNumber,defaultNumber,defaultStr,defaultBool,isNonNullString
 import theme,{flattenStyle} from "$theme";
 import DateLib from "$date";
 import { toDateObj } from "./utils";
+import TextField from "$components/TextField";
+import PeriodActionComponent from "./PeriodAction";
 
-export default function DateTimePickerComponent({left,withSeconds,right,format,dateFormat,timeFormat,defaultValue,onChange,testID,dateProps,disabled,readOnly,timeProps,...rest}){
+export default function DateTimePickerComponent({left,isPeriodAction,withSeconds,right,format,dateFormat,timeFormat,defaultValue,onChange,testID,dateProps,disabled,readOnly,timeProps,...rest}){
+    if(!isPeriodAction){
+        isPeriodAction = isNonNullString(defaultValue) && defaultValue.contains("=>");
+    }
+    if(isPeriodAction){
+        return <PeriodActionComponent
+            {...rest}
+            isDateTime
+            left = {left}
+            defaultValue = {defaultValue}
+            right = {right}
+        />
+    }
     dateProps = defaultObj(dateProps);
     timeProps = defaultObj(timeProps);
     testID = defaultStr(testID,"RN_DateTimeComponent")

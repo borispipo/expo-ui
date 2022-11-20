@@ -12,6 +12,7 @@ import Icon from "$ecomponents/Icon";
 import {StyleSheet,View} from "react-native";
 import DatePickerModal from '../DatePickerModal'
 import "../i18n";
+import PeriodActionComponent from "../PeriodAction";
 
 const validMinDate = (date,minDate)=>{
    if(!minDate || !date) return true;
@@ -44,9 +45,23 @@ const DatePickerInput = React.forwardRef(({
     style,
     anchorProps,
     render_filter,
+    isPeriodAction,
+    isFilter,
     calendarIconBefore = false, //si l'icone calendar sera en position left où non
     ...rest
   },ref)=>{
+    let right = customRight,left = customLeft, isIconLeft = calendarIconBefore;
+    if(!isPeriodAction){
+        isPeriodAction = isNonNullString(defaultValue) && defaultValue.contains("=>");
+    }
+    if(isPeriodAction){
+      return <PeriodActionComponent
+          {...rest}
+          left = {left}
+          defaultValue = {defaultValue}
+          right = {right}
+      />
+  }
   inputMode = defaultStr(inputMode,"start");
   locale = defaultStr(locale,defaultLocale);
   const theme = useTheme()
@@ -108,7 +123,6 @@ const DatePickerInput = React.forwardRef(({
   anchorProps = defaultObj(anchorProps);
   label = defaultStr(label,text);
   customRight = React.isValidElement(customRight) || typeof customRight =='function'? customRight : null;
-  let right = customRight,left = customLeft, isIconLeft = calendarIconBefore;
   if(withModal){
       const customLOrR = isIconLeft ? customLeft : customRight;
       const leftOrRight = (props)=>{
@@ -160,7 +174,7 @@ const DatePickerInput = React.forwardRef(({
           affix = {false}
           {...rest}
           style = {[styles.input,style]}
-          editable = {editable}
+          editable = {isEditable}
           disabled = {disabled}
           left = {left}
           right = {right}

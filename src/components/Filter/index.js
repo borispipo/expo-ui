@@ -16,6 +16,7 @@ import theme from "$theme";
 import {isMobileMedia} from "$cplatform/dimensions";
 import { ActivityIndicator } from "react-native-paper";
 import { getSessionData,setSessionData } from "./session";
+import DialogProvider from "$components/Form/FormData/DialogProvider";
 
 const manualRunKey = "manual-run";
 
@@ -169,7 +170,7 @@ export default class Filter extends AppComponent {
   fireValueChanged (forceRun){
       if(this.willRunManually() && !forceRun) return;
       let {defaultValue:value,prevDefaultValue,action,ignoreCase,operator} = this.state;
-      const force = forceRun ===true ? true : false;
+      let force = forceRun ===true ? true : false;
       if(!isObjOrArray(value) && (isNullOrEmpty(value,true) || value ==='undefined') ){
           value = undefined;
       }
@@ -250,57 +251,68 @@ export default class Filter extends AppComponent {
      if(DateLib.isValidSQLDate(split[1])){
         end = split[1];
      }
-    let fContext = undefined;
-    mountDialog(<FormDialog
-        visible
-        key = {_uniqid("period-filter-date")}
-        fields = {{
-           start : {type:'date',text:'Du',defaultValue:start},
-           end : {type:'date',text:'Au',defaultValue:end}
-        }}
-        title = {"Définir une période ["+defaultStr(this.props.label,this.props.text)+"]"}
-        no = {{
-           text : 'Annuler',
-           icon : 'cancel'
-        }}
-        yes = {{
-           text : 'Définir',
-           icon : "check"
-        }}
-        onSuccess = {({data})=>{
+    const type = this.type.contains("date")? this.type : "date";
+    DialogProvider.open({
+        fields : {
+           start : {type,text:'Du',defaultValue:start},
+           end : {type,text:'Au',defaultValue:end}
+        },
+        title :"Définir une période ["+defaultStr(this.props.label,this.props.text)+"]",
+        actions : {
+          no : {
+            text : 'Annuler',
+            icon : 'cancel',
+            isFormAction : false,
+            onPress : ()=>{
+              DialogProvider.close();
+            }
+         },
+         yes : {
+              text : 'Définir',
+              icon : "check"
+          },
+        },
+        onSuccess : ({data})=>{
+            console.log(data," is dataa")
            if(isFunction(success)){
               success(data.start+"=>"+data.end);
            }
+           DialogProvider.close();
            return true;
-        }}
-    />)
+        }})
   }
   setAction(action,text){
     if(!(this.searchFilter.current)) return;
     if(action === this.state.action && action !="$period" && action !== "$today") return;
     let value = this.state.defaultValue;
     let act = defaultStr(action).toLowerCase();
+    const isDateTime = this.type?.contains("time");
+    const dateFormat = isDateTime?DateLib.SQLDateTimeFormat:DateLib.SQLDateFormat;
     if(action == '$period'){
       this.showPeriodSelector((d)=>{
           this.runAction({value:d,action});
       })
     } else if(action =="$today"){
-        return this.runAction({value:new Date().toSQL(),action})
+        return this.runAction({value:new Date().toDateFormat(dateFormat),action})
     } else if(act.startsWith("$") && (act.contains("week") || act.contains("month"))){
       let diff = undefined;
+      const currentDate = new Date();
+      currentDate.setHours(0);
+      currentDate.setMinutes(0);
+      currentDate.setSeconds(0);
       switch (action){
         case "$month":
-            diff = DateLib.currentMonthDaysLimits();
+            diff = DateLib.currentMonthDaysLimits(currentDate);
           break;
         case "$week":      
-            diff = DateLib.currentWeekDaysLimits()
+            diff = DateLib.currentWeekDaysLimits(currentDate)
           break;
         case "$prevWeek":      
-          diff = DateLib.previousWeekDaysLimits()
+          diff = DateLib.previousWeekDaysLimits(currentDate)
         break;
       }
       if(diff){
-        let value = diff.first.toFormat(DateLib.SQLDateFormat) +"=>"+diff.last.toFormat(DateLib.SQLDateFormat);
+        let value = diff.first.toFormat(dateFormat) +"=>"+diff.last.toFormat(dateFormat);
         this.runAction({value,action})
       }
     } else {

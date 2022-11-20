@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-import Date from "./DatePickerInput";
+import DateComponent from "./DatePickerInput";
 import Time,{parseTime} from "./Time";
 import React from "$react";
 import PropTypes from "prop-types";
@@ -57,7 +57,7 @@ export default function DateTimePickerComponent({left,withSeconds,right,format,d
             onChange(args);
         }
     }
-    return <Date
+    return <DateComponent
         defaultValue = {dateObj}
         disabled = {disabled}
         readOnly = {readOnly}
@@ -107,7 +107,7 @@ export default function DateTimePickerComponent({left,withSeconds,right,format,d
 }
 
 DateTimePickerComponent.propTypes = {
-    ...Date.propTypes,
+    ...DateComponent.propTypes,
     dateProps : PropTypes.object,
     timeProps : PropTypes.object,
     dateFormat : PropTypes.string, //Le format de date

@@ -9,6 +9,11 @@ const Dictionary = {
         mustBeLowerThan: 'doit être plus récente de',
         mustBeBetween: 'doit être entre',
         dateIsDisabled: 'la date n\'est pas autorisée',
+        previous: 'Précédent',
+        next: 'Suivant',
+        typeInDate: 'Entrer la date',
+        pickDateFromCalendar: 'Sélectionner une date dans le calendrier',
+        close: 'Fermer',
         "DD/MM/YYYY" : "JJ/MM/AAAA",
     },
     en : {
@@ -21,6 +26,11 @@ const Dictionary = {
         mustBeLowerThan: 'Must be earlier then',
         mustBeBetween: 'Must be between',
         dateIsDisabled: 'Day is not allowed',
+        previous: 'Previous',
+        next: 'Next',
+        typeInDate: 'Type in date',
+        pickDateFromCalendar: 'Pick date from calendar',
+        close: 'Close',
         "DD/MM/YYYY" : "DD/MM/AAAA"
     }
 }

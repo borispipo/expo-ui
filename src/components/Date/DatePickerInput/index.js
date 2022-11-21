@@ -11,7 +11,6 @@ import TextField from "$ecomponents/TextField";
 import Icon from "$ecomponents/Icon";
 import {StyleSheet,View} from "react-native";
 import DatePickerModal from '../DatePickerModal'
-import "../i18n";
 import PeriodActionComponent from "../PeriodAction";
 
 const validMinDate = (date,minDate)=>{

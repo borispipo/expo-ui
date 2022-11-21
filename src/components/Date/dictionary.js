@@ -9,6 +9,7 @@ const Dictionary = {
         mustBeLowerThan: 'doit être plus récente de',
         mustBeBetween: 'doit être entre',
         dateIsDisabled: 'la date n\'est pas autorisée',
+        "DD/MM/YYYY" : "JJ/MM/AAAA",
     },
     en : {
         save: 'Save',
@@ -20,6 +21,7 @@ const Dictionary = {
         mustBeLowerThan: 'Must be earlier then',
         mustBeBetween: 'Must be between',
         dateIsDisabled: 'Day is not allowed',
+        "DD/MM/YYYY" : "DD/MM/AAAA"
     }
 }
 

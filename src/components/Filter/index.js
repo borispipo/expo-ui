@@ -42,6 +42,7 @@ const _operators = {
 }
 
 const periodActions = {
+  $yesterday : "Hier",
   $today:"Aujourd'hui",
   $prevWeek:"Semaine passée",
   $week:'Cette semaine',
@@ -185,7 +186,7 @@ export default class Filter extends AppComponent {
       let originValue = value;
       const type = defaultStr(this.props.type).toLowerCase().trim();
       value = parseDecimal(value,type);
-      if(action =="$today"){
+      if(action =="$today" || action =='$yesterday'){
          force = true;
       }
       let prev = JSON.stringify(defaultObj(this.previousObj)),//{value:this.previousValue,operator:this.previousOperator,action:this.previousAction}
@@ -206,7 +207,7 @@ export default class Filter extends AppComponent {
           let originAction = action;
           if(isNonNullString(action)){
             action = action.toLowerCase().trim();
-            if(action =="$today"){
+            if(action =="$today" || action =='$yesterday'){
               action = "$eq";
             } else if(action.startsWith("$") && (action.contains("week") || action.contains("month"))){
               action = "$period";
@@ -294,7 +295,7 @@ export default class Filter extends AppComponent {
   }
   setAction(action,text){
     if(!(this.searchFilter.current)) return;
-    if(action === this.state.action && action !="$period" && action !== "$today") return;
+    if(action === this.state.action && action !="$period" && action !== "$today" && action !='$yesterday') return;
     let value = this.state.defaultValue;
     let act = defaultStr(action).toLowerCase();
     const isDateTime = this.type?.contains("time");
@@ -305,7 +306,9 @@ export default class Filter extends AppComponent {
       })
     } else if(action =="$today"){
         return this.runAction({value:new Date().resetHours().resetMinutes().resetSeconds().toFormat(dateFormat),action})
-    } else if(act.startsWith("$") && (act.contains("week") || act.contains("month"))){
+    } else if(action =="$yesterday"){
+      return this.runAction({value: DateLib.removeDays(1,new Date(),null,true).resetHours().resetMinutes().resetSeconds().toFormat(dateFormat),action})
+  } else if(act.startsWith("$") && (act.contains("week") || act.contains("month"))){
       let diff = undefined;
       const currentDate = new Date();
       currentDate.setHours(0);
@@ -507,7 +510,7 @@ export default class Filter extends AppComponent {
                        if(checked && (isNumber(defaultValue) || isNonNullString(defaultValue))) {
                          let hasS = false;
                          let act = defaultStr(action).toLowerCase();
-                         if(act =="$today"){
+                         if(act =="$today" || act =='$yesterday'){
                             
                          } else if((action =="$period" || (act.startsWith("$") && (act.contains("week") || act.contains("month"))))){
                            let sp = defaultValue.split("=>");

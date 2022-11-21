@@ -481,7 +481,7 @@ export default class CommonDatagridComponent extends AppComponent {
             header.colIndex = colIndex;
             this.state.columns[header.field] = header;
             /*** les pieds de pages sont les données de type decimal, où qu'on peut compter */
-            if(header.footer !== false && (arrayValueExists(['decimal','number','money'],header.type) || header.format == 'money')){
+            if(header.footer !== false && ((arrayValueExists(['decimal','number','money'],header.type) && header.format) || header.format == 'money' || header.format =='number')){
                 footers[header.field] = header;
             }
             if(!this.hasColumnsHalreadyInitialized){

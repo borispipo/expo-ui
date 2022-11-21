@@ -10,6 +10,7 @@ import Label from "$ecomponents/Label";
 import theme from "$theme"
 import Expandable from "$ecomponents/Expandable";
 import { Dimensions } from "react-native";
+import Grid from "$components/Grid";
 
 const MIN_WIDTH = 250;
 let windowWidth = Dimensions.get("window").width;
@@ -28,6 +29,12 @@ const FiltersAccordionComponent = React.forwardRef((props,ref)=>{
     const filterTitle = defaultStr(customFilterTitle,'Filtres');
     const canHandlerFilterRef = React.useRef(0);
     const filteredRef = React.useRef({});
+    const cellProps = {
+        desktopSize : 4,
+        tabletSize :6,
+        phoneSize : 12, 
+        style : [theme.styles.ph1],
+    }
     const prepareContent = (filters)=>{
         const content = []
         const colMenus = [];
@@ -37,7 +44,7 @@ const FiltersAccordionComponent = React.forwardRef((props,ref)=>{
         };
         Object.map(filters,(filter,index)=>{
             if(React.isValidElement(filter)){
-                content.push(<React.Fragment key={index}>{filter}</React.Fragment>)
+                content.push(<Grid.Cell {...cellProps} key={index}>{filter}</Grid.Cell>)
             } else if(isObj(filter)){ 
                 const {onChange} = filter;
                 const key = defaultStr(filter.key,filter.field,filter.index,index+"");
@@ -65,7 +72,9 @@ const FiltersAccordionComponent = React.forwardRef((props,ref)=>{
                     }
                 }
                 mainFilterTitle +=(content.length?",":"")+"\n"+defaultStr(filter.label,filter.text,filter.field)+" : "+defVal+""
-                content.push(<Filter
+                content.push(
+                    <Grid.Cell {...cellProps} key={key}>
+                    <Filter
                         {...filter}
                         dynamicRendered
                         isLoading = {isLoading && filteredRef.current[key] ? true : false}
@@ -88,7 +97,7 @@ const FiltersAccordionComponent = React.forwardRef((props,ref)=>{
                         withBottomSheet
                         containerProps = {{...containerProps}}
                         inputProps = {{containerProps}}
-                    />)
+                    /></Grid.Cell>)
             }
         })
         return {content,mainFilterTitle,colMenus}
@@ -130,10 +139,10 @@ const FiltersAccordionComponent = React.forwardRef((props,ref)=>{
                     </View>
                 </Expandable>
             </View>
-            {content.length ? <View style={styles.contentContainer}>
-                <View style = {[styles.content]}>
+            {content.length ? <View style={[theme.styles.w100]}>
+                <Grid style={theme.styles.w100}>
                     {content}
-                </View>
+                </Grid>
             </View> : null}
         </View>
     </Content>

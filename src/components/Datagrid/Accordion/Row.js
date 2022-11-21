@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
     container : {
         marginVertical : 10,
         paddingVertical : 5,
-        paddingHorizontal : 5,
+        paddingHorizontal : 15,
         marginHorizontal : 5,
         flexWrap : 'nowrap',
         justifyContent : 'center',

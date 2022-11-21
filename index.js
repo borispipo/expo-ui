@@ -1,5 +1,5 @@
 import { registerRootComponent } from "expo";
-import {Platform } from 'react-native';
+import {AppRegistry, Platform } from 'react-native';
 import { createRoot } from 'react-dom/client';
 import appConfig from "$capp/config";
 import { activateKeepAwake } from 'expo-keep-awake';
@@ -17,8 +17,8 @@ export default function ExpoUIApp (options){
     options = options && typeof options =='object' && !Array.isArray(options)? options : {};
     appConfig.current = options.config;
     const App = require('./src/App').default(options);
-    if (Platform.OS === "web") {
-        const root = createRoot(document.getElementById("root") ?? document.getElementById("main"));
+    if (false && Platform.OS === "web") {
+        const root = createRoot(document.getElementById("root") || document.getElementById("main"));
         root.render(<App />);
     } else {
         registerRootComponent(App);

@@ -1554,7 +1554,7 @@ export default class CommonDatagridComponent extends AppComponent {
                          v1.map((v)=>{
                              for(let i in columnDef.items){
                                  let it = columnDef.items[i];
-                                 if(isObj(it) && defaultStr(it.code,i) == v){
+                                 if(isObj(it) && defaultVal(it.code,i) == v){
                                      _render+=(_render?arrayValueSeparator:"")+defaultStr(it.label,it.text,v);
                                  } else if(isNonNullString(it) && i == v){
                                     _render+=(_render?arrayValueSeparator:"")+it;
@@ -1567,7 +1567,7 @@ export default class CommonDatagridComponent extends AppComponent {
                      } else {
                          for(let i in columnDef.items){
                             let it = columnDef.items[i];
-                            if(isObj(it) && defaultStr(it.code,i) == v1){
+                            if(isObj(it) && defaultVal(it.code,i) == v1){
                                 _render =defaultStr(it.label,it.text,v1);
                                 break;
                             } else if(isNonNullString(it) && i == v1){

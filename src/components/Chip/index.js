@@ -27,13 +27,15 @@ const ChipComponent = React.forwardRef(({
   onLongPress,
   onClose,
   closeIcon,
-  textStyle,
+  labelStyle,
+  labelProps,
   style,
   testID,
   selectedColor,
   ellipsizeMode,
   ...rest
 },ref) => {
+  labelProps = Object.assign({},labelProps);
   testID =defaultStr(testID,"RN_ChipComponent");
   const { current: elevation } = React.useRef(
     new Animated.Value(0)
@@ -66,7 +68,7 @@ const ChipComponent = React.forwardRef(({
   const borderColor =
     mode === 'outlined'? (selectedColor !== undefined ? selectedColor : Colors.setAlpha(dark ? white : black,0.29)) : backgroundColor;
   const textColor = Colors.isValid(customColor)?customColor 
-    : Colors.setAlpha(selectedColor !== undefined ? selectedColor : colors.text,0.87);
+    : Colors.setAlpha(selectedColor !== undefined ? selectedColor : theme.colors.text,0.87);
   const iconColor =  Colors.setAlpha(textColor,theme.ALPHA);
         
   const backgroundColorString = typeof backgroundColor === 'string' ? backgroundColor : defaultBackgroundColor;
@@ -173,7 +175,8 @@ const ChipComponent = React.forwardRef(({
             selectable={false}
             numberOfLines={1}
             testID={testID+"_Text"}
-            style={[
+            {...labelProps}
+            style={StyleSheet.flatten([
               styles.text,
               {
                 ...theme.fonts.regular,
@@ -181,8 +184,9 @@ const ChipComponent = React.forwardRef(({
                 marginHorizontal : 4,
                 marginLeft: avatar || icon || selected ? 4 : 8,
               },
-              textStyle,
-            ]}
+              labelProps.style,
+              labelStyle,
+            ])}
             ellipsizeMode={ellipsizeMode}
           >
             {children}
@@ -332,7 +336,7 @@ ChipComponent.propTypes = {
     /**
      * Style of chip's text
      */
-    textStyle: StyleProps,
+    labelStyle: StyleProps,
     style: StyleProps,
   
     /**
@@ -347,4 +351,5 @@ ChipComponent.propTypes = {
      * Ellipsize Mode for the children text
      */
     ellipsizeMode: PropTypes.object,
+    labelProps : PropTypes.object,
   };

@@ -20,6 +20,7 @@ import {ACTION_ICON_SIZE} from "$ecomponents/AppBar";
 import DialogFooter from "./DialogFooter";
 import { Dimensions } from "react-native";
 import Surface from "$ecomponents/Surface";
+import stableHash from "stable-hash";
 
 export const FOOTER_HEIGHT = 50;
 export const HEADER_HEIGHT = 50;
@@ -307,14 +308,14 @@ DialogComponent.propTypes= {
 }
 
 
-export const DialogControlledComponent = React.forwardRef((props,ref)=>{
-    const [visible,setVisible] = React.useStateIfMounted(defaultBool(props.visible,false));
+export const DialogControlledComponent = React.forwardRef(({visible:dVisible,...props},ref)=>{
+    const [visible,setVisible] = React.useStateIfMounted(defaultBool(dVisible,false));
     const {onDismiss,onClose,onVisibilityChanged,...rest} = props;
     React.useEffect(()=>{
-        if(typeof props.visible =='boolean' && props.visible !== visible){
-            setVisible(props.visible);
+        if(typeof dVisible =='boolean' && dVisible !== visible){
+            setVisible(dVisible);
         }
-    },[props])
+    },[dVisible])
     const close = x=> setVisible(false);
     const open = x => setVisible(true);
     const isOpen=x=>visible,isClosed = x=>!visible;

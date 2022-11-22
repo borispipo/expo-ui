@@ -88,6 +88,12 @@ export default class Filter extends AppComponent {
     Object.defineProperties(this,{
       fireFilterSearch : {
          value : this.filterValidationTimeout ? debounce(this.fireValueChanged.bind(this),this.filterValidationTimeout) : this.fireValueChanged.bind(this),
+      },
+      isInitializedRef : {
+        value : {current:false}
+      },
+      previousRef : {
+        value : {current : null}
       }
     })
     extendObj(this.state,{
@@ -134,7 +140,7 @@ export default class Filter extends AppComponent {
      if(JSON.stringify(this.state.defaultValue) === JSON.stringify(arg.value)){
         return;
      }
-     this.setState({prevDefaultValue:this.state.defaultValue,defaultValue:arg.value},()=>{
+     this.setState({defaultValue:arg.value},()=>{
        this.callOnValidate(arg);
        if(!isNumber(this.filterValidationTimeout)){
           this.filterValidationTimeout = 0;
@@ -178,7 +184,7 @@ export default class Filter extends AppComponent {
   }
   fireValueChanged (forceRun){
       if(this.willRunManually() && !forceRun) return;
-      let {defaultValue:value,prevDefaultValue,action,ignoreCase,operator} = this.state;
+      let {defaultValue:value,action,ignoreCase,operator} = this.state;
       let force = forceRun ===true ? true : false;
       if(!isObjOrArray(value) && (isNullOrEmpty(value,true) || value ==='undefined') ){
           value = undefined;
@@ -189,18 +195,17 @@ export default class Filter extends AppComponent {
       if(action =="$today" || action =='$yesterday'){
          force = true;
       }
-      let prev = JSON.stringify(defaultObj(this.previousObj)),//{value:this.previousValue,operator:this.previousOperator,action:this.previousAction}
-          current = {value,operator,action,ignoreCase};
+      const prev = JSON.stringify(defaultObj(this.previousRef.current)), current = {value,operator,action,ignoreCase};
           let tV = isArray(value) && value.length <= 0 ? undefined : value;
-      let isFilterInitialized = this.props.dynamicRendered || this.isFilterInitialized;
-      if(prev == "{}" && (isNullOrEmpty(tV) || value === 0) && (!isFilterInitialized) && (force !== true))  {
+      this.isInitializedRef.current = this.props.dynamicRendered || this.isInitializedRef.current;
+      if(prev == "{}" && (isNullOrEmpty(tV) || value === 0) && (!this.isInitializedRef.current) && (force !== true))  {
         return this;
       }
       if(prev == JSON.stringify(current) && (force !== true)){
           return this;
       }
-      this.isFilterInitialized = true;
-      this.previousObj = current;
+      this.isInitializedRef.current = true;
+      this.previousRef.current = current;
       if(isFunction(this.props.onChange)){
           let selector = {};
           selector[this.props.field] = action;
@@ -353,7 +358,7 @@ export default class Filter extends AppComponent {
       })
   }
   clearFilter(event){
-    this.setState({defaultValue:undefined,prevDefaultValue:this.state.defaultValue},()=>{
+    this.setState({defaultValue:undefined},()=>{
       this.callOnValidate();
       this.fireValueChanged(true);
       let {onClearFilter,onResetFilter} = this.props;

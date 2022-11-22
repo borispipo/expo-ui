@@ -21,6 +21,7 @@ const FormDataDialogProvider = React.forwardRef((props,innerRef)=>{
     const {closeAction,onDismiss} = props;
     const context = {
         open : (props)=>{
+            if(state.visible) return;
             let sData = {};
             if(formRef.current && formRef.current.formDataContext && formRef.current.formDataContext.getData){
                 sData.data = formRef.current.formDataContext.getData();
@@ -28,6 +29,7 @@ const FormDataDialogProvider = React.forwardRef((props,innerRef)=>{
             return setState({...state,...sData,onDismiss:undefined,...defaultObj(props),visible:true})
         },
         close : (props)=>{
+            if(!state.visible) return;
             setState({...state,...defaultObj(props),visible:false});
         },
     };

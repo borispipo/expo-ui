@@ -41,16 +41,16 @@ export default function DateTimePickerComponent({left,isPeriodAction,withSeconds
             timeFormat = format[1].trim();
         }
     }
-    const changeDateArgsRef = React.useRef({
+    const changeDateArgsRef = {current:{
         date : dateObj,
-    });
+    }}
     const getTimeValue = (date)=>{
         date = DateLib.isValid(date)? date : new Date();
         const sqlTime = date.toSQLTimeFormat();
         return sqlTime.substring(0,withSeconds ?sqlTime.length :5);
     }
     const timeDefaultValue = getTimeValue(dateObj);
-    const changedTimeArgsRef = React.useRef({...defaultObj(parseTime(timeDefaultValue,withSeconds))});
+    const changedTimeArgsRef = {current:{...defaultObj(parseTime(timeDefaultValue,withSeconds))}};
     withSeconds = defaultBool(timeProps.withSeconds,withSeconds,true);
 
     const maxWidth = 120;//withSeconds ? 120 : 120;

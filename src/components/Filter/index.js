@@ -506,7 +506,10 @@ export default class Filter extends AppComponent {
                       style : [styles.bold,styles.noVerticalPadding],
                     }:null],
                      ...Object.mapToArray(actions,(x,j)=>{
-                       let checked = j === action?true : false;
+                      if(ignoreDefaultValue && !periodActions[j]){
+                        return null;
+                      } 
+                      let checked = j === action?true : false;
                        if(checked && (isNumber(defaultValue) || isNonNullString(defaultValue))) {
                          let hasS = false;
                          let act = defaultStr(action).toLowerCase();

@@ -402,6 +402,7 @@ export const prepareFilters = (filtersToPrepare,opts)=>{
             filters[f.operator].push(ob)
         }
     });
+    const f = convertToSQL(filters);
     return convToSQL ? convertToSQL(filters) : filters;
 }
 
@@ -495,4 +496,58 @@ const operatorsMap = {
     $nin : 'NOT IN',
     $eq: '=',
     $regex : "LIKE"
+  }
+
+  /**
+ *
+ * @param {*} operand
+ * @param {*} operator
+ * @param {*} field
+ *
+ * Return the operand in right format
+ */
+export const getTyppedOperand = (operand, operator, field) => {
+    if (typeof operand === 'string') { // wrap strings in double quots
+      return "'" +(operand) + "'"
+    } else if (operator === 'IN' || operator =='NOT IN') { // wrap IN arguments in brackers
+      operand = Array.isArray(operand)? operand.map(op => getTyppedOperand(op, null, null))
+      .join(', '): operand;
+      return '(' + operand + ')'
+    } else if (!isNonNullString(field) && Array.isArray(operand)) { // AND or OR elements
+      // recursively call 'buildWhereElement' for nested elements
+      // join each element with operator AND or OR
+      return operand.reduce((prev, curr) => {
+        return [...prev, buildWhereElement(curr)]
+      }, []).join(' ' + operator + ' ')
+    } else {
+      return operand
+    }
+}
+  
+  /**
+   *
+   * @param {*} elem
+   *
+   * Return element of WHERE clause
+   */
+  export const buildWhereElement = (elem) => {
+    const { field, operator, operand } = elem
+    if (!isNonNullString(field)) { // nested WHERE element
+      return '(' + getTyppedOperand(operand, operator, field) + ')'
+    } else { // simple WHERE element
+      return field + ' ' + operator + ' ' + getTyppedOperand(operand, operator, field)
+    }
+  }
+  
+  /**** construit une requête Where à partir des filtres préparé dans le tableau whereClausePrepared
+   * @see : https://github.com/gordonBusyman/mongo-to-sql-converter
+   * @parm {array} whereClausePrepared, les filtres préparés avec la méthode prepareFilters puis convertis avec la fonction convertToSQL
+     @return {string}, la requête Where correspondante
+  */
+  export const buildWhere = (whereClausePrepared)=>{
+    if(!Array.isArray(whereClausePrepared)) return null;
+    // build WHERE string clause by adding each element of array to it, separated with AND
+    return whereClausePrepared.reduce((prev, curr) => [
+        ...prev, buildWhereElement(curr)
+    ], []).join(' AND ');
   }

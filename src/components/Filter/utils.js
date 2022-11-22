@@ -402,7 +402,6 @@ export const prepareFilters = (filtersToPrepare,opts)=>{
             filters[f.operator].push(ob)
         }
     });
-    const f = convertToSQL(filters);
     return convToSQL ? convertToSQL(filters) : filters;
 }
 

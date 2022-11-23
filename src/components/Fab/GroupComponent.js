@@ -30,12 +30,12 @@ const FABGroup = ({
   screenName,
   fabStyle,
   visible,
-  testID,
   onStateChange,
   color: colorProp,
+  testID,
   ...rest
 }) => {
-  
+  testID = defaultStr(testID,"RN_FabGroupComponent")
   const { current: backdrop } = React.useRef(
     new Animated.Value(0)
   );
@@ -121,9 +121,10 @@ const FABGroup = ({
   const Item = isFormAction ? Action : FabItem;
   const itemComponentProps = isFormAction ? {Component : FabItem} : {};
   return (
-    <View pointerEvents="box-none" style={[styles.container, style]}>
-      <TouchableWithoutFeedback onPress={close}>
+    <View testID={testID+"_Container"} pointerEvents="box-none" style={[styles.container, style]}>
+      <TouchableWithoutFeedback testID={testID+"_TouchableOpacity"} onPress={close}>
         <Animated.View
+          testID={testID+"_AnimatedView"}
           pointerEvents={open ? 'auto' : 'none'}
           style={[
             styles.backdrop,
@@ -134,8 +135,8 @@ const FABGroup = ({
           ]}
         />
       </TouchableWithoutFeedback>
-      <SafeAreaView pointerEvents="box-none" style={styles.safeArea}>
-        <View pointerEvents={open ? 'box-none' : 'none'}>
+      <SafeAreaView testID={testID+"_SafeAreaView"} pointerEvents="box-none" style={styles.safeArea}>
+        <View testID={testID+"_ItemsContainer"} style={[styles.itemsContainer]} pointerEvents={open ? 'box-none' : 'none'}>
           {actions.map((it, i) => {
              const itemProps = {
                 labelColor : it.labelTextColor ??  it.labelColor ?? labelColor,
@@ -148,12 +149,13 @@ const FABGroup = ({
              }
              return (
               <View
+                testID={testID+"_Item_"+i}
                 key={i} // eslint-disable-line react/no-array-index-key
                 style={[
                   styles.item,
                   {
                     marginHorizontal:
-                      typeof it.small === 'undefined' || it.small ? 24 : 16,
+                      typeof it.small || it.small ? 24 : 16,
                   },
                 ]}
                 pointerEvents={open ? 'box-none' : 'none'}
@@ -281,7 +283,7 @@ FABGroup.propTypes = {
 export const FabItem = function(props){
   const {children,label,disabled:customDisabled,pointerEvents,open,close,testID:customTestID,labelStyle,labelColor,accessibilityLabel,icon,backgroundColor,scale,opacity,color,style,small,onPress,...rest} = props;
   const disabled = typeof customDisabled =='boolean'? customDisabled : false;
-  const testID = defaultStr(customTestID,"RN_FabGroupComponent")
+  const testID = defaultStr(customTestID,"RN_FabItemComponent")
   const _onPress = ()=>{
     if(onPress){
       onPress();
@@ -321,7 +323,7 @@ export const FabItem = function(props){
              </View>
            ) : null}
            <FAB
-             small={typeof small !== 'undefined' ? small : true}
+             small={typeof small =='boolean' ? small : true}
              icon={icon}
              color={color}
              disabled = {disabled}
@@ -357,6 +359,9 @@ export const FabItem = function(props){
 const styles = StyleSheet.create({
   safeArea: {
     alignItems: 'flex-end',
+  },
+  itemsContainer : {
+    marginBottom : 70,
   },
   container: {
     ...StyleSheet.absoluteFillObject,

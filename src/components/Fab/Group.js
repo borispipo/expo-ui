@@ -61,7 +61,6 @@ const FabGroupComponent = React.forwardRef((props,innerRef)=>{
                 act.label = defaultStr(act.label,act.text);
                 const a = actionMutator ? actionMutator ({action:act,key:i,isFab:true,fab:true}) : act;
                 if(!isObj(a) || !isNonNullString(a.label)) return null;
-                a.small = typeof a.small =='boolean'? a.small : false;
                 const {perm,isAllowed,primary,secondary,...restItem} = a;
                 if(typeof isAllowed =='function' && isAllowed() === false) return null;
                 if(isNonNullString(perm) && !Auth.isAllowedFromStr(perm)) return false;

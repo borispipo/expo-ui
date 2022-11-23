@@ -19,7 +19,6 @@ const FabComponent = React.forwardRef((props,ref)=>{
         color = theme.colors.secondaryText;
     }
     return  <FAB
-        //small
         testID='RN_FabComponent'
         {...rest}
         color = {color}

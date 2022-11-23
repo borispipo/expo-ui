@@ -83,9 +83,6 @@ export default function MainScreenScreenWithOrWithoutAuthContainer(props) {
   if(authRequired === false){
     withFab = false;
   }
-  if(typeof withFab !=='boolean'){
-    withFab = withDrawer;
-  }
   React.useEffect(() => {
     if((title||subtitle) && navigation && navigation.setOptions){
       const appName = APP.getName().toUpperCase();
@@ -106,7 +103,7 @@ export default function MainScreenScreenWithOrWithoutAuthContainer(props) {
     }
   }, [title,subtitle]);
   const Wrapper =  modal ? Portal : React.Fragment;
-  const fab = withFab !== false ? <Fab 
+  const fab = withFab ? <Fab 
       {...fabProps}
       screenName={screenName}
   />  : null;

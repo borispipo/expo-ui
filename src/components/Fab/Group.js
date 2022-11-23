@@ -7,15 +7,16 @@ import {MENU_ICON} from "$ecomponents/Icon";
 import theme,{Colors} from "$theme";
 import Group from "./GroupComponent";
 import Portal from "$ecomponents/Portal";
+import Auth from "$cauth";
 
 const FabGroupComponent = React.forwardRef((props,innerRef)=>{
     let {openedIcon,screenName,display:customDisplay,primary,actionMutator,secondary,onOpen,prepareActions,fabStyle,open:customOpen,onClose,onStateChange:customOnStateChange,closedIcon,color,actions:customActions,children,...customRest} = props;
-
     const [state, setState] = React.useStateIfMounted({ 
         open: typeof customOpen =='boolean'? customOpen : false,
         display : typeof customDisplay ==='boolean'? customDisplay : true,
     });
     const onStateChange = ({ open,...rest}) => {
+        if(state.open == open) return;
         setState({ ...state,open });
         if(customOnStateChange){
             customOnStateChange({open,...rest})
@@ -52,6 +53,7 @@ const FabGroupComponent = React.forwardRef((props,innerRef)=>{
         color = theme.colors.secondaryText;
     }
     const actions = React.useCallback(()=>{
+        if(!open) return []
         const actions =  prepareActions === false && Array.isArray(customActions)? customActions : [];
         if((prepareActions !== false || !actions.length)){
             Object.map(customActions,(act,i)=>{
@@ -62,6 +64,7 @@ const FabGroupComponent = React.forwardRef((props,innerRef)=>{
                 a.small = typeof a.small =='boolean'? a.small : false;
                 const {perm,isAllowed,primary,secondary,...restItem} = a;
                 if(typeof isAllowed =='function' && isAllowed() === false) return null;
+                if(isNonNullString(perm) && !Auth.isAllowedFromStr(perm)) return false;
                 if(primary){
                     restItem.style = StyleSheet.flatten([restItem.style,{color:theme.colors.primaryText,backgroundColor:theme.colors.primary}])
                 } else if(secondary){
@@ -72,7 +75,7 @@ const FabGroupComponent = React.forwardRef((props,innerRef)=>{
             }); 
         }
         return actions;
-    },[customActions,prepareActions])();
+    },[customActions,prepareActions,open])();
     
     React.useEffect(()=>{
         React.setRef(innerRef,context);
@@ -85,7 +88,7 @@ const FabGroupComponent = React.forwardRef((props,innerRef)=>{
           {...rest}
           color = {color}
           style = {[rest.style,styles.container]}
-          fabStyle = {[styles.fab,fabStyle,{backgroundColor},display?null: styles.hidden]}
+          fabStyle = {[styles.fab,fabStyle,{backgroundColor},!display && styles.hidden]}
           open={open ?true : false}
           icon={open ? openedIcon : closedIcon}
           actions={actions}
@@ -135,6 +138,12 @@ const styles = StyleSheet.create({
     },
     hidden : {
         display : 'none'
+    },
+    fab : {
+        position: 'absolute',
+        margin: 16,
+        right: 0,
+        bottom: 0,
     }
 })
 

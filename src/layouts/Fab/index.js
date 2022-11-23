@@ -11,7 +11,6 @@ import {sanitizeName} from "$escreens/utils";
 export * from "./utils";
 
 const FABContainer = React.forwardRef((props,ref)=>{
-   return null;
   const {state,actions:customActions,screenName,...rest} = props;
   const sScreenName = sanitizeName(screenName);
   ref = ref || createFabRef(screenName);
@@ -55,6 +54,6 @@ const styles = StyleSheet.create({
   export default FABContainer;
 
   FABContainer.propTypes = {
-     screenName : PropTypes.string.isRequired,
+     screenName : PropTypes.string,
   }
   FABContainer.displayName = "FABContainer";

@@ -13,6 +13,7 @@ import PropTypes from "prop-types";
 import { StylePropTypes } from '$theme';
 import Action from "$ecomponents/Form/Action";
 import { disabledStyle,cursorNotAllowed } from '$theme';
+import {defaultStr} from "$utils";
 
 
 
@@ -181,7 +182,7 @@ const FABGroup = ({
           accessibilityComponentType="button"
           accessibilityRole="button"
           accessibilityState={{ expanded: open }}
-          style={[styles.fab, fabStyle]}
+          style={StyleSheet.flatten([styles.fab, fabStyle])}
           visible={visible}
           testID={testID}
         />
@@ -278,8 +279,9 @@ FABGroup.propTypes = {
 
 
 export const FabItem = function(props){
-  const {children,label,disabled:customDisabled,pointerEvents,open,close,testID,labelStyle,labelColor,accessibilityLabel,icon,backgroundColor,scale,opacity,color,style,small,onPress,...rest} = props;
+  const {children,label,disabled:customDisabled,pointerEvents,open,close,testID:customTestID,labelStyle,labelColor,accessibilityLabel,icon,backgroundColor,scale,opacity,color,style,small,onPress,...rest} = props;
   const disabled = typeof customDisabled =='boolean'? customDisabled : false;
+  const testID = defaultStr(customTestID,"RN_FabGroupComponent")
   const _onPress = ()=>{
     if(onPress){
       onPress();
@@ -289,8 +291,9 @@ export const FabItem = function(props){
   const dStyle = disabled ? disabledStyle : null;
   return <>
        {label ? (
-         <View style={dStyle} pointerEvents={pointerEvents}>
+         <View testID = {testID+"_LabelContainer"} style={dStyle} pointerEvents={pointerEvents}>
                <Card
+                testID={testID+"_Card"}
                  style={
                    [
                      styles.label,
@@ -311,7 +314,7 @@ export const FabItem = function(props){
                  accessibilityComponentType="button"
                  accessibilityRole="button"
                >
-                 <Text style={{ color : labelColor }}>
+                 <Text testID={testID+"_Label"} style={{ color : labelColor }}>
                    {label}
                  </Text>
                </Card>
@@ -347,7 +350,7 @@ export const FabItem = function(props){
              accessibilityRole="button"
              testID={testID}
              visible={open}
-         />
+        />
   </>
 }
 

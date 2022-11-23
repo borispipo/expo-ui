@@ -11,7 +11,7 @@ import {FAB,Text,Card,withTheme} from "react-native-paper";
 import colorFn from 'color';
 import PropTypes from "prop-types";
 import Action from "$ecomponents/Form/Action";
-import theme,{ disabledStyle,StylePropTypes,Colors,cursorNotAllowed } from '$theme';
+import theme,{ disabledStyle,StylePropTypes,cursorPointer,Colors,cursorNotAllowed } from '$theme';
 import {defaultStr} from "$utils";
 
 
@@ -279,6 +279,7 @@ const _FabItem = function({children,label,disabled:customDisabled,pointerEvents,
   style = StyleSheet.flatten(style) || {};
   color = Colors.isValid(color)? color : style.color;
   backgroundColor = Colors.isValid(backgroundColor)? backgroundColor : style.backgroundColor;
+  const cursorStyle = disabled? cursorNotAllowed : cursorPointer;
   const _onPress = ()=>{
     if(onPress){
       onPress();
@@ -312,7 +313,7 @@ const _FabItem = function({children,label,disabled:customDisabled,pointerEvents,
                  accessibilityComponentType="button"
                  accessibilityRole="button"
                >
-                 <Text testID={testID+"_Label"} style={{ color}}>
+                 <Text testID={testID+"_Label"} style={StyleSheet.flatten([{ color},cursorStyle])}>
                    {label}
                  </Text>
                </Card>
@@ -328,7 +329,7 @@ const _FabItem = function({children,label,disabled:customDisabled,pointerEvents,
                [
                  style,
                  dStyle,
-                 disabled? cursorNotAllowed : null,
+                 cursorStyle,
                  {
                   transform: [{ scale}],
                   opacity,

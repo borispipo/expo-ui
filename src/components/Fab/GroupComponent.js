@@ -8,11 +8,10 @@ import {
 } from 'react-native';
 import View from "$ecomponents/View";
 import {FAB,Text,Card,withTheme} from "react-native-paper";
-import color from 'color';
+import colorFn from 'color';
 import PropTypes from "prop-types";
-import { StylePropTypes } from '$theme';
 import Action from "$ecomponents/Form/Action";
-import { disabledStyle,cursorNotAllowed } from '$theme';
+import theme,{ disabledStyle,StylePropTypes,Colors,cursorNotAllowed } from '$theme';
 import {defaultStr} from "$utils";
 
 
@@ -24,7 +23,6 @@ const FABGroup = ({
   open,
   onPress,
   accessibilityLabel,
-  theme,
   label,
   style,
   screenName,
@@ -90,11 +88,8 @@ const FABGroup = ({
 
   const toggle = () => onStateChange({ open: !open });
 
-  const { colors } = theme;
+  const colors = theme.colors;
 
-  const labelColor = theme.dark
-    ? colors.text
-    : color(colors.text).fade(theme.ALPHA).rgb().string();
   const backdropOpacity = open
     ? backdrop.interpolate({
         inputRange: [0, 0.5, 1],
@@ -139,8 +134,6 @@ const FABGroup = ({
         <View testID={testID+"_ItemsContainer"} style={[styles.itemsContainer]} pointerEvents={open ? 'box-none' : 'none'}>
           {actions.map((it, i) => {
              const itemProps = {
-                labelColor : it.labelTextColor ??  it.labelColor ?? labelColor,
-                backgroundColor : theme.colors.surface,
                 ...it,
                 open,
                 scale:scales[i],
@@ -280,10 +273,12 @@ FABGroup.propTypes = {
 }
 
 
-export const FabItem = function(props){
-  const {children,label,disabled:customDisabled,pointerEvents,open,close,testID:customTestID,labelStyle,labelColor,accessibilityLabel,icon,backgroundColor,scale,opacity,color,style,small,onPress,...rest} = props;
+const _FabItem = function({children,label,disabled:customDisabled,pointerEvents,open,close,testID:customTestID,labelStyle,accessibilityLabel,icon,backgroundColor,scale,opacity,color,style,small,onPress}){
   const disabled = typeof customDisabled =='boolean'? customDisabled : false;
   const testID = defaultStr(customTestID,"RN_FabItemComponent")
+  style = StyleSheet.flatten(style) || {};
+  color = Colors.isValid(color)? color : style.color;
+  backgroundColor = Colors.isValid(backgroundColor)? backgroundColor : style.backgroundColor;
   const _onPress = ()=>{
     if(onPress){
       onPress();
@@ -299,11 +294,12 @@ export const FabItem = function(props){
                  style={
                    [
                      styles.label,
+                     labelStyle,
                      {
                        transform: [{ scale }],
                        opacity,
+                       backgroundColor,
                      },
-                     labelStyle,
                    ] 
                  }
                  onPress={_onPress}
@@ -316,7 +312,7 @@ export const FabItem = function(props){
                  accessibilityComponentType="button"
                  accessibilityRole="button"
                >
-                 <Text testID={testID+"_Label"} style={{ color : labelColor }}>
+                 <Text testID={testID+"_Label"} style={{ color}}>
                    {label}
                  </Text>
                </Card>
@@ -330,14 +326,14 @@ export const FabItem = function(props){
              pointerEvents={pointerEvents}
              style={
                [
-                 {
-                   transform: [{ scale}],
-                   opacity,
-                   backgroundColor,
-                 },
                  style,
                  dStyle,
                  disabled? cursorNotAllowed : null,
+                 {
+                  transform: [{ scale}],
+                  opacity,
+                  backgroundColor,
+                },
                ] 
              }
              onPress={_onPress}
@@ -356,6 +352,7 @@ export const FabItem = function(props){
   </>
 }
 
+export const FabItem = theme.withStyles(_FabItem,{displayName:"FabItemComponent",mode:"contained"});
 const styles = StyleSheet.create({
   safeArea: {
     alignItems: 'flex-end',

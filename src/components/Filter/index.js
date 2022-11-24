@@ -24,6 +24,7 @@ export * from "./utils";
 
  const _actions = {
   '$eq' : 'Egal à',
+  "$ne" : 'Défférent de',
   '$gt' : 'Supérieur à',
   '$gte' : 'Supérieur ou égal',
   '$lt' : 'Inférieur à',
@@ -135,6 +136,10 @@ export default class Filter extends AppComponent {
       this.props.onValidate({...this.getStateValues(),field:this.props.name,...arg})
     }
   }
+  isDecimal(){
+    const t = defaultStr(this.type,this.props.type).toLowerCase();
+    return t =="number" || t =='decimal' ? true : false;
+  }
   onFilterValidate(arg){
      arg = defaultObj(arg);
      if(JSON.stringify(this.state.defaultValue) === JSON.stringify(arg.value)){
@@ -190,10 +195,14 @@ export default class Filter extends AppComponent {
           value = undefined;
       }
       let originValue = value;
-      const type = defaultStr(this.props.type).toLowerCase().trim();
-      value = parseDecimal(value,type);
       if(action =="$today" || action =='$yesterday'){
          force = true;
+      }
+      if(this.isDecimal()){
+        value = parseDecimal(value)
+        if(value == 0){
+          value = undefined;
+        }
       }
       const prev = JSON.stringify(defaultObj(this.previousRef.current)), current = {value,operator,action,ignoreCase};
           let tV = isArray(value) && value.length <= 0 ? undefined : value;
@@ -290,8 +299,7 @@ export default class Filter extends AppComponent {
             if(data.start && data.end && data.start> data.end){
                 return notify.error("La date de fin doit être supérieure à la date de début");
             }
-            console.log(data," is dataa")
-           if(isFunction(success)){
+            if(isFunction(success)){
               success(data.start+"=>"+data.end);
            }
            DialogProvider.close();
@@ -325,7 +333,6 @@ export default class Filter extends AppComponent {
           break;
         case "$week":      
             diff = DateLib.currentWeekDaysLimits(currentDate);
-            console.log(diff," is diffffff");
           break;
         case "$prevWeek":      
           diff = DateLib.previousWeekDaysLimits(currentDate)
@@ -383,8 +390,8 @@ export default class Filter extends AppComponent {
       field,
       style,
       anchorProps,
-      mode,
-      inputProps,
+      //mode,
+      //inputProps,
       moreOptions,
       isLoading,
       searchIconTooltip,
@@ -472,6 +479,7 @@ export default class Filter extends AppComponent {
       }
      anchorProps = defaultObj(anchorProps);
      rest.anchorProps = anchorProps;
+     rest.withLabel = withLabel;
      rest.pointerEvents = "auto";
      rest.right = isLoading ? <ActivityIndicator color={theme.colors.secondaryOnSurface} animating/> :<>
         <Menu 
@@ -557,7 +565,7 @@ export default class Filter extends AppComponent {
      if(ignoreDefaultValue) {
         rest.isPeriodAction = true;
      }
-     return <View testID={testID+"_FilterContainer"} {...containerProps} style={[theme.styles.w100,containerProps.style]}>
+     return <View testID={testID+"_FilterContainer"} {...containerProps} style={StyleSheet.flatten([theme.styles.w100,containerProps.style])}>
         <Component
           {...rest}
           readOnly = {ignoreDefaultValue}

@@ -244,12 +244,12 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
     if(isFocused || error){
         placeholderColor = labelColor;
     }
+    let labelText = React.isValidElement(label,true)?React.getTextContent(label):"";
     const defaultBackgroundColor = theme.surfaceBackgroundColor;
     let backgroundColor = Colors.isValid(flattenStyle.backgroundColor)? flattenStyle.backgroundColor : defaultBackgroundColor;
-    if(backgroundColor ==='transparent' && dynamicBackgroundColor !== false){
+    if(labelText && (backgroundColor ==='transparent' && dynamicBackgroundColor !== false)){
         backgroundColor = defaultBackgroundColor;
     }
-    let labelText = React.isValidElement(label,true)?React.getTextContent(label):"";
     placeholder = defaultStr(placeholder,labelText);
     const parsedValue = canValueBeDecimal ? parseValueToDecimal(text):text;
     const formattedValue = formatValue(text);

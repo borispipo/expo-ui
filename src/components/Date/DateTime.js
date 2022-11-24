@@ -13,7 +13,7 @@ import { toDateObj } from "./utils";
 import TextField from "$components/TextField";
 import PeriodActionComponent from "./PeriodAction";
 
-export default function DateTimePickerComponent({left,isPeriodAction,withSeconds,right,format,dateFormat,timeFormat,defaultValue,onChange,testID,dateProps,disabled,readOnly,timeProps,...rest}){
+export default function DateTimePickerComponent({left,isPeriodAction,contentProps,withSeconds,right,format,dateFormat,timeFormat,defaultValue,onChange,testID,dateProps,disabled,readOnly,timeProps,...rest}){
     if(!isPeriodAction){
         isPeriodAction = isNonNullString(defaultValue) && defaultValue.contains("=>");
     }
@@ -28,6 +28,7 @@ export default function DateTimePickerComponent({left,isPeriodAction,withSeconds
     }
     dateProps = defaultObj(dateProps);
     timeProps = defaultObj(timeProps);
+    contentProps = defaultObj(contentProps);
     testID = defaultStr(testID,"RN_DateTimeComponent")
     const anchorTimeProps = defaultObj(timeProps.anchorProps);
     const timePropsContainerProps = defaultObj(timeProps.containerProps);
@@ -52,8 +53,8 @@ export default function DateTimePickerComponent({left,isPeriodAction,withSeconds
     const timeDefaultValue = getTimeValue(dateObj);
     const changedTimeArgsRef = {current:{...defaultObj(parseTime(timeDefaultValue,withSeconds))}};
     withSeconds = defaultBool(timeProps.withSeconds,withSeconds,true);
-
-    const maxWidth = 120;//withSeconds ? 120 : 120;
+    const cStyle = [theme.styles.noPadding,theme.styles.noMargin];
+    const maxWidth = 110;
     const callOnChange = ()=>{
         if(onChange){
             const dObj = changeDateArgsRef.current;
@@ -71,6 +72,8 @@ export default function DateTimePickerComponent({left,isPeriodAction,withSeconds
             onChange(args);
         }
     }
+    const tInputProps = defaultObj(timeProps.inputProps);
+    const dStyle = flattenStyle([rest.style,dateProps.style]);
     return <DateComponent
         defaultValue = {dateObj}
         disabled = {disabled}
@@ -79,7 +82,7 @@ export default function DateTimePickerComponent({left,isPeriodAction,withSeconds
         {...rest}
         format = {dateFormat}
         {...dateProps}
-        style = {[rest.style,dateProps.style]}
+        style = {dStyle}
         calendarIconBefore = {true}
         onChange = {(args)=>{
             changeDateArgsRef.current = args;
@@ -102,15 +105,17 @@ export default function DateTimePickerComponent({left,isPeriodAction,withSeconds
                     }}
                     withLabel = {false}
                     mode = {"flat"}
-                    containerProps = {{...timePropsContainerProps,style:[{maxWidth},timePropsContainerProps.style]}}
+                    contentProps = {{style:cStyle}}
+                    containerProps = {{...timePropsContainerProps,style:[{maxWidth},theme.styles.noPadding,theme.styles.noMargin,timePropsContainerProps.style]}}
                     divider = {false}
+                    style = {[theme.styles.noPadding,{maxHeight:40},theme.styles.noMargin,timeProps.style,dStyle.backgroundColor && {backgroundColor:dStyle.backgroundColor}]}
                     anchorProps = {{
                         ...anchorTimeProps,
                         testID:testID+"_TimeAnchor",
                         style : [theme.styles.noPadding,{borderRadius:0},theme.styles.noMargin,anchorTimeProps.style]
                     }}
                     inputProps = {{
-                        ...defaultObj(timeProps.inputProps),
+                        ...tInputProps,
                         mode : "flat",
                     }}
                 />

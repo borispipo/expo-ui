@@ -71,13 +71,13 @@ export default class CommonDatagridComponent extends AppComponent {
         });
         selectedRows = sRows;
         let sData = this.getSessionData()
-        sData.showFooter = defaultVal(sData.showFooter,true);
+        sData.showFooters = defaultVal(sData.showFooters,true);
         sData.fixedTable = defaultBool(sData.fixedTable,false);
         extendObj(this.state, {
             data,
             sort :defaultObj(props.sort),
             showFilters : defaultBool(props.showFilters,(sData.showFilter? true : this.isPivotDatagrid())),
-            showFooter : defaultBool(props.showFooter,(sData.showFooter? true : false)),
+            showFooters : defaultBool(props.showFooters,(sData.showFooters? true : false)),
             fixedTable : sData.fixedTable
         });
         Object.defineProperties(this,{
@@ -784,16 +784,16 @@ export default class CommonDatagridComponent extends AppComponent {
    }
 
 
-    showFooter(){
+    showFooters(){
         if(!this._isMounted()) {
             this.isUpdating = false;
             return;
         }
         if(this.isUpdating) return false;
         this.isUpdating = true;
-        this.setState( {showFooter:true},()=>{
+        this.setState( {showFooters:true},()=>{
             this.isUpdating = false;
-            this.setSessionData({showFooter:true})
+            this.setSessionData({showFooters:true})
         })
     }
     hideFooter (){
@@ -802,9 +802,9 @@ export default class CommonDatagridComponent extends AppComponent {
              return;
         }
         if(this.isUpdating) return false;
-        this.setState({showFooter:false},()=>{
+        this.setState({showFooters:false},()=>{
             this.isUpdating = false;
-            this.setSessionData({showFooter:false});
+            this.setSessionData({showFooters:false});
         })
     }
    
@@ -899,14 +899,18 @@ export default class CommonDatagridComponent extends AppComponent {
             let colFilter = defaultVal(restCol.filter,true);
             field = header.field = defaultStr(header.field,field,headerIndex);
             delete restCol.filter;
+            
+            const type = defaultStr(header.type).toLowerCase();
+            sortType = defaultStr(sortType,type).toLowerCase();
             width = defaultDecimal(width);
             if(width <COLUMN_WIDTH/2){
                 width = COLUMN_WIDTH;
             }
-            const type = defaultStr(header.type).toLowerCase();
-            sortType = defaultStr(sortType,type).toLowerCase();
             if(type.contains("date")|| type.contains("time")){
-                width = Math.max(width,DATE_COLUMN_WIDTH);
+                const mWidth = type.toLowerCase().contains('datetime')? (DATE_COLUMN_WIDTH+30) : DATE_COLUMN_WIDTH;
+                width = Math.max(width,mWidth);
+            } else if((type.contains("number") || type.contains("decimal") && this.props.format)){
+                width = Math.max(width,DATE_COLUMN_WIDTH-30);
             }
             totalWidths +=width;
             widths[header.field] = width;
@@ -1721,7 +1725,7 @@ CommonDatagridComponent.propTypes = {
     /*** affiche ou masque les filtres */
     showFilters : PropTypes.bool,
     /*** si le pied de page sera affiché */
-    showFooter : PropTypes.bool,
+    showFooters : PropTypes.bool,
     /*** les donnnées peuvent être soient retournées par une fonction, soit par un tableau soit une promesse */
     data : PropTypes.oneOfType([PropTypes.array, PropTypes.func,PropTypes.object]),//.isRequired,
     columns:PropTypes.oneOfType([PropTypes.array,PropTypes.object]),//.isRequired,

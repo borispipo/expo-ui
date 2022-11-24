@@ -166,7 +166,7 @@ const DatePickerInput = React.forwardRef(({
         onChange({dateObject:state.inputDate,date:state.inputDate,sqlDate:date,value:date})
     }
   },[state])
-  const labelText = render_filter ? label : withLabel!==false ? getLabel({ label, inputFormat:inputFormatLabel, withDateFormatInLabel }):"";
+  const labelText = withLabel === false ? null: (render_filter ? label : getLabel({ label, inputFormat:inputFormatLabel, withDateFormatInLabel }));
   return (
     <>
         <TextField

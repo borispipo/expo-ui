@@ -385,7 +385,7 @@ const DatagridFactory = (Factory)=>{
             if(toggleFilters === false){
                 filters = false;
             }
-            let {showFilters,showFooter} = this.state;
+            let {showFilters,showFooters} = this.state;
             let max = this.getMaxSelectableRows();
             let restItems = [];
             
@@ -499,9 +499,9 @@ const DatagridFactory = (Factory)=>{
                                         closeOnPress : false,
                                     } : null,
                                     hasFooterFields ? {
-                                        onPress :  ()=>{showFooter?this.hideFooter():this.showFooter()}    
-                                        ,icon :  showFooter?'view-column':'view-module'
-                                        ,text : (showFooter?'Masquer/Ligne des totaux':'Afficher/Ligne des totaux')
+                                        onPress :  ()=>{showFooters?this.hideFooter():this.showFooters()}    
+                                        ,icon :  showFooters?'view-column':'view-module'
+                                        ,text : (showFooters?'Masquer/Ligne des totaux':'Afficher/Ligne des totaux')
                                     }:null,
                                     ...restItems,
                                     this.canScrollTo() &&  {
@@ -557,7 +557,7 @@ const DatagridFactory = (Factory)=>{
                         />
                         {datagridHeader}
                         {_progressBar}
-                        {showFooter ? (
+                        {showFooters ? (
                             <View  testID={testID+"_FooterContainer"} pointerEvents={pointerEvents} style={[{justifyContent:'center'}]}>
                                 <View  testID={testID+"_FooterContentContainer"} style={[styles.footersContainer]}>
                                     <ScrollView testID={testID+"_FooterScrollView"} horizontal contentContainerStyle={[styles.contentContainerStyle]}>

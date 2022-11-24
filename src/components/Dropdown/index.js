@@ -745,9 +745,10 @@ class DropdownComponent extends AppComponent {
         const inputRest = {disabled,editable,label,error}
         clearTimeout(this.doSearchFilter);
         this.doSearchFilter = null;
-
+        mode = defaultStr(mode,inputProps.mode);
         const textInputProps = {
             ...inputRest,
+            mode,
             editable,disabled,
             style : StyleSheet.flatten([styles.input,inputProps.style])
         }
@@ -840,8 +841,7 @@ class DropdownComponent extends AppComponent {
         }
         helperText = <HelperText disabled = {disabled} error={error}>{helperText}</HelperText>
         let labelTextField = defaultVal(label,text);
-        
-        const isFlatMode = textInputProps.mode === flatMode;
+        const isFlatMode = textInputProps.mode  === flatMode;
         let backgroundColor = Colors.isValid(textInputProps.style.backgroundColor)?textInputProps.style.backgroundColor : Colors.isValid(flattenStyle.backgroundColor)? flattenStyle.backgroundColor : theme.colors.surface;
         const tagLabelStyle = {backgroundColor,color:Colors.setAlpha(theme.colors.text,theme.ALPHA)}
         if(!isFlatMode && backgroundColor ==='transparent'){
@@ -904,9 +904,9 @@ class DropdownComponent extends AppComponent {
                         defaultValue={selectedText}
                         autoHeight = {renderTag}
                         useReadOnlyOpacity = {false}
-                        mode = {mode}
                         {...inputProps}
                         {...textInputProps}
+                        mode = {mode}
                         enableCopy = {enableCopy}
                         label = {labelTextField}
                         pointerEvents = "none"
@@ -1270,7 +1270,6 @@ DropdownComponent.propTypes = {
     onUnmount : PropTypes.func,
     label : PropTypes.string,
     placeholder : PropTypes.string,
-    mode : PropTypes.oneOf(["outlined", "flat"]),
     inputProps : PropTypes.object,
     selectedColor:PropTypes.string,
     accessibilityLabel : PropTypes.string,

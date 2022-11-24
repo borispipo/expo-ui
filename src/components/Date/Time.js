@@ -44,8 +44,9 @@ export const timeToString = (value,withSeconds)=>{
      return value.substring(0,5);
   }
 export default function TimePickerComponent (props){
-    let {right:customRight,upper,anchorProps,dialogProps,withLabel,containerProps,mode,onChange,withSeconds,cancelLabel,confirmLabel,label,text,upperCase,defaultValue,disabled,editable,withModal,readOnly,...rest} = props;
+    let {right:customRight,upper,anchorProps,dialogProps,withLabel,inputProps,containerProps,mode,onChange,withSeconds,cancelLabel,confirmLabel,label,text,upperCase,defaultValue,disabled,editable,withModal,readOnly,...rest} = props;
     rest = defaultObj(rest);
+    inputProps = defaultObj(inputProps);
     const isEditable = disabled !== true && readOnly !== true && editable !== false?true : false;
     withModal = defaultBool(withModal,true);
     if(!isEditable){
@@ -110,6 +111,7 @@ export default function TimePickerComponent (props){
     if(!disabled){
       containerProps.style = [containerProps.style,{opacity:1}]
     }
+    const iContainerProps = defaultObj(inputProps.containerProps);
     return <>
       <TouchableRipple {...containerProps} 
         disabled = {!isEditable}
@@ -120,6 +122,8 @@ export default function TimePickerComponent (props){
           <TextField
           mode = {mode||theme.textFieldMode}
           {...rest}
+          {...inputProps}
+          containerProps = {{...iContainerProps,style:[containerProps.style,iContainerProps.style]}}
           label = {label}
           right = {right}
           disabled = {disabled}

@@ -13,6 +13,7 @@ import React from "$react";
 import {Menu as BottomSheetMenu} from "$ecomponents/BottomSheet"
 import RenderType from "../RenderType";
 import Footer from "../Footer/Footer";
+import theme from "$theme";
 import Table from "$ecomponents/Table";
 
 
@@ -62,27 +63,23 @@ const DatagridFactory = (Factory)=>{
             }
             return null;
         }
-        renderHeaderCell(props){
-            let ret = super.renderHeaderCell(props);
-            const {columnField,columnDef,style} = props;
-            if(false && this.state.showFilters){
-                const filterC = this.currentFilteringColumns[columnField];
-                if(isObj(filterC) && filterC.visible){
-                    return <View testID={"RN_DatagridTableComponent_HeaderField_"+columnField} style={[style,{minHeight:100}]}>
-                        {ret}
-                        <Filter 
-                            {...filterC}
-                            withLabel = {false}
-                            style = {[styles.filter,style]}
-                            anchorProps  ={{size:20}}
-                            inputProps = {{
-                                style : [styles.filter,style]
-                            }}
-                        />
-                    </View>
-                }
+        renderFilterCell(props){
+            const {columnField,style} = props;
+            const filterC = this.currentFilteringColumns[columnField];
+            if(isObj(filterC)){
+                return <Filter 
+                    {...filterC}
+                    withLabel = {false}
+                    style = {[styles.filter,theme.styles.pv0,theme.styles.mv0]}
+                    anchorProps  ={{size:20}}
+                    mode = "flat"
+                    inputProps = {{
+                        style : [styles.filter],
+                        mode : "flat",
+                    }}
+                />
             }
-            return ret;
+            return null;
         }
         updateLayout(e){
             if(this.state.fixedTable === false) return;
@@ -162,7 +159,7 @@ const DatagridFactory = (Factory)=>{
             })*/
             const {visibleColumns} = this.preparedColumns;
             const hasFooterFields = this.hasFooterFields();
-            const {columnsWidths:widths,showFilters,showFooter} = this.state;
+            const {columnsWidths:widths,showFilters,showFooters} = this.state;
             let isAllRowsSelected = this.isAllRowsSelected();
             const isLoading = this.isLoading();
             let _progressBar = this.getProgressBar();
@@ -213,10 +210,10 @@ const DatagridFactory = (Factory)=>{
                             {hasFooterFields ? <Button
                                 normal
                                 style={styles.paginationItem}
-                                onPress =  {()=>{showFooter?this.hideFooter():this.showFooter()} }   
-                                icon = {showFooter?'view-column':'view-module'}
+                                onPress =  {()=>{showFooters?this.hideFooter():this.showFooters()} }   
+                                icon = {showFooters?'view-column':'view-module'}
                             >   
-                                    {showFooter?'Masquer/Ligne des totaux':'Afficher/Ligne des totaux'}
+                                    {showFooters?'Masquer/Ligne des totaux':'Afficher/Ligne des totaux'}
                             </Button>:null}
                             {selectableMultiple && (<>
                                 {restItems.map((item,index)=>{
@@ -273,9 +270,9 @@ const DatagridFactory = (Factory)=>{
                                     ,text : (showFilters?'Masquer/Filtres':'Afficher/Filtres')
                                 } : null,
                                 isMobile && hasFooterFields?{
-                                    onPress :  ()=>{showFooter?this.hideFooter():this.showFooter()}    
-                                    ,icon :  showFooter?'view-column':'view-module'
-                                    ,text : (showFooter?'Masquer/Ligne des totaux':'Afficher/Ligne des totaux')
+                                    onPress :  ()=>{showFooters?this.hideFooter():this.showFooters()}    
+                                    ,icon :  showFooters?'view-column':'view-module'
+                                    ,text : (showFooters?'Masquer/Ligne des totaux':'Afficher/Ligne des totaux')
                                 } : null,
                                 ...(selectableMultiple ? restItems : [])
                             ] : visibleColumns}
@@ -326,7 +323,7 @@ const DatagridFactory = (Factory)=>{
                     ref = {this.listRef}
                     hasFooters = {hasFooterFields}
                     showFilters = {showFilters}
-                    showFooters = {showFooter}
+                    showFooters = {showFooters}
                     headerContainerProps = {{}}
                     headerCellContainerProps = {{
                         style : showFilters?{justifyContent:'flex-start'}:null
@@ -344,6 +341,7 @@ const DatagridFactory = (Factory)=>{
                     }}
                     data = {this.state.data}
                     renderHeaderCell={this.renderHeaderCell.bind(this)}
+                    renderFilterCell={this.renderFilterCell.bind(this)}
                     renderFooterCell={this.renderFooterCell.bind(this)}
                     renderEmpty = {this.renderEmpty.bind(this)}
                 />
@@ -427,8 +425,10 @@ const styles = StyleSheet.create({
         maxHeight : 40,
         height : 40,
         width : "100%",
+        alignSelf : 'flex-start',
         flexGrow : 1,
         minHeight : 40,
+        backgroundColor : 'transparent'
     },
     layoutContent : {
         maxWidth : '100%',

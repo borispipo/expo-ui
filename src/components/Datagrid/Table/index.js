@@ -65,9 +65,9 @@ const DatagridFactory = (Factory)=>{
         renderHeaderCell(props){
             let ret = super.renderHeaderCell(props);
             const {columnField,columnDef,style} = props;
-            if(this.state.showFilters){
-                const filterC = this.customFilteredColumns[columnField];
-                if(isObj(filterC)){
+            if(false && this.state.showFilters){
+                const filterC = this.currentFilteringColumns[columnField];
+                if(isObj(filterC) && filterC.visible){
                     return <View testID={"RN_DatagridTableComponent_HeaderField_"+columnField} style={[style,{minHeight:100}]}>
                         {ret}
                         <Filter 
@@ -83,20 +83,6 @@ const DatagridFactory = (Factory)=>{
                 }
             }
             return ret;
-        }
-        beforePrepareColumns(){
-            this.customFilteredColumns = {};
-        }
-        prepareColumn({filterProps,columnField,columnDef,key,field,visible,filter},filters){
-            this.customFilteredColumns = defaultObj(this.customFilteredColumns);
-            if(visible){
-                if(filter){
-                    this.customFilteredColumns[columnField] = filterProps;
-                } else {
-                    this.customFilteredColumns[columnField] = null;
-                }
-            }
-            return filters;
         }
         updateLayout(e){
             if(this.state.fixedTable === false) return;
@@ -359,6 +345,7 @@ const DatagridFactory = (Factory)=>{
                     data = {this.state.data}
                     renderHeaderCell={this.renderHeaderCell.bind(this)}
                     renderFooterCell={this.renderFooterCell.bind(this)}
+                    renderEmpty = {this.renderEmpty.bind(this)}
                 />
             </View>
         }

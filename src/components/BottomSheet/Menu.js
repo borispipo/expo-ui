@@ -8,7 +8,7 @@ import PropTypes from "prop-types";
 import {getContentHeight} from "./utils";
 
 const BottomSheetMenuComponent = React.forwardRef((props,ref)=>{
-    let {anchor,screenIndent,height:customHeight,bindResizeEvent,onDismiss,testID,visible:customVisible,controlled,mobile,animateOnClose,renderMenuContent,sheet,children,...rest} = props;
+    let {anchor,anchorProps,screenIndent,height:customHeight,bindResizeEvent,onDismiss,testID,visible:customVisible,controlled,mobile,animateOnClose,renderMenuContent,sheet,children,...rest} = props;
     rest = defaultObj(rest);
     const isControlled = controlled ? true : false;
     const visibleRef = React.useRef(null);
@@ -44,12 +44,13 @@ const BottomSheetMenuComponent = React.forwardRef((props,ref)=>{
         setState({...state,visible:false})
     }
     const Component = isMob ? BottomSheet : Menu;
+    anchorProps = defaultObj(anchorProps);
     if(isMob){
         if(typeof anchor ==='function'){
             anchor = anchor(!isControlled?{onPress:open}:{});
         }
         if(React.isValidElement(anchor)){
-            anchor = <View testID={testID+"_Anchor"} ref={anchorRef} collapsable={false}>{anchor}</View>
+            anchor = <View testID={testID+"_Anchor"} ref={anchorRef} {...anchorProps} collapsable={false}>{anchor}</View>
         }
         if(renderMenuContent !== false){
             children = renderItems({testID:testID+".Items",...props,closeMenu:close,openMenu:open,isBottomSheetItem:true});
@@ -101,6 +102,7 @@ const BottomSheetMenuComponent = React.forwardRef((props,ref)=>{
             height = {controlled?customHeight:height}
             ref = {React.useMergeRefs(innerRef,ref)}
             anchor = {anchor}
+            anchorProps = {anchorProps}
             children = {visible && (React.isValidElement(children) || Array.isArray(children))?children:undefined}
         />
     </>

@@ -567,6 +567,7 @@ const DatagridFactory = (Factory)=>{
                                                     key = {field}
                                                     testID={testID+"_FooterItem_"+field}
                                                     {...footer}
+                                                    anchorProps = {{style:[theme.styles.ph1,theme.styles.mh05]}}
                                                 />
                                             })}
                                         </View>

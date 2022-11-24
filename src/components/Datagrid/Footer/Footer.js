@@ -3,7 +3,7 @@ import Menu from "$ecomponents/BottomSheet/Menu";
 import View from "$ecomponents/View";
 import {Pressable,StyleSheet} from "react-native";
 import Label from "$ecomponents/Label";
-import {defaultVal} from "$utils";
+import {defaultVal,defaultObj} from "$utils";
 import React from "$react";
 import theme from "$theme"
 
@@ -18,7 +18,9 @@ const formatValue = ({value,format,method})=>{
     return (format === 'money' && method != 'count')? value.formatMoney():value.formatNumber();
 }
 export default function DGGridFooterValue (props){
-    let {label,text,displayLabel,style,format} = props;
+    let {label,text,displayLabel,style,format,testID,anchorProps} = props;
+    anchorProps = defaultObj(anchorProps);
+    testID = defaultStr(testID,"RN_DatagridFooterComponent");
     label = defaultVal(label,text);
     const defLabel = label;
     if(displayLabel !== false){
@@ -50,19 +52,19 @@ export default function DGGridFooterValue (props){
         }
     }
     return  <Menu 
+        testID = {testID+"_Menu"}
         items = {menuItems}
-        style = {{minWidth:220}}
         title = {'Totaux de la colonne '+(defLabel?("[ "+defLabel+"]"):'')}
         animateOnClose
         anchor = {(p)=>{
-            return <Pressable {...p} style={[styles.anchor,style,label?styles.row:null]} title={title}>
+            return <Pressable {...anchorProps} {...p} testID={testID} style={[styles.anchor,anchorProps.style,label?styles.row:null]} title={title}>
                 {label ?
                     <>
-                        <View><Label style={[styles.label]}>{label}</Label></View>
-                        <View><Label style = {styles.label}> : </Label></View>
+                        <View testID={testID+"_Label"}><Label style={[styles.label]}>{label}</Label></View>
+                        <View testID={testID+"_LabelPoint"}><Label style = {styles.label}> : </Label></View>
                     </>
                 : null}
-                <Label primary style={[styles.value]}>
+                <Label testID={testID+"_LabelContent"} primary style={[styles.value]}>
                     {formatValue({value:defaultDecimal(props[active]),method:active,format})}
                 </Label>
             </Pressable>
@@ -75,11 +77,7 @@ const styles = StyleSheet.create({
         flexDirection : 'row',
         alignItems : 'center',
     },
-    anchor : {
-        paddingVertical : 10,
-        marginHorizontal : 10,
-        paddingHorizontal : 5,
-    },
+    anchor : {},
     value : {
         fontWeight : 'bold'
     }

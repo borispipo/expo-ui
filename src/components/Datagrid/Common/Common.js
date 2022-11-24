@@ -953,6 +953,17 @@ export default class CommonDatagridComponent extends AppComponent {
                 delete restCol.sortable;
                 filterProps = {
                     ...restCol,
+                    columnIndex,
+                    visibleColumnIndex,
+                    sortable:isColumnSortable,
+                    sorted:isColumnSorted,
+                    sortedColumn :sortedProps,///les props de la columns triée
+                    sortedProps,
+                    width,
+                    columnField : field,
+                    columnDef : header,
+                    index : headerIndex,
+                    visible,
                     key : header.field,
                     label : defaultStr(header.label,header.text),
                     orOperator : filterOrOperator,

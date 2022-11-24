@@ -324,7 +324,8 @@ export default class Filter extends AppComponent {
             diff = DateLib.currentMonthDaysLimits(currentDate);
           break;
         case "$week":      
-            diff = DateLib.currentWeekDaysLimits(currentDate)
+            diff = DateLib.currentWeekDaysLimits(currentDate);
+            console.log(diff," is diffffff");
           break;
         case "$prevWeek":      
           diff = DateLib.previousWeekDaysLimits(currentDate)

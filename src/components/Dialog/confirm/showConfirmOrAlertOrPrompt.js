@@ -30,6 +30,7 @@ export default function showConfirm (p,cb){
         buttons,
         messageProps,
         inputProps,
+        format,
         placeholder,
         children,
         withInputField,
@@ -116,8 +117,11 @@ export default function showConfirm (p,cb){
             {messageContent}
             {withInputField !== false ? <Component
                 type = {type}
+                enableCopy = {false}
                 defaultValue = {defaultValue}
                 placeholder = {placeholder}
+                affix = {false}
+                format = {format}
                 {...inputProps}
                 ref = {inputRef}
                 onChange = {(args)=>{

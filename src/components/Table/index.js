@@ -1,14 +1,16 @@
-import {FlashList,BigList} from "$ecomponents/List";
+import {FlashList} from "$ecomponents/List";
 import View from "$ecomponents/View";
-import {defaultObj,defaultStr,debounce,isNumber,defaultVal} from "$utils";
+import {defaultObj,defaultStr,debounce,defaultNumber,defaultVal} from "$utils";
 import PropTypes from "prop-types";
 export const DEFAULT_COLUMN_WIDTH = 60;
 import React from "$react";
 import Label from "$ecomponents/Label";
-import { StyleSheet,ScrollView,Dimensions} from "react-native";
+import { StyleSheet,View as RNView,ScrollView,Dimensions} from "react-native";
 import { getRowStyle } from "$ecomponents/Datagrid/utils";
 import {isMobileNative} from "$cplatform";
 import theme from "$theme";
+import AbsoluteScrollView from "./AbsoluteScrollView";
+
 const isSCrollingRef = React.createRef();
 const scrollLists = (opts,refs)=>{
     refs.map((ref)=>{
@@ -18,14 +20,24 @@ const scrollLists = (opts,refs)=>{
     });
     isSCrollingRef.current = false;
 }
-const getOnScrollCb = (refs)=>{
+const getOnScrollCb = (refs,pos,cb2)=>{
     const cb = (args)=>{
         if(isSCrollingRef.current) return;
         if(!isObj(args) || !args.nativeEvent) {
             isSCrollingRef.current = false;
         }
         isSCrollingRef.current = true;
-        scrollLists({x:args.nativeEvent.contentOffset?.x},refs);
+        if(typeof pos =='function'){
+            pos(args);
+            isSCrollingRef.current = false;
+            return;
+        }
+        pos = pos && (pos =='x' || pos=='y')? pos : "x";
+        const a = {[pos]:args.nativeEvent.contentOffset?.[pos]};
+        scrollLists(a,refs);
+        if(typeof cb2 == 'function'){
+            cb2(args);
+        }
     };
     return isMobileNative()? cb : debounce(cb,200);
 }
@@ -178,8 +190,10 @@ const TableComponent = React.forwardRef(({containerProps,isRowSelected,headerScr
         fContent = f.length ? <View testID={testID+"_Footer"} {...footerContainerProps} style={[styles.header,styles.footers,footerContainerProps.style]}>
         {f}
     </View> : null;
+    const absoluteScrollViewRefCanScroll = React.useRef(true);
     React.setRef(tableRef,context);
     const cStyle = {width:listWidth}
+    const absoluteScrollViewRef = React.useRef(null);
     return <View testID= {testID+"_Container"} {...containerProps} style={[styles.container,{alignItems:'stretch'},containerProps.style]}>
             <View autoHeight style={[cStyle]} testID={testID+"_Headers_ScrollViewContainer"}>
                 <ScrollView
@@ -194,12 +208,36 @@ const TableComponent = React.forwardRef(({containerProps,isRowSelected,headerScr
                     {hContent}
                 </ScrollView>
             </View>
-            <ScrollView {...scrollViewProps} scrollEventThrottle = {scrollEventThrottle} horizontal contentContainerStyle={[scrollContentContainerStyle,scrollViewProps.contentContainerStyle]} showsVerticalScrollIndicator={false}  onScroll = {getOnScrollCb([headerScrollViewRef,footerScrollViewRef])} ref={scrollViewRef}  testID={testID+"_ScrollView"}>    
+            <ScrollView {...scrollViewProps} scrollEventThrottle = {scrollEventThrottle} horizontal contentContainerStyle={[scrollContentContainerStyle,scrollViewProps.contentContainerStyle]} showsVerticalScrollIndicator={false}  
+            onScroll = {getOnScrollCb([headerScrollViewRef,footerScrollViewRef],null,(args)=>{
+            })} ref={scrollViewRef}  testID={testID+"_ScrollView"}>    
                 <FlashList
                     containerProps = {{style:[cStyle]}}
                     //prepareItems = {Array.isArray(items)? false : undefined}
                     estimatedItemSize = {200}
                     {...props}
+                    onContentSizeChange = {(width,height)=>{
+                        if(props.onContentSizeChange){
+                            props.onContentSizeChange(width,height);
+                        }
+                        if(!absoluteScrollViewRef.current) return;
+                        absoluteScrollViewRef.current.setStyles({
+                            content : {height}
+                        });
+                    }}
+                    onLayout = {(args)=>{
+                        if(props.onLayout){
+                            props.onLayout(args);
+                        }
+                        if(!absoluteScrollViewRef.current) return;
+                        const {nativeEvent:{layout}}=args;
+                        const top = defaultNumber(layout.top,layout.y);
+                        const height = layout.height;
+                        absoluteScrollViewRef.current.setStyles({
+                            container : {top,height},
+                            contentContainer : {height},
+                        });
+                    }}
                     ref = {listRef}
                     numberOfLines = {1}
                     responsive = {false}
@@ -209,6 +247,17 @@ const TableComponent = React.forwardRef(({containerProps,isRowSelected,headerScr
                     style = {[styles.datagrid,{width:listWidth,minWidth:totalWidths}]}
                     keyExtractor = {typeof getRowKey =='function'? getRowKey : React.getKey}
                     //stickyHeaderIndices={[0]}
+                    onScroll = {getOnScrollCb([absoluteScrollViewRef],(args)=>{
+                        const offset = args?.nativeEvent?.contentOffset.y;
+                        const scrollViewRef = absoluteScrollViewRef.current?.scrollViewRef;
+                        if(typeof offset =='number' && scrollViewRef.current && scrollViewRef.current.scrollTo){
+                            absoluteScrollViewRefCanScroll.current = false;
+                            scrollViewRef.current.scrollTo({animated:false,y:offset});
+                            setTimeout(()=>{
+                                absoluteScrollViewRefCanScroll.current = true;
+                            },500);
+                        }
+                    })}
                     renderItem = {(arg)=>{
                         const item = arg.item, data = arg.item,allData=Array.isArray(item.items)? item.items : data;
                         const cells = visibleColumns.map((i,index)=>{
@@ -237,10 +286,20 @@ const TableComponent = React.forwardRef(({containerProps,isRowSelected,headerScr
                         </View>;
                     }}
                 />
+                <AbsoluteScrollView
+                    ref={absoluteScrollViewRef}
+                    scrollEventThrottle = {scrollEventThrottle} 
+                    onScroll = {(args)=>{
+                        if(!absoluteScrollViewRefCanScroll.current) return;
+                        const offset = args?.nativeEvent?.contentOffset.y;
+                        if(typeof offset =='number' && listRef.current && listRef.current.scrollToOffset){
+                            listRef.current.scrollToOffset({animated:true,offset});
+                        }
+                    }}
+                />
         </ScrollView>
     </View>
 });
-
 
 const ColumnType = PropTypes.shape({
     field : PropTypes.string,
@@ -364,19 +423,6 @@ TableComponent.popTypes = {
     footerScrollViewProps : PropTypes.object,
 }
 
-const ScrollViewCustom = React.forwardRef((props,ref)=>{
-    const {testID,onScroll,style,handle} = props;
-    const context = {};
-    React.setRef(ref,context);
-    return <View 
-        {...props}
-        ref = {ref} 
-        style = {[styles.scrollViewCustom,style,{backgroundColor:theme.colors.primary}]}
-        onScroll={onScroll} 
-        testID={(testID||'RN_TableComponentScrollViewCustom')}
-    />
-});
-ScrollViewCustom.displayName = "TableComponentScrollViewCustom";
 
 TableComponent.displayName = "TableComponent";
 

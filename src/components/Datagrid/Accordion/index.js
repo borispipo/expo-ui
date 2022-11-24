@@ -245,9 +245,6 @@ const DatagridFactory = (Factory)=>{
         getMaxSelectedRows(){
             return isMobileMedia()? 30 : 50;
         }
-        prepareFilter(props,headerFilters){
-            return headerFilters.push(props);
-        }
         showFilters(){
             if(!this._isMounted()) {
                  this.isUpdating = false;
@@ -299,6 +296,12 @@ const DatagridFactory = (Factory)=>{
                 </View>
             })
         }
+        renderEmpty(){
+            if(isObj(this.currentAccordionProps) && typeof this.currentAccordionProps.renderEmpty =='function'){
+                return this.currentAccordionProps.renderEmpty();
+            }
+            return super.renderEmpty();
+        }
         render (){
             let {
                 filters,
@@ -332,6 +335,7 @@ const DatagridFactory = (Factory)=>{
             if(isObj(accordion)){
                 accordionProps = {...accordion,...accordionProps};
             }
+            this.currentAccordionProps = accordionProps;
             backToTopRef = defaultVal(backToTopRef,accordionProps.backToTopRef,true);
             
             let descOrContentProps = isObj(accordionProps.descriptionProps)? Object.assign({},accordionProps.descriptionProps) : isObj(accordionProps.contentProps)? Object.assign({},accordionProps.contentProps) : {};
@@ -539,7 +543,6 @@ const DatagridFactory = (Factory)=>{
                     </View>
             </ScrollView>
         </View>  
-        renderEmpty = defaultFunc(accordionProps.renderEmpty,renderEmpty,x=>null)
         return <View testID={testID+"_Container"} pointerEvents={pointerEvents} style={[styles.container]} collapsable={false}>
                 { <View testID={testID+"_ContentContainer"} style={[this.bindResizeEvents()?{height:this.renderedListHeight}:undefined]}> 
                     <View testID={testID+"_AccordionHeader"} style={[styles.accordionHeader]} ref={this.layoutRef} onLayout={this.updateLayout.bind(this)}>
@@ -591,7 +594,7 @@ const DatagridFactory = (Factory)=>{
                         }:false}
                         keyExtractor = {this.getRowKey.bind(this)}
                     /> : <View style={styles.hasNotData}>
-                        {renderEmpty()}
+                        {this.renderEmpty()}
                     </View>}
                 </View>}
                 {backToTopRef ? <BackToTop testID={testID+"_BackToTop"} {...backToTopProps} ref={this.backToTopRef} style={[styles.backToTop,backToTopProps.style]} onPress={this.scrollToTop.bind(this)}/>:null}

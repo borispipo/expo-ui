@@ -96,6 +96,7 @@ export default class CommonDatagridComponent extends AppComponent {
             [footerFieldName] : {
                 value : uniqid(footerFieldName),override:false, writable: false
             },
+            currentFilteringColumns : {value:{}}
         }) 
         
         this.state.sort.dir = defaultStr(this.state.sort.dir,this.state.sort.column == "date"?"desc":'asc')
@@ -847,13 +848,20 @@ export default class CommonDatagridComponent extends AppComponent {
         });
    }
    prepareFilter(props,filteredColumns){
-
+        filteredColumns.push(props);
    }
    renderFilter(props){
        return <Filter {...props}/>
    }
    prepareColumn(){}
    beforePrepareColumns(){}
+   renderEmpty(){
+        if(typeof this.props.renderEmpty =='function'){
+            const r = this.props.renderEmpty();
+            return React.isValidElement(r)? r : null;
+        }
+        return null;
+   }
    prepareColumns (args){
        this.beforePrepareColumns();
        args = defaultObj(args);
@@ -958,6 +966,7 @@ export default class CommonDatagridComponent extends AppComponent {
                     operator : fCol.operator,
                     action : defaultStr(fCol.originAction,fCol.action),
                 };
+                this.currentFilteringColumns[header.field] = filterProps;
                 this.prepareFilter(filterProps,headerFilters); 
             }
             this.prepareColumn({
@@ -1169,19 +1178,15 @@ export default class CommonDatagridComponent extends AppComponent {
     onFilterChange(arg){
         this.filteredValues = defaultObj(this.filteredValues);
         let {field,operator,originAction,action,value} = defaultObj(arg);     
-        const filters = this.preparedColumns.filters;   
-        if(isNonNullString(field) && isNonNullString(operator) && isNonNullString(action)){
+        const filter = isNonNullString(field)? this.currentFilteringColumns[field] : null;   
+        if(!isObj(filter)) return;
+        if(isNonNullString(operator) && isNonNullString(action)){
             this.filteredValues[field] = {
                 operator,action,value,field
             }
-            Object.map(filters,(filter)=>{
-                if(isObj(filter) && filter.field == field){
-                    filter.originValue = filter.defaultValue = arg.defaultValue;
-                    filter.operator = operator;
-                    filter.action = defaultStr(originAction,action);
-                }
-            });
-            
+            filter.originValue = filter.defaultValue = arg.defaultValue;
+            filter.operator = operator;
+            filter.action = defaultStr(originAction,action);            
         }
         return this.doFilter(arg);
     }

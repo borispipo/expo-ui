@@ -7,7 +7,7 @@ import {MENU_ICON} from "$ecomponents/Icon";
 import theme,{Colors} from "$theme";
 import Group from "./GroupComponent";
 import Portal from "$ecomponents/Portal";
-import Auth from "$cauth";
+import {isAllowedFromStr} from "$cauth/perms";
 
 const FabGroupComponent = React.forwardRef((props,innerRef)=>{
     let {openedIcon,screenName,display:customDisplay,primary,actionMutator,secondary,onOpen,prepareActions,fabStyle,open:customOpen,onClose,onStateChange:customOnStateChange,closedIcon,color,actions:customActions,children,...customRest} = props;
@@ -63,7 +63,7 @@ const FabGroupComponent = React.forwardRef((props,innerRef)=>{
                 if(!isObj(a) || !isNonNullString(a.label)) return null;
                 const {perm,isAllowed,primary,secondary,...restItem} = a;
                 if(typeof isAllowed =='function' && isAllowed() === false) return null;
-                if(isNonNullString(perm) && !Auth.isAllowedFromStr(perm)) return false;
+                if(isNonNullString(perm) && !isAllowedFromStr(perm)) return false;
                 if(primary){
                     restItem.style = StyleSheet.flatten([restItem.style,{color:theme.colors.primaryText,backgroundColor:theme.colors.primary}])
                 } else if(secondary){

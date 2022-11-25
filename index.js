@@ -1,12 +1,12 @@
 import { registerRootComponent } from "expo";
-import {AppRegistry, Platform } from 'react-native';
+import {Platform } from 'react-native';
 import { createRoot } from 'react-dom/client';
 import appConfig from "$capp/config";
 import { activateKeepAwake } from 'expo-keep-awake';
 if (__DEV__) {
     activateKeepAwake();
 }
-
+const isWeb = Platform.OS === "web";
 /**** initialise l'application expoUI avec les paramètres de configuration
  * les options sont de la forme : 
  * {
@@ -17,10 +17,13 @@ export default function ExpoUIApp (options){
     options = options && typeof options =='object' && !Array.isArray(options)? options : {};
     appConfig.current = options.config;
     const App = require('./src/App').default(options);
-    if (false && Platform.OS === "web") {
+    if (false) {
         const root = createRoot(document.getElementById("root") || document.getElementById("main"));
-        root.render(<App />);
     } else {
+        console.log("registring compddd");
         registerRootComponent(App);
     }
 }
+
+///fix bug lié au fait que l'application stuck on splashscreen en environnement mobile
+!isWeb && registerRootComponent(x=>null);

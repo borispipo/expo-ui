@@ -2,6 +2,7 @@ module.exports = function(api,opts) {
     opts = typeof opts =='object' && opts ? opts : {};
     ///les chemin vers la variable d'environnement, le chemin du fichier .env,@see : https://github.com/brysgo/babel-plugin-inline-dotenv
     let environmentPath = opts.environmentPath || opts.envPath;
+    //console.log(environmentPath," is envvv ",opts);
     const path = require("path");
     const fs = require("fs");
     const dir = path.resolve(__dirname);

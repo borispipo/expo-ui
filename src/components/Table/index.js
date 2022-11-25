@@ -10,6 +10,7 @@ import { getRowStyle } from "$ecomponents/Datagrid/utils";
 import {isMobileNative} from "$cplatform";
 import theme from "$theme";
 import AbsoluteScrollView from "./AbsoluteScrollView";
+import DragResize,{CONNECTOR_MIDDLE_RIGHT} from "$ecomponents/DragResize";
 
 const isSCrollingRef = React.createRef();
 const scrollLists = (opts,refs)=>{
@@ -69,7 +70,7 @@ const TableComponent = React.forwardRef(({containerProps,renderEmpty,isRowSelect
           type = defaultStr(type,"text").toLowerCase().trim();
           colProps = defaultObj(colProps);
           width = defaultDecimal(widths[columnField],width,DEFAULT_COLUMN_WIDTH);
-          const style = [colProps.style,{width}];
+          const style = StyleSheet.flatten([colProps.style,{width}]);
           const colArgs = {width,type,style,columnDef,containerProps:{},columnField,index:columnIndex,columnIndex};
           let content = typeof renderHeaderCell =='function'? renderHeaderCell(colArgs) : defaultVal(columnDef.text,columnDef.label,columnField);
           let hContainerProps = {};
@@ -83,8 +84,9 @@ const TableComponent = React.forwardRef(({containerProps,renderEmpty,isRowSelect
             console.error(content," is not valid element of header ",columnDef," it could not be render on table");
             return null;
           }
+        
         headers[columnField] = <View testID={testID+"_HeaderCell_"+columnField} {...headerCellContainerProps} {...hContainerProps} key={columnField} style={[styles.headerItem,styles.headerItemOrCell,headerCellContainerProps.style,hContainerProps.style,style]}>
-            <Label textBold primary>{content}</Label>
+            <Label style={[theme.styles.w100,theme.styles.h100]} textBold primary>{content}</Label>
         </View>;
         if(typeof renderFilterCell =='function'){
             const filterCell = renderFilterCell(colArgs);

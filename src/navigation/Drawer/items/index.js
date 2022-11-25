@@ -16,7 +16,7 @@ import { screenName as aboutScreenName} from "$escreens/Help/About";
 export const getItems = (force)=>{
     const name = APP.getName();
     const itx = typeof items === "function" ? items() : items;
-    const handleHelp =  defaultVal(appConfig.get("handleHelpScreen"));
+    const handleHelp =  appConfig.get("handleHelpScreen") !== false ? true : false;
     const r = [
         {
             label : name,

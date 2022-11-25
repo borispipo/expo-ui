@@ -86,7 +86,7 @@ const TableComponent = React.forwardRef(({containerProps,renderEmpty,isRowSelect
           }
         
         headers[columnField] = <View testID={testID+"_HeaderCell_"+columnField} {...headerCellContainerProps} {...hContainerProps} key={columnField} style={[styles.headerItem,styles.headerItemOrCell,headerCellContainerProps.style,hContainerProps.style,style]}>
-            <Label style={[theme.styles.w100,theme.styles.h100]} textBold primary>{content}</Label>
+            <Label splitText numberOfLines={2} style={[theme.styles.w100,theme.styles.h100,{maxHeight:70}]} textBold primary>{content}</Label>
         </View>;
         if(typeof renderFilterCell =='function'){
             const filterCell = renderFilterCell(colArgs);
@@ -164,7 +164,7 @@ const TableComponent = React.forwardRef(({containerProps,renderEmpty,isRowSelect
         scrollEventThrottle,
         horizontal : true,
         ...scrollViewProps,
-        style : [scrollViewProps.style],
+        style : [{maxHeight:130},scrollViewProps.style],
         contentContainerStyle : [styles.scrollView,scrollViewProps.contentContainerStyle,scrollViewFlexGrow,scrollContentContainerStyle]
     }
     const listWidth = '100%';

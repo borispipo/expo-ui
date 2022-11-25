@@ -3,6 +3,7 @@ import {Platform } from 'react-native';
 import { createRoot } from 'react-dom/client';
 import appConfig from "$capp/config";
 import { activateKeepAwake } from 'expo-keep-awake';
+import { startNetworkLogging } from 'react-native-network-logger';
 if (__DEV__) {
     activateKeepAwake();
 }
@@ -23,6 +24,10 @@ export default function ExpoUIApp (options){
         console.log("registring compddd");
         registerRootComponent(App);
     }
+}
+
+if(__DEV__ && !isWeb){
+    startNetworkLogging();
 }
 
 ///fix bug lié au fait que l'application stuck on splashscreen en environnement mobile

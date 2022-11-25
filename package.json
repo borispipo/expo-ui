@@ -1,10 +1,10 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "2.5.4",
+  "version": "2.5.5",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "index.js",
   "resolutions": {
-    "@expo/cli": "xxx" 
+    "@expo/cli": "xxx"
   },
   "scripts": {
     "publish1": "npm publish --access=public",
@@ -97,6 +97,7 @@
     "react-native": "0.70.5",
     "react-native-big-list": "^1.5.5",
     "react-native-gesture-handler": "~2.8.0",
+    "react-native-network-logger": "^1.13.0",
     "react-native-paper": "^4.12.5",
     "react-native-paper-dates": "^0.9.2",
     "react-native-reanimated": "~2.12.0",

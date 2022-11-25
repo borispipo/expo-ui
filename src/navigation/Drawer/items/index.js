@@ -4,6 +4,10 @@
 
 import { isRouteActive} from "$cnavigation";
 import "$cutils";
+import appConfig from "$capp/config";
+import {isMobileNative} from "$platform";
+import NetworkLoginScreen from "$escreens/NetworkLogin";
+import {defaultVal} from "$utils";
 import APP from "$capp";
 ///les items du drawer
 import items from "$drawerItems";
@@ -12,6 +16,7 @@ import { screenName as aboutScreenName} from "$escreens/Help/About";
 export const getItems = (force)=>{
     const name = APP.getName();
     const itx = typeof items === "function" ? items() : items;
+    const handleHelp =  defaultVal(appConfig.get("handleHelpScreen"));
     const r = [
         {
             label : name,
@@ -27,19 +32,29 @@ export const getItems = (force)=>{
         }
     })
     r.push({divider:true});
-    r.push({
-        key : 'dataHelp',
-        label : 'Aide',
-        section : true,
-        divider : false,
-        items : [
-            {
-                icon : 'help',
-                label : 'A propos de '+name,
-                routeName : aboutScreenName,
-            }
-        ]
-    });
+    if(handleHelp){
+        const dataHelp = {
+            key : 'dataHelp',
+            label : 'Aide',
+            section : true,
+            divider : false,
+            items : [
+                {
+                    icon : 'help',
+                    label : 'A propos de '+name,
+                    routeName : aboutScreenName,
+                }
+            ]
+        };
+        if(__DEV__ && isMobileNative()){
+            dataHelp.items.unshift({
+                icon : 'math-log',
+                label : 'Inpecter les requêtes réseau',
+                routeName : NetworkLoginScreen.screenName,
+            });
+        }
+        r.push(dataHelp);
+    }
     return r;
 }
 

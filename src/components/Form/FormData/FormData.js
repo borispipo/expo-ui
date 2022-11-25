@@ -76,7 +76,7 @@ export default class FormDataComponent extends AppComponent{
             save :(args)=>{
                 setTimeout(()=>{
                     const form = this.getForm();
-                    if(!form) return false;
+                    if(!form || !form.isValid) return false;
                     if(!form.isValid()){
                         const errorText = form.getErrorText();
                         if(errorText){

@@ -46,13 +46,13 @@ export const getItems = (force)=>{
                 }
             ]
         };
-        if(__DEV__ && isMobileNative()){
+        /*if(false && __DEV__ && isMobileNative()){
             dataHelp.items.unshift({
                 icon : 'math-log',
                 label : 'Inpecter les requêtes réseau',
                 routeName : NetworkLoginScreen.screenName,
             });
-        }
+        }*/
         r.push(dataHelp);
     }
     return r;

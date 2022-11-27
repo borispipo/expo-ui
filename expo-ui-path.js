@@ -23,12 +23,13 @@ module.exports = function (...args){
             }
         }
     }
-    if(isBuild){
-        return expoUIPath;
-    }
     const suffix = path.join(...args);
-    const p = require("./lookup-expo-ui-path")();
     const sep = path.sep;
+    if(isBuild){
+        const pp = suffix ? path.join(expoUIPath,suffix).replace(sep,"/") : expoUIPath;
+        return pp;
+    }
+    const p = require("./lookup-expo-ui-path")();
     if(p && fs.existsSync(p)){
         const rootPath = path.resolve(p,"..");
         const src = path.resolve(rootPath,"src");

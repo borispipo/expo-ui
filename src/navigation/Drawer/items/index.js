@@ -5,9 +5,6 @@
 import { isRouteActive} from "$cnavigation";
 import "$cutils";
 import appConfig from "$capp/config";
-import {isMobileNative} from "$platform";
-import NetworkLoginScreen from "$escreens/NetworkLogin";
-import {defaultVal} from "$utils";
 import APP from "$capp";
 ///les items du drawer
 import items from "$drawerItems";
@@ -46,13 +43,6 @@ export const getItems = (force)=>{
                 }
             ]
         };
-        /*if(false && __DEV__ && isMobileNative()){
-            dataHelp.items.unshift({
-                icon : 'math-log',
-                label : 'Inpecter les requêtes réseau',
-                routeName : NetworkLoginScreen.screenName,
-            });
-        }*/
         r.push(dataHelp);
     }
     return r;

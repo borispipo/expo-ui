@@ -6,7 +6,7 @@ const fs = require("fs");
 const path = require("path");
 ///retourne le chemin vers le package @expo-ui
 module.exports = function (...args){
-    const argv = require('args-parser')(process.argv);
+    const argv = require('yargs-parser')(process.argv?.slice(2))
     let isBuild = false;
     const expoUIPath = "@fto-consult/expo-ui";
     if(typeof argv == 'object' && argv && !Array.isArray(argv)){

@@ -4,15 +4,20 @@
 
 const fs = require("fs");
 const path = require("path");
+const { hideBin } = require('yargs/helpers')
+const yargs = require('yargs/yargs');
 ///retourne le chemin vers le package @expo-ui
 module.exports = function (...args){
-    const argv = require('yargs-parser')(process.argv?.slice(2))
+    const argv = yargs(hideBin(process.argv)).argv
     let isBuild = false;
     const expoUIPath = "@fto-consult/expo-ui";
     if(typeof argv == 'object' && argv && !Array.isArray(argv)){
         for(let i in argv){
-            i = (i+"").toLowerCase(); 
-            if(i.includes('build') || i.includes('production') || i.includes('export') || i.includes('android')){
+            let v = argv[i];
+            if(typeof v !='string' || !v) continue;
+            v = v.toLowerCase(); 
+            i = (i+'').toLocaleLowerCase();
+            if(i.includes("export") || v.includes('build') || v.includes('production') || v.includes('export') || v.includes('android')){
                 isBuild = true;
                 break;
             }

@@ -19,6 +19,7 @@ import init from "$capp/init";
 import { setIsInitialized} from "$capp/utils";
 import {isObj,isNonNullString} from "$cutils";
 import {loadFonts} from "$ecomponents/Icon/Font";
+import appConfig from "$capp/config";
 
 let MAX_BACK_COUNT = 1;
 let countBack = 0;
@@ -42,7 +43,8 @@ function App(props) {
   React.useEffect(() => {
     const loadResources = ()=>{
        return new Promise((resolve)=>{
-          loadFonts().catch((e)=>{
+          //FontsIconsFilter porte le nom de la props de appConfig dans lequel définir les filtres à utiliser pour charger l'iconSet désirée pour l'appication
+          loadFonts(appConfig.get("FontsIconsFilter")).catch((e)=>{
             console.warn(e," ierror loading app resources fonts");
           }).finally(()=>{
             resolve(true);

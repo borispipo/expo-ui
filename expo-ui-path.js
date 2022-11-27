@@ -7,7 +7,20 @@ const path = require("path");
 ///retourne le chemin vers le package @expo-ui
 module.exports = function (...args){
     const argv = require('args-parser')(process.argv);
-    console.log(argv," is argvvvvvvvv");    
+    let isBuild = false;
+    const expoUIPath = "@fto-consult/expo-ui";
+    if(typeof argv == 'object' && argv && !Array.isArray(argv)){
+        for(let i in argv){
+            i = (i+"").toLowerCase(); 
+            if(i.includes('build') || i.includes('production') || i.includes('export') || i.includes('android')){
+                isBuild = true;
+                break;
+            }
+        }
+    }
+    if(isBuild){
+        return expoUIPath;
+    }
     const suffix = path.join(...args);
     const p = require("./lookup-expo-ui-path")();
     const sep = path.sep;
@@ -18,6 +31,6 @@ module.exports = function (...args){
             return path.resolve(p,suffix).replace(sep,(sep+sep));
         }
     }
-    return suffix ? path.join("@fto-consult/expo-ui",suffix).replace(sep,"/"):"@fto-consult/expo-ui";
+    return suffix ? path.join(expoUIPath,suffix).replace(sep,"/"): expoUIPath;
 };
 

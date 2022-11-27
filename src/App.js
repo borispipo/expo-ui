@@ -22,10 +22,12 @@ import StatusBar from "$ecomponents/StatusBar";
 import SimpleSelect from '$ecomponents/SimpleSelect';
 import {Provider as AlertProvider} from '$ecomponents/Dialog/confirm/Alert';
 import APP from "$app";
+import FontIcon from "$ecomponents/Icon/Font"
 import {isMobileNative} from "$cplatform";
 import {setDeviceIdRef} from "$capp";
 import appConfig from "$capp/config";
 import {showPrompt} from "$components/Dialog/confirm";
+
 import * as Utils from "$utils";
 Object.map(Utils,(v,i)=>{
   if(typeof v =='function' && typeof window !='undefined' && window && !window[i]){
@@ -63,7 +65,14 @@ export default function getIndex(options){
     const children = typeof App =='function'? App({children:child,APP}) : child;
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
-          <PaperProvider theme={theme}>
+          <PaperProvider 
+              theme={theme}
+              settings={{
+                icon: (props) => {
+                   return <FontIcon {...props}/>
+                },
+              }}
+          >
             <SafeAreaProvider>
               <AuthProvider>
                   <PortalProvider>

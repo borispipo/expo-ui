@@ -17,13 +17,15 @@ import {notify} from "$ecomponents/Dialog";
 import {decycle} from "$utils/json";
 import init from "$capp/init";
 import { setIsInitialized} from "$capp/utils";
+import {isObj,isNonNullString} from "$cutils";
+import {loadFonts} from "$ecomponents/Icon/Font";
 
 let MAX_BACK_COUNT = 1;
 let countBack = 0;
 let isBackConfirmShowing = false;  
 
 const resetExitCounter = ()=>{
-  countBack = 0;
+  countBack = 0
   isBackConfirmShowing = false;
 };
 
@@ -38,6 +40,15 @@ function App(props) {
      isInitialized:true,
   });
   React.useEffect(() => {
+    const loadResources = ()=>{
+       return new Promise((resolve)=>{
+          loadFonts().catch((e)=>{
+            console.warn(e," ierror loading app resources fonts");
+          }).finally(()=>{
+            resolve(true);
+          });
+       })
+    }
     const restoreState = () => {
        return new Promise((resolve,reject)=>{
           (async ()=>{
@@ -102,16 +113,18 @@ function App(props) {
     NetInfo.fetch().catch((e)=>{
       console.log(e," is net info heinn")
     });
-    init().then(()=>{
-      if(Auth.isLoggedIn()){
-        Auth.loginUser(false);
-      }
-      setState({
-        ...state,isInitialized:true,isLoading : false,
-      });  
-    }).catch((e)=>{
-        console.error(e," initializing app")
-        setState({...state,isInitialized:true,isLoading : false});
+    loadResources().finally(()=>{
+      init().then(()=>{
+        if(Auth.isLoggedIn()){
+          Auth.loginUser(false);
+        }
+        setState({
+          ...state,isInitialized:true,isLoading : false,
+        });  
+      }).catch((e)=>{
+          console.error(e," initializing app")
+          setState({...state,isInitialized:true,isLoading : false});
+      })
     });
 
     const Events = {}
@@ -139,7 +152,7 @@ function App(props) {
   }, []);
   const {isInitialized} = state;
   const hasGetStarted = true;
-  const isLoading = state.isLoading || !isInitialized || !appReadyRef.current ? true : false;
+  const isLoading = state.isLoading || !isInitialized || !appReadyRef.current? true : false;
     React.useEffect(()=>{
       if(isInitialized){
           setIsInitialized(true);

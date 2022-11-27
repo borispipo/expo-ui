@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "2.6.1",
+  "version": "2.7.0",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "index.js",
   "resolutions": {
@@ -42,7 +42,8 @@
     "electron-p": "npm run compile-electron-p && npm run electron",
     "update-app-version": "node ./update-app-version.js",
     "find-licenses": "node ./find-licenses.js",
-    "fix-dependencies": "expo doctor --fix-dependencies"
+    "fix-dependencies": "expo doctor --fix-dependencies",
+    "delete-node-modules": "rimraf ./**/node_modules"
   },
   "repository": {
     "type": "git",
@@ -64,8 +65,9 @@
     "@emotion/native": "^11.10.0",
     "@expo/html-elements": "^0.2.0",
     "@expo/metro-config": "^0.4.0",
+    "@expo/vector-icons": "^13.0.0",
     "@expo/webpack-config": "^0.17.2",
-    "@fto-consult/common": "^1.12.3",
+    "@fto-consult/common": "^1.13.1",
     "@gorhom/portal": "^1.0.14",
     "@react-native-async-storage/async-storage": "~1.17.3",
     "@react-native-community/datetimepicker": "6.5.2",
@@ -106,6 +108,7 @@
     "react-native-web": "~0.18.7",
     "react-native-webview": "11.23.1",
     "sharp-cli": "^2.1.0",
-    "tippy.js": "^6.3.7"
+    "tippy.js": "^6.3.7",
+    "expo-font": "~11.0.1"
   }
 }

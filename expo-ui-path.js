@@ -6,6 +6,8 @@ const fs = require("fs");
 const path = require("path");
 ///retourne le chemin vers le package @expo-ui
 module.exports = function (...args){
+    const argv = require('args-parser')(process.argv);
+    console.log(argv," is argvvvvvvvv");    
     const suffix = path.join(...args);
     const p = require("./lookup-expo-ui-path")();
     const sep = path.sep;

@@ -11,7 +11,7 @@ import {notify,showConfirm} from "$ecomponents/Dialog";
 import Label from "$ecomponents/Label";
 import Image from "$ecomponents/Image";
 import Icon,{COPY_ICON} from "$ecomponents/Icon";
-import filterUtils from "$ecomponents/Filter/utils";
+import filterUtils from "$cfilters";
 import Hashtag from "$ecomponents/Hashtag";
 import {sortBy,isDecimal,extendObj,isObjOrArray,defaultNumber,defaultStr,isFunction,defaultBool,defaultArray,defaultObj,isNonNullString,defaultDecimal} from "$utils";
 import {Datagrid as DatagridContentLoader} from "$ecomponents/ContentLoader";
@@ -900,7 +900,7 @@ export default class CommonDatagridComponent extends AppComponent {
             field = header.field = defaultStr(header.field,field,headerIndex);
             delete restCol.filter;
             
-            const type = defaultStr(header.type).toLowerCase();
+            const type = defaultStr(header.jsType,header.type,"text").toLowerCase();
             sortType = defaultStr(sortType,type).toLowerCase();
             width = defaultDecimal(width);
             if(width <COLUMN_WIDTH/2){
@@ -929,6 +929,7 @@ export default class CommonDatagridComponent extends AppComponent {
             });
             restCol.field = header.field;
             restCol.label = defaultStr(header.text,header.label) ;
+            restCol.type = type;
             if(!restCol.label){
                 console.error(header," has not label or text in datagrid",columns,this.props)
             }
@@ -957,6 +958,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 delete restCol.sortable;
                 filterProps = {
                     ...restCol,
+                    type,
                     columnIndex,
                     visibleColumnIndex,
                     sortable:isColumnSortable,
@@ -986,6 +988,7 @@ export default class CommonDatagridComponent extends AppComponent {
             }
             this.prepareColumn({
                 visible,
+                type,
                 columnIndex,
                 visibleColumnIndex,
                 sortable:isColumnSortable,
@@ -1493,6 +1496,7 @@ export default class CommonDatagridComponent extends AppComponent {
         if(!isObj(rowData)) return {render:null,extra:{}};
          let _render = null;
          columnDef = defaultObj(columnDef);
+         let _type = defaultStr(columnDef.jsType,columnDef.type).trim().toLowerCase();
          if(this.isSelectableColumn(columnDef,columnField)){
              rowKey = rowKey ? rowKey : this.getRowKey(rowData,rowIndex);
              return {render :handleSelectableColumn === false ? null : this.renderSelectableCheckboxCell({
@@ -1528,7 +1532,6 @@ export default class CommonDatagridComponent extends AppComponent {
             _render = defaultDecimal(columnDef.multiplicater({...renderArgs,value:rowData[columnField]}),rowData[columnField]);
         } else {
              _render = defaultValue;
-             let _type = defaultStr(columnDef.type).trim().toLowerCase();
              if(defaultStr(columnDef.format).toLowerCase() === 'hashtag'){
                 _render = <Hashtag>{_render}</Hashtag>
              } else if(typeof columnDef.render === "function"){

@@ -2,7 +2,7 @@
 
 import DateLib from "$lib/date";
 import {isNonNullString,defaultStr,isNullOrEmpty,debounce,uniqid} from "$utils";
-import {regexParser,regexActions,getFilterStateValues} from "./utils";
+import {regexParser,regexActions,operators as _operators,actions as _actions,periodActions, inActions as _inActions,getFilterStateValues,getSessionData,setSessionData} from "$cfilters";
 import {parseDecimal} from "$ecomponents/TextField";
 import notify from "$notify";
 import PropTypes from "prop-types";
@@ -15,41 +15,12 @@ import React,{Component as AppComponent} from "$react";
 import theme from "$theme";
 import {isMobileMedia} from "$cplatform/dimensions";
 import { ActivityIndicator } from "react-native-paper";
-import { getSessionData,setSessionData } from "./session";
 import DialogProvider from "$components/Form/FormData/DialogProvider";
 
 const manualRunKey = "manual-run";
 
-export * from "./utils";
+export * from "$cfilters";
 
- const _actions = {
-  '$eq' : 'Egal à',
-  "$ne" : 'Défférent de',
-  '$gt' : 'Supérieur à',
-  '$gte' : 'Supérieur ou égal',
-  '$lt' : 'Inférieur à',
-  '$lte' : 'Inférieur où égal à',
-}
-
-const _inActions = {
-  '$in'  :'Est inc ds la liste', //Array of JSON values	The document field must exist in the list provided.
-  '$nin' : 'N\'est pas inc ds la liste', //Array of JSON values	The document field not must exist in the list provided.
-}
- 
-
-const _operators = {
-   '$and' : 'Et', //Array	Matches if all the selectors in the array match.
-   '$or' : 'Ou', //Array	Matches if any of the selectors in the array match. All selectors must use the same index.
-}
-
-const periodActions = {
-  $yesterday : "Hier",
-  $today:"Aujourd'hui",
-  $prevWeek:"Semaine passée",
-  $week:'Cette semaine',
-  $month:'Ce mois',
-  $period:"Période"
-}
   
 /***** Coposant Filter, pour les filtres de données */
 export default class Filter extends AppComponent {

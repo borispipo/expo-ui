@@ -863,7 +863,7 @@ export default class Field extends AppComponent {
         delete rest.archivable;
 
         this.___formattedField = undefined;
-        let _type = this.type = defaultStr(this.props.type,this.type,"text").trim().toLowerCase();
+        let _type = this.type = defaultStr(this.props.jsType,this.props.type,this.type,"text").trim().toLowerCase();
         format = defaultStr(format).toLowerCase().trim();
         tooltip = defaultVal(tooltip,title);
 
@@ -959,6 +959,7 @@ Field.propTypes = {
         PropTypes.node,
         PropTypes.func,
     ]),
+    jsType : PropTypes.string,
     usePlaceholderWhenEmpty : PropTypes.bool,//si la valeur du placeholder sera utilée, lorsque la valeur du champ de type formatable est nulle ou égale à la valeur vide
     responsive : PropTypes.bool,
     responsiveProps : PropTypes.object,

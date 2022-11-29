@@ -61,12 +61,16 @@ const FontIcon = React.forwardRef(({icon,name,testID,color,iconStyle,backgroundC
         console.warn("Icone non définie pour le composant FontIcon, icon [{0}], merci de spécifier une icone supportée par la liste du module https://github.com/expo/vector-icons/MaterialCommunityIcons".sprintf(icon),props);
         return null;
     }
-    const iconName = icon.ltrim("")
+    const iconName = icon.ltrim("material-")
+                    .ltrim("fa-").ltrim("ant-").ltrim("fontisto-")
+                    .ltrim("foundation-").ltrim("ionic-").ltrim("octicons-")
+                    .ltrim("simple-line-").ltrim("zocial-").trim();
+
     return <Icon {...props} 
         ref = {ref}
         testID = {testID}
         color={color}
-        name = {icon}
+        name = {iconName}
         backgroundColor = {backgroundColor}
     />
 });
@@ -94,7 +98,7 @@ export const isIcon = (name,iconSet)=>{
     if(!isNonNullString(name) || !isNonNullString(iconSet)) return false;
     name = name.toLowerCase();
     iconSet = iconSet.toLowerCase().trim();
-    return name.startsWith(iconSet+"-") || name.startsWith(iconSet+"s"+"-") ? true : false;
+    return name.startsWith(iconSet+"-") /*|| name.startsWith(iconSet+"s"+"-")*/ ? true : false;
 }
 
 export default theme.withStyles(FontIcon,{displayName:FontIcon.displayName,mode:'normal'});

@@ -28,8 +28,8 @@ export const getItems = (force)=>{
             r.push(item);
         }
     })
-    r.push({divider:true});
     if(handleHelp){
+        r.push({divider:true});
         const dataHelp = {
             key : 'dataHelp',
             label : 'Aide',

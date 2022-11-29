@@ -86,7 +86,7 @@ export default function LoginComponent(props){
             },1000)
         }
     },[withPortal])
-    const {header,withScrollView:customWithScrollView,children,initialize,contentTop,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,mutateData,canSubmit:canSubmitForm,onStepChange,...loginProps} = defaultObj(getProps({
+    const {header,withScrollView:customWithScrollView,children,initialize,contentTop,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,mutateData,beforeSubmit:beforeSubmitForm,canSubmit:canSubmitForm,onStepChange,...loginProps} = defaultObj(getProps({
         ...state,
         setState,
         state,
@@ -119,6 +119,7 @@ export default function LoginComponent(props){
      * par défaut, on envoie les données lorssqu'on est à l'étappe 2
      * **/
     const canSubmit = typeof canSubmitForm =='function'? canSubmitForm : ({step})=>step >= 2;
+    const beforeSubmit = typeof beforeSubmitForm =='function'? beforeSubmitForm : x=> true;
     const goToNext = ()=>{
         let step = state.step;
         const data = getData();
@@ -149,7 +150,7 @@ export default function LoginComponent(props){
             nextButtonRef.current?.enable();
         }
         if(step > 1){
-            if(canSubmit(args)){
+            if(canSubmit(args) && beforeSubmit(args) !== false){
                 ///pour modifier automatiquement la données à mettre à jour
                 if(typeof mutateData =='function'){
                     mutateData(data);
@@ -178,7 +179,7 @@ export default function LoginComponent(props){
             else {
                 loginFields[i] = Object.clone(field);
                 hasLoginFields = true;
-                if("autoFocusOnStep" in loginFields[i]){
+                if("autoFocusOnStep" in loginFields[i] && typeof loginFields[i].autoFocus !=='boolean'){
                     loginFields[i].autoFocus = !!loginFields[i].autoFocusOnStep;    
                 }
             }

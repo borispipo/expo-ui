@@ -191,7 +191,7 @@ export default class FormDataComponent extends AppComponent{
                 content.push(<Divider key = {index} style={theme.styles.w100}/>)
             } else if(isObj(field) && field.form !== false) {
                 const name = defaultStr(field.name,field.field,index);
-                const type = defaultStr(field.type,"text").trim().toLowerCase().replaceAll("_","");
+                const type = defaultStr(field.jsType,field.type,"text").trim().toLowerCase().replaceAll("_","");
                 const Component = componentTypes[type] || componentTypes.default;
                 let {defaultValue,useDefaultValueFromData,hidden,renderFormDataField,getMediaQueryStyle,printLabels,queryLimit,selected,value,visible,dataFilesInterest,perm,ignore,form,responsiveProps:customResponsiveProps,...rest} = field;
                 rest = Object.assign({},rest);

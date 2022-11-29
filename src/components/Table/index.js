@@ -160,7 +160,7 @@ const TableComponent = React.forwardRef(({containerProps,renderEmpty,isRowSelect
     const scrollContentContainerStyle = {flex:1,width:listWidth,minWidth:totalWidths,height:'100%'};
     const scrollEventThrottle = isMobileNative()?200:50;
     const scrollViewFlexGrow = {flexGrow:0};
-    const maxScrollheight = f.length && fFilters.length ? 170  : f.length || fFilters.length ? 120 : 80;
+    const maxScrollheight = f.length && fFilters.length ? 170  : f.length ?120 :  fFilters.length ? 140 : 80;
     const allScrollViewProps = {
         scrollEventThrottle,
         horizontal : true,

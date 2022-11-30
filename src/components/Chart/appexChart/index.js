@@ -11,7 +11,7 @@ const AppexChartComponent = React.forwardRef(({chartContext,options,...props},re
         if (chartContext.current && typeof chartContext.current.destroy === 'function') {
           setTimeout(()=>{
             try {chartContext.current.destroy();} catch{}
-          },500);
+          },1000);
         }
       }
     },[]);

@@ -16,6 +16,7 @@ const FABContainer = React.forwardRef((props,ref)=>{
   ref = ref || createFabRef(screenName);
   React.useEffect(()=>{
     const onFocusFab = ({sanitizedName})=>{
+        console.log(sanitizedName," is dddddd focused")
         const isFocused = sanitizedName === sScreenName;
         if(isFocused && ref.current && ref.current.show){
             ref.current.show();

@@ -1458,7 +1458,7 @@ export default class CommonDatagridComponent extends AppComponent {
                     onPress = {sortMe}
                     primary
                 />: null}
-                <Label primary={isColumnSorted}>{ret}</Label>
+                <Label textBold style={[{fontSize:13}]} primary={isColumnSorted}>{ret}</Label>
             </>
         </TouchableRipple>
     }

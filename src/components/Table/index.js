@@ -213,7 +213,7 @@ const TableComponent = React.forwardRef(({containerProps,renderEmpty,isRowSelect
     React.setRef(tableRef,context);
     const cStyle = {width:listWidth}
     const absoluteScrollViewRef = React.useRef(null);
-    return <View testID= {testID+"_Container"} {...containerProps} style={[styles.container,{alignItems:'stretch'},containerProps.style,theme.styles.pl0,theme.styles.pr0]}>
+    return <View testID= {testID+"_Container"} {...containerProps} style={[styles.container,{alignItems:'stretch'},containerProps.style]}>
             <RNView style={[cStyle]} testID={testID+"_Headers_ScrollViewContainer"}>
                 <ScrollView
                     testID={testID+"_HeaderScrollView"}
@@ -352,7 +352,8 @@ const styles = StyleSheet.create({
         width : '100%',
         minHeight : 300,
         paddingBottom : 50,
-        paddingHorizontal : 5,
+        paddingLeft : 10,
+        paddingRight : 10,
         flex : 1,
         position : 'relative',
     },

@@ -1,11 +1,8 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "2.9.2",
+  "version": "2.9.5",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "index.js",
-  "resolutions": {
-    "@expo/cli": "xxx"
-  },
   "scripts": {
     "publish1": "npm publish --access=public",
     "unpublish": "npm -f unpublish @fto-consult/expo-ui",
@@ -44,7 +41,7 @@
     "find-licenses": "node ./find-licenses.js",
     "fix-dependencies": "expo doctor --fix-dependencies",
     "delete-node-modules": "rimraf ./**/node_modules",
-    "modifier-url-remote-git":"git remote set-url origin 'https://borispipo@github.com/borispipo/smart-eneo.git'"
+    "modifier-url-remote-git": "git remote set-url origin 'https://borispipo@github.com/borispipo/smart-eneo.git'"
   },
   "repository": {
     "type": "git",
@@ -68,7 +65,7 @@
     "@expo/metro-config": "^0.4.0",
     "@expo/vector-icons": "^13.0.0",
     "@expo/webpack-config": "^0.17.2",
-    "@fto-consult/common": "^1.15.0",
+    "@fto-consult/common": "^1.15.2",
     "@fto-consult/expo-ui": "^2.9.2",
     "@gorhom/portal": "^1.0.14",
     "@react-native-async-storage/async-storage": "~1.17.3",
@@ -111,7 +108,6 @@
     "react-native-web": "~0.18.7",
     "react-native-webview": "11.23.1",
     "sharp-cli": "^2.1.0",
-    "tippy.js": "^6.3.7",
-    "yargs": "^17.1.1-candidate.0"
+    "tippy.js": "^6.3.7"
   }
 }

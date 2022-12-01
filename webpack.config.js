@@ -20,7 +20,7 @@ module.exports = async function(env, argv,opts) {
       argv
   );
     //config.resolve.alias['moduleA'] = 'moduleB';
-  
+    config.mode = config.mode =="development" || config.mode =='production' && config.mode  || "development";
     // Maybe you want to turn off compression in dev mode.
     if (config.mode === 'development') {
       config.devServer.compress = false;

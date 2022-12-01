@@ -43,7 +43,8 @@
     "update-app-version": "node ./update-app-version.js",
     "find-licenses": "node ./find-licenses.js",
     "fix-dependencies": "expo doctor --fix-dependencies",
-    "delete-node-modules": "rimraf ./**/node_modules"
+    "delete-node-modules": "rimraf ./**/node_modules",
+    "modifier-url-remote-git":"git remote set-url origin 'https://borispipo@github.com/borispipo/smart-eneo.git'"
   },
   "repository": {
     "type": "git",

@@ -7,6 +7,7 @@ import {defaultObj} from "$utils";
 import PropTypes from "prop-types";
 import {isNonNullString,isNumber,defaultStr} from "$utils";
 import Label from "$ecomponents/Label";
+import appConfig from "$capp/config";
 
 /**** retourne les props du champ de type countrie */
 export const getCountryFieldProps = (props)=>{
@@ -28,6 +29,7 @@ export const getCountryFieldProps = (props)=>{
                 <Label>{item.label}</Label>
             </View>
         },
+        defaultValue : appConfig.countryCode,
         ...defaultObj(rest),
     }
 }

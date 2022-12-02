@@ -31,7 +31,8 @@ import copyToClipboard from "$capp/clipboard";
 import { Pressable } from "react-native";
 import TableLink from "$TableLink";
 import appConfig from "$capp/config";
-import stableHash from "stable-hash"
+import stableHash from "stable-hash";
+import DatagridProgressBar from "./ProgressBar";
 
 export const arrayValueSeparator = ", ";
 
@@ -96,9 +97,16 @@ export default class CommonDatagridComponent extends AppComponent {
             [footerFieldName] : {
                 value : uniqid(footerFieldName),override:false, writable: false
             },
+            progressRef : {
+                value : {current : null}
+            },
+            isLoadingRef : {
+                value : {current:false}
+            },
             currentFilteringColumns : {value:{}}
         }) 
-        
+        this.isLoading = this.isLoading.bind(this);
+        this.getProgressBar = this.getProgressBar.bind(this);
         this.state.sort.dir = defaultStr(this.state.sort.dir,this.state.sort.column == "date"?"desc":'asc')
         this.hasColumnsHalreadyInitialized = false;
         this.initColumns(props.columns);
@@ -1082,7 +1090,7 @@ export default class CommonDatagridComponent extends AppComponent {
         } else if(force){
             this.setSelectedRows();
         }
-        const state = {data,isLoading:false,sort : this._sort};
+        const state = {data,sort : this._sort};
         if((cb)){
             cb(state);
         }
@@ -1124,15 +1132,24 @@ export default class CommonDatagridComponent extends AppComponent {
    
 
     getProgressBar(props){
-        if(!this.isLoading() && props !== true) return null;
+        if(!this.isLoading() && props !== true) {
+            if(this.canSetIsLoading()){
+                this.setIsLoading(false);
+            }
+            return null;
+        }
         if(typeof props !=='object' || !props){
             props = {};
         }
-        if(React.isValidElement(this.props.progressBar)) return this.props.progressBar ;
-        if(this.props.useLinesProgressBar === true || this.props.useLineProgressBar === true){
-            return CommonDatagridComponent.LineProgressBar(props);
-        }
-        return this.getDefaultPreloader(props);
+        const children = React.isValidElement(this.props.progressBar) ? this.props.progressBar : 
+            this.props.useLinesProgressBar === true || this.props.useLineProgressBar === true ? CommonDatagridComponent.LineProgressBar(props)
+            : this.getDefaultPreloader(props);
+        return <DatagridProgressBar
+            isLoading = {defaultBool(this.props.isLoading,this.isLoading())}
+            {...props}
+            children = {children}  
+            ref = {this.progressRef}
+        />
     }
     handlePagination(start, limit, page) {
         this._previousPagination = this._pagination;
@@ -1354,11 +1371,25 @@ export default class CommonDatagridComponent extends AppComponent {
         }
         return max;
     }
+    canSetIsLoading(){
+        return this.progressRef.current && typeof this.progressRef.setIsLoading =='function';
+    }
+    setIsLoading(loading,cb){
+        if(this.canSetIsLoading()){
+            return this.progressRef.setIsLoading(defaultBool(loading,this.isLoadingRef.current),cb);
+        }
+        return false;
+    }
      /**** met à jour l'état de progression de la mise à jour du tableau */
-     updateProgress(state,cb){
-        state = defaultObj(state);
-        state.isLoading = defaultBool(state.isLoading,!!!this.state.isLoading);
-        this.setState({...state},cb);
+     updateProgress(isLoading,cb){
+        this.isLoadingRef.current = defaultBool(isLoading,!!!this.isLoadingRef.current);
+        cb = typeof cb =='function'?cb : typeof isLoading =='function'? isLoading : null
+        if(this.canSetIsLoading()){
+            return this.setIsLoading(isLoading,cb);
+        }
+        cb && setTimeout(() => {
+            cb();
+        }, 500);
     }
     isAllRowsSelected(update){
         return this.selectedRowsCount && this.selectedRowsCount === this.getMaxSelectableRows()? true : false;
@@ -1418,7 +1449,7 @@ export default class CommonDatagridComponent extends AppComponent {
         return CommonDatagridComponent.getDefaultPreloader();
     }
     isLoading (){
-        return this.state.isLoading === true ? true : false;
+        return this.isLoadingRef.current === true ? true : false;
     }
     getLinesProgressBar(){
         return CommonDatagridComponent.LinesProgressBar(this.props);

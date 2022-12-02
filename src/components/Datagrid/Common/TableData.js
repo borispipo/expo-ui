@@ -33,7 +33,6 @@ export default class CommonTableDatagrid extends CommonDatagrid{
         } else {
             this.currentDataSources = Object.toArray(this.currentDataSources);
         }
-        this.state.isLoading = true;
     }
     prepareFetchData(fetchData){
         this.INITIAL_STATE.fetchData = defaultVal(fetchData,this.props.fetchData);
@@ -159,8 +158,9 @@ export default class CommonTableDatagrid extends CommonDatagrid{
                     /**** l'on peut définir la props fetchData, qui est la fonction appelée pour la recherche des données */
                     fetchData = this.props.fetchData.call(this,fetchOptions);
                 }
+                if(fetchData === false) return;
                 fetchData = isFunction(fetchData)? fetchData.call(this,fetchOptions) : fetchData;
-                this.updateProgress({isLoading:true},()=>{
+                this.updateProgress(true,()=>{
                     if(isPromise(fetchData)){
                         return fetchData.then(data=>{
                            return this.resolveFetchedDataPromise({cb,data,force}).then((data)=>{

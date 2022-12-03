@@ -13,7 +13,7 @@ import Image from "$ecomponents/Image";
 import Icon,{COPY_ICON} from "$ecomponents/Icon";
 import filterUtils from "$cfilters";
 import Hashtag from "$ecomponents/Hashtag";
-import {sortBy,isDecimal,extendObj,isObjOrArray,defaultNumber,defaultStr,isFunction,defaultBool,defaultArray,defaultObj,isNonNullString,defaultDecimal} from "$utils";
+import {sortBy,isDecimal,extendObj,isObjOrArray,isOb,defaultNumber,defaultStr,isFunction,defaultBool,defaultArray,defaultObj,isNonNullString,defaultDecimal} from "$utils";
 import {Datagrid as DatagridContentLoader} from "$ecomponents/ContentLoader";
 import React from "$react";
 import DateLib from "$lib/date";
@@ -97,7 +97,7 @@ export default class CommonDatagridComponent extends AppComponent {
             [footerFieldName] : {
                 value : uniqid(footerFieldName),override:false, writable: false
             },
-            progressRef : {
+            progressBarRef : {
                 value : {current : null}
             },
             isLoadingRef : {
@@ -1165,12 +1165,6 @@ export default class CommonDatagridComponent extends AppComponent {
    
 
     getProgressBar(props){
-        if(!this.isLoading() && props !== true) {
-            if(this.canSetIsLoading()){
-                this.setIsLoading(false);
-            }
-            return null;
-        }
         if(typeof props !=='object' || !props){
             props = {};
         }
@@ -1179,9 +1173,12 @@ export default class CommonDatagridComponent extends AppComponent {
             : this.getDefaultPreloader(props);
         return <DatagridProgressBar
             {...props}
-            isLoading = {defaultBool(this.props.isLoading,props.isLoading,this.isLoading())}
+            onChange = {(context)=>{
+                this.isLoadingRef.current = context.isLoading;
+            }}
+            isLoading = {defaultBool(this.props.isLoading,this.isLoading())}
             children = {children}  
-            ref = {this.progressRef}
+            ref = {this.progressBarRef}
         />
     }
     handlePagination(start, limit, page) {
@@ -1282,7 +1279,7 @@ export default class CommonDatagridComponent extends AppComponent {
         this.previousDataSources = dataSources;
         this.previousServer = server;
     }
-    beforeFetchdata(){}
+    beforeFetchData(){}
     fetchData({fetchOptions}){
         return Promise.resolve(this.state.data);
     }
@@ -1434,11 +1431,17 @@ export default class CommonDatagridComponent extends AppComponent {
         return max;
     }
     canSetIsLoading(){
-        return this.progressRef.current && typeof this.progressRef.setIsLoading =='function';
+        return isObj(this.progressBarRef.current) && typeof this.progressBarRef.current.setIsLoading =='function' ? true : false;
     }
     setIsLoading(loading,cb){
-        if(this.canSetIsLoading()){
-            return this.progressRef.setIsLoading(defaultBool(loading,this.isLoadingRef.current),cb);
+        if(this.canSetIsLoading() && typeof loading =='boolean'){
+            return this.progressBarRef.current.setIsLoading(loading,()=>{
+                if(typeof cb =='function'){
+                    cb();
+                }
+            });
+        } else if(typeof cb =='function'){
+            cb();
         }
         return false;
     }
@@ -1510,6 +1513,8 @@ export default class CommonDatagridComponent extends AppComponent {
         return CommonDatagridComponent.getDefaultPreloader();
     }
     isLoading (){
+        if(this.state.isReady === false) return true;
+        if(typeof this.props.isLoading =='boolean') return this.props.isLoading;
         return this.isLoadingRef.current === true ? true : false;
     }
     getLinesProgressBar(){

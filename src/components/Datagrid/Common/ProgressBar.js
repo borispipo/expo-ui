@@ -4,17 +4,17 @@
 import React from "$react";
 import {defaultBool} from "$utils";
 
-const DatagridProgressBar = React.forwardRef(({isLoading:customIsLoading,children},ref)=>{
+const DatagridProgressBar = React.forwardRef(({isLoading:customIsLoading,onChange,children},ref)=>{
     const [isLoading,_setIsLoading] = React.useState(defaultBool(customIsLoading));
     const isMounted = React.useIsMounted();
     const loadingCbRef = React.useRef(null);
     const cb = loadingCbRef.current;
     loadingCbRef.current = null;
     const setIsLoading = (loading)=>{
-        if(!isMounted()) return;
         _setIsLoading(loading);
     }
-    React.setRef(ref,{
+    const context = {
+        isLoading,
         setIsLoading : (loading,cb)=>{
             if(!isMounted()){
                 if(typeof cb =='function'){
@@ -23,12 +23,14 @@ const DatagridProgressBar = React.forwardRef(({isLoading:customIsLoading,childre
                 return;
             }
             if(typeof loading =='boolean' && loading != isLoading){
+                loadingCbRef.current = cb;
                 setIsLoading(loading);
             } else if(typeof cb =='function'){
                 cb({isLoading});
             }
         }
-    });
+    }
+    React.setRef(ref,context);
     React.useEffect(()=>{
         if(typeof customIsLoading =='boolean' && customIsLoading != isLoading){
             setIsLoading(customIsLoading);
@@ -39,8 +41,15 @@ const DatagridProgressBar = React.forwardRef(({isLoading:customIsLoading,childre
             cb({isLoading});
         }
         loadingCbRef.current = null;
+        if(typeof onChange =='function'){
+            onChange(context);
+        }
     },[isLoading])
-    console.log(children," is children rendering ",isLoading);
+    React.useEffect(()=>{
+        return ()=>{
+            React.setRef(ref,null);
+        }
+    },[]);
     return !isLoading || !React.isValidElement(children) ? null : children;
 });
 

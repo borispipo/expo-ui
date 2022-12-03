@@ -87,7 +87,6 @@ export default function getIndex(options){
           },
           isVisible() {
             /* Customize the visibility state detector */
-            console.log(isScreenFocusedRef.current," is screen visible heeee")
             return isScreenFocusedRef.current;
           },
           initFocus(callback) {

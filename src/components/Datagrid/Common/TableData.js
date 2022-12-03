@@ -94,8 +94,8 @@ export default class CommonTableDatagrid extends CommonDatagrid{
                         delete fetchOptions.limit
                     }
                 }
-                this.beforeFetchdata(fetchOptions);
-                if(typeof this.props.beforeFetchData =='function' && this.props.beforeFetchData(fetchOptions) === false){
+                this.beforeFetchData(fetchOptions);
+                if(typeof this.props.beforeFetchData =='function' && this.props.beforeFetchData({context:this,fetchOptions,options:fetchOptions}) === false){
                     this.isFetchingData = false;
                     return resolve(this.state.data);
                 }

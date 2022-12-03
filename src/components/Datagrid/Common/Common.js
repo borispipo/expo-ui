@@ -150,6 +150,39 @@ export default class CommonDatagridComponent extends AppComponent {
             windowHeight,
         }
         this.selectableColumnRef = React.createRef(null);
+        let isPv = this.isPivotDatagrid();
+        if(isPv){
+            isPv = this.props.dataSourceSelector !== false;
+        } else isPv = this.props.dataSourceSelector === true ? true : false;
+        if(isPv){
+            let dataSourceSelectorProps = defaultObj(this.props.dataSourceSelectorProps);
+            ['table','tableName'].map((tb,idx)=>{
+                dataSourceSelectorProps[tb] = defaultStr(this.props[tb],dataSourceSelectorProps[tb]);
+            });
+            let cDB = []//DBSelector.getDefaultSelected(dataSourceSelectorProps,this.currentDataSources,this.props);
+            let sDB = this.getSessionData().selectedDataSources;
+            cDB = Object.toArray(cDB);
+            if(cDB.length){
+                this.currentDataSources = cDB
+            } else {
+                this.currentDataSources = sDB;
+            }   
+            this.setSessionData({selectedDataSources:this.currentDataSources});
+        } else {
+            this.currentDataSources = Object.toArray(this.currentDataSources);
+        }
+        if(isPv){
+            isPv = this.props.dataSourceSelector !== false;
+        } else isPv = this.props.dataSourceSelector === true ? true : false;
+        if(isPv){
+            let dataSourceSelectorProps = defaultObj(this.props.dataSourceSelectorProps);
+            ['table','tableName'].map((tb)=>{
+                dataSourceSelectorProps[tb] = defaultStr(this.props[tb],this[tb],dataSourceSelectorProps[tb]);
+            });
+            this.setSessionData({selectedDataSources:this.currentDataSources});
+        } else {
+            this.currentDataSources = Object.toArray(this.currentDataSources);
+        }
     }
     bindResizeEvents(){
         return false;
@@ -1145,8 +1178,8 @@ export default class CommonDatagridComponent extends AppComponent {
             this.props.useLinesProgressBar === true || this.props.useLineProgressBar === true ? CommonDatagridComponent.LineProgressBar(props)
             : this.getDefaultPreloader(props);
         return <DatagridProgressBar
-            isLoading = {defaultBool(this.props.isLoading,this.isLoading())}
             {...props}
+            isLoading = {defaultBool(this.props.isLoading,props.isLoading,this.isLoading())}
             children = {children}  
             ref = {this.progressRef}
         />
@@ -1234,7 +1267,25 @@ export default class CommonDatagridComponent extends AppComponent {
         const preparedFilters = prepareFilters(this.filters,{filter:this.canHandleFilterVal.bind(this),convertToSQL:this.willConvertFiltersToSQL()});
         return preparedFilters;
     }
-    fetchData(){}
+    onChangeDataSources(args){
+        let {dataSources,server} = args;
+        if(this.props.onChangeDataSources =='function' && this.props.onChangeDataSources({dataSources,prev:this.currentDataSources}) === false) return;
+        this.currentDataSources = dataSources;
+        this.setSessionData({selectedDatabases:dataSources}) 
+        if(JSON.stringify({dataSources:this.previousDataSources}) != JSON.stringify({dataSources})){
+            if(isObj(this.props.dataSourceSelectorProps) && isFunction(this.props.dataSourceSelectorProps.onChange)){
+                args.datagridContext = this;
+                this.props.dataSourceSelectorProps.onChange(args);
+            }
+            this.refresh(true);
+        } 
+        this.previousDataSources = dataSources;
+        this.previousServer = server;
+    }
+    beforeFetchdata(){}
+    fetchData({fetchOptions}){
+        return Promise.resolve(this.state.data);
+    }
     /****  Filtre le tableau */
     doFilter ({value,field,selector,event,force}){
         if(!this._isMounted()) return;
@@ -1264,7 +1315,7 @@ export default class CommonDatagridComponent extends AppComponent {
             this._pagination.start = 0;
         }
         this.filtersSelectors = {selector:this.getFilters()};
-        return this.fetchData(true,null,this.filtersSelectors);
+        return this.fetchData({force:true,fetchOptions:this.filtersSelectors});
     }
     onSetQueryLimit(){
         if(!this.canSetQueryLimit()) return;
@@ -1321,7 +1372,18 @@ export default class CommonDatagridComponent extends AppComponent {
     forceRefresh(){
         this.refresh(true);
     }
-    refresh (force,cb){}
+    refresh (force,cb){
+        if(isFunction(force)){
+            let t = cb;
+            cb = force;
+            force = isBool(t)? t : true;
+        }
+        return this.fetchData({force:defaultBool(force,true)}).then((data)=>{
+            if(isFunction(cb)){
+                cb(data);
+            }
+        })
+    }
     onResizePage(){}
     componentDidMount(){
         super.componentDidMount();
@@ -1439,11 +1501,10 @@ export default class CommonDatagridComponent extends AppComponent {
         return false;
     }
     UNSAFE_componentWillReceiveProps(nextProps){
-        if(!this.isTableData() && 'data' in nextProps && isObjOrArray(nextProps.data) && nextProps.data != this.state.data && (stableHash(nextProps.data) != stableHash(this.state.data))){
-            this.prepareData({data:nextProps.data,force:true},(state)=>{
-                this.setState(state)
-            });
-        }
+        if(!isObjOrArray(nextProps.data) || nextProps.data == this.props.data || stableHash(nextProps.data) == stableHash(this.props.data)) return;
+        this.prepareData({data:nextProps.data,force:true},(state)=>{
+            this.setState(state)
+        });
     }
     getDefaultPreloader(props){
         return CommonDatagridComponent.getDefaultPreloader();

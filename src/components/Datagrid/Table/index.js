@@ -113,30 +113,29 @@ const DatagridFactory = (Factory)=>{
         render(){
             let {title,testID,actions,selectableMultiple,sortable,exportable,
                 selectable,pagin,showPagination,
-                sessionName,onMount,onUnmount,onFetchData,dbSelector,dbSelectorProps,queryLimit,
+                sessionName,onMount,onUnmount,onFetchData,dataSourceSelector,dataSourceSelectorProps,queryLimit,
                 filters,
                 accordion, //pour le rendu du header en accordion
                 ...rest
             } = this.props;
             testID = defaultStr(testID,'RN_DatagridTableComponent');
             rest = defaultObj(rest);
-            let showDBSelector = false;
-            if(dbSelector === true){
-                showDBSelector = true;
-            }  else if(dbSelector ===false){
-                showDBSelector = false;
+            let showDataSourceSelector = false;
+            if(dataSourceSelector === true){
+                showDataSourceSelector = true;
+            }  else if(dataSourceSelector ===false){
+                showDataSourceSelector = false;
             }
-            dbSelectorProps = defaultObj(dbSelectorProps);
-            dbSelectorProps = defaultObj(dbSelectorProps);
-            let _dbSelector = undefined;/* showDBSelector ? <div>
+            dataSourceSelectorProps = defaultObj(dataSourceSelectorProps);
+            let _dataSourceSelector = undefined;/* showDataSourceSelector ? <div>
                 <DBSelector 
-                    {...dbSelectorProps}
+                    {...dataSourceSelectorProps}
                     onChange = {this.onChangeDatabases.bind(this)}
                 />
             </div> : null;*/
             if(!title){
-                title = _dbSelector;
-                _dbSelector = null;
+                title = _dataSourceSelector;
+                _dataSourceSelector = null;
             }
             exportable = defaultBool(exportable,true);
             sortable = defaultVal(sortable,true);

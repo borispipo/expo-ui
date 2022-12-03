@@ -40,6 +40,7 @@ const DatagridProgressBar = React.forwardRef(({isLoading:customIsLoading,childre
         }
         loadingCbRef.current = null;
     },[isLoading])
+    console.log(children," is children rendering ",isLoading);
     return !isLoading || !React.isValidElement(children) ? null : children;
 });
 

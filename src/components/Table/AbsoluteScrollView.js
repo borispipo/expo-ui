@@ -20,6 +20,7 @@ const AbsoluteScrollView = React.forwardRef(({testID,contentProps,listRef,contai
         styles : {},
         visible : true,
     })
+    const [layoutVisible,_setLayoutVisible] = React.useState(true);
     const {styles,visible} = state,setStyles = (s)=>{
         if(isObj(s)){
             setState({...state,styles:{...styles,...s}});
@@ -31,9 +32,19 @@ const AbsoluteScrollView = React.forwardRef(({testID,contentProps,listRef,contai
                 setState({...state,visible});
             }
         }
-    }
+    },setVisible = (visible)=>{
+        if(typeof visible =='boolean' && visible !== state.visible){
+            setState({...state,visible});
+        }
+    },setLayoutVisible = (layoutVisible)=>{
+        if(typeof layoutVisible =='boolean' && layoutVisible !== state.layoutVisible){
+            _setLayoutVisible(layoutVisible);
+        }
+    }   
     React.setRef(ref,{
         setStyles,
+        setVisible,
+        setLayoutVisible,
         checkVisibility : (args)=>{
             args = defaultObj(args);
             if(isObj(args.contentOffset) && isObj(args.contentSize)){
@@ -56,7 +67,7 @@ const AbsoluteScrollView = React.forwardRef(({testID,contentProps,listRef,contai
         toggleVisible();
     },[styles])
     return <Portal>
-        {<View testID={testID+"_Containter"} {...containerProps} style={[mainStyles.container,containerProps.style,styles.container,{left:win.width-10},!visible &&{display:'none',width:0,opacity:0}]}>
+        {<View testID={testID+"_Containter"} {...containerProps} style={[mainStyles.container,containerProps.style,styles.container,{left:win.width-10},(!visible || !layoutVisible) &&{display:'none',width:0,opacity:0}]}>
             <ScrollView
                 {...props}
                 ref = {scrollViewRef}

@@ -9,7 +9,7 @@ import PropTypes from "prop-types";
 import notify from "$notify";
 import Auth from "$cauth";
 import {open as showPreloader,close as hidePreloader} from "$preloader";
-import {canMakePhoneCall, makePhoneCall as makePCall} from "$app/MakePhoneCall";
+import {canMakePhoneCall, makePhoneCall as makePCall} from "$app/makePhoneCall";
 import copyToClipboard from "$app/clipboard";
 import {isMobileOrTabletMedia} from "$platform/dimensions";
 import Tab  from "$ecomponents/Tab";

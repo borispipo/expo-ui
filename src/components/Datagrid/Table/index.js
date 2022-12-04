@@ -404,7 +404,7 @@ const styles = StyleSheet.create({
     selectableColumn : {
         width : SELECTABLE_COLUMN_WIDTH,
         //justifyContent:'center',
-        alignItems : 'flex-start',
+        alignItems : 'center',
         paddingVertical : 0,
         marginVertical : 0,
         paddingHorizontal : 0,

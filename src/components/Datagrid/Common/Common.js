@@ -1510,7 +1510,7 @@ export default class CommonDatagridComponent extends AppComponent {
     }
     UNSAFE_componentWillReceiveProps(nextProps){
         if(!isObjOrArray(nextProps.data) || nextProps.data == this.props.data || stableHash(nextProps.data) == stableHash(this.props.data)) {
-            if(nextProps.isLoading !== this.props.isLoading && typeof nextProps.isLoading =='boolean'){
+            if( typeof this.props.isLoading=='boolean' && nextProps.isLoading !== this.props.isLoading && typeof nextProps.isLoading =='boolean'){
                 this.setIsLoading(nextProps.isLoading)
             }
             return;
@@ -1536,6 +1536,7 @@ export default class CommonDatagridComponent extends AppComponent {
     renderHeaderCell({columnDef,columnField}){
         if(this.isSelectableColumn(columnDef,columnField)){
             return <Checkbox
+                testID = "RN_SelectColumnHeaderCell"
                 checked  ={this.isAllRowsSelected()?true:false}
                 key = {this.getSelectableColumName()}
                 secondaryOnCheck

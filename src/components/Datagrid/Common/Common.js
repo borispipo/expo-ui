@@ -33,6 +33,8 @@ import TableLink from "$TableLink";
 import appConfig from "$capp/config";
 import stableHash from "stable-hash";
 import DatagridProgressBar from "./ProgressBar";
+import {Flag} from "$ecomponents/Countries"
+import View from "$ecomponents/View";
 
 export const arrayValueSeparator = ", ";
 
@@ -954,6 +956,8 @@ export default class CommonDatagridComponent extends AppComponent {
                 width = Math.max(width,DATE_COLUMN_WIDTH-30);
             } else if(type == "tel"){
                 width = Math.max(width,DATE_COLUMN_WIDTH)
+            } else if(type =="select_country" || type =='selectcountry'){
+                width = Math.max(width,90);
             }
             totalWidths +=width;
             widths[header.field] = width;
@@ -1505,7 +1509,12 @@ export default class CommonDatagridComponent extends AppComponent {
         return false;
     }
     UNSAFE_componentWillReceiveProps(nextProps){
-        if(!isObjOrArray(nextProps.data) || nextProps.data == this.props.data || stableHash(nextProps.data) == stableHash(this.props.data)) return;
+        if(!isObjOrArray(nextProps.data) || nextProps.data == this.props.data || stableHash(nextProps.data) == stableHash(this.props.data)) {
+            if(nextProps.isLoading !== this.props.isLoading && typeof nextProps.isLoading =='boolean'){
+                this.setIsLoading(nextProps.isLoading)
+            }
+            return;
+        }
         this.prepareData({...nextProps,force:true},(state)=>{
             this.setState(state)
         });
@@ -1649,6 +1658,9 @@ export default class CommonDatagridComponent extends AppComponent {
                  if(val === checkedValue){
                      _render = checkedLabel;
                  } else _render = uncheckedLabel;
+             }
+             else if(_type =='select_country' || _type =='selectcountry'){
+                _render = <Flag withCode {...columnDef} length={undefined} width={undefined} height={undefined} code={defaultValue}/>
              }
              ///le lien vers le table data se fait via une colonne de type selecttabledata ou select_tabledata ou potant l'une des propriétés foreignKeyTable ou linkToTable de type chaine de caractère non nulle
              else if(arrayValueExists(['piece','selecttabledata','id'],_type) || isNonNullString(columnDef.linkToTable) || isNonNullString(columnDef.foreignKeyTable)){

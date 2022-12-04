@@ -76,6 +76,9 @@ export const getFilterComponentProps = (_props)=>{
         props.inputProps.placeholder = defaultStr(props.inputProps.placeholder,i18n.lang("search.."))
         props.label = label;
         component = Fields.SelectField;
+        if(type =='select_country' || type =='selectcountry'){
+            component = Fields.SelectCountry;
+        }
         /*if(type !== 'select'){
             if(type === 'selectstructdata') {
                 dbName = 'structData';

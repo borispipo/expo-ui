@@ -1,8 +1,7 @@
 import {Image,View} from "react-native";
 import Menu from "$ecomponents/Menu";
 import Avatar from "$ecomponents/Avatar";
-import {TouchableOpacity,Pressable} from "react-native";
-import {isDecimal,setQueryParams,isValidURL,defaultStr as defaultString,isDataURL,isPromise,defaultBool,isObj,isNonNullString} from "$utils";
+import {isDecimal,setQueryParams,isValidURL,defaultDecimal,defaultStr as defaultString,isDataURL,isPromise,defaultBool,isObj,isNonNullString} from "$utils";
 import {notify} from "$ecomponents/Dialog";
 let maxWidthDiff = 150, maxHeightDiff = 150;
 import {StyleSheet} from "react-native";
@@ -58,7 +57,7 @@ export default function ImageComponent(props){
     let {disabled,onMount,defaultSource,onUnmount,label,text,labelProps,readOnly,beforeRemove,
         onChange,draw,round,drawText,drawLabel,rounded,editable,defaultSrc,
         createSignatureOnly,pickImageProps,width,height,cropProps,size,resizeProps,containerProps,
-        menuProps,pickUri,drawProps,imageProps,testID,...rest} = props;
+        menuProps,pickUri,drawProps,imageProps,length,testID,...rest} = props;
     rest = defaultObj(rest);
     pickImageProps = defaultObj(pickImageProps);
     cropProps = defaultObj(cropProps);
@@ -71,7 +70,7 @@ export default function ImageComponent(props){
     round = defaultBool(round,rounded,true);
     containerProps = defaultObj(containerProps);
     drawProps = defaultObj(drawProps);
-    let content = null;
+    const flattenStyle = StyleSheet.flatten(props.style) || {};
     defaultSrc = defaultVal(defaultSrc);
     editable = defaultBool(editable,true);
     if(disabled){
@@ -82,16 +81,25 @@ export default function ImageComponent(props){
         setSrc(props.src);
     },[props.src])
     
+    if(!isDecimal(width) && isDecimal(flattenStyle.width)){
+        width = flattenStyle.width;
+    }
+    if(!isDecimal(height) && isDecimal(flattenStyle.height)){
+        height = flattenStyle.height;
+    }
     if(isDecimal(width) && width > 0){
         rest.width = width;
     } 
+    
     if(isDecimal(height) && height > 0){
         rest.height = height;
     } 
+    
     if(isDecimal(size) && size > 10){
         rest.size = Math.trunc(size);
     } else {
-        rest.size = 50;
+        const sZize = Math.min(defaultDecimal(width),defaultDecimal(height));
+        rest.size = sZize >= 10 ? sZize : 50;
     }
 
     let imageWidth, imageHeight;
@@ -251,7 +259,7 @@ export default function ImageComponent(props){
                 {...menuProps}
                 disabled = {isDisabled}
                 anchor = {(props)=>{
-                    return <View pointerEvents={pointerEvents} accessibilityLabel = {_label} testID={testID+"_Container"} {...containerProps} pointerEvents={disabled|| readOnly? "none":"auto"} style={[label?styles.align:null,containerProps.style,label?styles.container:null]}>
+                    return <View accessibilityLabel = {_label} testID={testID+"_Container"} {...containerProps} pointerEvents={disabled|| readOnly? "none":"auto"} style={[label?styles.align:null,containerProps.style,label?styles.container:null]}>
                         {<Label testID={testID+"_Label"} {...labelProps} disabled={disabled} style={[styles.label,labelProps.style]}>{label}</Label>}
                         {<Avatar
                             resizeMethod = {"auto"}

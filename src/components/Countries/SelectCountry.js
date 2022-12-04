@@ -1,6 +1,6 @@
 import React from "$react";
 import SimpleSelect from "$ecomponents/SimpleSelect";
-import { countries } from "./utils";
+import { countries,styles} from "./utils";
 import View from "$ecomponents/View";
 import {StyleSheet,Image} from "react-native";
 import {defaultObj} from "$utils";
@@ -15,9 +15,10 @@ export const getCountryFieldProps = (props)=>{
     let {imageProps,...rest} = props;
     imageProps = defaultObj(imageProps);
     return {
-        text : 'Pays',
+        label : defaultStr(props.label,props.text,'Pays'),
         type : 'select',
         items : countries,
+        upper : true,
         dialogProps : {title:'Sélectionner un pays'},
         getItemValue : ({item})=>item.code,
         compare : (a,b)=>{
@@ -50,18 +51,6 @@ SelectCoutryComponent.propTypes = {
     imageProps : PropTypes.object, ///les props à appliquer aux images affichées
 }
 
-const styles = StyleSheet.create({
-    renderedImage : {
-        flexDirection : "row",
-        alignItems : 'center',
-        justifyContent : 'flex-start',
-        flex : 1,
-    },
-    flagImage : {
-        borderWidth:0,
-        width : 30,
-        height : 20,
-    },
-})
+
 
 

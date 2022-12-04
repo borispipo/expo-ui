@@ -66,7 +66,8 @@ export default class Filter extends AppComponent {
       },
       previousRef : {
         value : {current : null}
-      }
+      },
+      manualRunRef : {value : {current : 0}},
     })
     extendObj(this.state,{
         ...this.initFiltersOp(),
@@ -84,7 +85,11 @@ export default class Filter extends AppComponent {
         };
      })
   }
+  setSessionManualRunValue(value){
+      this.manualRunRef.current = value;
+  }
   getSessionManualRunValue(){
+    return this.manualRunRef.current;
     return getSessionData(manualRunKey) ? true : false
   }
   willRunManually (){
@@ -92,7 +97,7 @@ export default class Filter extends AppComponent {
   }
   toggleManualRun(){
     this.setState({manualRun:!this.state.manualRun},()=>{
-       setSessionData(manualRunKey,this.state.manualRun?0:1);
+       this.setSessionManualRunValue(this.state.manualRun?0:1);
        if(!this.willRunManually()){
          this.fireValueChanged(true);
        }

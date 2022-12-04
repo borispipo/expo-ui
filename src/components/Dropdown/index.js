@@ -79,7 +79,7 @@ class DropdownComponent extends AppComponent {
                 override : false, writable : false,
             },
             isBigList : {
-                value : multiple || this.props.dynamicContent ? true : false,
+                value : true,//multiple || this.props.dynamicContent ? true : false,
                 override : false,
             },
         });

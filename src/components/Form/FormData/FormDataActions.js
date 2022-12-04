@@ -4,8 +4,6 @@ import Dimensions from "$cplatform/dimensions";
 import {defaultStr,isObj,defaultObj,isNonNullString,defaultVal,defaultFunc} from "$utils";
 import React from "$react";
 import {isWeb} from "$cplatform";
-import PropTypes from "prop-types";
-
 
 export default class FormDataActionComponent extends FormData {
     isFullScreen(){

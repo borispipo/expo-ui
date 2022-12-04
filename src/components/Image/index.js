@@ -47,13 +47,13 @@ export const getUri = (src,onlySting)=>{
 }
 
 export default function ImageComponent(props){
-    const [src,setSrc] = React.useStateIfMounted(defaultVal(props.src));
+    const [src,setSrc] = React.useState(defaultVal(props.src));
     const prevSrc = React.usePrevious(src);
-    /*const [editorProps,setEditorProps] = React.useStateIfMounted({
+    /*const [editorProps,setEditorProps] = React.useState({
         visible : false,
         options : {}
     })*/ 
-    const [isDrawing,setIsDrawing] = React.useStateIfMounted(false);
+    const [isDrawing,setIsDrawing] = React.useState(false);
     let {disabled,onMount,defaultSource,onUnmount,label,text,labelProps,readOnly,beforeRemove,
         onChange,draw,round,drawText,drawLabel,rounded,editable,defaultSrc,
         createSignatureOnly,pickImageProps,width,height,cropProps,size,resizeProps,containerProps,

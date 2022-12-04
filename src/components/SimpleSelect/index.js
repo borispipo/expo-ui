@@ -7,7 +7,7 @@ import View from "$ecomponents/View";
 import Divider from "$ecomponents/Divider";
 import Menu from "$ecomponents/Menu/Menu";
 import theme,{Colors,StylePropTypes} from "$theme";
-import List,{MIN_HEIGHT} from "$ecomponents/List";
+import List,{MIN_HEIGHT,BigList} from "$ecomponents/List";
 import Label from "$ecomponents/Label";
 import PropTypes from "prop-types";
 import Icon from "$ecomponents/Icon";
@@ -371,7 +371,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
                     />
                     <Divider />
                 </>}
-                <List
+                <BigList
                     testID = {testID+"_List"}
                     {...listProps}
                     getItemLayout = {getItemLayout}

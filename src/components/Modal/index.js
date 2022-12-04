@@ -13,8 +13,6 @@ import theme,{StyleProp} from "$theme";
 import OpacityAnimation from "$ecomponents/Animations/OpacityAnimation";
 import { Surface } from "react-native-paper";
 import { Platform } from "react-native";
-import {isWeb} from "$cplatform";
-import {isAndroid} from "$cplatform";
 import Portal from "$ecomponents/Portal";
 import {
   getStatusBarHeight,

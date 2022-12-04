@@ -23,6 +23,8 @@ module.exports = (opts)=>{
     ///les screens principaux de l'application
     r["$mainScreens"] = r["$mainScreens"] || r["$emainScreens"];
     r["$escreen"] = r["$eScreen"] = path.resolve(expo,"layouts/Screen");
+    r["$eTableDataScreen"] = path.resolve(expo,"layouts","Screen","TableData");
+    r["$TableDataScreen"] = r["$TableDataScreen"] || r["$eTableDataScreen"]
     r["$eassets"] = path.resolve(dir,"assets");
     r["$ethemeSelectorComponent"] = path.resolve(expo,"auth","ThemeSelector");
     /*** le composant permettant de sélectionner un theme utilisateur */

@@ -215,6 +215,9 @@ export default class FormDataComponent extends AppComponent{
                 if(hidden){
                     rest.style = flattenStyle([rest.style,theme.styles.hidden]);
                 }
+                if(rest.defaultValue === null){
+                    rest.defaultValue = undefined;
+                }
                 customResponsiveProps = defaultObj(customResponsiveProps);
                 content.push(<Component 
                         data = {data} 

@@ -952,6 +952,8 @@ export default class CommonDatagridComponent extends AppComponent {
                 width = Math.max(width,mWidth);
             } else if((type.contains("number") || type.contains("decimal") && this.props.format)){
                 width = Math.max(width,DATE_COLUMN_WIDTH-30);
+            } else if(type == "tel"){
+                width = Math.max(width,DATE_COLUMN_WIDTH)
             }
             totalWidths +=width;
             widths[header.field] = width;
@@ -1098,7 +1100,6 @@ export default class CommonDatagridComponent extends AppComponent {
             });
             data = newData;
         }      
-        const beforeS = data;
         if(this.isDatagrid() && isNonNullString(this._sort.column)){
             if(isObj(this.state.columns) && this.state.columns[this._sort.column]){
                 let field = this.state.columns[this._sort.column];
@@ -1505,7 +1506,7 @@ export default class CommonDatagridComponent extends AppComponent {
     }
     UNSAFE_componentWillReceiveProps(nextProps){
         if(!isObjOrArray(nextProps.data) || nextProps.data == this.props.data || stableHash(nextProps.data) == stableHash(this.props.data)) return;
-        this.prepareData({data:nextProps.data,force:true},(state)=>{
+        this.prepareData({...nextProps,force:true},(state)=>{
             this.setState(state)
         });
     }

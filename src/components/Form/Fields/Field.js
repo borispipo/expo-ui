@@ -771,6 +771,7 @@ export default class Field extends AppComponent {
             usePlaceholderWhenEmpty,
             width,
             height,
+            jsType,
             ...rest
         } = this.props;
         if(this.state.caughtAnError){
@@ -863,7 +864,7 @@ export default class Field extends AppComponent {
         delete rest.archivable;
 
         this.___formattedField = undefined;
-        let _type = this.type = defaultStr(this.props.jsType,this.props.type,this.type,"text").trim().toLowerCase();
+        let _type = this.type = defaultStr(jsType,this.props.type,this.type,"text").trim().toLowerCase();
         format = defaultStr(format).toLowerCase().trim();
         tooltip = defaultVal(tooltip,title);
 

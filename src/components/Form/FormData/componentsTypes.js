@@ -2,6 +2,7 @@ import {defaultStr,defaultObj,defaultVal,isObj} from "$utils";
 import Fields from "../Fields";
 //import dataFileManager from "$dataFileManager";
 import i18n from "$i18n";
+import React from "$react";
 
 const componentTypes =  {
     ...Fields,
@@ -58,11 +59,12 @@ export const getFilterComponentProps = (_props)=>{
         check,
         width,
         type,
+        jsType,
         ...props
     } = _props;
     props = defaultObj(props);
     let component = Fields.TextField;
-    type = defaultStr(type,'text').toLowerCase().replaceAll("_","").replaceAll("-","").trim();
+    type = defaultStr(jsType,type,'text').toLowerCase().replaceAll("_","").replaceAll("-","").trim();
     props = defaultObj(props);
     /*if(type =='datafile'){
         type = 'select';
@@ -88,8 +90,8 @@ export const getFilterComponentProps = (_props)=>{
     } else if(type == 'switch' || type =='radio' || type ==='checkbox') {
         type = 'select';
         let {checkedLabel,checkedTooltip,uncheckedTooltip,checkedValue,uncheckedLabel,uncheckedValue,label,text,...pR} = props;
-        checkedLabel = defaultVal(checkedLabel,checkedTooltip,'Désactivé/Désélectionné')
-        uncheckedLabel = defaultVal(uncheckedLabel,uncheckedTooltip,'Activé/Sélectionné')
+        checkedLabel = defaultVal(checkedLabel,checkedTooltip,'Inactif/Désélectionné')
+        uncheckedLabel = defaultVal(uncheckedLabel,uncheckedTooltip,'Actif/Sélectionné')
         checkedValue = defaultVal(checkedValue,1); uncheckedValue = defaultVal(uncheckedValue,0)
         props = pR;
         props.items = [{code:checkedValue,label:checkedLabel},{code:uncheckedValue,label:uncheckedLabel}];
@@ -98,7 +100,9 @@ export const getFilterComponentProps = (_props)=>{
         component = type == 'datetime' ? Fields.DateTime : type === 'date'? Fields.Date : Fields.Time;
     }  else if(type == 'color' || type =='colorpicker') {
         component = Fields.ColorPicker;
-    } else {
+    } else if(React.isComponent(componentTypes[type])) {
+        component = componentTypes[type];
+    }else {
         delete props.dbName;
         delete props.tableName;
         props.label = label; 

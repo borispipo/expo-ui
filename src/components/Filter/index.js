@@ -177,6 +177,7 @@ export default class Filter extends AppComponent {
       }
       const prev = JSON.stringify(defaultObj(this.previousRef.current)), current = {value,operator,action,ignoreCase};
           let tV = isArray(value) && value.length <= 0 ? undefined : value;
+      
       this.isInitializedRef.current = this.props.dynamicRendered || this.isInitializedRef.current;
       if(prev == "{}" && (isNullOrEmpty(tV) || value === 0) && (!this.isInitializedRef.current) && (force !== true))  {
         return this;
@@ -203,7 +204,10 @@ export default class Filter extends AppComponent {
                    value = f(value);
                 }
                 if(isNonNullString(value) && this.state.ignoreCase){
-                    value = RegExp(value.ltrim("/").rtrim("/"),'i');
+                    try {
+                      const v = RegExp(value.ltrim("/").rtrim("/"),'i');
+                      value = v;
+                    } catch{}
                 }
                 action = "$regex";
              } 

@@ -19,20 +19,18 @@ import stableHash from "stable-hash";
 const  SimpleSelect = React.forwardRef((props,ref)=>{
     let {style : customStyle,onMount,mode,showSearch,anchorContainerProps,renderText,contentContainerProps,withCheckedIcon,testID,selectionColor,dialogProps,onShow,anchor,onUnmont,controlled,onDismiss,visible:controlledVisible,selectedColor,inputProps,itemProps,itemContainerProps,label,listProps,editable,readOnly,text,filter,renderItem,itemValue,getItemValue,defaultValue,items:menuItems,onPress,onChange,disabled,...rest} = props;
     const flattenStyle = StyleSheet.flatten(customStyle) || {};
+    const [layout,setLayout] = React.useState({
+        height: 0,
+        width: 0,
+    });
     const [state,setState] = React.useState({
         value : defaultValue !== undefined? defaultValue:undefined,
         visible : controlled?undefined:false,
         items : [],
-        layout : {
-            height: 0,
-            width: 0,
-        },
     });
     contentContainerProps = defaultObj(contentContainerProps);
-    const inputLayout = state.layout;
-    const prevLayout = React.usePrevious(inputLayout);
+    const prevLayout = React.usePrevious(layout);
     filter = defaultFunc(filter,x=>true);
-    const {items} = state;
     const value = state.value,
     visible = controlled? controlledVisible : state.visible;
     compare = defaultFunc(compare,(a,b)=> a === b);
@@ -68,7 +66,8 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
         return React.getTextContent(content);
     }
     const prevMenuItems = React.usePrevious(menuItems,stableHash);
-    const areItemsEquals = prevMenuItems == menuItems;//JSON.stringify(prevMenuItems) == JSON.stringify(menuItems);
+    const hasInitializedRef = React.useRef(false);
+    const areItemsEquals = hasInitializedRef.current && prevMenuItems == menuItems;//JSON.stringify(prevMenuItems) == JSON.stringify(menuItems);
     const prepareItems = React.useCallback(()=>{
         const items = [];
         selectedRef.current = null;
@@ -96,7 +95,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
             if(isDecimal(content)) content+="";
             if(!React.isValidElement(content,true)) return null;
             mItem.content = content;
-            mItem.textContent = rText;
+            mItem.textContent = React.getTextContent(rText) || React.getTextContent(content);
             if(isValueDifferent && itValue !== undefined && compare(defaultValue,itValue)){
                 selectedRef.current = mItem;
                 currentSelectedValue = defaultValue;
@@ -106,8 +105,10 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
             }
             items.push(mItem);
         });
+        hasInitializedRef.current = true;
         setState({...state,value:currentSelectedValue,items});
     },[stableHash(menuItems)])
+    const {items} = state;
     React.useEffect(()=>{
         if(compare(defaultValue == value) && areItemsEquals) return;
         if(!areItemsEquals){
@@ -199,22 +200,17 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
     itemContainerProps = defaultObj(itemContainerProps);
     const onLayout = (event) => {
         const layout = event.nativeEvent.layout;
-        if(prevIsMob === isMob && layout.height == prevLayout.height && layout.width == prevLayout.width) return;
+        if(prevIsMob === isMob && Math.abs(layout.height - prevLayout.height) <=50 && Math.abs(layout.width == prevLayout.width)<=50) return;
         const isDiff = prevIsMob !== isMob;
-        const nState = {
-            ...state,
-            layout,
-            //visible : controlled ? undefined : isDiff ? false : visible
-        };
-        setState(nState);
+        setLayout(layout);
         if(controlled && onDismiss){
             if(isDiff){
-                onDismiss(nState,true);
+                onDismiss(state,true);
             }
         } 
     };
     const dimensions = Dimensions.get("window");// useWindowDimensions();
-    let contentContainerHeight = dimensions.height - defaultDecimal(inputLayout?.top) - defaultDecimal(inputLayout?.height)-20;
+    let contentContainerHeight = dimensions.height - defaultDecimal(layout?.top) - defaultDecimal(layout?.height)-20;
     contentContainerHeight = Math.max(contentContainerHeight,200);
     let marginTop = 0;
     const Component = isMob ? Dialog : Menu;
@@ -341,7 +337,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
                         paddingHorizontal : 10,
                         paddingVertical:0,
                         height : !isMob?contentContainerHeight:'90%',
-                        width : !isMob ? inputLayout.width : undefined,
+                        width : !isMob ? layout.width : undefined,
                     },
                     isMob && {flex:1},
                     !isMob && {paddingRight : 0},

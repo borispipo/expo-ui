@@ -677,9 +677,20 @@ export default class Field extends AppComponent {
         return true;
     }
     onBlurField(event){
-        if(isFunction(this.props.onBlur)){
-            this.props.onBlur({event,context:this})
+        if(isFunction(this.props.onBlur) && this.props.onBlur({event,context:this}) === false){
+            return;
         }
+        if(this.isFilter()) return
+        const value = this.getValue();
+        if(isNonNullString(this.props.fieldToPopulateOnBlur) && isNonNullString(value)){
+            const context = this.getField(this.props.fieldToPopulateOnBlur.trim());
+            if(context && context.getValue){
+                const cVal = defaultStr(context.getValue());
+                if(cVal.length < value.length){
+                    context.setValue(value);
+                }
+            }
+        }   
     }
     onFocusField(event){
         if(isFunction(this.props.onFocus)){
@@ -772,6 +783,7 @@ export default class Field extends AppComponent {
             width,
             height,
             jsType,
+            fieldToPopulateOnBlur,
             ...rest
         } = this.props;
         if(this.state.caughtAnError){
@@ -1043,6 +1055,10 @@ Field.propTypes = {
      *   Lorsqu'elle est définie alors le rendu lors du composant doit être de type filter 
      */
     renderfilter : PropTypes.string, 
+    /**** il s'agit d'un champ du même formulaire que la formField actuel, qui sera populated avec la valeur par défaut
+     * de la formField cournat loreque la valeur du champ en question a une longueur très inférieure à celle de la valeur de la form courante.
+     */
+    fieldToPopulateOnBlur : PropTypes.string,
     /*** cette fonction doit retourner l'instance de la field
         elle doit toujours être définie dans la classe qui hérite directement au composant Field
     */

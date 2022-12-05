@@ -20,6 +20,8 @@ import {renderTabsContent,renderActions} from "./utils";
 import theme from "$theme";
 import cActions from "$cactions";
 import APP from "$capp/instance";
+import { generatedColumnsProperties } from "./utils";
+
 
 const HIDE_PRELOADER_TIMEOUT = 300;
 
@@ -164,6 +166,13 @@ export default class TableDataScreenComponent extends FormDataScreen{
         Object.map(this.fields,(field,i)=>{
             if(isObj(field)){
                 fields[i] = Object.clone(field);
+                generatedColumnsProperties.map((f)=>{
+                    //on affiche les champs générés uniquement  en cas de mise à jour
+                    if(field[f] === true){
+                        fields[f].visible = isUpdated ? true : false;
+                        fields[i].readOnly = true;
+                    }
+                });
                 if(isUpdated){
                     //la props readOnlyOnEditing permet de rendre le champ readOnly en cas de mise à jour de la tableData
                     if((field.readOnlyOnEditing === true)){
@@ -173,6 +182,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
                         fields[i].disabled = true;
                     }
                 }
+                
             } else {
                 fields[i] = field;
             }
@@ -438,7 +448,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
         if(this.cloneProp && this.cloneProp(data,this) === false) return data;
         this.showPreloader();
         delete data.approved;
-        Object.map(['_rev','_id','code','updatedBy','updatedDate','createdBy','updatedHour','createdHour','createdDate'],(idx)=>{
+        Object.map(['_rev',...generatedColumnsProperties,'_id','code','updateBy','updatedDate','createBy','updatedHour','createdHour','createdDate'],(idx)=>{
             data[idx] = undefined;
             delete data[idx];
         });

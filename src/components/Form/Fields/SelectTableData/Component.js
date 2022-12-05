@@ -36,7 +36,7 @@ const TableDataSelectField = React.forwardRef((_props,ref)=>{
     const [state,setState] = React.useState({
         items : [],isLoading : true,
     });
-    fetchDataOpts = Object.assign({},fetchDataOpts);
+    fetchDataOpts = Object.clone(defaultObj(fetchDataOpts));
     fetchItems = typeof fetchItems =='function' ? fetchItems : typeof fKeyTable.queryPath =='string' ?  (opts)=>{
         return fetch(fKeyTable.queryPath,opts);
     } : undefined;
@@ -92,10 +92,12 @@ const TableDataSelectField = React.forwardRef((_props,ref)=>{
     const context = {
         refresh : (force,cb)=>{
             if(!isMounted()) return;
+            if(typeof beforeFetchItems ==='function' && beforeFetchItems(fetchDataOpts) === false) return;
             let opts = Object.clone(fetchDataOpts);
             opts.selector = prepareFilters(fetchDataOpts.selector,{convertToSQL:convertFiltersToSQL});
             opts = getFetchOptions(opts);
             const r = fetchItems && fetchItems(opts);
+            if(r === false) return;
             if(isPromise(r)){
                 r.then((args)=>{
                     if(Array.isArray(args)){
@@ -208,6 +210,7 @@ TableDataSelectField.propTypes = {
     ...Dropdown.propTypes,
     mutateFetchedItems : PropTypes.func, //la fonction permettant d'effectuer une mutation sur l'ensemble des donnéees récupérées à distance
     fetchItems : PropTypes.func,//la fonction de rappel à utiliser pour faire une requête fetch permettant de selectionner les données à distance
+    beforeFetchItems : PropTypes.func, //appelée immédiatement avant l'exécution de la requête fetch
     foreignKeyColumn : PropTypes.string.isRequired,//le nom de la clé étrangère à laquelle fait référence la colone dans la fKeyTable
     foreignKeyLabel : PropTypes.string,
     getForeignKeyTable : PropTypes.func.isRequired, //la fonction permettant de récupérer la fKeyTable data dont fait référence le champ

@@ -20,7 +20,7 @@ export const getCountryFieldProps = (props)=>{
         items : countries,
         upper : true,
         dialogProps : {title:'Sélectionner un pays'},
-        getItemValue : ({item})=>item.code,
+        getItemValue : ({item})=>item.code.toUpperCase(),
         renderText : ({item})=>"[{0}] {1}".sprintf(item?.code?.toUpperCase(),item?.label),
         compare : (a,b)=>{
             return typeof a ==='string' && typeof b =='string' && a.toLowerCase() === b.toLowerCase() ? true : false; 

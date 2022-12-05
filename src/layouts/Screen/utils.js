@@ -5,6 +5,8 @@ import {Colors} from "$theme";
 import { COPY_ICON,PRINT_ICON} from "$ecomponents/Icon";
 import {getTableDataRouteName} from "$enavigation/utils";
 
+//@seee : https://github.com/typeorm/typeorm/blob/master/src/entity-schema/EntitySchemaColumnOptions.ts
+export const generatedColumnsProperties = ["createDate","updateDate","deleteDate","createBy","updateBy","deleteBy"]
 
 export const renderTabsContent = ({tabs,context,data,sessionName,isMobile,props,firstTab,tabKey,tabProps,tabsProps})=>{
     let tabsArr = [],hasFirstTab = false; 

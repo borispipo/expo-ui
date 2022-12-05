@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import libPhoneNumber from 'google-libphonenumber';
+import {isNonNullString,defaultStr} from "$cutils";
 
 import Country from './country';
 import numberType from './numberType.json'; // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -10,7 +11,7 @@ const asYouTypeFormatter = libPhoneNumber.AsYouTypeFormatter;
 
 export const parse = (number,iso2)=>{
     try {
-        return phoneUtil.parse(number, iso2);
+        return phoneUtil.parse(number, defaultStr(iso2).toLowerCase());
     } catch (err) {
         console.log(`Exception was thrown on parsing phone number : ${err.toString()}`);
         return null;
@@ -18,7 +19,7 @@ export const parse = (number,iso2)=>{
 }
 
 export const isValidNumber = (number,iso2)=>{
-    const phoneInfo = parse(number, iso2);
+    const phoneInfo = parse(number, defaultStr(iso2).toLowerCase());
     if (phoneInfo) {
         return phoneUtil.isValidNumber(phoneInfo);
     }
@@ -83,16 +84,16 @@ class PhoneNumber {
 
     // eslint-disable-next-line class-methods-use-this
     parse(number, iso2) {
-        return parse(number,iso2);
+        return parse(number,defaultStr(iso2).toLowerCase());
     }
 
     isValidNumber(number, iso2) {
-        return this.isValidNumber(number,iso2);
+        return this.isValidNumber(number,defaultStr(iso2).toLowerCase());
     }
 
     // eslint-disable-next-line class-methods-use-this
     format(number, iso2) {
-        const formatter = new asYouTypeFormatter(iso2); // eslint-disable-line new-cap
+        const formatter = new asYouTypeFormatter(defaultStr(iso2).toLowerCase()); // eslint-disable-line new-cap
         let formatted;
         number.replace(/-/g, '')
             .replace(/ /g, '')
@@ -107,14 +108,14 @@ class PhoneNumber {
     }
 
     getNumberType(number, iso2) {
-        const phoneInfo = this.parse(number, iso2);
+        const phoneInfo = this.parse(number, defaultStr(iso2).toLowerCase());
         const typeIndex = phoneInfo ? phoneUtil.getNumberType(phoneInfo) : -1;
         return _.findKey(numberType, (noType) => noType === typeIndex);
     }
 
     // eslint-disable-next-line class-methods-use-this
     getCountryDataByCode(iso2) {
-        return Country.getCountryDataByCode(iso2);
+        return Country.getCountryDataByCode(defaultStr(iso2).toLowerCase());
     }
 }
 

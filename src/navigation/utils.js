@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 import {navigate,sanitizeName} from "$cnavigation";
-import {routeName as tableDataRouteName} from "$screens/TableData/utils";
 import {isNonNullString,defaultObj,isObj} from "$utils";
+
+export const tableDataRouteName = 'TableData';
 
 export const navigateToTableData = function(tableName,params,actionType){
     if(isNonNullString(tableName)){

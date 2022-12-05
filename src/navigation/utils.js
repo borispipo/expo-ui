@@ -50,3 +50,12 @@ export const getTableDataRouteName = function(tableName){
 export const getTableDataListRouteName = function(tableName){
     return buildScreenRoute(tableName,tableDataRouteName+"/LIST/");
 }
+
+export const navigateToTableDataList = function (tableName,params){
+    const route = getTableDataListRouteName(tableName);
+    if(isNonNullString(route)){
+        return navigate({routeName:route,params});
+    }
+    return false;
+}
+

@@ -46,9 +46,9 @@ export default function DateTimePickerComponent({left,isPeriodAction,contentProp
         date : dateObj,
     }}
     const getTimeValue = (date)=>{
-        date = DateLib.isValid(date)? date : new Date();
-        const sqlTime = date.toSQLTimeFormat();
-        return sqlTime.substring(0,withSeconds ?sqlTime.length :5);
+        date = DateLib.isValid(date)? date : null;
+        const sqlTime = date && date.toSQLTimeFormat() || '';
+        return sqlTime?.substring(0,withSeconds ?sqlTime?.length :5);
     }
     const timeDefaultValue = getTimeValue(dateObj);
     const changedTimeArgsRef = {current:{...defaultObj(parseTime(timeDefaultValue,withSeconds))}};

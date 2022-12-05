@@ -19,7 +19,7 @@ import React from "$react";
 import DateLib from "$lib/date";
 import Filter,{canHandleFilter,prepareFilters} from "$ecomponents/Filter";
 import {CHECKED_ICON_NAME} from "$ecomponents/Checkbox";
-import { COLUMN_WIDTH,DATE_COLUMN_WIDTH } from "../utils";
+import { COLUMN_WIDTH,DATE_COLUMN_WIDTH,willConvertFiltersToSQL } from "../utils";
 import { StyleSheet,Dimensions,useWindowDimensions} from "react-native";
 import Preloader from "$ecomponents/Preloader";
 import Checkbox from "../Checkbox";
@@ -1262,7 +1262,7 @@ export default class CommonDatagridComponent extends AppComponent {
     }
     ///si les filtres devront être convertis au format SQL
     willConvertFiltersToSQL(){
-        return !!defaultVal(this.props.convertFiltersToSQL,appConfig.get("convertDatagridFiltersToSQL"));;
+        return !!defaultVal(this.props.convertFiltersToSQL,willConvertFiltersToSQL());;
     }
     getFilters(){
         this.filters = extendObj(true,{},this.filteredValues,this.filters)

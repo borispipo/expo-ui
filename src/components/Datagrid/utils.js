@@ -1,6 +1,7 @@
 import theme,{LINE_HEIGHT} from "$theme";
 import { StyleSheet } from "react-native";
 import {get as getSession} from "./Common/session";
+import appConfig from "$capp/config";
 
 export const getRenderType = ()=>getSession("render-type");
 
@@ -183,3 +184,5 @@ export const getRowStyle = ({row,bordered,numColumns,rowData,isAccordion,isTable
     }
     return style;
 }
+
+export const willConvertFiltersToSQL = x=>!!appConfig.get("convertDatagridFiltersToSQL");

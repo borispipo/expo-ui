@@ -38,6 +38,10 @@ module.exports = (opts)=>{
     r["$expo"] = r["$expo-ui"] = expo;
     r["$epreloader"] = path.resolve(expo,"components/Preloader");
     r["$eform"] = path.resolve(expo,"components","Form");
+
+    //l'alias $extendFormFields, pour étendre les formFields qu'on veut définir
+    r["$extendFormFields"] = r["$extendFormFields"] || path.resolve(r["$eform"],"Fields","$extendFormFields")
+    
     r["$form"] = r["$form"] || r["$eform"];
     r["$eform-data"] = r["$eformData"]= path.resolve(expo,"components","Form","FormData");
     r["$formData"] = r["$formData"] || r["$eformData"];

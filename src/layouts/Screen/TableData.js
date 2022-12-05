@@ -43,10 +43,13 @@ export default class TableDataScreenComponent extends FormDataScreen{
             data : hasManyData ? defaultObj(cDatas[0]) : isObj(mainProps.data)? mainProps.data : {}
         });
         const table = defaultObj(mainProps.table);
-        const fields = {};
+        const fields = {},primaryKeyFields = {};
         Object.map(table.fields,(field,i)=>{
             if(isObj(field) && field.form !== false){
                 fields[i] = Object.clone(field);
+                if(field.primary === true){
+                    primaryKeyFields[field.field || i] = true;
+                }
             } else {
                 fields[i] = field;
             }
@@ -63,7 +66,13 @@ export default class TableDataScreenComponent extends FormDataScreen{
             titleProp : {value : mainProps.title},
             closeOnSaveProp : {value : mainProps.closeOnSave || mainProps.closeAfterSave },
             newActionProp : {value : mainProps.newAction},
-        
+            //la liste des champ de type clé primaire associés à la table
+            primaryKeyFields : {value : primaryKeyFields},
+            cloneProp : {value : typeof mainProps.clone =='function' && mainProps.clone || undefined},
+            printProp : {value : typeof mainProps.print =='function' && mainProps.print || undefined},
+            archiveProp : {value : typeof mainProps.archive =='function' && mainProps.archive || undefined },
+            testIDProp : {value : defaultStr(mainProps.testID)},
+            isDocEditingProp : {value : typeof mainProps.isDocEditing =='function'? mainProps.isDocEditing : typeof mainProps.isDocUpdate =='function'? mainProps.isDocUpdate : undefined}
         });
         this.hidePreloader = this.hidePreloader.bind(this);
         this.showPreloader = this.showPreloader.bind(this);
@@ -256,7 +265,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
         const restProps = this.getCurrentEditingProps();
         delete restProps.tabs;
         let {tabProps,firstTabProps,tabsProps,withScrollView} = restProps;
-        let testID = defaultStr(this.props.testID);
+        let testID = this.testIDProp;
         tabsProps = defaultObj(tabsProps);
         tabsProps.tabItemsProps = defaultObj(tabsProps.tabItemsProps);
         if(typeof withScrollView =='boolean' && typeof tabsProps.withScrollView !=='boolean'){
@@ -385,10 +394,40 @@ export default class TableDataScreenComponent extends FormDataScreen{
     isPrintable(){
         return false;
     }
+    /*** retourne la liste des valeurs de clé primarire associés à la table data pour la données en cours de modification 
+     * Elle permet d'afficher dans la barre de titre, les identifiants de la table de données en cours de modification
+    */
+    getPrimaryKeysFieldsValueText(data){
+        data = defaultObj(data,this.getCurrentData());
+        const v = [];
+        Object.map(this.primaryKeyFields,(vv,f)=>{
+            if(typeof data[f] =='number' || (typeof data[f] =='string' && data[f])){
+                v.push(data[f]);
+            }
+        });
+        return v.join(" ");
+    }
+    isDocEditing(data){
+        data = defaultObj(data);
+        if(!this.isDocEditingProp){
+            let hasPrimaryFields = false;
+            let hasValidated = true;
+            Object.map(this.primaryKeyFields,(v,f)=>{
+                hasPrimaryFields = true;
+                if(!(f in data) || (data[f] == null) || (!data[f] && typeof data !=='number')){
+                    hasValidated = false;
+                }
+            });
+            if(hasPrimaryFields){
+                return hasValidated;
+            }
+        }
+        return super.isDocEditing(data);
+    }
     print(data){   
-        if(!this.isPrintable() && typeof this.props.print!=='function') return;
+        if(!this.isPrintable() && typeof this.printProp!=='function') return;
         data = this.isDocEditing(data)? data : isObj(data) && this.isDocEditing(data.data)? data.data : {};
-        return this.props.print(data,this);
+        return this.printProp(data,this);
     }
     isClonable(){
         return true;
@@ -396,7 +435,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
     clone (data){
         if(!this._isMounted() || !this.isClonable())return data;
         data = {...this.getCurrentEditingData(data)};
-        if(typeof this.props.clone =='function' && this.props.clone(data,this) === false) return data;
+        if(this.cloneProp && this.cloneProp(data,this) === false) return data;
         this.showPreloader();
         delete data.approved;
         Object.map(['_rev','_id','code','updatedBy','updatedDate','createdBy','updatedHour','createdHour','createdDate'],(idx)=>{

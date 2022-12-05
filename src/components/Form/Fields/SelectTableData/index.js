@@ -1,5 +1,5 @@
-import SelectField from "./SelectField";
-import SelectTableData from "$containers/TableData/SelectField";
+import SelectField from "../SelectField";
+import SelectTableData from "./Component";
 
 export default class FormSelectTableDataField extends SelectField{
     _render(props){

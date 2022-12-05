@@ -7,6 +7,8 @@ import React from "$react";
 const componentTypes =  {
     ...Fields,
     id : Fields.IdField,
+    selecttabledata : Fields.SelectTableData,
+    select_tabledata : Fields.SelectTableData,
     idfield : Fields.IdField,
     piecefield : Fields.PieceField,
     piece : Fields.PieceField,
@@ -78,17 +80,9 @@ export const getFilterComponentProps = (_props)=>{
         component = Fields.SelectField;
         if(type =='select_country' || type =='selectcountry'){
             component = Fields.SelectCountry;
+        } else if(type =='select_tabledata' || type =='selecttabledata'){
+            component = Fields.SelectTableData;
         }
-        /*if(type !== 'select'){
-            if(type === 'selectstructdata') {
-                dbName = 'structData';
-                component = StructDataSelectField;
-            } else if(type === 'selecttabledata'){
-                component = TableDataSelectField;
-            } 
-            props.tableName = tableName;
-            props.dbName = dbName;
-        }*/
         type = "select";
     } else if(type == 'switch' || type =='radio' || type ==='checkbox') {
         type = 'select';

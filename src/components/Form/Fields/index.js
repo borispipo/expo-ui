@@ -3,6 +3,7 @@ import TextField from "./TextField";
 import SelectField from "./SelectField";
 import Switch from "./Switch";
 import Checkbox from "./Checkbox";
+import SelectTableData from "./SelectTableData";
 //import IdField from "./IdField";
 //import PieceField from "./PieceField";
 import Slider from "./Slider";
@@ -14,11 +15,17 @@ import Image from "./Image";
 import Tel from "./Tel";
 import SelectCountry from "./SelectCountry";
 import Html from "./Html";
+import * as eFormFields from "$extendFormFields";
+import "$utils";
+import React from "$react";
 
-export default {
+export * from "$extendFormFields";
+
+const defFormFields = {
     Field,
     TextField, 
     SelectField,
+    SelectTableData,
     SelectCountry
     ,Switch
     ,Checkbox
@@ -34,10 +41,20 @@ export default {
     ,Html
 }
 
+//pour étendre les FormFields par défaut
+Object.map(eFormFields,(F,i)=>{
+    if(React.isComponent(F)){
+        defFormFields[i] = F;
+    }
+})
+
+export default defFormFields;
+
 export {
     Field,
     TextField, 
     SelectField,
+    SelectTableData,
     SelectCountry
     ,Switch
     ,Checkbox

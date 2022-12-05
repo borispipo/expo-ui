@@ -149,7 +149,6 @@ export default class FormDataComponent extends AppComponent{
             return this.props.isDocUpdate({data,context:this}) ? true : false;
         }
         return false;
-        //return isDocUpdate(data) ? true : false;
     }
     canBindResizeEvents(){
         return false;

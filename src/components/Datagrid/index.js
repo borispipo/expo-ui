@@ -5,3 +5,5 @@
 export * from "./Common";
 
 export {default} from "./IndexComponent";
+
+export {default as SWRDatagrid} from "./SWRDatagrid";

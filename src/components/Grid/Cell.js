@@ -20,22 +20,42 @@ export const defaultDesktopSize = 4;
 
 const isV = x=> typeof x =='number' && x && x <= totalSize ? true : false;
 export const getSizeStyle = (props)=>{
-    let {size,smallPhoneSize,paddingMultiplicator,phoneSize,marginMultiplicator,mobileSize,tabletSize,gutter,desktopSize} = defaultObj(props);
+    let {size,smallPhoneSize,paddingMultiplicator,phoneSize,marginMultiplicator,mobileSize,tabletSize,gutter,desktopSize
+        ,smallPhoneGutter,phoneGutter,mobileGutter,tabletGutter,desktopGutter,
+    } = defaultObj(props);
     gutter = gutter === false ? 0 : typeof gutter =='number'? gutter : undefined;
-    if(Dimensions.isSmallPhoneMedia()){
-        size = isV(smallPhoneSize) ? smallPhoneSize : size || defaultMobileSize;
+    let hasFound = false;
+    const isValidSmallSize = isV(smallPhoneSize),
+    isValidPhoneSize = isV(phoneSize),
+    isValidMobileSize = isV(mobileSize),
+    isValidTabletSize = isV(tabletSize),
+    isValidDesktopSize = isV(desktopSize);
+    if(Dimensions.isSmallPhoneMedia() && isValidSmallSize){
+        size =  smallPhoneSize;
+        if(smallPhoneGutter !== undefined){gutter = smallPhoneGutter;}
         gutter = gutter !== undefined ? gutter : medias.sp;
-    } else if(Dimensions.isPhoneMedia()){
-        size = isV(phoneSize) ? phoneSize : size || defaultMobileSize;
+        hasFound = true;
+    } 
+    if(!hasFound && Dimensions.isPhoneMedia() && isValidPhoneSize){
+        size = phoneSize;
+        if(phoneGutter !== undefined){gutter = phoneGutter;}
         gutter = gutter !== undefined ? gutter : medias.mp;
-    } else if(Dimensions.isMobileMedia()){
-        size = isV(mobileSize) ? mobileSize : size || defaultMobileSize;
+        hasFound = true;
+    }
+    if(!hasFound && Dimensions.isMobileMedia()){
+        size = isValidMobileSize? mobileSize : size || defaultMobileSize;
+        if(mobileGutter !== undefined) gutter = mobileGutter;
         gutter = gutter !== undefined ? gutter : medias.xs;
-    } else if(Dimensions.isTabletMedia()){
-        size = isV(tabletSize) ? tabletSize : size || defaultTabletSize;
+        hasFound = true;
+    } 
+    if(!hasFound && Dimensions.isTabletMedia()){
+        size = isValidTabletSize ? tabletSize : size || defaultTabletSize;
+        if(tabletGutter !== undefined) gutter = tabletGutter;
         gutter = gutter !== undefined ? gutter : medias.sm;
-    } else {
-        size = isV(desktopSize)? desktopSize : size || defaultDesktopSize;
+        hasFound = true;
+    } else if(!hasFound){
+        size = isValidDesktopSize ? desktopSize : size || defaultDesktopSize;
+        if(desktopGutter !== undefined) gutter = desktopGutter;
         gutter = gutter !== undefined ? gutter : medias.md;
     }
     if(!isV(size)){

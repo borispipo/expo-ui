@@ -76,9 +76,6 @@ export default class CommonTableDatagrid extends CommonDatagrid{
                     force = cb;
                     cb = undefined;
                 }
-                if(force !== true && isArray(this.INITIAL_STATE.data)) {
-                    return this.resolveFetchedDataPromise({cb,data:this.INITIAL_STATE.data}).then(resolve).catch(reject)
-                }
                 const fetchFilters = this.getFilters();
                 fetchOptions = isObj(fetchOptions)?Object.clone(fetchOptions):{};
                 fetchOptions.selector = defaultObj(fetchOptions.selector);
@@ -98,6 +95,9 @@ export default class CommonTableDatagrid extends CommonDatagrid{
                 if(typeof this.props.beforeFetchData =='function' && this.props.beforeFetchData({context:this,fetchOptions,options:fetchOptions}) === false){
                     this.isFetchingData = false;
                     return resolve(this.state.data);
+                }
+                if(force !== true && isArray(this.INITIAL_STATE.data)) {
+                    return this.resolveFetchedDataPromise({cb,data:this.INITIAL_STATE.data}).then(resolve).catch(reject)
                 }
                 let fetchData  = this.INITIAL_STATE.fetchData;
                 if(isFunction(this.props.fetchData)){

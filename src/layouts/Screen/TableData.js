@@ -1,7 +1,7 @@
 import {defaultStr,isNumber,isPromise,defaultVal,extendObj,defaultObj,uniqid,isObj,isObjOrArray} from "$utils";
 import {FormData} from "$ecomponents/Form";
 import FormDataScreen from "./FormData";
-import ScreenContainer from "$screen";
+import ScreenContainer from "./Screen";
 import React from "$react";
 import { StyleSheet} from "react-native";
 import ScrollView from "$ecomponents/ScrollView";

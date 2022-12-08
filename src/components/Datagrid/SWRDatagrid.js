@@ -1,9 +1,12 @@
 // Copyright 2022 @fto-consult/Boris Fouomene. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
-
+/****
+ *  @see : https://swr.vercel.app/examples/infinite-loading
+ *  @see : 
+ */
 import Datagrid from "./IndexComponent";
-import {defaultStr,defaultObj,defaultVal,extendObj} from "$utils";
+import {defaultStr,defaultObj,defaultVal,isObjOrArray,isObj,extendObj} from "$utils";
 import React from "$react";
 import Auth from "$cauth";
 import DateLib from "$lib/date";
@@ -28,10 +31,14 @@ export const swrOptions = {
     errorRetryCount : 5,
 }
 
+/****la fonction fetcher doit toujours retourner : 
+ *  1. la liste des éléments fetchés dans la props data
+ *  2. le nombre total d'éléments de la liste obtenue en escluant les clause limit et offset correspondant à la même requête
+ */
 const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     let {
         table,
-        data,
+        data:customData,
         saveButton,
         title,
         fab,
@@ -82,9 +89,11 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         title
     },rest.exportTableProps.pdf);
     const fetchOptionsRef = React.useRef({});
+    const refreshCBRef = React.useRef(null);
     fetchPath = defaultStr(fetchPath,table.queryPath,tableName.toLowerCase()).trim();
     const innerRef = React.useRef(null);
-    let {data:fetchedData, error, isValidating,size, setSize,isLoading,refresh} =  useSWR(fetchPath,{
+    const showProgressRef = React.useRef(true);
+    const {data:fetchedData, error, isValidating,size, setSize,isLoading,refresh} =  useSWR(fetchPath,{
         fetchOptionsMutator : (opts)=>{
             const {url} = opts;
             const fo = fetchOptionsRef.current;
@@ -99,32 +108,59 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             ...defaultObj(appConfig.swr),
         },
     });
+    const fetchedRef = React.useRef(fetchedData);
+    const hasResult = !isLoading && !isValidating && isObj(fetchedData) && 'data' in fetchedData;
+    if(hasResult){
+        fetchedRef.current = fetchedData;
+    }
+    const data = fetchedRef.current?.data;
+    const total = fetchedRef.current?.total;
     React.useEffect(()=>{
         innerRef.current && innerRef.current.setIsLoading && innerRef.current.setIsLoading(isLoading);
     },[isLoading])
     React.useEffect(()=>{
+        const cb = refreshCBRef.current;
+        refreshCBRef.current = null;
+        if(!isValidating && !isLoading && typeof cb =='function'){
+            cb();
+        }
+    },[isValidating,isLoading])
+    const doRefresh = (showProgress)=>{
+        showProgressRef.current = showProgress ? typeof showProgress ==='boolean' : false;
+        refreshCBRef.current = ()=>{
+            showProgressRef.current = true;
+        };
+        refresh();
+    }
+    React.useEffect(()=>{
         const upsert = cAction.upsert(tableName);
         const remove = cAction.remove(tableName);
-        APP.on(remove,refresh);
-        APP.on(upsert,refresh);
-        return ()=>{
-            APP.off(upsert,refresh);
-            APP.off(remove,refresh);
+        const onUpsert = ()=>{
+            doRefresh(false);
         }
-    },[])
+        APP.on(remove,onUpsert);
+        APP.on(upsert,onUpsert);
+        return ()=>{
+            APP.off(upsert,onUpsert);
+            APP.off(remove,onUpsert);
+        }
+    },[]);
     return (
         <Datagrid 
             {...rest}
             {...defaultObj(table.datagrid)} 
-            isLoading = {isLoading|| isValidating}
+            isLoading = {isLoading|| isValidating && !error && showProgressRef.current && true || false}
             beforeFetchData = {({fetchOptions:opts})=>{
                 opts.fields = fetchFields;
-                opts = getFetchOptions({fetcher,...opts});
+                opts = getFetchOptions({fetcher,showError:showProgressRef.current,...opts});
+                opts.queryParams.withTotal = true;
                 fetchOptionsRef.current = opts;
-                refresh();
+                doRefresh(true);
+                return false;
             }}
+            isTableData
             fetchData = {undefined}
-            data = {error ? data : defaultObj(fetchedData).data}
+            data = {data}
             canMakePhoneCall={canMakePhoneCall} 
             key={tableName} 
             sessionName={defaultStr(sessionName,'list-data')} 

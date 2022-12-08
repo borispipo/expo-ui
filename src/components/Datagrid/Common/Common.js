@@ -839,6 +839,9 @@ export default class CommonDatagridComponent extends AppComponent {
             this.setSessionData({showFooters:true})
         })
     }
+    setState(a,b){
+        super.setState(a,b);
+    }
     hideFooter (){
         if(!this._isMounted()) {
              this.isUpdating = false;
@@ -1513,7 +1516,7 @@ export default class CommonDatagridComponent extends AppComponent {
             if( typeof this.props.isLoading=='boolean' && nextProps.isLoading !== this.props.isLoading && typeof nextProps.isLoading =='boolean'){
                 this.setIsLoading(nextProps.isLoading)
             }
-            return;
+            return false;
         }
         this.prepareData({...nextProps,force:true},(state)=>{
             this.setState(state)

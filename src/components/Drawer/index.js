@@ -10,7 +10,7 @@ import DrawerItems from './DrawerItems';
 import {isDesktopMedia} from "$cplatform/dimensions";
 import {isMobileNative} from "$cplatform";
 import {open,close} from "$epreloader";
-import {DRAWER_POSITIONS,DRAWER_TYPES,MINIMIZED_WIDTH,DRAWER_WIDTH,MINIMIZED_ICON_SIZE,ICON_SIZE} from './utils';
+import {DRAWER_POSITIONS,DRAWER_TYPES,MINIMIZED_WIDTH,getDrawerWidth,MINIMIZED_ICON_SIZE,ICON_SIZE} from './utils';
 import Icon,{MENU_ICON} from "$ecomponents/Icon";
 import apiSession from "./session";
 import View from "$ecomponents/View";
@@ -82,7 +82,7 @@ const DrawerComponent = React.forwardRef((props,ref)=>{
     if(!overlayColor){
       overlayColor  = theme.colors.backdrop;// drawerType === DRAWER_TYPES.front ? 'black' : '#00000000';
     }
-    let drawerWidth = DRAWER_WIDTH;
+    let drawerWidth = getDrawerWidth();
     const restP = {};
     const isDesktop = isDesktopMedia();
     const _canBeMinimizedOrPermanent = canBeMinimizedOrPermanent();
@@ -155,7 +155,7 @@ const DrawerComponent = React.forwardRef((props,ref)=>{
       isPermanent = false;
       isMinimized = false;
       restP.drawerLockMode = "unlocked";
-      drawerWidth = DRAWER_WIDTH;
+      drawerWidth = drawerWidth;
     }
     context.isMinimizable = ()=>{
       return minimizable !== false && canBeMinimizedOrPermanent() ? true : false;

@@ -1,4 +1,4 @@
-import {isDesktopMedia} from "$cdimensions";
+import Dimensions,{isDesktopMedia} from "$cdimensions";
 
 export * from "./DrawerItems/utils";
 
@@ -6,7 +6,15 @@ let activeItem = null;
 export const getActiveItem = x=> activeItem;
 export {default as session} from "./session";
 
-export const DRAWER_WIDTH = 300;
+const DRAWER_WIDTH = 340;
+const DESKTOP_DRAWER_WIDTH = 280;
+
+export const getDrawerWidth = ()=>{
+    if(isDesktopMedia()) return DESKTOP_DRAWER_WIDTH;
+    const {width} = Dimensions.get("window");
+    if(DRAWER_WIDTH <= width) return width;
+    return Math.floor(80*width/100);
+}
 
 export const MINIMIZED_WIDTH = 85;
 

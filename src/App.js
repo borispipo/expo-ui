@@ -87,6 +87,7 @@ export default function getIndex(options){
           },
           isVisible() {
             /* Customize the visibility state detector */
+            return false;
             return isScreenFocusedRef.current;
           },
           initFocus(callback) {

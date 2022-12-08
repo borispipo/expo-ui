@@ -51,7 +51,7 @@ export default function DatabaseStatisticContainer (props){
         }
     },[]);
     React.useEffect(()=>{
-        refresh();
+        //refresh();
     },[props])
     const {isLoading,count} = state;
     return <Item

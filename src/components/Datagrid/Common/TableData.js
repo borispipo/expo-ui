@@ -92,7 +92,7 @@ export default class CommonTableDatagrid extends CommonDatagrid{
                     }
                 }
                 this.beforeFetchData(fetchOptions);
-                if(typeof this.props.beforeFetchData =='function' && this.props.beforeFetchData({context:this,fetchOptions,options:fetchOptions}) === false){
+                if(typeof this.props.beforeFetchData =='function' && this.props.beforeFetchData({context:this,force,fetchOptions,options:fetchOptions}) === false){
                     this.isFetchingData = false;
                     return resolve(this.state.data);
                 }

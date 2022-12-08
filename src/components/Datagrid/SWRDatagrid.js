@@ -139,10 +139,10 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         }
     },[isValidating,isLoading])
     const doRefresh = (showProgress)=>{
+        showProgressRef.current = showProgress ? typeof showProgress ==='boolean' : false;
         if(isFetchingRef.current) return;
-        showProgressRef.current = showProgress ? typeof showProgress ==='boolean' : true;
         refreshCBRef.current = ()=>{
-            showProgressRef.current = true;
+            showProgressRef.current = false;
         };
         refresh();
     }
@@ -163,12 +163,12 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         <Datagrid 
             {...rest}
             {...defaultObj(table.datagrid)} 
-            isLoading = {isLoading|| isValidating && !error && showProgressRef.current && true || false}
-            beforeFetchData = {({fetchOptions:opts})=>{
+            isLoading = {(isLoading|| isValidating) && !error && showProgressRef.current && true || false}
+            beforeFetchData = {({fetchOptions:opts,force})=>{
                 opts.fields = fetchFields;
                 opts = getFetchOptions({showError:showProgressRef.current,...opts});
                 fetchOptionsRef.current = opts;
-                doRefresh(true);
+                doRefresh(force);
                 return false;
             }}
             isTableData

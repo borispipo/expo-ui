@@ -12,6 +12,7 @@ import Auth from "$cauth";
 import DateLib from "$lib/date";
 import {getFetchOptions} from "$cutils/filters";
 import {setQueryParams} from "$cutils/uri";
+import { getFetcherOptions } from "$capi/fetch";
 import Icon from "$ecomponents/Icon";
 import Label from "$ecomponents/Label";
 import { StyleSheet,View } from "react-native";
@@ -93,28 +94,40 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     fetchPath = defaultStr(fetchPath,table.queryPath,tableName.toLowerCase()).trim();
     const innerRef = React.useRef(null);
     const showProgressRef = React.useRef(true);
-    const {data:fetchedData, error, isValidating,size, setSize,isLoading,refresh} =  useSWR(fetchPath,{
-        fetchOptionsMutator : (opts)=>{
-            const {url} = opts;
-            const fo = fetchOptionsRef.current;
-            if(Object.size(fo.queryParams,true)){
-                return {url : setQueryParams(url,fo.queryParams)};
+    const dataRef = React.useRef(null);
+    const hasResultRef = React.useRef(false);
+    const totalRef = React.useRef(0);
+    const isFetchingRef = React.useRef(false);
+    const {error, isValidating,isLoading,refresh} = useSWR(fetchPath,{
+        fetcher : (url,opts)=>{
+            opts = extendObj({},opts,fetchOptionsRef.current);
+            opts.queryParams = defaultObj(opts.queryParams);
+            opts.queryParams.withTotal = true;
+            const fetchCB = ({data,total})=>{
+                totalRef.current = total;
+                dataRef.current = data;
+                hasResultRef.current = true;
+                return data;
+            };
+            hasResultRef.current = false;
+            isFetchingRef.current = true;
+            if(typeof fetcher =='function'){
+                url = setQueryParams(url,opts.queryParams);
+                return fetcher(url,opts).then(fetchCB).finally(()=>{
+                    isFetchingRef.current = false;
+                });
             }
+            const {url:fUrl,fetcher:cFetcher,...rest} = getFetcherOptions(url,opts);
+            return cFetcher(fUrl,rest).then(fetchCB).finally(()=>{
+                isFetchingRef.current = false;
+            });
         },
-        fetcher,
         showError  : false,
         swrOptions : {
             ...swrOptions,
             ...defaultObj(appConfig.swr),
         },
     });
-    const fetchedRef = React.useRef(fetchedData);
-    const hasResult = !isLoading && !isValidating && isObj(fetchedData) && 'data' in fetchedData;
-    if(hasResult){
-        fetchedRef.current = fetchedData;
-    }
-    const data = fetchedRef.current?.data;
-    const total = fetchedRef.current?.total;
     React.useEffect(()=>{
         innerRef.current && innerRef.current.setIsLoading && innerRef.current.setIsLoading(isLoading);
     },[isLoading])
@@ -126,7 +139,8 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         }
     },[isValidating,isLoading])
     const doRefresh = (showProgress)=>{
-        showProgressRef.current = showProgress ? typeof showProgress ==='boolean' : false;
+        if(isFetchingRef.current) return;
+        showProgressRef.current = showProgress ? typeof showProgress ==='boolean' : true;
         refreshCBRef.current = ()=>{
             showProgressRef.current = true;
         };
@@ -152,15 +166,14 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             isLoading = {isLoading|| isValidating && !error && showProgressRef.current && true || false}
             beforeFetchData = {({fetchOptions:opts})=>{
                 opts.fields = fetchFields;
-                opts = getFetchOptions({fetcher,showError:showProgressRef.current,...opts});
-                opts.queryParams.withTotal = true;
+                opts = getFetchOptions({showError:showProgressRef.current,...opts});
                 fetchOptionsRef.current = opts;
                 doRefresh(true);
                 return false;
             }}
             isTableData
             fetchData = {undefined}
-            data = {data}
+            data = {dataRef.current}
             canMakePhoneCall={canMakePhoneCall} 
             key={tableName} 
             sessionName={defaultStr(sessionName,'list-data')} 

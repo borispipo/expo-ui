@@ -6,14 +6,16 @@ let activeItem = null;
 export const getActiveItem = x=> activeItem;
 export {default as session} from "./session";
 
-const DRAWER_WIDTH = 340;
+const DRAWER_WIDTH = 320;
 const DESKTOP_DRAWER_WIDTH = 280;
 
 export const getDrawerWidth = ()=>{
     if(isDesktopMedia()) return DESKTOP_DRAWER_WIDTH;
     const {width} = Dimensions.get("window");
-    if(DRAWER_WIDTH <= width) return width;
-    return Math.floor(80*width/100);
+    if(width > DRAWER_WIDTH + 100) return DRAWER_WIDTH;
+    const percent = Math.floor((width <= DRAWER_WIDTH?90:80)*width/100);
+    if(width <= DESKTOP_DRAWER_WIDTH) return percent;
+    return Math.max(percent,DESKTOP_DRAWER_WIDTH);
 }
 
 export const MINIMIZED_WIDTH = 85;

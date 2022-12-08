@@ -5,7 +5,7 @@ import {defaultNumber,defaultStr} from "$utils";
 
 export const getDefaultStep = (count)=>{
     count = Math.abs(parseInt(count)||0);
-    return count <= 20 ? 1 : count <=  50 ? 3 : count <= 100 ? 10 : Math.floor(count/20);
+    return count <= 20 ? 5 : count <=  50 ? 5 : count <= 100 ? 10 : Math.floor(count/10);
 }
 
 const CountUpComponent = ({from,to,format,type,duration,step,formatter,interval,...props})=>{

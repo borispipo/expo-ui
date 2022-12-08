@@ -9,7 +9,6 @@ import Icon from "$ecomponents/Icon";
 import PhoneNumber from "./PhoneNumber";
 import SelectCountry from "$ecomponents/Countries/SelectCountry";
 import {getFlag} from "$ecomponents/Countries";
-import View from "$ecomponents/View";
 
 import libPhoneNumber from 'google-libphonenumber';
 const asYouTypeFormatter = libPhoneNumber.AsYouTypeFormatter;

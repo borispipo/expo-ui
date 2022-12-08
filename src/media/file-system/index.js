@@ -1,20 +1,9 @@
-import { readAsStringAsync } from "./utils";
-import { loadAsset } from "../Assets/utils";
+// Copyright 2022 @fto-consult/Boris Fouomene. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
-export * from "./utils";
+import * as FileSystem from "./exports";
 
-export const readFileAsText = async (asset)=>{
-    return await new Promise((resolve,reject)=>{
-        loadAsset(asset).then((a)=>{
-            readAsStringAsync(a.localUri).then((data) => {
-                resolve(data);
-            }).catch(reject);
-        }).catch(reject);
-    })
-}
-export const readFile = readFileAsText;
+export default FileSystem;
 
-export default {
-    readFileAsText,
-    readFile,
-}
+export * from "./exports";

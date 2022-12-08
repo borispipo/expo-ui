@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 export const DEFAULT_COLUMN_WIDTH = 60;
 import React from "$react";
 import Label from "$ecomponents/Label";
-import { StyleSheet,View as RNView,ScrollView,Dimensions} from "react-native";
+import { StyleSheet,View as RNView,ScrollView,NativeModules,Dimensions} from "react-native";
 import { getRowStyle } from "$ecomponents/Datagrid/utils";
 import {isMobileNative} from "$cplatform";
 import theme from "$theme";
@@ -213,7 +213,17 @@ const TableComponent = React.forwardRef(({containerProps,renderEmpty,isRowSelect
     React.setRef(tableRef,context);
     const cStyle = {width:listWidth}
     const absoluteScrollViewRef = React.useRef(null);
-    return <View testID= {testID+"_Container"} {...containerProps} style={[styles.container,{alignItems:'stretch'},containerProps.style,theme.styles.pl0,theme.styles.pr0]}>
+    const scrollViewLayoutRef = React.useRef({});
+    const toggleAbsoluteScrollVisible = ()=>{
+        const ref = scrollViewLayoutRef.current;
+        if(isObj(ref.layout) && isObj(ref.content)){
+            const layoutVisible  = Math.abs(ref.content.width - ref.layout.width)<=50 ? false : true;
+            if(absoluteScrollViewRef.current && absoluteScrollViewRef.current.setLayoutVisible){
+                absoluteScrollViewRef.current.setLayoutVisible(layoutVisible);
+            }
+        }
+    }
+    return <View testID= {testID+"_Container"} {...containerProps} style={[styles.container,{alignItems:'stretch'},containerProps.style]}>
             <RNView style={[cStyle]} testID={testID+"_Headers_ScrollViewContainer"}>
                 <ScrollView
                     testID={testID+"_HeaderScrollView"}
@@ -234,12 +244,23 @@ const TableComponent = React.forwardRef(({containerProps,renderEmpty,isRowSelect
             {hasEmptyData ? <View testID={testID+"_Empty"} style={styles.hasNotData}>
                     {emptyData}
             </View> : <ScrollView {...scrollViewProps} scrollEventThrottle = {scrollEventThrottle} horizontal contentContainerStyle={[scrollContentContainerStyle,scrollViewProps.contentContainerStyle]} showsVerticalScrollIndicator={false}  
-            onScroll = {getOnScrollCb([headerScrollViewRef,footerScrollViewRef],null,(args)=>{
-                const nativeEvent = args.nativeEvent;
-                if(absoluteScrollViewRef.current && absoluteScrollViewRef.current.checkVisibility){
-                    absoluteScrollViewRef.current.checkVisibility(nativeEvent);
-                }
-            })} ref={scrollViewRef}  testID={testID+"_ScrollView"}>  
+                onScroll = {getOnScrollCb([headerScrollViewRef,footerScrollViewRef],null,(args)=>{
+                    const nativeEvent = args.nativeEvent;
+                    if(absoluteScrollViewRef.current && absoluteScrollViewRef.current.checkVisibility){
+                        absoluteScrollViewRef.current.checkVisibility(nativeEvent);
+                    }
+                })} 
+                onLayout={({nativeEvent:{layout}}) => {
+                    scrollViewLayoutRef.current.layout = layout;
+                    toggleAbsoluteScrollVisible();
+                }}
+                ref={scrollViewRef} 
+                testID={testID+"_ScrollView"}
+                onContentSizeChange = {(width,height)=>{
+                    scrollViewLayoutRef.current.content = {width,height};
+                    toggleAbsoluteScrollVisible();
+                }}
+            >  
                 <FlashList
                     containerProps = {{style:[cStyle]}}
                     //prepareItems = {Array.isArray(items)? false : undefined}
@@ -352,7 +373,8 @@ const styles = StyleSheet.create({
         width : '100%',
         minHeight : 300,
         paddingBottom : 50,
-        paddingHorizontal : 5,
+        paddingLeft : 10,
+        paddingRight : 0,
         flex : 1,
         position : 'relative',
     },

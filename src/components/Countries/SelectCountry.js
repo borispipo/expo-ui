@@ -1,12 +1,13 @@
 import React from "$react";
 import SimpleSelect from "$ecomponents/SimpleSelect";
-import { countries } from "./utils";
+import { countries,styles} from "./utils";
 import View from "$ecomponents/View";
 import {StyleSheet,Image} from "react-native";
 import {defaultObj} from "$utils";
 import PropTypes from "prop-types";
 import {isNonNullString,isNumber,defaultStr} from "$utils";
 import Label from "$ecomponents/Label";
+import appConfig from "$capp/config";
 
 /**** retourne les props du champ de type countrie */
 export const getCountryFieldProps = (props)=>{
@@ -14,11 +15,13 @@ export const getCountryFieldProps = (props)=>{
     let {imageProps,...rest} = props;
     imageProps = defaultObj(imageProps);
     return {
-        text : 'Pays',
+        label : defaultStr(props.label,props.text,'Pays'),
         type : 'select',
         items : countries,
+        upper : true,
         dialogProps : {title:'Sélectionner un pays'},
-        getItemValue : ({item})=>item.code,
+        getItemValue : ({item})=>item.code.toUpperCase(),
+        renderText : ({item})=>"[{0}] {1}".sprintf(item?.code?.toUpperCase(),item?.label),
         compare : (a,b)=>{
             return typeof a ==='string' && typeof b =='string' && a.toLowerCase() === b.toLowerCase() ? true : false; 
         },
@@ -28,6 +31,7 @@ export const getCountryFieldProps = (props)=>{
                 <Label>{item.label}</Label>
             </View>
         },
+        defaultValue : appConfig.countryCode,
         ...defaultObj(rest),
     }
 }
@@ -48,18 +52,6 @@ SelectCoutryComponent.propTypes = {
     imageProps : PropTypes.object, ///les props à appliquer aux images affichées
 }
 
-const styles = StyleSheet.create({
-    renderedImage : {
-        flexDirection : "row",
-        alignItems : 'center',
-        justifyContent : 'flex-start',
-        flex : 1,
-    },
-    flagImage : {
-        borderWidth:0,
-        width : 30,
-        height : 20,
-    },
-})
+
 
 

@@ -143,6 +143,7 @@ export default function TimePickerComponent (props){
             onTimeChange = {(date)=>{
                 return onConfirm({hours:date?.getHours(),minutes:date?.getMinutes()})
             }}
+            theme = {theme}
             onDismiss = {closeModal}
             locale={defaultStr(rest.locale,dialogProps.locale,locale)}
             uppercase = {(upper === true || upperCase === true) ? true : false}

@@ -79,7 +79,7 @@ class DropdownComponent extends AppComponent {
                 override : false, writable : false,
             },
             isBigList : {
-                value : multiple || this.props.dynamicContent ? true : false,
+                value : true,//multiple || this.props.dynamicContent ? true : false,
                 override : false,
             },
         });
@@ -709,6 +709,7 @@ class DropdownComponent extends AppComponent {
             bindResizeEvents,
             left,
             right,
+            dialogProps,
             ...dropdownProps
         } = this.props;
 
@@ -935,7 +936,7 @@ class DropdownComponent extends AppComponent {
                                 r = React.isValidElement(t)? r = <>{t}{r}</> : r;
                             }
                             if(showAdd){
-                                return <>{r}<Icon {..._addIconProps} {...props}/></>
+                                return <>{r}<Icon {..._addIconProps} {...props} style={[theme.styles.noMargin,theme.styles.noPadding,_addIconProps.style,props.style]}/></>
                             }
                             return r;
                         }}
@@ -981,6 +982,7 @@ class DropdownComponent extends AppComponent {
         const isBigList = this.isBigList;
         const ListComponent = isBigList ? BigList : List;
         const autoFocus = canAutoFocusSearchField({visible,items:renderingItems});
+        dialogProps = defaultObj(dialogProps);
         return (
             <Fragment>
                 {!withBottomSheet && isMob && anchor}
@@ -993,7 +995,8 @@ class DropdownComponent extends AppComponent {
                     onDismiss={this.hide.bind(this)}
                     contentStyle = {[{paddingVertical:0},restProps.contentStyle]}
                     anchor={anchor}
-                    title = {defaultStr(label,text)+"[ "+self.state.data.length.formatNumber()+" ]"}
+                    {...dialogProps}
+                    title = {defaultStr(dialogProps.title,label,text)+"[ "+self.state.data.length.formatNumber()+" ]"}
                     subtitle = {selectedText}
                     style = {[restProps.style]}
                     contentProps = {{style:{flex:1}}}

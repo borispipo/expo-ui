@@ -1,7 +1,6 @@
 import Fab from "$ecomponents/Fab";
 import {isObj,defaultStr,defaultVal,defaultObj} from "$utils";
 import React from "$react";
-import { StyleSheet } from 'react-native';
 import PropTypes from "prop-types";
 
 const SCREEN_INDENT = 20;
@@ -23,23 +22,21 @@ const BackToTopComponent = React.forwardRef((props,ref)=>{
     const isMounted = React.useIsMounted();
     const {onPress,accessibilityLabel,onBackToTop,onVisibilityChange,position,icon,...rProps} = props;
     const rest = defaultObj(rProps);
-    const [state,setState] = React.useStateIfMounted({
-        visible : false,
-    });
+    const [visible,setVisible] = React.useState(false);
     const open = ()=>{
-        if(!isMounted() || state.visible)return;
-        setState({...state,visible:true});
+        if(!isMounted() || visible)return;
+        setVisible(true);
     }
     const close = ()=>{
-        if(!isMounted() || !state.visible)return;
-        setState({...state,visible:false});
+        if(!isMounted() || !visible)return;
+        setVisible(false);
     }
  
     const context = {open,close,
         toggleVisibility:(event)=>{
             if(!isMounted()) return;
             let v = toggleVisibility(event);
-            if(typeof v =='boolean' && v !== state.visible){
+            if(typeof v =='boolean' && v !== visible){
                 return v ? open() : close();
             }
             return undefined;
@@ -50,7 +47,7 @@ const BackToTopComponent = React.forwardRef((props,ref)=>{
         if(onVisibilityChange){
             onVisibilityChange({context,visible});
         }
-    },[state.visible])
+    },[visible])
     const style = defaultStr(position).toLowerCase() =='right' ? {
         right: 0
     }  : {left : 0};
@@ -58,7 +55,7 @@ const BackToTopComponent = React.forwardRef((props,ref)=>{
     React.useEffect(()=>{
         React.setRef(ref,context);
     },[])
-    return !state.visible ? null :  <Fab
+    return !visible ? null :  <Fab
         {...rest}
         accessibilityLabel = {defaultStr(rest.accessibilityLabel,'Retour en haut')}
         onPress = {(e)=>{

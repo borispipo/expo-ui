@@ -4,8 +4,6 @@ import Dimensions from "$cplatform/dimensions";
 import {defaultStr,isObj,defaultObj,isNonNullString,defaultVal,defaultFunc} from "$utils";
 import React from "$react";
 import {isWeb} from "$cplatform";
-import PropTypes from "prop-types";
-
 
 export default class FormDataActionComponent extends FormData {
     isFullScreen(){
@@ -33,18 +31,12 @@ export default class FormDataActionComponent extends FormData {
         const mainProps = this.getMainProps();
         const data = this.getDataProp();
         const appBarProps = Object.assign({},mainProps.appBarProps);
-        const indexField = this.getIndexFieldProps();
         const isEditing = this.isDocEditing(data);
         let subtitle = (isEditing?'Modifier':this.getNewElementLabel());
         let title = React.getTextContent(defaultVal(appBarProps.title,mainProps.title,this.props.title));
         if(isEditing){
-            let _title = "";
-            if(isNonNullString(indexField)){
-                _title = defaultStr(data[indexField]);
-            } else if(isNonNullString(data.code)){
-                _title = data.code;
-            }
-            if(_title){
+            let _title = this.getPrimaryKeysFieldsValueText(data);
+            if(isNonNullString(_title)){
                 subtitle+= " ["+_title+"]"
             }
         } else {
@@ -90,6 +82,12 @@ export default class FormDataActionComponent extends FormData {
     canCreateNew(){
         return true;
     }
+    /*** permet de récupérer le contenu textuel associé à la données en cours de modification, pour les clés primaires */
+    getPrimaryKeysFieldsValueText(data){
+        data = defaultObj(data);
+        const indexField = this.getIndexFieldProps();
+        return isNonNullString(indexField) && isNonNullString(data[indexField])? data[indexField] : isNonNullString(data.code)? data.code : undefined; 
+    }
     getAppBarActionsProps(props){
         props = defaultObj(props,this.getMainProps(),this.props);
         let {actions,save2NewAction,save2printAction,save2closeAction,saveAction,newAction} = props;
@@ -104,10 +102,9 @@ export default class FormDataActionComponent extends FormData {
         const isEditing = this.isDocEditing(data);
         let textSave = isEditing ? "Modifier": 'Enregistrer';
         const newElementLabel = defaultStr(props.newElementLabel,this.props.newElementLabel,"Nouvel Element");
-        const indexField = this.getIndexFieldProps();
         if(isEditing){
-            const t = isNonNullString(indexField) && isNonNullString(data[indexField])? data[indexField] : isNonNullString(data.code)? data.code : undefined;
-            if(t){
+            const t = this.getPrimaryKeysFieldsValueText(data);
+            if(isNonNullString(t)){
                 textSave+="["+t+"]"
             }
         }

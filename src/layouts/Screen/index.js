@@ -8,5 +8,5 @@ Screen.FormData = FormData;
 Screen.List = List;
 
 export default Screen;
-
+export {default as TableData} from "./TableData";
 export {FormData,List,ScreenWithoutAuthContainer};

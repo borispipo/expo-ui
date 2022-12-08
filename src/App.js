@@ -1,5 +1,6 @@
 import '$session';
 import React from 'react';
+import {SWRConfig} from "$swr";
 import {defaultObj} from "$utils";
 import  {updateTheme,defaultTheme} from "$theme";
 import {Provider as PaperProvider } from 'react-native-paper';
@@ -27,6 +28,8 @@ import {isMobileNative} from "$cplatform";
 import {setDeviceIdRef} from "$capp";
 import appConfig from "$capp/config";
 import {showPrompt} from "$components/Dialog/confirm";
+import { AppState } from 'react-native'
+import {canFetchOffline} from "$capi/utils";
 
 import * as Utils from "$utils";
 Object.map(Utils,(v,i)=>{
@@ -38,10 +41,20 @@ Object.map(Utils,(v,i)=>{
 export default function getIndex(options){
   const {App,onMount,onUnmount,preferences:appPreferences} = defaultObj(options);
   return function MainIndexComponent() {
+    const isScreenFocusedRef = React.useRef(true);
     React.useEffect(()=>{
         ///la fonction de rappel lorsque le composant est monté
         let cb = typeof onMount =='function'? onMount() : null;
+        const onScreenFocus = ()=>{
+            isScreenFocusedRef.current = true;
+        }, onScreenBlur = ()=>{
+           isScreenFocusedRef.current = false;
+        }
+        APP.on(APP.EVENTS.SCREEN_FOCUS,onScreenFocus);
+        APP.on(APP.EVENTS.SCREEN_BLUR,onScreenBlur);
         return ()=>{
+          APP.off(APP.EVENTS.SCREEN_FOCUS,onScreenFocus);
+          APP.off(APP.EVENTS.SCREEN_BLUR,onScreenBlur);
           if(typeof onUnmount =='function'){
              onUnmount();
           }
@@ -64,38 +77,75 @@ export default function getIndex(options){
     const child = <Index theme={theme}/>;
     const children = typeof App =='function'? App({children:child,APP}) : child;
     return (
-      <GestureHandlerRootView style={{ flex: 1 }}>
-          <PaperProvider 
-              theme={theme}
-              settings={{
-                icon: (props) => {
-                   return <FontIcon {...props}/>
-                },
-              }}
-          >
-            <SafeAreaProvider>
-              <AuthProvider>
-                  <PortalProvider>
-                    <Portal.Host>
-                        <ErrorBoundary>
-                              <StatusBar/>
-                              <PreferencesContext.Provider value={preferences}>
-                                <DropdownAlert ref={notificationRef}/> 
-                                <PreloaderProvider/>   
-                                <DialogProvider responsive/>
-                                <AlertProvider SimpleSelect={SimpleSelect}/>
-                                <FormDataDialogProvider/>  
-                                {children}
-                                <ErrorBoundaryProvider/>
-                                <BottomSheetProvider/>
-                              </PreferencesContext.Provider>  
-                        </ErrorBoundary>
-                    </Portal.Host>
-                  </PortalProvider>
-                </AuthProvider>
-            </SafeAreaProvider>
-          </PaperProvider>
-      </GestureHandlerRootView>
+      <SWRConfig 
+        value={{
+          provider: () => new Map(),
+          isOnline() {
+            /* Customize the network state detector */
+            if(canFetchOffline) return true;
+            return APP.isOnline();
+          },
+          isVisible() {
+            /* Customize the visibility state detector */
+            return isScreenFocusedRef.current;
+          },
+          initFocus(callback) {
+            let appState = AppState.currentState
+            const onAppStateChange = (nextAppState) => {
+              /* If it's resuming from background or inactive mode to active one */
+              if (appState.match(/inactive|background/) && nextAppState === 'active') {
+                callback()
+              }
+              appState = nextAppState
+            }
+            // Subscribe to the app state change events
+            const subscription = AppState.addEventListener('change', onAppStateChange);
+            return () => {
+              subscription?.remove()
+            }
+          },
+          initReconnect(callback) {
+            /* Register the listener with your state provider */
+            APP.on(APP.EVENTS.GO_ONLINE,callback);
+            return ()=>{
+              APP.off(APP.EVENTS.GO_ONLINE,callback);
+            }
+          }
+        }}
+      >
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <PaperProvider 
+                theme={theme}
+                settings={{
+                  icon: (props) => {
+                    return <FontIcon {...props}/>
+                  },
+                }}
+            >
+              <SafeAreaProvider>
+                <AuthProvider>
+                    <PortalProvider>
+                      <Portal.Host>
+                          <ErrorBoundary>
+                                <StatusBar/>
+                                <PreferencesContext.Provider value={preferences}>
+                                  <DropdownAlert ref={notificationRef}/> 
+                                  <PreloaderProvider/>   
+                                  <DialogProvider responsive/>
+                                  <AlertProvider SimpleSelect={SimpleSelect}/>
+                                  <FormDataDialogProvider/>  
+                                  {children}
+                                  <ErrorBoundaryProvider/>
+                                  <BottomSheetProvider/>
+                                </PreferencesContext.Provider>  
+                          </ErrorBoundary>
+                      </Portal.Host>
+                    </PortalProvider>
+                  </AuthProvider>
+              </SafeAreaProvider>
+            </PaperProvider>
+        </GestureHandlerRootView>
+      </SWRConfig>
     );
   }
 };

@@ -1,6 +1,7 @@
 import theme,{LINE_HEIGHT} from "$theme";
 import { StyleSheet } from "react-native";
 import {get as getSession} from "./Common/session";
+import appConfig from "$capp/config";
 
 export const getRenderType = ()=>getSession("render-type");
 
@@ -65,27 +66,27 @@ export const getImputedBackgroundStyle = (rowData)=>{
 
 
 export const ROW_APPROVED_STYLE = {
-    borderRightColor : APPROVED_COLOR,
-    borderRightWidth : 4,
-    marginRight : MARGIN_HORIZONTAL
+    //borderRightColor : APPROVED_COLOR,
+    //borderRightWidth : 4,
+    //marginRight : MARGIN_HORIZONTAL
 }
 
 export const ROW_ARCHIVED_STYLE = {
-    borderBottomColor : ARCHIVED_COLOR,
-    borderBottomWidth :4,
+    //borderBottomColor : ARCHIVED_COLOR,
+    //borderBottomWidth :4,
     //marginBottom : MARGIN_VERTICAL,
 }
 
 export const ROW_PAID_STYLE = {
-    borderLeftColor : PAID_COLOR,
-    borderLeftWidth : 5,
-    marginLeft : MARGIN_HORIZONTAL
+    //borderLeftColor : PAID_COLOR,
+    //borderLeftWidth : 5,
+    //marginLeft : MARGIN_HORIZONTAL
 }
 
 export const ROW_IMPUTED_STYLE = {
-    borderLeftColor : IMPUTED_COLOR,
-    borderLeftWidth : 5,
-    marginLeft : MARGIN_HORIZONTAL
+    //borderLeftColor : IMPUTED_COLOR,
+    //borderLeftWidth : 5,
+    //marginLeft : MARGIN_HORIZONTAL
 }
 
 export const ROW_ODD_STYLE = {
@@ -110,7 +111,7 @@ export const ROW_BORDER_STYLE = {
     borderRightColor : ROW_BORDER_COLOR,
     borderRightWidth : 0,
     borderTopColor : ROW_BORDER_COLOR,
-    borderTopWidth : 0,
+    borderTopWidth : 0
 }
 
 
@@ -166,7 +167,7 @@ export const getRowStyle = ({row,bordered,numColumns,rowData,isAccordion,isTable
     if(rowIndex !== undefined){
         style.push(rowIndex%2===0?styles.even : theme.isDark()?styles.oddDark : styles.odd)
     }
-    if(selected){
+    if(false && selected){
         style.push(styles.selected,{borderBottomWidth:1,borderBottomColor:theme.colors.primary})
     }
     if(paid || row.paid){
@@ -183,3 +184,5 @@ export const getRowStyle = ({row,bordered,numColumns,rowData,isAccordion,isTable
     }
     return style;
 }
+
+export const willConvertFiltersToSQL = x=>!!appConfig.get("convertDatagridFiltersToSQL");

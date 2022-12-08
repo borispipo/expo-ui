@@ -107,8 +107,8 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,...props},ref)=>
                         }}
                     >
                     <View style={styles.labelContainer}>
-                        <Label splitText style={{color:theme.colors.primaryOnSurface}}>{pseudo}</Label>
-                        <Label splitText style={{fontSize:12,color:theme.colors.secondaryOnSurface,marginTop:6}}>
+                        <Label splitText numberOfLines={1} style={{color:theme.colors.primaryOnSurface,fontSize:14}}>{pseudo}</Label>
+                        <Label splitText numberOfLines={1} style={{fontSize:12,color:theme.colors.secondaryOnSurface,marginTop:6}}>
                             {label}
                         </Label>
                         {deviceName && <Label.withRef textBold splitText title={"Identifiant unique de l'application, installé sur cet appareil"} ref={deviceNameRef} secondary style={{fontSize:10}}>

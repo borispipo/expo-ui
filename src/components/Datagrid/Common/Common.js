@@ -13,13 +13,13 @@ import Image from "$ecomponents/Image";
 import Icon,{COPY_ICON} from "$ecomponents/Icon";
 import filterUtils from "$cfilters";
 import Hashtag from "$ecomponents/Hashtag";
-import {sortBy,isDecimal,extendObj,isObjOrArray,defaultNumber,defaultStr,isFunction,defaultBool,defaultArray,defaultObj,isNonNullString,defaultDecimal} from "$utils";
+import {sortBy,isDecimal,extendObj,isObjOrArray,isOb,defaultNumber,defaultStr,isFunction,defaultBool,defaultArray,defaultObj,isNonNullString,defaultDecimal} from "$utils";
 import {Datagrid as DatagridContentLoader} from "$ecomponents/ContentLoader";
 import React from "$react";
 import DateLib from "$lib/date";
 import Filter,{canHandleFilter,prepareFilters} from "$ecomponents/Filter";
 import {CHECKED_ICON_NAME} from "$ecomponents/Checkbox";
-import { COLUMN_WIDTH,DATE_COLUMN_WIDTH } from "../utils";
+import { COLUMN_WIDTH,DATE_COLUMN_WIDTH,willConvertFiltersToSQL } from "../utils";
 import { StyleSheet,Dimensions,useWindowDimensions} from "react-native";
 import Preloader from "$ecomponents/Preloader";
 import Checkbox from "../Checkbox";
@@ -31,7 +31,10 @@ import copyToClipboard from "$capp/clipboard";
 import { Pressable } from "react-native";
 import TableLink from "$TableLink";
 import appConfig from "$capp/config";
-import stableHash from "stable-hash"
+import stableHash from "stable-hash";
+import DatagridProgressBar from "./ProgressBar";
+import {Flag} from "$ecomponents/Countries"
+import View from "$ecomponents/View";
 
 export const arrayValueSeparator = ", ";
 
@@ -96,9 +99,16 @@ export default class CommonDatagridComponent extends AppComponent {
             [footerFieldName] : {
                 value : uniqid(footerFieldName),override:false, writable: false
             },
+            progressBarRef : {
+                value : {current : null}
+            },
+            isLoadingRef : {
+                value : {current:false}
+            },
             currentFilteringColumns : {value:{}}
         }) 
-        
+        this.isLoading = this.isLoading.bind(this);
+        this.getProgressBar = this.getProgressBar.bind(this);
         this.state.sort.dir = defaultStr(this.state.sort.dir,this.state.sort.column == "date"?"desc":'asc')
         this.hasColumnsHalreadyInitialized = false;
         this.initColumns(props.columns);
@@ -142,6 +152,39 @@ export default class CommonDatagridComponent extends AppComponent {
             windowHeight,
         }
         this.selectableColumnRef = React.createRef(null);
+        let isPv = this.isPivotDatagrid();
+        if(isPv){
+            isPv = this.props.dataSourceSelector !== false;
+        } else isPv = this.props.dataSourceSelector === true ? true : false;
+        if(isPv){
+            let dataSourceSelectorProps = defaultObj(this.props.dataSourceSelectorProps);
+            ['table','tableName'].map((tb,idx)=>{
+                dataSourceSelectorProps[tb] = defaultStr(this.props[tb],dataSourceSelectorProps[tb]);
+            });
+            let cDB = []//DBSelector.getDefaultSelected(dataSourceSelectorProps,this.currentDataSources,this.props);
+            let sDB = this.getSessionData().selectedDataSources;
+            cDB = Object.toArray(cDB);
+            if(cDB.length){
+                this.currentDataSources = cDB
+            } else {
+                this.currentDataSources = sDB;
+            }   
+            this.setSessionData({selectedDataSources:this.currentDataSources});
+        } else {
+            this.currentDataSources = Object.toArray(this.currentDataSources);
+        }
+        if(isPv){
+            isPv = this.props.dataSourceSelector !== false;
+        } else isPv = this.props.dataSourceSelector === true ? true : false;
+        if(isPv){
+            let dataSourceSelectorProps = defaultObj(this.props.dataSourceSelectorProps);
+            ['table','tableName'].map((tb)=>{
+                dataSourceSelectorProps[tb] = defaultStr(this.props[tb],this[tb],dataSourceSelectorProps[tb]);
+            });
+            this.setSessionData({selectedDataSources:this.currentDataSources});
+        } else {
+            this.currentDataSources = Object.toArray(this.currentDataSources);
+        }
     }
     bindResizeEvents(){
         return false;
@@ -796,6 +839,9 @@ export default class CommonDatagridComponent extends AppComponent {
             this.setSessionData({showFooters:true})
         })
     }
+    setState(a,b){
+        super.setState(a,b);
+    }
     hideFooter (){
         if(!this._isMounted()) {
              this.isUpdating = false;
@@ -911,6 +957,10 @@ export default class CommonDatagridComponent extends AppComponent {
                 width = Math.max(width,mWidth);
             } else if((type.contains("number") || type.contains("decimal") && this.props.format)){
                 width = Math.max(width,DATE_COLUMN_WIDTH-30);
+            } else if(type == "tel"){
+                width = Math.max(width,DATE_COLUMN_WIDTH)
+            } else if(type =="select_country" || type =='selectcountry'){
+                width = Math.max(width,90);
             }
             totalWidths +=width;
             widths[header.field] = width;
@@ -1057,7 +1107,6 @@ export default class CommonDatagridComponent extends AppComponent {
             });
             data = newData;
         }      
-        const beforeS = data;
         if(this.isDatagrid() && isNonNullString(this._sort.column)){
             if(isObj(this.state.columns) && this.state.columns[this._sort.column]){
                 let field = this.state.columns[this._sort.column];
@@ -1082,7 +1131,7 @@ export default class CommonDatagridComponent extends AppComponent {
         } else if(force){
             this.setSelectedRows();
         }
-        const state = {data,isLoading:false,sort : this._sort};
+        const state = {data,sort : this._sort};
         if((cb)){
             cb(state);
         }
@@ -1124,15 +1173,21 @@ export default class CommonDatagridComponent extends AppComponent {
    
 
     getProgressBar(props){
-        if(!this.isLoading() && props !== true) return null;
         if(typeof props !=='object' || !props){
             props = {};
         }
-        if(React.isValidElement(this.props.progressBar)) return this.props.progressBar ;
-        if(this.props.useLinesProgressBar === true || this.props.useLineProgressBar === true){
-            return CommonDatagridComponent.LineProgressBar(props);
-        }
-        return this.getDefaultPreloader(props);
+        const children = React.isValidElement(this.props.progressBar) ? this.props.progressBar : 
+            this.props.useLinesProgressBar === true || this.props.useLineProgressBar === true ? CommonDatagridComponent.LineProgressBar(props)
+            : this.getDefaultPreloader(props);
+        return <DatagridProgressBar
+            {...props}
+            onChange = {(context)=>{
+                this.isLoadingRef.current = context.isLoading;
+            }}
+            isLoading = {defaultBool(this.props.isLoading,this.isLoading())}
+            children = {children}  
+            ref = {this.progressBarRef}
+        />
     }
     handlePagination(start, limit, page) {
         this._previousPagination = this._pagination;
@@ -1210,14 +1265,32 @@ export default class CommonDatagridComponent extends AppComponent {
     }
     ///si les filtres devront être convertis au format SQL
     willConvertFiltersToSQL(){
-        return !!defaultVal(this.props.convertFiltersToSQL,appConfig.get("convertDatagridFiltersToSQL"));;
+        return !!defaultVal(this.props.convertFiltersToSQL,willConvertFiltersToSQL());;
     }
     getFilters(){
         this.filters = extendObj(true,{},this.filteredValues,this.filters)
         const preparedFilters = prepareFilters(this.filters,{filter:this.canHandleFilterVal.bind(this),convertToSQL:this.willConvertFiltersToSQL()});
         return preparedFilters;
     }
-    fetchData(){}
+    onChangeDataSources(args){
+        let {dataSources,server} = args;
+        if(this.props.onChangeDataSources =='function' && this.props.onChangeDataSources({dataSources,prev:this.currentDataSources}) === false) return;
+        this.currentDataSources = dataSources;
+        this.setSessionData({selectedDatabases:dataSources}) 
+        if(JSON.stringify({dataSources:this.previousDataSources}) != JSON.stringify({dataSources})){
+            if(isObj(this.props.dataSourceSelectorProps) && isFunction(this.props.dataSourceSelectorProps.onChange)){
+                args.datagridContext = this;
+                this.props.dataSourceSelectorProps.onChange(args);
+            }
+            this.refresh(true);
+        } 
+        this.previousDataSources = dataSources;
+        this.previousServer = server;
+    }
+    beforeFetchData(){}
+    fetchData({fetchOptions}){
+        return Promise.resolve(this.state.data);
+    }
     /****  Filtre le tableau */
     doFilter ({value,field,selector,event,force}){
         if(!this._isMounted()) return;
@@ -1247,7 +1320,7 @@ export default class CommonDatagridComponent extends AppComponent {
             this._pagination.start = 0;
         }
         this.filtersSelectors = {selector:this.getFilters()};
-        return this.fetchData(true,null,this.filtersSelectors);
+        return this.fetchData({force:true,fetchOptions:this.filtersSelectors});
     }
     onSetQueryLimit(){
         if(!this.canSetQueryLimit()) return;
@@ -1304,7 +1377,18 @@ export default class CommonDatagridComponent extends AppComponent {
     forceRefresh(){
         this.refresh(true);
     }
-    refresh (force,cb){}
+    refresh (force,cb){
+        if(isFunction(force)){
+            let t = cb;
+            cb = force;
+            force = isBool(t)? t : true;
+        }
+        return this.fetchData({force:defaultBool(force,true)}).then((data)=>{
+            if(isFunction(cb)){
+                cb(data);
+            }
+        })
+    }
     onResizePage(){}
     componentDidMount(){
         super.componentDidMount();
@@ -1354,11 +1438,31 @@ export default class CommonDatagridComponent extends AppComponent {
         }
         return max;
     }
+    canSetIsLoading(){
+        return isObj(this.progressBarRef.current) && typeof this.progressBarRef.current.setIsLoading =='function' ? true : false;
+    }
+    setIsLoading(loading,cb){
+        if(this.canSetIsLoading() && typeof loading =='boolean'){
+            return this.progressBarRef.current.setIsLoading(loading,()=>{
+                if(typeof cb =='function'){
+                    cb();
+                }
+            });
+        } else if(typeof cb =='function'){
+            cb();
+        }
+        return false;
+    }
      /**** met à jour l'état de progression de la mise à jour du tableau */
-     updateProgress(state,cb){
-        state = defaultObj(state);
-        state.isLoading = defaultBool(state.isLoading,!!!this.state.isLoading);
-        this.setState({...state},cb);
+     updateProgress(isLoading,cb){
+        this.isLoadingRef.current = defaultBool(isLoading,!!!this.isLoadingRef.current);
+        cb = typeof cb =='function'?cb : typeof isLoading =='function'? isLoading : null
+        if(this.canSetIsLoading()){
+            return this.setIsLoading(isLoading,cb);
+        }
+        cb && setTimeout(() => {
+            cb();
+        }, 500);
     }
     isAllRowsSelected(update){
         return this.selectedRowsCount && this.selectedRowsCount === this.getMaxSelectableRows()? true : false;
@@ -1408,17 +1512,23 @@ export default class CommonDatagridComponent extends AppComponent {
         return false;
     }
     UNSAFE_componentWillReceiveProps(nextProps){
-        if(!this.isTableData() && 'data' in nextProps && isObjOrArray(nextProps.data) && nextProps.data != this.state.data && (stableHash(nextProps.data) != stableHash(this.state.data))){
-            this.prepareData({data:nextProps.data,force:true},(state)=>{
-                this.setState(state)
-            });
+        if(!isObjOrArray(nextProps.data) || nextProps.data == this.props.data || stableHash(nextProps.data) == stableHash(this.props.data)) {
+            if( typeof this.props.isLoading=='boolean' && nextProps.isLoading !== this.props.isLoading && typeof nextProps.isLoading =='boolean'){
+                this.setIsLoading(nextProps.isLoading)
+            }
+            return false;
         }
+        this.prepareData({...nextProps,force:true},(state)=>{
+            this.setState(state)
+        });
     }
     getDefaultPreloader(props){
         return CommonDatagridComponent.getDefaultPreloader();
     }
     isLoading (){
-        return this.state.isLoading === true ? true : false;
+        if(this.state.isReady === false) return true;
+        if(typeof this.props.isLoading =='boolean') return this.props.isLoading;
+        return this.isLoadingRef.current === true ? true : false;
     }
     getLinesProgressBar(){
         return CommonDatagridComponent.LinesProgressBar(this.props);
@@ -1429,6 +1539,7 @@ export default class CommonDatagridComponent extends AppComponent {
     renderHeaderCell({columnDef,columnField}){
         if(this.isSelectableColumn(columnDef,columnField)){
             return <Checkbox
+                testID = "RN_SelectColumnHeaderCell"
                 checked  ={this.isAllRowsSelected()?true:false}
                 key = {this.getSelectableColumName()}
                 secondaryOnCheck
@@ -1458,7 +1569,7 @@ export default class CommonDatagridComponent extends AppComponent {
                     onPress = {sortMe}
                     primary
                 />: null}
-                <Label primary={isColumnSorted}>{ret}</Label>
+                <Label textBold style={[{fontSize:13}]} primary={isColumnSorted}>{ret}</Label>
             </>
         </TouchableRipple>
     }
@@ -1551,6 +1662,9 @@ export default class CommonDatagridComponent extends AppComponent {
                  if(val === checkedValue){
                      _render = checkedLabel;
                  } else _render = uncheckedLabel;
+             }
+             else if(_type =='select_country' || _type =='selectcountry'){
+                _render = <Flag withCode {...columnDef} length={undefined} width={undefined} height={undefined} code={defaultValue}/>
              }
              ///le lien vers le table data se fait via une colonne de type selecttabledata ou select_tabledata ou potant l'une des propriétés foreignKeyTable ou linkToTable de type chaine de caractère non nulle
              else if(arrayValueExists(['piece','selecttabledata','id'],_type) || isNonNullString(columnDef.linkToTable) || isNonNullString(columnDef.foreignKeyTable)){

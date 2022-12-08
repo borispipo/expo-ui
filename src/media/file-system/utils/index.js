@@ -30,3 +30,5 @@ const readAs = async (asset,fn)=>{
 export const readAsStringAsync = async (asset)=>{
     return readAs(asset);
 }
+
+export * from "./write";

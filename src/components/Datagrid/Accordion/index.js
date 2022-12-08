@@ -413,7 +413,7 @@ const DatagridFactory = (Factory)=>{
             const containerHeight = winheight - y;
             this.renderedListHeight = Math.max(300,containerHeight - (this.hasScrollViewParent() ? 50:0));
             const isLoading = this.isLoading();
-            const _progressBar = this.getProgressBar(!this.state.isReady);
+            const _progressBar = this.getProgressBar();
             const pointerEvents = isLoading || _progressBar ? "none":"auto"; 
             
             const {

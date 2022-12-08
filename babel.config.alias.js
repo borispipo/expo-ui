@@ -23,6 +23,8 @@ module.exports = (opts)=>{
     ///les screens principaux de l'application
     r["$mainScreens"] = r["$mainScreens"] || r["$emainScreens"];
     r["$escreen"] = r["$eScreen"] = path.resolve(expo,"layouts/Screen");
+    r["$eTableDataScreen"] = path.resolve(expo,"layouts","Screen","TableData");
+    r["$TableDataScreen"] = r["$TableDataScreen"] || r["$eTableDataScreen"]
     r["$eassets"] = path.resolve(dir,"assets");
     r["$ethemeSelectorComponent"] = path.resolve(expo,"auth","ThemeSelector");
     /*** le composant permettant de sélectionner un theme utilisateur */
@@ -36,6 +38,10 @@ module.exports = (opts)=>{
     r["$expo"] = r["$expo-ui"] = expo;
     r["$epreloader"] = path.resolve(expo,"components/Preloader");
     r["$eform"] = path.resolve(expo,"components","Form");
+
+    //l'alias $extendFormFields, pour étendre les formFields qu'on veut définir
+    r["$extendFormFields"] = r["$extendFormFields"] || path.resolve(r["$eform"],"Fields","$extendFormFields")
+    
     r["$form"] = r["$form"] || r["$eform"];
     r["$eform-data"] = r["$eformData"]= path.resolve(expo,"components","Form","FormData");
     r["$formData"] = r["$formData"] || r["$eformData"];

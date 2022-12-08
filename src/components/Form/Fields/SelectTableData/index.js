@@ -1,5 +1,5 @@
-import SelectField from "./SelectField";
-import SelectTableData from "$containers/TableData/SelectField";
+import SelectField from "../SelectField";
+import SelectTableData from "./Component";
 
 export default class FormSelectTableDataField extends SelectField{
     _render(props){
@@ -10,6 +10,12 @@ export default class FormSelectTableDataField extends SelectField{
                 if(typeof this.props.onChange =='function'){
                     this.props.onChange(args);
                 }
+            }}
+            beforeFetchItems = {(opts)=>{
+                if(typeof props.beforeFetchItems =='function'){
+                    return props.beforeFetchItems({...opts,context:this,dropdownContext : this._field})
+                }
+                return true;
             }}
             ref = {(el)=>{
                 this._field = el;

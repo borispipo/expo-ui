@@ -20,7 +20,7 @@ import {defaultDecimal,extendObj} from "$utils";
 import theme,{StylePropTypes} from "$theme";
 import APP from "$app/instance";
 import MenuItem from "./Item";
-import {isWeb} from "$platform";
+import { MIN_WIDTH } from './utils';
 
 const RESIZE_PAGE = APP.EVENTS.RESIZE_PAGE;
 
@@ -516,7 +516,8 @@ class _Menu extends AppComponent {
                       shadowMenuContainerStyle,
                       contentStyle,
                       {backgroundColor : theme.colors.surface},
-                      sameWidth && anchorLayout.width ? {width:Math.max(anchorLayout.width,minWidth)} : undefined,
+                      minWidth && {minWidth : Math.max(minWidth,MIN_WIDTH)},
+                      sameWidth && anchorLayout.width ? {width:Math.max(anchorLayout.width,minWidth,MIN_WIDTH)} : undefined,
                     ]
                   }
                 >

@@ -9,8 +9,122 @@ import Group from "./GroupComponent";
 import Portal from "$ecomponents/Portal";
 import {isAllowedFromStr} from "$cauth/perms";
 
+const activeRef = {current:null};
+
+export const isValid = (context)=>{
+    if(!isObj(context) || !isNonNullString(context.fabId) || typeof context.show !=="function" || context.hide !="function") return false;
+    return true;
+}
+/*** retourne le fab d'ont l'id est passé en paramètre */
+export const getFab = (fabId)=>{
+    if(!isNonNullString(fabId)) return null;
+    return isValid(allFabs[fabId])? allFabs[fabId] : null;
+}
+const allFabs = {};
+///les ids des fabs
+const fabIdRefs = {current:[]};
+
+//ajoute l'id du fab dans la lite des fabActif
+export const activateFabId = (fabId)=>{
+    if(!isNonNullString(fabId)) return fabIdRefs.current;
+    const nIds = desactivateFabId(fabId);
+    ///le fab active devient en top des id
+    nIds.push(fabId);
+    fabIdRefs.current = nIds;
+}
+
+export const desactivateFabId = (fabId)=>{
+    if(!isNonNullString(fabId)) return fabIdRefs.current;
+    const nIds = [];
+    for(let i in fabIdRefs.current){
+        if(fabIdRefs.current[i] != fabId){
+            nIds.push(fabIdRefs.current[i]);
+        }
+    }
+    fabIdRefs.current = nIds;
+    return nIds;
+}
+
+export const isActive = (fabId)=>{
+    return isNonNullString(fabId) && fabIdRefs.current[fabIdRefs.current.length-1] == fabId && isValid(getFab(fabId));
+}
+
+export const MANAGER = {
+    get active (){
+        return activeRef.current;
+    },
+    ///la liste des fabs
+    get all (){
+        return allFabs;
+    },
+    ///la liste des fabs Id
+    get fabIds (){
+        return fabIdRefs.current;
+    },
+    set active(active){
+        active = isValid(active)? active : null;
+        if(active){
+            ///on désactive l'ancien fab qui était actif
+            if(isValid(activeRef.current)){
+                activeRef.current.hide();
+            }
+            activateFabId(active.fabId);
+            activeRef.current = active;
+        } else {
+            //l'ancien fab devient active
+            let length = fabIdRefs.current.length-1;
+            let prevActive = null,prevFabId = null;
+            ///ça veut dire que l'ancien fab active a été démonté
+            if(isValid(activeRef.current)){
+                prevFabId = activeRef.current.fabId
+            }
+            while(length >=0 && !isValid(prevActive)){
+                const fId = fabIdRefs.current[length];
+                if(isNonNullString(fId) && fId !== prevFabId){
+                    prevActive = allFabs[fId];
+                    if(isValid(prevActive)){
+                        break;
+                    }
+                }
+                length --;
+            }   
+            if(!prevActive){
+                fabIdRefs.current = [];
+                Object.map(allFabs,(f,i)=>{
+                    delete allFabs[i];
+                })
+            }
+            if(isValid(prevActive)){
+                prevActive.show();
+                activateFabId(prevActive.fabId);
+            }
+            activeRef.current = prevActive;
+        }
+    },
+    get hasActive(){
+        return isValid(activeRef.current);
+    },
+    get get (){
+        return getFab;
+    }
+};
+
+export const activate = (args)=>{
+    const {context,fabId} = args;
+    if(!isNonNullString(fabId)|| !isObj(context)) return false;
+    let hasFound = false;
+    for(let i in allFabs){
+       if(allFabs[i]?.fabId == fabId){
+         hasFound = true;
+         break;
+       }
+    }
+}
 const FabGroupComponent = React.forwardRef((props,innerRef)=>{
-    let {openedIcon,screenName,display:customDisplay,primary,actionMutator,secondary,onOpen,prepareActions,fabStyle,open:customOpen,onClose,onStateChange:customOnStateChange,closedIcon,color,actions:customActions,children,...customRest} = props;
+    let {openedIcon,screenName,fabId,display:customDisplay,onMount,onUnmount,primary,actionMutator,secondary,onOpen,prepareActions,fabStyle,open:customOpen,onClose,onStateChange:customOnStateChange,closedIcon,color,actions:customActions,children,...customRest} = props;
+    const fabIdRef = React.useRef(defaultStr(fabId,uniqid("fab-id-ref")));
+    fabId = fabIdRef.current;
+    const isMountedRef = React.useRef(false);
     const [state, setState] = React.useStateIfMounted({ 
         open: typeof customOpen =='boolean'? customOpen : false,
         display : typeof customDisplay ==='boolean'? customDisplay : true,
@@ -27,6 +141,8 @@ const FabGroupComponent = React.forwardRef((props,innerRef)=>{
     const context = {
         open:x=>setState({...state,open:true}),
         close : x=> {setState({...state,open:false})},
+        fabId,
+        id : fabId,
         hide : x=> {
             setState({...state,display:false})
         },
@@ -35,9 +151,11 @@ const FabGroupComponent = React.forwardRef((props,innerRef)=>{
         },
         isHidden : x => !state.display,
         isShown : x => state.display,
+        isVisible : x=> state.display,
         isClosed : x => !state.open,
         isOpened : x => state.open,
     }
+    allFabs[fabId] = context;
     const {open,display} = state;
     openedIcon = defaultStr(openedIcon,"close");
     closedIcon = defaultStr(closedIcon,MENU_ICON);
@@ -77,11 +195,24 @@ const FabGroupComponent = React.forwardRef((props,innerRef)=>{
     },[customActions,prepareActions,open])();
     
     React.useEffect(()=>{
+        onMount && onMount(context);
         React.setRef(innerRef,context);
+        isMountedRef.current = true;
         return ()=>{
+            onUnmount && onUnmount({fabId});
+            delete allFabs[fabId];
+            desactivateFabId(fabId);
+            isMountedRef.current = false;
             React.setRef(innerRef,null);
         }
     },[])
+    React.useEffect(()=>{
+        if(display){
+            MANAGER.active = context;
+        } else {
+            MANAGER.active = null;
+        }
+    },[display]);
     return <Portal>
         <Group
           {...rest}
@@ -112,6 +243,9 @@ const actionType = PropTypes.shape({
 });
 FabGroupComponent.propTypes = {
     ...defaultObj(FAB.Group.propTypes),
+    fabId : PropTypes.string,//l'id du fab
+    onMount : PropTypes.func, ///lorsque le composant est monté
+    onUnmount : PropTypes.func, //lorsque le composant est démonté
     actionMutator : PropTypes.func,
     prepareActions : PropTypes.bool, //si un retraitement sera effectué sur les actions du FAB
     onOpen : PropTypes.func,

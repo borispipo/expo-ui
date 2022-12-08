@@ -4,6 +4,8 @@ import {Stack,setInitialRouteName } from "$cnavigation";
 import React from "$react";
 import DrawerNavigator from "./Drawer";
 
+export * from "./utils";
+
 export default function NavigationComponent (props){
     let {state,hasGetStarted,initialRouteName,extra} = props;
     const allScreens = initScreens({Factory:Stack,ModalFactory:Stack,filter:({name,Screen})=>{

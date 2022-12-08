@@ -2,10 +2,13 @@ import {defaultStr,defaultObj,defaultVal,isObj} from "$utils";
 import Fields from "../Fields";
 //import dataFileManager from "$dataFileManager";
 import i18n from "$i18n";
+import React from "$react";
 
 const componentTypes =  {
     ...Fields,
     id : Fields.IdField,
+    selecttabledata : Fields.SelectTableData,
+    select_tabledata : Fields.SelectTableData,
     idfield : Fields.IdField,
     piecefield : Fields.PieceField,
     piece : Fields.PieceField,
@@ -58,11 +61,12 @@ export const getFilterComponentProps = (_props)=>{
         check,
         width,
         type,
+        jsType,
         ...props
     } = _props;
     props = defaultObj(props);
     let component = Fields.TextField;
-    type = defaultStr(type,'text').toLowerCase().replaceAll("_","").replaceAll("-","").trim();
+    type = defaultStr(jsType,type,'text').toLowerCase().replaceAll("_","").replaceAll("-","").trim();
     props = defaultObj(props);
     /*if(type =='datafile'){
         type = 'select';
@@ -74,22 +78,17 @@ export const getFilterComponentProps = (_props)=>{
         props.inputProps.placeholder = defaultStr(props.inputProps.placeholder,i18n.lang("search.."))
         props.label = label;
         component = Fields.SelectField;
-        /*if(type !== 'select'){
-            if(type === 'selectstructdata') {
-                dbName = 'structData';
-                component = StructDataSelectField;
-            } else if(type === 'selecttabledata'){
-                component = TableDataSelectField;
-            } 
-            props.tableName = tableName;
-            props.dbName = dbName;
-        }*/
+        if(type =='select_country' || type =='selectcountry'){
+            component = Fields.SelectCountry;
+        } else if(type =='select_tabledata' || type =='selecttabledata'){
+            component = Fields.SelectTableData;
+        }
         type = "select";
     } else if(type == 'switch' || type =='radio' || type ==='checkbox') {
         type = 'select';
         let {checkedLabel,checkedTooltip,uncheckedTooltip,checkedValue,uncheckedLabel,uncheckedValue,label,text,...pR} = props;
-        checkedLabel = defaultVal(checkedLabel,checkedTooltip,'Désactivé/Désélectionné')
-        uncheckedLabel = defaultVal(uncheckedLabel,uncheckedTooltip,'Activé/Sélectionné')
+        checkedLabel = defaultVal(checkedLabel,checkedTooltip,'Inactif/Désélectionné')
+        uncheckedLabel = defaultVal(uncheckedLabel,uncheckedTooltip,'Actif/Sélectionné')
         checkedValue = defaultVal(checkedValue,1); uncheckedValue = defaultVal(uncheckedValue,0)
         props = pR;
         props.items = [{code:checkedValue,label:checkedLabel},{code:uncheckedValue,label:uncheckedLabel}];
@@ -98,7 +97,9 @@ export const getFilterComponentProps = (_props)=>{
         component = type == 'datetime' ? Fields.DateTime : type === 'date'? Fields.Date : Fields.Time;
     }  else if(type == 'color' || type =='colorpicker') {
         component = Fields.ColorPicker;
-    } else {
+    } else if(React.isComponent(componentTypes[type])) {
+        component = componentTypes[type];
+    }else {
         delete props.dbName;
         delete props.tableName;
         props.label = label; 

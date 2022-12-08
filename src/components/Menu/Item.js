@@ -35,7 +35,7 @@ const MenuItemComponent = React.forwardRef(({
   accessibilityLabel,
   ...rest
 },ref) => {
-  title = defaultVal(title,label,text);
+  title = defaultVal(label,text,title);
   const disabledColor = color(theme.dark ? white : black)
     .alpha(0.32)
     .rgb()
@@ -66,6 +66,7 @@ const MenuItemComponent = React.forwardRef(({
   return (
     <Tooltip
       {...defaultObj(rest)}
+      tooltip = {defaultVal(rest.tooltip,title,label,text)}
       Component = {TouchableRipple}
       style={[styles.container, style,maxWidthStyle,disabledStyle]}
       onPress={onPress}

@@ -1,6 +1,6 @@
 import React from '$react'
 import PropTypes from 'prop-types'
-import {defaultStr} from "$utils";
+import {defaultStr,defaultObj,uniqid} from "$utils";
 import {extend} from "./utils"
 import stableHash from 'stable-hash';
 import Chart from "./appexChart";
@@ -14,30 +14,34 @@ import Chart from "./appexChart";
  *  options {number} - les options supplémentaires au chart
  * 
 */
-const ChartComponent = React.forwardRef(({type, height, width, series, options,testID,webViewProps, ...props },ref)=>{
+const ChartComponent = React.forwardRef(({type, height,chartId, width, series, options,testID,webViewProps, ...props },ref)=>{
   const chartContext = React.useRef(null);
+  options = defaultObj(options);
+  const chartIdRef = React.useRef(defaultStr(chartId,options.chart?.id,uniqid("chart-id")));
   const config = extend(options,{
     chart: {
       type,
       height,
-      width
+      width,
+      id : chartIdRef.current
     },
     series,
   });
+  config.chart.id = chartIdRef.current;
   testID = defaultStr(testID,"RN_ChartComponent");
   const prevWidth = React.usePrevious(width), prevHeight = React.usePrevious(height);
-  const prevOptions = React.usePrevious(options,stableHash);
+  const prevOptions = React.usePrevious(options,JSON.stringify);
   const prevSeries = React.usePrevious(series,JSON.stringify);
   React.useEffect(()=>{
     if(chartContext.current && chartContext.current.updateOptions){
-        if((JSON.stringify(prevSeries) == JSON.stringify(series)) || width != prevWidth || height != prevHeight){
+        if((prevSeries == series) || width != prevWidth || height != prevHeight){
             chartContext.current.updateOptions(config);
-        } else if(JSON.stringify(prevOptions) != JSON.stringify(options)){
+        } else if(prevOptions != options){
             chartContext.current.updateSeries(series);
         } 
     }
   },[stableHash({type,options,series,width,height})])
-  return <Chart {...props} options={config} chartContext={chartContext} testID={testID} ref={ref}/>
+  return <Chart {...props} options={config} chartId={chartIdRef.current} chartContext={chartContext} testID={testID} ref={ref}/>
 });
 
 

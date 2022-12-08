@@ -3,6 +3,7 @@ import {isObj,defaultStr} from "$utils";
 import View from "$ecomponents/View";
 import Portal from "$ecomponents/Portal";
 import theme,{Colors} from "$theme";
+import Dimensions,{isMobileMedia,isTabletMedia,isDesktopMedia} from "$dimensions";
 import {
   StyleSheet,
   TouchableOpacity,
@@ -598,7 +599,7 @@ export default class DropdownAlert extends Component {
       wrapperStyle,
       tapToCloseEnabled,
       accessibilityLabel,
-      testID,
+      testID:customTestId,
       accessible,
       contentContainerStyle,
       defaultTextContainer,
@@ -608,6 +609,7 @@ export default class DropdownAlert extends Component {
       showCancel,
       imageStyle,
     } = this.props;
+    const testID = defaultStr(customTestId,"RN_DropdownAlert");
     const {animationValue, bottomValue, height} = this.state;
     const {type, payload} = this.alertData;
     let style = this.getStyleForType(type);
@@ -641,14 +643,6 @@ export default class DropdownAlert extends Component {
       right: 0,
       elevation: elevation,
     };
-    /*wrapperAnimStyle.zIndex = 1000100;
-    if (zIndex != null) {
-      wrapperAnimStyle.zIndex = zIndex;
-    }*/
-    let ContentView = View//SafeAreaView;
-    if (IS_IOS_BELOW_11 || IS_ANDROID) {
-      ContentView = View;
-    }
     const activeOpacity = !tapToCloseEnabled || showCancel ? 1 : 0.95;
     const onPress = !tapToCloseEnabled
       ? null
@@ -658,28 +652,45 @@ export default class DropdownAlert extends Component {
           <Animated.View
             ref={(ref) => (this.mainView = ref)}
             {...this.panResponder.panHandlers}
+            testID={testID+"_AnimatedView"}
             style={[wrapperAnimStyle, wrapperStyle]}>
             <TouchableOpacity
-            activeOpacity={activeOpacity}
-            onPress={onPress}
-            disabled={!tapToCloseEnabled}
-            onLayout={(event) => this._onLayoutEvent(event)}
-            testID={testID}
-            accessibilityLabel={accessibilityLabel}
-            accessible={accessible}>
-            <View style={style}>
-                <ContentView style={StyleSheet.flatten(contentContainerStyle)}>
-                {this._renderImage(imageSrc, imageStyle)}
-                <View style={StyleSheet.flatten(defaultTextContainer)}>
-                    {this._renderTitle()}
-                    {this._renderMessage()}
+              activeOpacity={activeOpacity}
+              onPress={onPress}
+              disabled={!tapToCloseEnabled}
+              onLayout={(event) => this._onLayoutEvent(event)}
+              testID={testID}
+              accessibilityLabel={accessibilityLabel}
+              accessible={accessible}>
+            <View style={style} testID={testID+"_ContentContainer"}>
+                  <View testID={testID+"_ContentWrapper"} style={[contentContainerStyle,getContainerStyle().style]}
+                     mediaQueryUpdateNativeProps={(args)=>{
+                       return getContainerStyle(args);
+                    }}
+                  >
+                      {this._renderImage(imageSrc, imageStyle)}
+                      <View testID={testID+"_Content"} style={defaultTextContainer}>
+                          {this._renderTitle()}
+                          {this._renderMessage()}
+                      </View>
+                      {this._renderCancel(showCancel)}
                 </View>
-                {this._renderCancel(showCancel)}
-                </ContentView>
             </View>
             </TouchableOpacity>
         </Animated.View>
       </Portal>
     );
+  }
+}
+
+const getContainerStyle = (args)=>{
+  if(!isObj(args)){
+     args = {isMobile : isMobileMedia(),isTablet : isTabletMedia()};
+  }
+  const {width} = Dimensions.get("window");
+  return {
+    style : {
+       maxWidth  : args.isMobile ? (90*width)/100 : args.isTablet? Math.max((70*width/100),350) : 500
+    }
   }
 }

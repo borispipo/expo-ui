@@ -6,7 +6,7 @@
  *  @see : 
  */
 import Datagrid from "./IndexComponent";
-import {defaultStr,defaultObj,defaultVal,isObjOrArray,isObj,extendObj} from "$utils";
+import {defaultStr,defaultObj,defaultVal,isNonNullString,defaultNumber,isObjOrArray,isObj,extendObj} from "$utils";
 import {Pressable} from "react-native";
 import SimpleSelect from "$ecomponents/SimpleSelect";
 import React from "$react";
@@ -27,6 +27,26 @@ import PropTypes from "prop-types";
 import {isDesktopMedia} from "$dimensions";
 import ActivityIndicator from "$ecomponents/ActivityIndicator";
 import {Menu} from "$ecomponents/BottomSheet";
+import session from "$session";
+
+export const getSessionKey = ()=>{
+    return Auth.getSessionKey("swrDatagrid");
+}
+export const getSessionData = (key)=>{
+    const data = defaultObj(session.get(getSessionKey()));
+    return isNonNullString(key) ? data[key.trim()] : data;
+}
+
+export const setSessionData = (key,value)=>{
+    const d = getSessionData();
+    if(isObj(key)){
+        return session.set(getSessionKey(),extendObj({},d,key));
+    }
+    d[key] = value;
+    return session.set(getSessionKey(),d);
+}
+
+
 
 const timeout = 5000*60*60;
 export const swrOptions = {
@@ -110,7 +130,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     const totalRef = React.useRef(0);
     const isFetchingRef = React.useRef(false);
     const pageRef = React.useRef(1);
-    const limitRef = React.useRef(500);
+    const limitRef = React.useRef(defaultNumber(getSessionData("limit"),500));
     const isInitializedRef = React.useRef(false);
     testID = defaultStr(testID,"RNSWRDatagridComponent")
     const {error, isValidating,isLoading,refresh} = useSWR(fetchPath,{
@@ -268,6 +288,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                                     onPress : ()=>{
                                         if(item == limitRef.current) return;
                                         limitRef.current = item;
+                                        setSessionData("limit",limitRef.current);
                                         pageRef.current = firstPage;
                                         setTimeout(() => {
                                             doRefresh(true);

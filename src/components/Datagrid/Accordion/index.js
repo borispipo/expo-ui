@@ -325,6 +325,7 @@ const DatagridFactory = (Factory)=>{
                 backToTopProps,
                 testID,
                 renderEmpty,
+                ...rest
             } = this.props
             const hasData = this.state.data.length ? true : false;
             testID = defaultStr(testID,"RN_DatagridAccordion");
@@ -433,6 +434,7 @@ const DatagridFactory = (Factory)=>{
                         <View testID={testID+"_HeaderQueryLimit"} style={[styles.paginationItem]}>
                             {this.renderQueryLimit(this.state.data.length.formatNumber())}
                         </View>
+                        {this.renderCustomPagination()}
                         {sortedColumnsLength ? <View testID={testID+"_HeaderSortedColumns"} style={[styles.sortableItems,styles.paginationItem,{paddingRight:10}]}>
                             <Icon 
                                 testID={testID+"_HeaderSortIcon"}
@@ -503,6 +505,7 @@ const DatagridFactory = (Factory)=>{
                                         ,icon :  showFooters?'view-column':'view-module'
                                         ,text : (showFooters?'Masquer/Ligne des totaux':'Afficher/Ligne des totaux')
                                     }:null,
+                                    ...this.renderCustomMenu(),
                                     ...restItems,
                                     this.canScrollTo() &&  {
                                         text : 'Retour en haut',
@@ -579,6 +582,7 @@ const DatagridFactory = (Factory)=>{
                     {hasData ? <FlashList
                         estimatedItemSize = {150}
                         prepareItems = {false}
+                        {...rest}
                         {...accordionProps}
                         testID = {testID}
                         extraData = {this.state.refresh}

@@ -11,15 +11,16 @@ import {defaultStr,isPromise,defaultObj} from "$utils";
 import {open as openPreloader,close as closePreloader} from "$preloader";
 import {styles as _styles} from "$theme";
 import Tooltip from "$ecomponents/Tooltip";
+import {navigateToTableData} from "$enavigation/utils";
 
 const TableLinKComponent = React.forwardRef((props,ref)=>{
-    let {disabled,labelProps,server,containerProps,id,columnDef,tableName,table:customTable,data,testID,Component,routeName,routeParams,component,primary,triggerProps,onPress,children, ...rest} = props;
+    let {disabled,labelProps,server,containerProps,id,fetchForeignData,foreignKeyTable,foreignKeyColumn,data,testID,Component,routeName,routeParams,component,primary,triggerProps,onPress,children, ...rest} = props;
     testID = defaultStr(testID,"RN_TableDataLinkContainer")
-    tableName = defaultStr(tableName,customTable).trim();
+    foreignKeyTable = defaultStr(foreignKeyTable).trim();
+    foreignKeyColumn = defaultStr(foreignKeyColumn).trim();
     rest = defaultObj(rest);
     containerProps = defaultObj(containerProps)
     labelProps = defaultObj(labelProps);
-    columnDef = defaultObj(columnDef);
     data = defaultObj(data);
     id = defaultStr(id);
     if(!id){
@@ -28,10 +29,25 @@ const TableLinKComponent = React.forwardRef((props,ref)=>{
     const pointerEvents = disabled || !id? 'none' : 'auto';
     const onPressLink = (event)=>{
         React.stopEventPropagation(event);
-        const r = typeof onPress =='function'? onPress({...React.getOnPressArgs(event),...columnDef,tableName,table:tableName,data,id,value:id,}) : undefined;
+        const args = {...React.getOnPressArgs(event),...rest,foreignKeyTable,foreignKeyColumn,data,id,value:id};
+        let r = typeof onPress =='function'? onPress(args) : undefined;
+        if(r === false) return;
+        const cb = (a)=>{
+            const r2 = typeof fetchForeignData === 'function'? fetchForeignData({...args,...defaultObj(a)}) : undefined;
+            if(isPromise(r2)){
+                return r2.then((data)=>{
+                    if(isObj(data) && data[foreignKeyColumn] !== undefined){
+                        navigateToTableData({tableName:foreignKeyTable,data});
+                    }
+                });
+            }
+            return Promise.reject({msg:'type de données retournée par la fonction fetchForeignKeyData invalide'});
+        }
+        openPreloader("traitement de la requête...");
         if(isPromise(r)){
-            openPreloader("traitement de la requête...");
-            r.finally(closePreloader);
+            r.then(cb).finally(closePreloader);
+        } else {
+            cb().finally(closePreloader);
         }
     }
     rest.style = [rest.style,_styles.cursorPointer];
@@ -47,6 +63,9 @@ export default TableLinKComponent;
 
 
 TableLinKComponent.propTypes = {
+    foreignKeyColumn : PropTypes.string.isRequired,//le nom de la colonne de la clé étrangère
+    foreignKeyTable : PropTypes.string.isRequired, //le nom de la table référencée
+    fetchForeignData : PropTypes.func, // la fonction permettant de chercher la données à distance
     server : PropTypes.string,//le serveur sur lequel rechercher les données
     primary : PropTypes.bool,//si le composant sera stylé en theme primary de react
     ///les props à utiliser pour afficher la table de données en cas de click sur le lien

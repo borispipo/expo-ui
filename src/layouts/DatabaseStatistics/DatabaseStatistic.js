@@ -13,10 +13,8 @@ import cActions from "$cactions";
 import {View} from "react-native";
 
 export default function DatabaseStatisticContainer (props){
-    const [state,setState] = React.useState({
-        isLoading : true,
-        count : 0,
-    });
+    const [count,setCount] = React.useState(0);
+    const [isLoading,setIsLoading] = React.useState(true);
     let {table,fetchCount,index,testID,title,icon,onPress} = props;
     title = defaultStr(title)
     table = defaultObj(table);
@@ -28,14 +26,14 @@ export default function DatabaseStatisticContainer (props){
     const refresh = ()=>{
         if(refreshingRef.current || !isMounted()) return;
         refreshingRef.current = true;
+        setIsLoading(true);
         setTimeout(()=>{
            fetchCount().then((count)=>{
-                setState({...state,isLoading:false,count});
+                setCount(count);
+                setIsLoading(false);
                 refreshingRef.current = false;
             }).catch((e)=>{
-                setState({
-                    isLoading : false, count : 0,
-                });
+                setIsLoading(false);
                 refreshingRef.current = false;
             });
         },100);
@@ -50,10 +48,6 @@ export default function DatabaseStatisticContainer (props){
             APP.off(cActions.remove(tableName),refresh);
         }
     },[]);
-    React.useEffect(()=>{
-        //refresh();
-    },[props])
-    const {isLoading,count} = state;
     return <Item
         testID = {defaultStr(testID,"RN_DatabaseStatistic_"+table)}
         onPress = {(args)=>{
@@ -65,7 +59,6 @@ export default function DatabaseStatisticContainer (props){
         left = {(aProps)=>{
             return <Avatar suffix={index} {...aProps} icon= {icon} size={40} label={title}/>
         }}
-        //right = {(rP)=><Icon {...rP} name='refresh' onPress={refresh}/>}
         title = {<Label splitText numberOfLines={1} primary style={[{fontSize:15}]}>{title}</Label>}
         titleProps = {{primary : true}}
         description = {isLoading?<View style={[theme.styles.justifyContentFlexStart,theme.styles.alignItemsFlexStart]}>

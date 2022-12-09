@@ -7,6 +7,8 @@
  */
 import Datagrid from "./IndexComponent";
 import {defaultStr,defaultObj,defaultVal,isObjOrArray,isObj,extendObj} from "$utils";
+import {Pressable} from "react-native";
+import SimpleSelect from "$ecomponents/SimpleSelect";
 import React from "$react";
 import Auth from "$cauth";
 import DateLib from "$lib/date";
@@ -22,6 +24,9 @@ import appConfig from "$capp/config";
 import APP from "$capp/instance";
 import cAction from "$cactions";
 import PropTypes from "prop-types";
+import {isDesktopMedia} from "$dimensions";
+import ActivityIndicator from "$ecomponents/ActivityIndicator";
+import {Menu} from "$ecomponents/BottomSheet";
 
 const timeout = 5000*60*60;
 export const swrOptions = {
@@ -31,7 +36,9 @@ export const swrOptions = {
     errorRetryInterval : timeout*2,
     errorRetryCount : 5,
 }
-
+const getDefaultPaginationRowsPerPageItems = ()=>{
+    return [5,10,15,20,25,30,40,50,60,80,100,500,1000,...(isDesktopMedia() ? [1500,2000,2500,3000,3500,4000,4500,5000,10000]:[])];
+}
 /****la fonction fetcher doit toujours retourner : 
  *  1. la liste des éléments fetchés dans la props data
  *  2. le nombre total d'éléments de la liste obtenue en escluant les clause limit et offset correspondant à la même requête
@@ -53,10 +60,13 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         fetchData,
         fetchPath,
         fetcher,
+        ListFooterComponent,
+        testID,
         ...rest
     } = props;
     rest = defaultObj(rest);
     rest.exportTableProps = defaultObj(rest.exportTableProps)
+    const firstPage = 1;
     const tableName = defaultStr(table.tableName,table.table).trim().toUpperCase();
     canMakePhoneCall = defaultBool(canMakePhoneCall,table.canMakePhoneCall);
     makePhoneCallProps = defaultObj(makePhoneCallProps,rest.makePhoneCallProps,table.makePhoneCallProps);
@@ -98,13 +108,30 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     const hasResultRef = React.useRef(false);
     const totalRef = React.useRef(0);
     const isFetchingRef = React.useRef(false);
+    const pageRef = React.useRef(1);
+    const limitRef = React.useRef(500);
+    const isInitializedRef = React.useRef(false);
+    testID = defaultStr(testID,"RNSWRDatagridComponent")
     const {error, isValidating,isLoading,refresh} = useSWR(fetchPath,{
         fetcher : (url,opts)=>{
+            if(!isInitializedRef.current) {
+                isFetchingRef.current = false;
+                return;
+            }
             opts = extendObj({},opts,fetchOptionsRef.current);
             opts.queryParams = defaultObj(opts.queryParams);
             opts.queryParams.withTotal = true;
+            opts.queryParams.limit = limitRef.current;
+            opts.queryParams.page = pageRef.current -1;
             const fetchCB = ({data,total})=>{
                 totalRef.current = total;
+                /***
+                 * if(pageRef.current ===firstPage){
+                        dataRef.current = data;
+                    } else {
+                        dataRef.current = prevPage != pageRef.current ? (isObj(data)?{...dataRef.current,...data}:[...dataRef.current,...data]) : data;
+                    }
+                 */
                 dataRef.current = data;
                 hasResultRef.current = true;
                 return data;
@@ -146,6 +173,37 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         };
         refresh();
     }
+    const canPagninate = ()=>{
+        if(typeof totalRef.current !=='number' || typeof pageRef.current !='number' || typeof limitRef.current !='number') return false;
+        if(limitRef.current <= 0) return false;
+        return true;
+    }
+    const getTotalPages = ()=>{
+        if(!canPagninate()) return false;
+        return Math.ceil(totalRef.current / limitRef.current);;
+    };
+    const getNextPage = ()=>{
+        if(!canPagninate()) return false;
+        const totalPages = getTotalPages();
+        let nPage = pageRef.current+1;
+        if(nPage > totalPages){
+            nPage  = totalPages;
+        }
+        if(nPage === pageRef.current){
+            return false;
+        }
+        return nPage;
+    },getPrevPage = ()=>{
+        if(!canPagninate()) return false;
+        let pPage = pageRef.current - 1;
+        if(pPage < firstPage){
+            pPage  = firstPage;
+        }
+        if(pPage === pageRef.current){
+            return false;
+        }
+        return pPage;
+    }
     React.useEffect(()=>{
         const upsert = cAction.upsert(tableName);
         const remove = cAction.remove(tableName);
@@ -159,15 +217,138 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             APP.off(remove,onUpsert);
         }
     },[]);
+    const loading = (isLoading|| isValidating);
+    const pointerEvents = loading ?"node" : "auto";
     return (
         <Datagrid 
+            testID = {testID}
             {...rest}
             {...defaultObj(table.datagrid)} 
-            isLoading = {(isLoading|| isValidating) && !error && showProgressRef.current && true || false}
+            renderCustomPagination = {({context})=>{
+                if(!canPagninate()) return null;
+                const page = pageRef.current, totalPages = getTotalPages(), prevPage = getPrevPage(),nextPage = getNextPage();
+                const iconProp = {
+                    size : 25,
+                    style : [theme.styles.noMargin,theme.styles.noPadding],
+                }
+                const sStyle = [styles.limitStyle1,theme.styles.noPadding,theme.styles.noMargin];
+                return <View testID={testID+"_PaginationContainer"} pointerEvents={pointerEvents}>
+                    <View style={[theme.styles.row,theme.styles.w100]} pointerEvents={pointerEvents} testID={testID+"_PaginationContentContainer"}>
+                        <Menu
+                            testID={testID+"_SimpleSelect"}
+                            style = {sStyle}
+                            anchor = {(p)=>{
+                                return <Pressable style={[theme.styles.noMargin,theme.styles.noPadding]} {...p} testID={testID+"MenuSelectLimit"}>
+                                    <Label primary  testID={testID+"_Label"} style={[{fontSize:15}]}>
+                                        {limitRef.current.formatNumber()}
+                                    </Label>
+                                </Pressable>
+                            }}
+                            title = {'Limite du nombre d\'éléments par page'}
+                            items = {getDefaultPaginationRowsPerPageItems().map((item)=>{
+                                return {
+                                    text : item.formatNumber(),
+                                    icon : limitRef.current == item ? 'check' : null,
+                                    primary : limitRef.current === item ? true : false,
+                                    onPress : ()=>{
+                                        if(item == limitRef.current) return;
+                                        limitRef.current = item;
+                                        pageRef.current = firstPage;
+                                        setTimeout(() => {
+                                            doRefresh(true);
+                                        }, (500));
+                                    }
+                                }
+                            })}
+                        />
+                        <Icon
+                            ///firstPage
+                            {...iconProp}
+                            title = {"Aller à la première page"}
+                            name="material-first-page"
+                            disabled = {pageRef.current <= 1 && true || false}
+                            onPress = {()=>{
+                                if(pageRef.current <= firstPage) return;
+                                pageRef.current = firstPage;
+                                doRefresh(true);
+                            }}
+                        />
+                        <Icon
+                            //decrement
+                            {...iconProp}
+                            title = {"Aller à la page précédente {0}".sprintf(prevPage && prevPage.formatNumber()||undefined)}
+                            name="material-keyboard-arrow-left"
+                            disabled = {page === prevPage || getPrevPage() === false ? true : false}
+                            onPress = {()=>{
+                                const page = getPrevPage();
+                                if(page === false) return;
+                                if(pageRef.current === page) return;
+                                pageRef.current = page;
+                                doRefresh(true);
+                            }}
+                            
+                        />
+                        <View testID={testID+"_PaginationLabel"}>
+                            <Label style={{fontSize:15}}>
+                                {page.formatNumber()}-{totalPages.formatNumber()}{" / "}{totalRef.current.formatNumber()}
+                            </Label>
+                        </View>
+                        <Icon
+                            //increment
+                            {...iconProp}
+                            title = {"Aller à la page suivante {0}".sprintf(nextPage && nextPage.formatNumber()||undefined)}
+                            name="material-keyboard-arrow-right"
+                            disabled = {nextPage >= totalPages || getNextPage() === false ? true : false}
+                            onPress = {()=>{
+                                const page = getNextPage();
+                                if(page === false) return;
+                                if(pageRef.current === page) return;
+                                pageRef.current = page;
+                                doRefresh(true);
+                            }}
+                        />
+                        <Icon
+                            //lastPage
+                            {...iconProp}
+                            name="material-last-page"
+                            title = {"Aller à la dernière page {0}".sprintf(totalPages && totalPages.formatNumber()||undefined)}
+                            disabled = {page >= totalPages ? true : false}
+                            onPress = {()=>{
+                                const page = getTotalPages();
+                                if(pageRef.current >= page) return;
+                                pageRef.current = page;
+                                doRefresh(true);
+                            }}
+                            
+                        />
+                    </View>
+                </View>
+            }}
+            ListFooterComponent = {(props)=>{
+                const r = typeof ListFooterComponent =='function'? ListFooterComponent(props) : null;
+                if(!loading) return r;
+                const aContent = <View testID={testID+"_ListHeaderActivityIndicator"} style={[theme.styles.w100,theme.styles.justifyContentCenter]}>
+                    <ActivityIndicator color={theme.colors.primary}/>
+                </View>;
+                if(r){
+                    return <View testID={testID+"_ListHeaderContainer"} style={[theme.styles.w100]}>
+                        {r}
+                        {aContent}
+                    </View>
+                }
+                return aContent;
+            }}
+            handleQueryLimit = {false}
+            handlePagination = {false}
+            isLoading = {loading && !error && showProgressRef.current && true || false}
             beforeFetchData = {({fetchOptions:opts,force})=>{
                 opts.fields = fetchFields;
                 opts = getFetchOptions({showError:showProgressRef.current,...opts});
+                isInitializedRef.current = true;
                 fetchOptionsRef.current = opts;
+                if(force){
+                    pageRef.current = firstPage;
+                }
                 doRefresh(force);
                 return false;
             }}
@@ -217,6 +398,11 @@ const styles = StyleSheet.create({
     },
     labelTitle: {
         fontSize : 18,
+    },
+    limitStyle : {
+        backgroundColor:'transparent',
+        width:50,
+        height : 35,
     },
     emptyText : {
         fontSize : 16,

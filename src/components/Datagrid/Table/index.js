@@ -170,20 +170,21 @@ const DatagridFactory = (Factory)=>{
             if(selectableMultiple && max && defaultBool(this.props.selectableMultiple,true)){
                 max = max.formatNumber();
                 restItems = [
-                    {
-                        text : "Sélect "+max,
+                    ...this.renderCustomMenu(),
+                    ...(selectableMultiple ? [{
+                        label : "Sélect "+max,
                         icon : "select-all",
                         onPress : (x,event)=>{
                             this.handleAllRowsToggle(true);
                         }
                     },
                     {
-                        text : "Tout désélec",
+                        label : "Tout désélec",
                         onPress : (x,event)=>{
                             this.handleAllRowsToggle(false);
                         },
                         icon : "select"
-                    }
+                    }] : [])
                 ]
             }   
             const rPagination = showPagination ? <View style={[styles.paginationContainer]}>
@@ -192,6 +193,7 @@ const DatagridFactory = (Factory)=>{
                         <View testID={testID+"_HeaderQueryLimit"}>
                             {this.renderQueryLimit(this.state.data.length.formatNumber())}
                         </View>
+                        {this.renderCustomPagination()}
                         {!isMobile && <>
                             <Button normal style={[styles.paginationItem]} icon = {"refresh"} onPress = {this.refresh.bind(this)}>
                                 Rafraichir
@@ -214,19 +216,15 @@ const DatagridFactory = (Factory)=>{
                             >   
                                     {showFooters?'Masquer/Ligne des totaux':'Afficher/Ligne des totaux'}
                             </Button>:null}
-                            {selectableMultiple && (<>
-                                {restItems.map((item,index)=>{
-                                    return <Button 
-                                        normal
-                                        style={styles.paginationItem}
-                                        key = {index}
-                                        icon = {item.icon}
-                                        onPress = {item.onPress}                                    
-                                    >
-                                        {item.text}
-                                    </Button>
-                                })}
-                            </>)}
+                            {restItems.map((item,index)=>{
+                                return <Button 
+                                    normal
+                                    key = {index}
+                                    {...item}
+                                    style={[styles.paginationItem,item.style]}
+                                    children = {item.children|| item.label}
+                                />
+                             })}
                         </>}
                         {exportable && (
                             <>{/**
@@ -320,6 +318,7 @@ const DatagridFactory = (Factory)=>{
                 </View>
                 <Table
                     ref = {this.listRef}
+                    {...rest}
                     hasFooters = {hasFooterFields}
                     showFilters = {showFilters}
                     showFooters = {showFooters}

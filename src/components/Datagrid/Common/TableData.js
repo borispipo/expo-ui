@@ -60,7 +60,7 @@ export default class CommonTableDatagrid extends CommonDatagrid{
         la table dans la base common.
         Elle pourra éventuellement passer directement la limite et les filtres à la fonction fetchdata
     */
-    fetchData ({cb,callback,force,fetchOptions}){
+    fetchData ({cb,callback,force,fetchOptions,...rest}){
         if(!this._isMounted()) return Promise.resolve(this.state.data);
         if(this.isFetchingData) {
             if(!isPromise(this.fetchingPromiseData)){
@@ -92,7 +92,7 @@ export default class CommonTableDatagrid extends CommonDatagrid{
                     }
                 }
                 this.beforeFetchData(fetchOptions);
-                if(typeof this.props.beforeFetchData =='function' && this.props.beforeFetchData({context:this,force,fetchOptions,options:fetchOptions}) === false){
+                if(typeof this.props.beforeFetchData =='function' && this.props.beforeFetchData({...rest,context:this,force,fetchOptions,options:fetchOptions}) === false){
                     this.isFetchingData = false;
                     return resolve(this.state.data);
                 }

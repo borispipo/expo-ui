@@ -29,6 +29,43 @@ const DEFAULT_TABS_KEYS = "main-tabs";
 
 const TIMEOUT = 50;
 
+const checkPrimary = (data,f)=>{
+    return !(!(f in data) || (data[f] == null) || (!data[f] && typeof data !=='number'));
+}
+/*** vérifie si le document passé en paramètre est éditable
+ * @param {object} data la données à vérifier
+ * @param {object| array} les champs sur lesquels se baser pour vérifier si la donénes est une mise à jour
+ * @param {func} checkPrimaryKey la foncition permettant de vérifier s'il s'agit d'une clé primaire pour la données courante
+ */
+export const isDocEditing = (data,fields,checkPrimaryKey)=>{
+    if(!isObj(data) || !isObjOrArray(fields)) return false;
+    
+            let hasPrimaryFields = false;
+            let hasValidated = true;
+            for(let i in fields){
+                const field = fields[i];
+                if(typeof checkPrimaryKey =='function') {
+                    hasPrimaryFields = true;
+                    if(checkPrimaryKey({field,i,index:i,data}) === false){
+                        return false;
+                    }
+                    continue;
+                }
+                if(!isObj(field)) continue;
+                hasPrimaryFields = true;
+                const f = defaultStr(field.field,i);
+                if(field.primaryKey === true){
+                    if(!checkPrimary(data,f)){
+                        hasValidated = false;
+                    }
+                }
+            }
+            if(hasPrimaryFields){
+                return hasValidated;
+            }
+    return false;
+}
+
 export default class TableDataScreenComponent extends FormDataScreen{
     constructor(props){
         super(props);
@@ -49,7 +86,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
         Object.map(table.fields,(field,i)=>{
             if(isObj(field) && field.form !== false){
                 fields[i] = Object.clone(field);
-                if(field.primary === true){
+                if(field.primaryKey === true){
                     primaryKeyFields[field.field || i] = true;
                 }
             } else {
@@ -420,17 +457,9 @@ export default class TableDataScreenComponent extends FormDataScreen{
     isDocEditing(data){
         data = defaultObj(data);
         if(!this.isDocEditingProp){
-            let hasPrimaryFields = false;
-            let hasValidated = true;
-            Object.map(this.primaryKeyFields,(v,f)=>{
-                hasPrimaryFields = true;
-                if(!(f in data) || (data[f] == null) || (!data[f] && typeof data !=='number')){
-                    hasValidated = false;
-                }
-            });
-            if(hasPrimaryFields){
-                return hasValidated;
-            }
+            if(isDocEditing(data,this.primaryKeyFields,({index:field,data})=>{
+                return checkPrimary(data,field);
+            })) return true;
         }
         return super.isDocEditing(data);
     }

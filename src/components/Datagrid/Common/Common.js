@@ -308,6 +308,7 @@ export default class CommonDatagridComponent extends AppComponent {
         return ;
     }
     canPaginateData(){
+        if(this.props.handlePagination === false) return false;
         return false;
     }
     getFiltersProps(){
@@ -752,7 +753,41 @@ export default class CommonDatagridComponent extends AppComponent {
         }
         this.handlePagination(newStart, limit, nextPage);
     }
-
+    /*** pour le rendu personalisé de la pagination */
+    renderCustomPagination(){
+        if(typeof this.props.renderCustomPagination ==='function'){
+            const r = this.props.renderCustomPagination({
+                context:this,refresh:this.refresh.bind(this)
+            });
+            return React.isValidElement(r)? r : null;
+        }
+        return null;
+    }
+    /*** permet de faire le rendu de certaines entête personalisés 
+     * utile lorsque l'on veut par exemple afficher d'autres information au niveau de l'entête du tableau
+    */
+    renderCustomMenu(){
+        const customMenu = []
+        Object.map(this.props.customMenu,(menu,i)=>{
+            if(isObj(menu)){
+                const {onPress,menu,label,text,children,...rest} = menu;
+                const args = {context:this,refresh:this.refresh.bind(this)};
+                const lCB = defaultVal(children,label,text);
+                const labelText = typeof lCB ==='function'? lCB(args) : lCB;
+                if(labelText === false || !React.isValidElement(labelText,true)) return;
+                customMenu.push({
+                    ...rest,
+                    label : labelText,
+                    onPress : (event)=>{
+                        if(typeof onPress =='function'){
+                            return onPress({...React.getOnPressArgs(event),...args})
+                        }
+                    }
+                })
+            }
+        });
+        return customMenu;
+    }
     /*** aller à la dernière page */
     _goToLastPage(){
         let { start,limit} = this._pagination;
@@ -1320,7 +1355,7 @@ export default class CommonDatagridComponent extends AppComponent {
             this._pagination.start = 0;
         }
         this.filtersSelectors = {selector:this.getFilters()};
-        return this.fetchData({force:true,fetchOptions:this.filtersSelectors});
+        return this.fetchData({force:true,isFiltering : true,fetchOptions:this.filtersSelectors});
     }
     onSetQueryLimit(){
         if(!this.canSetQueryLimit()) return;
@@ -1334,7 +1369,7 @@ export default class CommonDatagridComponent extends AppComponent {
         this.currentDatagridQueryLimit = this.getSessionData("dataSourceQueryLimit");
         setQueryLimit(this.currentDatagridQueryLimit,(limit)=>{
             this.setSessionData("dataSourceQueryLimit",limit)
-            notify.success("Le nombre maximal d'élément a été définit à la valeur "+(limit==0?" infinit ":limit.formatNumber())+". Cette valeur sera prise en compte à la prochaine réactualisation du tableau")
+            notify.success("Le nombre maximal d'élément à récuperer par page a été définit à la valeur "+(limit==0?" infinit ":limit.formatNumber())+". Cette valeur sera prise en compte à la prochaine réactualisation du tableau")
         });
     }
     
@@ -1348,6 +1383,9 @@ export default class CommonDatagridComponent extends AppComponent {
         return 0;
     }
     canHandleQueryLimit(){
+        if(typeof this.props.handleQueryLimit ==='boolean'){
+            return this.props.handleQueryLimit;
+        }
         return true;
     }
     renderQueryLimit(content){
@@ -1357,7 +1395,7 @@ export default class CommonDatagridComponent extends AppComponent {
         let s = "";
         let canSetQ = this.canSetQueryLimit();
         if(canSetQ){
-            s = ".\nPressez pendent quelques secondes pour modifier cette valeur du nombre limite d'éléments de la liste";
+            s = ".\nPressez pendent quelques secondes pour modifier cette valeur du nombre limite d'éléments de la liste par page";
         }
         else if(isDecimal(cLImit)){
             cLImit = (" de "+cLImit.formatNumber())
@@ -1666,16 +1704,14 @@ export default class CommonDatagridComponent extends AppComponent {
              else if(_type =='select_country' || _type =='selectcountry'){
                 _render = <Flag withCode {...columnDef} length={undefined} width={undefined} height={undefined} code={defaultValue}/>
              }
-             ///le lien vers le table data se fait via une colonne de type selecttabledata ou select_tabledata ou potant l'une des propriétés foreignKeyTable ou linkToTable de type chaine de caractère non nulle
-             else if(arrayValueExists(['piece','selecttabledata','id'],_type) || isNonNullString(columnDef.linkToTable) || isNonNullString(columnDef.foreignKeyTable)){
-                let tableName = defaultStr(columnDef.linkToTable && columnDef.linkToTable,columnDef.foreignKeyTable && columnDef.foreignKeyTable,columnDef.tableName,columnDef.table).toUpperCase();
+             ///le lien vers le table data se fait via la colonne ayant la propriété foreignKeyTable de type chaine de caractère non nulle
+             else if(isNonNullString(columnDef.foreignKeyTable)){
                 const id = rowData[columnField]?.toString();
                 if(isNonNullString(id)){
                     _render = <TableLink 
-                        tableName = {tableName} 
                         id = {id}
+                        {...columnDef}
                         data = {rowData}
-                        columnDef = {columnDef}
                         columnField = {columnField}
                     >
                         {rowData[columnField]}
@@ -1950,6 +1986,14 @@ CommonDatagridComponent.propTypes = {
     /*** pour le rendu du footer, pied de page en affichage accordion */
     sessionName : PropTypes.string,
     onFetchData : PropTypes.func,
+    handleQueryLimit : PropTypes.bool, ///si le datagrid devra gérer les queryLimit
+    /**** les menus customisés à ajouter au composant Datagrid */
+    customMenu : PropTypes.oneOfType([
+        PropTypes.arrayOf(PropTypes.object),
+        PropTypes.objectOf(PropTypes.object),
+    ]),
+    /**** la fonction permettant de faire le rendu dun contenu paginé, personalisé */
+    renderCustomPagination : PropTypes.func,
     getActionsArgs : PropTypes.func,//fonction permettant de récupérer les props supplémentaires à passer aux actions du datagrid
 }
 

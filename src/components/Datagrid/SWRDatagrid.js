@@ -339,7 +339,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                     </View>
                 </View>
             }}
-            ListFooterComponent = {(props)=>{
+            /*ListFooterComponent = {(props)=>{
                 const r = typeof ListFooterComponent =='function'? ListFooterComponent(props) : null;
                 if(!loading) return r;
                 const aContent = <View testID={testID+"_ListHeaderActivityIndicator"} style={[theme.styles.w100,theme.styles.justifyContentCenter]}>
@@ -352,7 +352,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                     </View>
                 }
                 return aContent;
-            }}
+            }}*/
             handleQueryLimit = {false}
             handlePagination = {false}
             autoSort = {canSortRemotely()? false : true}

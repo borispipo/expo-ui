@@ -17,8 +17,8 @@ const DatagridRenderTypeComponent = (props)=>{
     const isDesk = isDesktopMedia();
     let type = defaultStr(get(typeKey),isDesk? "fixed":'accordion').toLowerCase().trim();
     const rTypes = [
-        {...getActiveProps(type,'accordion'),title:"Les éléments de liste s'affichent de manière optimisé pour téléphone mobile",code:'accordion',icon:accordionIcon,label:'Mobile',labelText:'environnement optimisé pour téléphone mobile'},
-        {...getActiveProps(type,'table'),title:"Les éléments de listes s'affichent dans un tableau rééel",code:'table',icon:tableIcon,label:'Tableau réel avec pagination'}
+        {...getActiveProps(type,'accordion'),tooltip:"Les éléments de liste s'affichent de manière optimisé pour téléphone mobile",code:'accordion',icon:accordionIcon,label:'Mobile',labelText:'environnement optimisé pour téléphone mobile'},
+        {...getActiveProps(type,'table'),tooltip:"Les éléments de listes s'affichent dans un tableau rééel",code:'table',icon:tableIcon,label:'Tableau réel avec pagination'}
     ]  
     Object.map(rendersTypes,(t,i)=>{
         if(isObj(t)){
@@ -37,10 +37,10 @@ const DatagridRenderTypeComponent = (props)=>{
         }
     });
     return <Menu
-        title = {"Type d'affichage du tableau"}
+        tooltip = {"Type d'affichage du tableau"}
         sheet
         items = {rTypes}
-        anchor = {(props)=><Icon {...props} name = {typeObj.icon} title={typeObj.title}/>}
+        anchor = {(props)=><Icon {...props} name = {typeObj.icon} tooltip={typeObj.tooltip}/>}
         onPressItem = {({item})=>{
             if(isObj(item) && item.code){
                 set(typeKey,item.code);

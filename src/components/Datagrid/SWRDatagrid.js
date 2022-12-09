@@ -62,6 +62,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         fetcher,
         ListFooterComponent,
         testID,
+        autoSort,
         ...rest
     } = props;
     rest = defaultObj(rest);
@@ -123,6 +124,9 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             opts.queryParams.withTotal = true;
             opts.queryParams.limit = limitRef.current;
             opts.queryParams.page = pageRef.current -1;
+            if(isObj(opts.sort)){
+                opts.queryParams.sort = opts.sort;
+            }
             const fetchCB = ({data,total})=>{
                 totalRef.current = total;
                 /***
@@ -203,6 +207,10 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             return false;
         }
         return pPage;
+    }, canSortRemotely = ()=>{
+        if(!canPagninate() || autoSort === true) return false;
+        ///si le nombre total d'élements est inférieur au nombre limite alors le trie peut être fait localement
+        return totalRef.current > limitRef.current && true || false;
     }
     React.useEffect(()=>{
         const upsert = cAction.upsert(tableName);
@@ -224,6 +232,13 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             testID = {testID}
             {...rest}
             {...defaultObj(table.datagrid)} 
+            onSort = {({sort})=>{
+                if(!canSortRemotely()) return;
+                fetchOptionsRef.current.sort = sort;
+                pageRef.current = firstPage;
+                doRefresh(true);
+                return false;
+            }}
             renderCustomPagination = {({context})=>{
                 if(!canPagninate()) return null;
                 const page = pageRef.current, totalPages = getTotalPages(), prevPage = getPrevPage(),nextPage = getNextPage();
@@ -340,6 +355,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             }}
             handleQueryLimit = {false}
             handlePagination = {false}
+            autoSort = {canSortRemotely()? false : true}
             isLoading = {loading && !error && showProgressRef.current && true || false}
             beforeFetchData = {({fetchOptions:opts,force})=>{
                 opts.fields = fetchFields;

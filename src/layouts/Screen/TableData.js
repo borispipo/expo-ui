@@ -477,7 +477,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
         if(this.cloneProp && this.cloneProp(data,this) === false) return data;
         this.showPreloader();
         delete data.approved;
-        Object.map(['_rev',...generatedColumnsProperties,'_id','code','updateBy','updatedDate','createBy','updatedHour','createdHour','createdDate'],(idx)=>{
+        Object.map(['_rev',...generatedColumnsProperties,...Object.keys(this.primaryKeyFields),'_id','code','updateBy','updatedDate','createBy','updatedHour','createdHour','createdDate'],(idx)=>{
             data[idx] = undefined;
             delete data[idx];
         });

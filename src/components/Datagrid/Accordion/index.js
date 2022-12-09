@@ -308,6 +308,7 @@ const DatagridFactory = (Factory)=>{
                 filter,
                 actions,
                 sortable,
+                autoSort,
                 exportable,
                 filterOrOperator,
                 filterAndOperator,

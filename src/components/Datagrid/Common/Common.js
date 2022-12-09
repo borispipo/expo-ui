@@ -78,7 +78,6 @@ export default class CommonDatagridComponent extends AppComponent {
         sData.fixedTable = defaultBool(sData.fixedTable,false);
         extendObj(this.state, {
             data,
-            sort :defaultObj(props.sort),
             showFilters : defaultBool(props.showFilters,(sData.showFilter? true : this.isPivotDatagrid())),
             showFooters : defaultBool(props.showFooters,(sData.showFooters? true : false)),
             fixedTable : sData.fixedTable
@@ -86,6 +85,9 @@ export default class CommonDatagridComponent extends AppComponent {
         Object.defineProperties(this,{
             layoutRef : {
                 value : React.createRef(null),
+            },
+            sortRef : {
+                value : {current : defaultObj(props.sort)}
             },
             preparedColumns : {
                 value : {},override:false, writable:false,
@@ -109,17 +111,15 @@ export default class CommonDatagridComponent extends AppComponent {
         }) 
         this.isLoading = this.isLoading.bind(this);
         this.getProgressBar = this.getProgressBar.bind(this);
-        this.state.sort.dir = defaultStr(this.state.sort.dir,this.state.sort.column == "date"?"desc":'asc')
+        this.sortRef.current.dir = defaultStr(this.sortRef.current.dir,this.sortRef.current.column == "date"?"desc":'asc')
         this.hasColumnsHalreadyInitialized = false;
         this.initColumns(props.columns);
-        if(!isNonNullString(this.state.sort.column) && "date" in this.state.columns){
-            this.state.sort.column = "date";
+        if(!isNonNullString(this.sortRef.current.column) && "date" in this.state.columns){
+            this.sortRef.current.column = "date";
         }
         this.INITIAL_STATE = {
             data,
-            sort : this.state.sort
         }
-        this._sort = this.state.sort;
         this._datagridId = isNonNullString(this.props.id)? this.props.id : uniqid("datagrid-id")
         this.canDoFilter = true;    
         this.filters =  {}
@@ -309,7 +309,7 @@ export default class CommonDatagridComponent extends AppComponent {
     }
     canPaginateData(){
         if(this.props.handlePagination === false) return false;
-        return false;
+        return this.isDatagrid();
     }
     getFiltersProps(){
         return this.props.filters;
@@ -689,11 +689,11 @@ export default class CommonDatagridComponent extends AppComponent {
         }
      */
     sort (column,dir){
-        let sort = extendObj({},{
+        const sort = extendObj({},{
             dir: '',
             column : '',
             ignoreCase : true
-        }, this.state.sort);
+        }, this.sortRef.current);
         if(isNonNullString(column)){
             sort.column = column;
         }
@@ -703,8 +703,8 @@ export default class CommonDatagridComponent extends AppComponent {
         if(isNonNullString(dir)){
             sort.dir = dir;
         } 
-        if(this.state.sort.column === sort.column){
-            switch(this.state.sort.dir){
+        if(this.sortRef.current.column === sort.column){
+            switch(this.sortRef.current.dir){
                 case 'asc':
                     sort.dir = 'desc';
                     break;
@@ -720,9 +720,12 @@ export default class CommonDatagridComponent extends AppComponent {
             sort.dir = sort.dir.trim().toLowerCase();            
         }
         if(sort.dir !== "asc" && sort.dir !== "desc") sort.dir = 'asc';
-        this._previousSortObj = this._sort;
-        this._sort = sort;
-        this.prepareColumns({sortedColumn : this._sort});
+        this._previousSortObj = Object.clone(this.sortRef.current);
+        this.sortRef.current = sort;
+        this.prepareColumns({sortedColumn : this.sortRef.current});
+        if(typeof this.props.onSort =='function' && this.props.onSort({...sort,context:this,sort,data:this.INITIAL_STATE.data,fields:this.state.columns,columns:this.state.columns}) === false){
+            return;
+        }
         this.prepareData({data:this.state.data,updateFooters:false},(state)=>{
             this.setState(state);
         });
@@ -948,7 +951,7 @@ export default class CommonDatagridComponent extends AppComponent {
        args = defaultObj(args);
        const filteredColumns = isObjOrArray(args.filteredColumns)?args.filteredColumns : isObjOrArray(this.state.filteredColumns) ? this.state.filteredColumns : {};
        const columns = args.columns || this.state.columns;
-       const currentSortedColumn = isObj(args.sortedColumn) && args.sortedColumn.column? args.sortedColumn : defaultObj(this.state.sort);
+       const currentSortedColumn = isObj(args.sortedColumn) && args.sortedColumn.column? args.sortedColumn : defaultObj(this.sortRef.current);
        const visibleColumns = [],headerFilters = [],visibleColumnsNames={};
        const sortable = defaultBool(this.props.sortable,true);
        const sortedColumns = {};
@@ -1107,7 +1110,7 @@ export default class CommonDatagridComponent extends AppComponent {
    }
    getPaginatedSelectedRows(data){
         data = isArray(data)? data : this.INITIAL_STATE.data;
-        if(JSON.stringify(this._previousSortObj) !== JSON.stringify(this._sort || JSON.stringify(this._previousPagination) !== JSON.stringify(this._pagination)) && this.getPaginatedData().length !== data.length){
+        if(JSON.stringify(this._previousSortObj) !== JSON.stringify(this.sortRef.current) || JSON.stringify(this._previousPagination) !== JSON.stringify(this._pagination) && this.getPaginatedData().length !== data.length){
             return {};
         }
         return this.selectedRows;
@@ -1142,10 +1145,10 @@ export default class CommonDatagridComponent extends AppComponent {
             });
             data = newData;
         }      
-        if(this.isDatagrid() && isNonNullString(this._sort.column)){
-            if(isObj(this.state.columns) && this.state.columns[this._sort.column]){
-                let field = this.state.columns[this._sort.column];
-                const cfg = Object.assign({},this._sort);
+        if(this.canAutoSort() && isNonNullString(this.sortRef.current.column)){
+            if(isObj(this.state.columns) && this.state.columns[this.sortRef.current.column]){
+                let field = this.state.columns[this.sortRef.current.column];
+                const cfg = Object.assign({},this.sortRef.current);
                 cfg.getItem = (item,columnName,{getItem})=>{
                     if(isObj(item) && (field.type =='decimal' || field.type =="number")){
                         const v = item[columnName];
@@ -1166,7 +1169,7 @@ export default class CommonDatagridComponent extends AppComponent {
         } else if(force){
             this.setSelectedRows();
         }
-        const state = {data,sort : this._sort};
+        const state = {data};
         if((cb)){
             cb(state);
         }
@@ -1571,8 +1574,18 @@ export default class CommonDatagridComponent extends AppComponent {
     getLinesProgressBar(){
         return CommonDatagridComponent.LinesProgressBar(this.props);
     }
+    /*** si le datagrid sera sortable */
+    isSortable(){
+        return this.isDatagrid() && this.props.sortable !== false? true : false;
+    }
+    canAutoSort(){
+        return this.isSortable() && this.props.autoSort !==false ? true : false;
+    }
     isSelectableMultiple(){
         return defaultBool(this.props.selectableMultiple,true)
+    }
+    getSort(){
+        return defaultObj(this.sortRef.current);
     }
     renderHeaderCell({columnDef,columnField}){
         if(this.isSelectableColumn(columnDef,columnField)){
@@ -1705,11 +1718,13 @@ export default class CommonDatagridComponent extends AppComponent {
                 _render = <Flag withCode {...columnDef} length={undefined} width={undefined} height={undefined} code={defaultValue}/>
              }
              ///le lien vers le table data se fait via la colonne ayant la propriété foreignKeyTable de type chaine de caractère non nulle
-             else if(isNonNullString(columnDef.foreignKeyTable)){
+             else if(isNonNullString(columnDef.foreignKeyTable) || columnDef.primaryKey === true || arrayValueExists(['id','piece'],_type)){
                 const id = rowData[columnField]?.toString();
                 if(isNonNullString(id)){
                     _render = <TableLink 
                         id = {id}
+                        foreignKeyTable = {defaultStr(columnDef.foreignKeyTable,columnDef.table,columnDef.tableName)}
+                        foreignKeyColumn = {defaultStr(columnDef.foreignKeyColumn,columnDef.field)}
                         {...columnDef}
                         data = {rowData}
                         columnField = {columnField}
@@ -1806,9 +1821,9 @@ export default class CommonDatagridComponent extends AppComponent {
              let fmat = defaultStr(columnDef.format).toLowerCase();
             if(fmat == "money"){
                 _render = _render.formatMoney();
-            } else if(fmat =="number") {
+            } else //if(fmat =="number") {
                 _render = _render.formatNumber();
-            }
+            //}
          }
          if(_render && isObj(renderProps)){
              let Component = defaultVal(renderProps.Component,Label);
@@ -1818,7 +1833,7 @@ export default class CommonDatagridComponent extends AppComponent {
          if(typeof _render =='boolean'){
             _render = _render ? "Oui" : "Non";
          }
-         if(typeof _render ==='string' || typeof _render =='decimal'){
+         if(typeof _render ==='string' || typeof _render =='number'){
              _render = <Label selectable>{_render}</Label>
          }
          _render = React.isValidElement(_render)|| Array.isArray(_render)?_render:null;

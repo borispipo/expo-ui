@@ -111,7 +111,10 @@ const DatagridFactory = (Factory)=>{
             }
         }
         render(){
-            let {title,testID,actions,selectableMultiple,sortable,exportable,
+            let {title,testID,actions,selectableMultiple,
+                sortable,
+                autoSort,
+                exportable,
                 selectable,pagin,showPagination,
                 sessionName,onMount,onUnmount,onFetchData,dataSourceSelector,dataSourceSelectorProps,queryLimit,
                 filters,
@@ -138,7 +141,6 @@ const DatagridFactory = (Factory)=>{
                 _dataSourceSelector = null;
             }
             exportable = defaultBool(exportable,true);
-            sortable = defaultVal(sortable,true);
             let isMobile = isMobileOrTabletMedia();
             selectable = defaultVal(selectable,true);
             selectableMultiple = defaultBool(selectableMultiple,true);

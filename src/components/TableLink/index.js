@@ -12,9 +12,11 @@ import {open as openPreloader,close as closePreloader} from "$preloader";
 import {styles as _styles} from "$theme";
 import Tooltip from "$ecomponents/Tooltip";
 import {navigateToTableData} from "$enavigation/utils";
+import Auth from "$cauth";
+import fetch from "$capi/fetch";
 
 const TableLinKComponent = React.forwardRef((props,ref)=>{
-    let {disabled,labelProps,server,containerProps,id,fetchForeignData,foreignKeyTable,foreignKeyColumn,data,testID,Component,routeName,routeParams,component,primary,triggerProps,onPress,children, ...rest} = props;
+    let {disabled,readOnly,labelProps,server,containerProps,perm,id,fetchForeignData,foreignKeyTable,foreignKeyColumn,data,testID,Component,routeName,routeParams,component,primary,triggerProps,onPress,children, ...rest} = props;
     testID = defaultStr(testID,"RN_TableDataLinkContainer")
     foreignKeyTable = defaultStr(foreignKeyTable).trim();
     foreignKeyColumn = defaultStr(foreignKeyColumn).trim();
@@ -23,13 +25,16 @@ const TableLinKComponent = React.forwardRef((props,ref)=>{
     labelProps = defaultObj(labelProps);
     data = defaultObj(data);
     id = defaultStr(id);
-    if(!id){
-        disabled = true;
+    if(!id || !foreignKeyTable){
+        readOnly = true;
     }
-    const pointerEvents = disabled || !id? 'none' : 'auto';
+    const pointerEvents = disabled || readOnly || !id? 'none' : 'auto';
     const onPressLink = (event)=>{
         React.stopEventPropagation(event);
-        const args = {...React.getOnPressArgs(event),...rest,foreignKeyTable,foreignKeyColumn,data,id,value:id};
+        if((isNonNullString(perm) && !Auth.isAllowedFromString(perm)) || !Auth.isTableDataAllowed({table:foreignKeyTable,action:'read'})){
+            return;
+        }
+        const args = {...React.getOnPressArgs(event),...rest,fetch,foreignKeyTable,foreignKeyColumn,data,id,value:id};
         let r = typeof onPress =='function'? onPress(args) : undefined;
         if(r === false) return;
         const cb = (a)=>{
@@ -51,10 +56,10 @@ const TableLinKComponent = React.forwardRef((props,ref)=>{
         }
     }
     rest.style = [rest.style,_styles.cursorPointer];
-    const CP = disabled ? View : TouchableOpacity;
+    const CP = disabled || readOnly ? View : TouchableOpacity;
     return <CP testID={testID} onLongPres={(e)=>React.stopEventPropagation(e)} {...containerProps} onPress={disabled? undefined : onPressLink} style={[styles.container,containerProps.style]}>
-        <Tooltip testID={testID+"_Tooltip"} {...rest} Component={Component}  onPress={disabled?undefined:onPressLink} ref={ref} pointerEvents={pointerEvents} disabled = {disabled}>
-            <Label testID={testID+"_Label"} underlined primary {...labelProps} style={[_styles.lh15,labelProps.style]} disabled={disabled}>{children}</Label>
+        <Tooltip testID={testID+"_Tooltip"} {...rest} Component={Component}  onPress={disabled || readOnly?undefined:onPressLink} ref={ref} pointerEvents={pointerEvents} readOnly={readOnly} disabled = {disabled}>
+            <Label testID={testID+"_Label"} underlined primary {...labelProps} style={[_styles.lh15,labelProps.style]} disabled={disabled} readOnly={readOnly}>{children}</Label>
         </Tooltip>
     </CP>
 });

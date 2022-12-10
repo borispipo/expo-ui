@@ -22,6 +22,7 @@ import cActions from "$cactions";
 import APP from "$capp/instance";
 import { generatedColumnsProperties } from "./utils";
 import i18n from "$i18n";
+import fetch from "$capi/fetch";
 
 
 const HIDE_PRELOADER_TIMEOUT = 300;
@@ -93,12 +94,12 @@ export default class TableDataScreenComponent extends FormDataScreen{
                 if((f.type =='id' || f.type =='piece' || f.unique === true) && f.unique !== false && f.disabled !== true && f.editable !== false && f.readOnly !== true){
                     const {onBlur} = f;
                     f.onBlur = (args)=>{
-                        args = {...f,...args,columnField:name,fieldName:name,id:args.value};
+                        args = {...f,...args,fetch,columnField:name,fieldName:name,id:args.value};
                         const {context} = args;
                         const r = typeof onBlur =='function'? onBlur (args) : undefined;
                         if(r === false) return r;
                         //on applique la validation seulement en cas de non mise à jour
-                        if(!this.isDocEditingRef.current && context && typeof context.onNoValidate =='function'){
+                        if(!this.isCurrentDocEditingUpdate() && context && typeof context.onNoValidate =='function'){
                             const cb = typeof field.fetchUniqueId =='function'? field.fetchUniqueId : typeof this.fetchUniqueId =='function'? this.fetchUniqueId : undefined;
                             if(cb){
                                 const r2 = cb(args);
@@ -152,6 +153,9 @@ export default class TableDataScreenComponent extends FormDataScreen{
         this.hidePreloader = this.hidePreloader.bind(this);
         this.showPreloader = this.showPreloader.bind(this);
     };
+    isCurrentDocEditingUpdate(){
+        return this.isDocEditingRef.current === true ? true : false;
+    }
     resetState(){
         Object.map(this.INITIAL_STATE,(s,k)=>{
             delete this.INITIAL_STATE[k];
@@ -231,7 +235,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
         const tableName = this.tableName;
         const sessionName = this.INITIAL_STATE.sessionName = defaultStr(customSessionName,"table-form-data"+tableName);
         const isUpdated = this.isDocEditing(data);
-        this.isDocEditingRef.current = isUpdated;
+        this.isDocEditingRef.current = !!isUpdated;
         const isMobOrTab = isMobileOrTabletMedia();
         let archived = this.isArchived(); 
         this.INITIAL_STATE.archived = archived;
@@ -398,7 +402,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
             }
         } else {
             mainContent = <Surface  {...contentProps} testID={testID+"_MainContentContainer"} elevation={elevation} style={[styles.container,styles.noPadding,{paddingTop:0,marginTop:0}]}>
-                <ScrollView virtualized testID={testID+"_MainContentScrollView"}>
+                <ScrollView virtualized testID={testID+"_MainContentScrollViewWithoutTab"}>
                     <View testID={testID+"_MainContent"} style={[styles.screenContent,!isMobOrTab && theme.styles.p1,header?styles.screenContentWithHeader:null]}>
                         {header}
                         {content}

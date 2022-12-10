@@ -3,7 +3,6 @@
 // license that can be found in the LICENSE file.
 import {navigate,sanitizeName} from "$cnavigation";
 import {isNonNullString,defaultObj,isObj} from "$utils";
-
 export const tableDataRouteName = 'TableData';
 
 export const navigateToTableData = function(tableName,params,actionType){
@@ -54,6 +53,9 @@ export const getTableDataListRouteName = function(tableName){
 export const navigateToTableDataList = function (tableName,params){
     const route = getTableDataListRouteName(tableName);
     if(isNonNullString(route)){
+        if(!Auth.isTableDataAllowed({table:tableName,action:'read'})){
+            return Auth.showError() 
+       }
         return navigate({routeName:route,params});
     }
     return false;

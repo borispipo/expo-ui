@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "2.16.0",
+  "version": "2.16.2",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "index.js",
   "scripts": {
@@ -39,7 +39,7 @@
     "electron-p": "npm run compile-electron-p && npm run electron",
     "update-app-version": "node ./update-app-version.js",
     "find-licenses": "node ./find-licenses.js",
-    "fix-dependencies": "expo doctor --fix-dependencies",
+    "fix-dependencies": "expo-cli doctor --fix-dependencies",
     "delete-node-modules": "rimraf ./**/node_modules",
     "modifier-url-remote-git": "git remote set-url origin 'https://borispipo@github.com/borispipo/smart-eneo.git'"
   },
@@ -61,7 +61,7 @@
     "@emotion/native": "^11.10.0",
     "@expo/html-elements": "^0.2.0",
     "@expo/vector-icons": "^13.0.0",
-    "@fto-consult/common": "^1.21.2",
+    "@fto-consult/common": "^1.21.3",
     "@gorhom/portal": "^1.0.14",
     "@react-native-async-storage/async-storage": "~1.17.3",
     "@react-native-community/datetimepicker": "6.5.2",

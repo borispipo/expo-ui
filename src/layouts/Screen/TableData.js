@@ -251,7 +251,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
                     currentField.form = false;
                 }
                 // les champs de type date par défaut qui sont requis, auront comme valeur par défaut la date actuelle s'il ne sont pas définies
-                if((type.contains('date') || type.contains('time')) && currentField.required === true && !currentField.defaultValue){
+                if(currentField.autoSetDefaultValue !== false && (type.contains('date') || type.contains('time')) && currentField.required === true && !currentField.defaultValue){
                     currentField.defaultValue = new Date();
                 }
                 generatedColumnsProperties.map((f)=>{
@@ -844,6 +844,7 @@ TableDataScreenComponent.propTypes = {
         PropTypes.node,
         PropTypes.element,
     ]),
+    autoSetDefaultValue : PropTypes.bool,//si la valeur par défaut sera définie pour les champs de types date et time
 }
 
 const styles = StyleSheet.create({

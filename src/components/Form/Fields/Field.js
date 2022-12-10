@@ -677,7 +677,7 @@ export default class Field extends AppComponent {
         return true;
     }
     onBlurField(event){
-        if(isFunction(this.props.onBlur) && this.props.onBlur({event,context:this}) === false){
+        if(isFunction(this.props.onBlur) && this.props.onBlur({event,value:this.getValue(),context:this}) === false){
             return;
         }
         if(this.isFilter()) return

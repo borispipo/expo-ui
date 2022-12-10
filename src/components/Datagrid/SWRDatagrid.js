@@ -274,7 +274,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                             style = {sStyle}
                             anchor = {(p)=>{
                                 return <Pressable style={[theme.styles.noMargin,theme.styles.noPadding]} {...p} testID={testID+"MenuSelectLimit"}>
-                                    <Label primary  testID={testID+"_Label"} style={[{fontSize:15}]}>
+                                    <Label primary testID={testID+"_Label"} fontSize={16}>
                                         {limitRef.current.formatNumber()}
                                     </Label>
                                 </Pressable>

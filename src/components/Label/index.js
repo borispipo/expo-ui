@@ -10,7 +10,7 @@ const defaultSelectable = canTextBeSelectable();
 
 export const EllipsizeMode = {'head':'head','middle':'middle', 'tail':'tail' , 'clip':'clip'}
 
-const LabelComponent = React.forwardRef(({ children,upperCase,testID,wrap,nativeID,wrapText,error,underlined,splitText,secondary,primary,bold,textBold,disabled,text,style,...rest},ref)=> {
+const LabelComponent = React.forwardRef(({ children,upperCase,fontSize,testID,wrap,nativeID,wrapText,error,underlined,splitText,secondary,primary,bold,textBold,disabled,text,style,...rest},ref)=> {
     children = defaultVal(children,text);
     let isText = false;
     if(!React.isValidElement(children) && Array.isArray(children) && children.length){
@@ -37,6 +37,7 @@ const LabelComponent = React.forwardRef(({ children,upperCase,testID,wrap,native
     if(underlined){
         r1.textDecorationLine = 'underline';
     }
+    
     style = Object.assign({},StyleSheet.flatten(style));
     testID = defaultStr(testID,"RN_LabelComponent");
     const restProps = {nativeID};
@@ -56,6 +57,9 @@ const LabelComponent = React.forwardRef(({ children,upperCase,testID,wrap,native
             if(upperCase){
                 children = children.toUpperCase();
             }
+        }
+        if(fontSize){
+            r1.fontSize = fontSize;
         }
         return (<Text allowFontScaling = {true} ref = {ref} selectable={defaultSelectable} {...rest} {...restProps} testID={testID} disabled={disabled} style={[styles.label,splitText?styles.wrap:null,splitText?styles.w100:null,bold?styles.bold:null,r2,style,r1,styles.webFontFamilly]}>{children}</Text>)
     }
@@ -91,6 +95,7 @@ LabelComponentExported.propTypes = {
     children : PropTypes.any,
     upperCase: PropTypes.bool,///si la transformation sera en majuscule
     text : PropTypes.any,
+    fontSize : PropTypes.number,
     wrap : PropTypes.bool, //si le texte sera splité vers la ligne suivantes
     wrapText : PropTypes.bool,///alias à wrap
     primary : PropTypes.bool,

@@ -2,12 +2,14 @@ import {Checkbox} from "$ecomponents/Icon";
 import React from "$react";
 import {defaultObj,isObj} from "$utils";
 import PropTypes from "prop-types";
+import theme from "$theme";
 
 const DatagridCheckboxComponent = React.forwardRef((props,ref)=>{
     const {onChange,rowKey,rowData,row,rowIndex,index,rowsRefs,...rest} = props;
     return <Checkbox
         secondaryOnCheck
-        {...defaultObj(rest)}
+        {...rest}
+        style = {[rest.style,theme.styles.alignItemsCenter]}
         ref = {(el)=>{
             React.setRef(ref,el);
             if(isObj(rowsRefs) && rowKey){

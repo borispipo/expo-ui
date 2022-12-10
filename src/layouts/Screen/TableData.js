@@ -21,6 +21,7 @@ import theme from "$theme";
 import cActions from "$cactions";
 import APP from "$capp/instance";
 import { generatedColumnsProperties } from "./utils";
+import i18n from "$i18n";
 
 
 const HIDE_PRELOADER_TIMEOUT = 300;
@@ -86,6 +87,39 @@ export default class TableDataScreenComponent extends FormDataScreen{
         Object.map(table.fields,(field,i)=>{
             if(isObj(field) && field.form !== false){
                 fields[i] = Object.clone(field);
+                const f = fields[i];
+                f.type = defaultStr(f.jsType,f.type).toLowerCase();
+                const name = f.field = defaultStr(f.field,i);
+                if((f.type =='id' || f.type =='piece' || f.unique === true) && f.unique !== false && f.disabled !== true && f.editable !== false && f.readOnly !== true){
+                    const {onBlur} = f;
+                    f.onBlur = (args)=>{
+                        args = {...f,...args,columnField:name,fieldName:name,id:args.value};
+                        const {context} = args;
+                        const r = typeof onBlur =='function'? onBlur (args) : undefined;
+                        if(r === false) return r;
+                        //on applique la validation seulement en cas de non mise à jour
+                        if(!this.isDocEditingRef.current && context && typeof context.onNoValidate =='function'){
+                            const cb = typeof field.fetchUniqueId =='function'? field.fetchUniqueId : typeof this.fetchUniqueId =='function'? this.fetchUniqueId : undefined;
+                            if(cb){
+                                const r2 = cb(args);
+                                if(isPromise(r2)){
+                                    r2.then((data)=>{
+                                        let message = data;
+                                        if(isObj(data) && Object.size(data,true)){
+                                            message = i18n.lang('validate_rule_field_must_be_unique')+ defaultStr(f.label,f.text);
+                                        }
+                                        if(isNonNullString(message)){
+                                            context.onNoValidate({...args,msg:message,message,context,validRule:context.getValidRule()});
+                                        }
+                                    }).catch((e)=>{
+
+                                    })
+                                } 
+                            }
+                        }
+                        return r;
+                    }
+                }
                 if(field.primaryKey === true){
                     primaryKeyFields[field.field || i] = true;
                 }
@@ -98,6 +132,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
             tableName : { value : defaultStr(table.table,table.tableName)},
             fields : {value : fields},
             table : {value : table},
+            isDocEditingRef : {value : {current:false}},
             validateDataBeforeSave : {value : mainProps.validateData},
             upsertDataToDB : {value : mainProps.upsertToDB},
             makePhoneCallProps : {value : mainProps.makePhoneCallProps},
@@ -105,6 +140,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
             titleProp : {value : mainProps.title},
             closeOnSaveProp : {value : mainProps.closeOnSave || mainProps.closeAfterSave },
             newActionProp : {value : mainProps.newAction},
+            fetchUniqueId : {value : mainProps.fetchUniqueId},
             //la liste des champ de type clé primaire associés à la table
             primaryKeyFields : {value : primaryKeyFields},
             cloneProp : {value : typeof mainProps.clone =='function' && mainProps.clone || undefined},
@@ -195,6 +231,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
         const tableName = this.tableName;
         const sessionName = this.INITIAL_STATE.sessionName = defaultStr(customSessionName,"table-form-data"+tableName);
         const isUpdated = this.isDocEditing(data);
+        this.isDocEditingRef.current = isUpdated;
         const isMobOrTab = isMobileOrTabletMedia();
         let archived = this.isArchived(); 
         this.INITIAL_STATE.archived = archived;
@@ -755,6 +792,8 @@ TableDataScreenComponent.propTypes = {
         table : PropTypes.string,
         fields : PropTypes.object,
     }),
+    unique : PropTypes.bool,//si la validation de type unique sur le champ sera effective
+    fetchUniqueId : PropTypes.func,//la fonction permettant de fetch un élément unique pour la validation de type uniqueID, liée aux champs de type piece et id
     validateData : PropTypes.func,// la fonction permettant de valider les données à enregistrer
     archivedPermsFilter : PropTypes.func,///le filtre des permissions archivées
     newElementLabel : PropTypes.string,//le titre du bouton nouveau pour l'ajout d'un nouvel élément

@@ -390,7 +390,8 @@ const styles = StyleSheet.create({
         flexDirection : 'row',
         width : '100%',
         justifyContent : 'flex-end',
-        alignItems : 'center'
+        alignItems : 'center',
+        paddingHorizontal : 10,
     },
     hidden : {
         display : 'none',

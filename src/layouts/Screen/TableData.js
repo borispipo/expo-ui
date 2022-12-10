@@ -113,7 +113,10 @@ export default class TableDataScreenComponent extends FormDataScreen{
                                             context.onNoValidate({...args,msg:message,message,context,validRule:context.getValidRule()});
                                         }
                                     }).catch((e)=>{
-
+                                        const message = defaultStr(e?.message,e?.msg);
+                                        if(message){
+                                            context.onNoValidate({...args,msg:message,message,error:e,context,validRule:context.getValidRule()});
+                                        }
                                     })
                                 } 
                             }

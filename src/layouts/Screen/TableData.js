@@ -228,6 +228,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
             containerProps : customContainerProps,
             formProps : customFormProps,
             newElementLabel,
+            prepareField,
             ...rest
         } = getScreenProps(props);
         const table = this.table;
@@ -241,29 +242,44 @@ export default class TableDataScreenComponent extends FormDataScreen{
         this.INITIAL_STATE.archived = archived;
         this.INITIAL_STATE.tableName = tableName;
         const fields = {};
-        Object.map(this.fields,(field,i)=>{
+        Object.map(this.fields,(field,i,counterIndex)=>{
+            let currentField = isObj(field)?Object.clone(field):field;
             if(isObj(field)){
-                fields[i] = Object.clone(field);
+                const type = currentField.type = defaultStr(currentField.jsType,currentField.type,"text").toLowerCase();
+                /**** lorsqu'un champ porte la propriété visibleOnlyOnEditing  à true alors ce champ sera disponible uniquement en cas de modification */
+                if(currentField.visibleOnlyOnEditing === true && !isUpdated){
+                    currentField.form = false;
+                }
+                // les champs de type date par défaut qui sont requis, auront comme valeur par défaut la date actuelle s'il ne sont pas définies
+                if((type.contains('date') || type.contains('time')) && currentField.required === true && !currentField.defaultValue){
+                    currentField.defaultValue = new Date();
+                }
                 generatedColumnsProperties.map((f)=>{
                     //on affiche les champs générés uniquement  en cas de mise à jour
-                    if(field[f] === true){
-                        fields[f].visible = isUpdated ? true : false;
-                        fields[i].readOnly = true;
+                    if(currentField[f] === true){
+                        currentField.visible = isUpdated ? true : false;
+                        currentField.readOnly = true;
                     }
                 });
                 if(isUpdated){
                     //la props readOnlyOnEditing permet de rendre le champ readOnly en cas de mise à jour de la tableData
-                    if((field.readOnlyOnEditing === true)){
-                        fields[i].readOnly = true;
+                    if((currentField.readOnlyOnEditing === true)){
+                        currentField.readOnly = true;
                     }
-                    if((field.disabledOnEditing === true)){
-                        fields[i].disabled = true;
+                    if((currentField.disabledOnEditing === true)){
+                        currentField.disabled = true;
                     }
                 }
                 
-            } else {
-                fields[i] = field;
             }
+            ///on effectue une mutator sur le champ en cours de modification
+            if(typeof prepareField =='function'){
+                const name = isObj(currentField) && defaultStr(currentField.field,i) || "";
+                const isPrimary = name && this.primaryKeyFields[name] && true || false;
+                const f = prepareField({field:defaultObj(currentField),isUpdate:isUpdated,name,index:i,counterIndex,isPrimary,fields,contex:this,data,datas,currentIndex,isUpdated,tableName,table});  
+                if(f === false) return;
+            }
+            fields[i] = currentField;
         })
         if(isObj(customFields)){
             extendObj(true,fields,customFields);
@@ -791,6 +807,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
 
 TableDataScreenComponent.propTypes = {
     ...defaultObj(FormData.propTypes),
+    prepareField : PropTypes.func,//La fonction permettant de faire des mutations sur le champ field à passer au formulaire form. si elle retourne false alors la field ne sera pas pris een compte
     table : PropTypes.shape({
         tableName : PropTypes.string,
         table : PropTypes.string,

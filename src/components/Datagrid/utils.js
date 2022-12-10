@@ -115,7 +115,7 @@ export const ROW_BORDER_STYLE = {
 }
 
 
-export const DATE_COLUMN_WIDTH = 180;
+export const DATE_COLUMN_WIDTH = 200;
 
 export {LINE_HEIGHT}
 

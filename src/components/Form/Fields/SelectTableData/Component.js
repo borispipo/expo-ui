@@ -23,7 +23,6 @@ const TableDataSelectField = React.forwardRef((_props,ref)=>{
     props = defaultObj(props);
     props.data = defaultObj(props.data);
     foreignKeyColumn = foreignKeyColumn.trim();
-    foreignKeyLabel = defaultStr(foreignKeyLabel).trim();
     convertFiltersToSQL = defaultVal(convertFiltersToSQL,willConvertFiltersToSQL());
     const fKeyTable = getForeignKeyTable(foreignKeyTable,props)
     if(!isObj(fKeyTable) || !(defaultStr(fKeyTable.tableName,fKeyTable.table))){
@@ -45,9 +44,10 @@ const TableDataSelectField = React.forwardRef((_props,ref)=>{
         isUpdate = false;
     }
     const defaultFields = [foreignKeyColumn];
-    if(foreignKeyLabel){
+    if(isNonNullString(foreignKeyLabel)){
+        foreignKeyLabel = foreignKeyLabel.trim();
         defaultFields.push(foreignKeyLabel);
-    }
+    } 
     if(fetchDataOpts.fields !== 'all' && (!Array.isArray(fetchDataOpts.fields) || !fetchDataOpts.fields.length)){
         fetchDataOpts.fields = defaultFields;
     }
@@ -86,7 +86,7 @@ const TableDataSelectField = React.forwardRef((_props,ref)=>{
     
     let dat = isNonNullString(foreignKeyColumnValue)? {
         [foreignKeyColumn]:foreignKeyColumnValue, 
-        ...(foreignKeyLabel ? {[foreignKeyLabel]:foreignKeyColumnValue+", introuvable dans le système"}:{})
+        ...(isNonNullString(foreignKeyLabel) ? {[foreignKeyLabel]:foreignKeyColumnValue+", introuvable dans le système"}:{})
     } : null;
     
     const context = {
@@ -158,7 +158,15 @@ const TableDataSelectField = React.forwardRef((_props,ref)=>{
     }
     const rItem = (p)=>{
         if(!isObj(p) || !isObj(p.item)) return null;
-        const itemLabel = defaultStr(foreignKeyLabel && p.item[foreignKeyLabel]), itemCode = defaultStr(p.item[foreignKeyColumn]);
+        let itemLabel = typeof foreignKeyLabel =='function'? foreignKeyLabel(p) : undefined;
+        if(isNonNullString(foreignKeyLabel)){
+            itemLabel = defaultStr(p.item[foreignKeyLabel] !== undefined && p.item[foreignKeyLabel] !== null && p.item[foreignKeyLabel].toString(), p.item[foreignKeyColumn] !== undefined && p.item[foreignKeyColumn] !== null && p.item[foreignKeyColumn].toString());
+        }
+        const itemCode = p.item[foreignKeyColumn] !== undefined && p.item[foreignKeyColumn] !== null && p.item[foreignKeyColumn].toString() || undefined;
+        if(!isNonNullString(itemLabel)){
+            itemLabel = "";
+        }
+        if(!itemLabel) return itemCode;
         return (itemLabel !== itemCode ? ((isNonNullString(itemCode)?("["+itemCode+"] "):"")+itemLabel):itemLabel);
     }
     const dialogProps = defaultObj(props.dialogProps);
@@ -212,7 +220,10 @@ TableDataSelectField.propTypes = {
     fetchItems : PropTypes.func,//la fonction de rappel à utiliser pour faire une requête fetch permettant de selectionner les données à distance
     beforeFetchItems : PropTypes.func, //appelée immédiatement avant l'exécution de la requête fetch
     foreignKeyColumn : PropTypes.string.isRequired,//le nom de la clé étrangère à laquelle fait référence la colone dans la fKeyTable
-    foreignKeyLabel : PropTypes.string,
+    foreignKeyLabel : PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.func, //s'il s'agit d'une fonciton qui sera appelée
+    ]),
     getForeignKeyTable : PropTypes.func.isRequired, //la fonction permettant de récupérer la fKeyTable data dont fait référence le champ
     foreignKeyTable : PropTypes.string, //le nom de la fKeyTable data à laquelle se reporte le champ
     onFetchItems : PropTypes.func,

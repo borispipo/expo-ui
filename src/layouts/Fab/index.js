@@ -1,46 +1,76 @@
 import Fab from "$ecomponents/Fab";
 import { StyleSheet } from "react-native";
-import actions from "./actions";
-import {isObjOrArray} from "$utils";
-import {removeFabRef,createFabRef} from "./utils";
-import PropTypes from "prop-types";
+import {isObjOrArray,isObj,defaultStr,defaultObj} from "$utils";
 import APP from "$capp";
 import React from "$react";
-import {sanitizeName} from "$escreens/utils";
+import {navigateToTableData} from "$enavigation/utils";
+import PropTypes from "prop-types";
+import theme from "$theme";
+import {isLoggedIn as isAuthLoggedIn} from "$cauth/utils/session";
 
 export * from "./utils";
 
-const FABContainer = React.forwardRef((props,ref)=>{
-  const {state,actions:customActions,screenName,...rest} = props;
-  const sScreenName = sanitizeName(screenName);
-  ref = ref || createFabRef(screenName);
+const FabLayoutComponent = React.forwardRef(({style,screenName,tables,...props},ref)=>{
+  const [isLoggedIn,setIsLoggedIn] = React.useState(isAuthLoggedIn());
+  const isMounted = React.useIsMounted();
+  const actions = React.useCallback(()=>{
+      if(!isLoggedIn) return null;
+      const a = [];
+      Object.map(tables,(table,i,index)=>{
+          if(!isObj(table) || table.showInFab === false) return;
+          const icon  = defaultStr(table.addIcon,"material-add");
+          const text = defaultStr(table.text,table.label);
+          const addText = defaultStr(table.newElementLabel,"Nouveau");
+          const tableName = defaultStr(table.table,table.tableName);
+          let auth = true;
+          if(typeof Auth !=='undefined' && Auth && Auth.isTableDataAllowed){
+             auth = Auth.isTableDataAllowed({table:tableName,action:'create'});
+          }
+          if(!table || !icon || !text || !auth) return;
+          let fabProps = typeof table.getFabProps ==='function'? table.getFabProps({tableName}) : defaultObj(table.fabProps);;
+          if(fabProps === false) return;
+          fabProps = defaultObj(fabProps);
+          const cSuffix = theme.Colors.getSuffix(index);
+          const color = theme.Colors.isValid(fabProps.color)? fabProps.color : theme.Colors.getContrast(cSuffix);
+          const backgroundColor = theme.Colors.isValid(fabProps.backgroundColor)?fabProps.backgroundColor : cSuffix;
+          const label = defaultStr(fabProps.label,fabProps.text,"{0} | {1}".sprintf(addText,text));
+          a.push({
+              icon,
+              label,
+              tooltip:label,
+              ...fabProps,
+              color,
+              backgroundColor,
+              onPress : (e)=>{
+                  if(fabProps.onPress && fabProps.onPress({...React.getOnPressArgs(e),table,tableName,navigateToTableData,navigate:navigateToTableData}) === false) return;
+                  navigateToTableData({tableName});
+              }   
+          })
+      })
+      return a.length ? a : null;
+  },[isLoggedIn])();
   React.useEffect(()=>{
-    const onFocusFab = ({sanitizedName})=>{
-        const isFocused = sanitizedName === sScreenName;
-        if(isFocused && ref.current && ref.current.show){
-            ref.current.show();
-        }
-    }, onBlurFab = ({sanitizedName})=>{
-      const isBlured = sanitizedName == sScreenName;
-      if(isBlured && ref.current && ref.current.hide){
-        ref.current.hide();
+      const onLogin = ()=>{
+          if(!isMounted())return;
+          setIsLoggedIn(true);
+      },onLogout = ()=>{
+          if(!isMounted()) return;
+          setIsLoggedIn(false);
       }
-    }
-    APP.on(APP.EVENTS.SCREEN_FOCUS,onFocusFab);
-    APP.on(APP.EVENTS.SCREEN_BLUR,onBlurFab);
-    return ()=>{
-      APP.off(APP.EVENTS.SCREEN_FOCUS,onFocusFab);
-      APP.off(APP.EVENTS.SCREEN_BLUR,onBlurFab);
-      removeFabRef(screenName);
-    }
+      APP.on(APP.EVENTS.AUTH_LOGIN_USER,onLogin);
+      APP.on(APP.EVENTS.AUTH_LOGOUT_USER,onLogout);
+      return ()=>{
+          APP.off(APP.EVENTS.AUTH_LOGIN_USER,onLogin);
+          APP.off(APP.EVENTS.AUTH_LOGOUT_USER,onLogout);
+      }
   },[])
-  return <Fab.Group
-        {...rest}
+  return actions ? <Fab.Group
+        {...props}
         screenName = {screenName}
         ref = {ref}
-        style={styles.fab}
-        actions = {isObjOrArray(customActions) && Object.size(customActions,true)?customActions : actions()}
-    />
+        style={[styles.fab,style]}
+        actions = {actions}
+    /> : null;
 });
 const styles = StyleSheet.create({
     fab: {
@@ -51,9 +81,14 @@ const styles = StyleSheet.create({
     },
   })
 
-  export default FABContainer;
+  export default FabLayoutComponent;
 
-  FABContainer.propTypes = {
-     screenName : PropTypes.string,
+  FabLayoutComponent.displayName = "FabLayoutComponent";
+
+  FabLayoutComponent.propTypes = {
+    tables : PropTypes.oneOfType([
+        PropTypes.objectOf(PropTypes.object),
+        PropTypes.arrayOf(PropTypes.object)
+    ]).isRequired,
+    screenName : PropTypes.string,
   }
-  FABContainer.displayName = "FABContainer";

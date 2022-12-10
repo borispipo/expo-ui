@@ -3,7 +3,7 @@ import KeyboardEventHandler from "../KeyboardEventHandler";
 const {getActions,getFormFields,Forms} = require("../utils")
 import TextField,{parseDecimal} from "$ecomponents/TextField";
 import Icon from "$ecomponents/Icon";
-import {extendObj,isBool,isUndefined,uniqid,defaultObj,isObj,defaultFunc,isFunction,isNumber,arrayValueExists,defaultVal,defaultStr,isNonNullString,defaultBool,defaultDecimal} from "$utils";
+import {extendObj,isBool,isUndefined,uniqid,isValidDataFileName,defaultObj,isObj,defaultFunc,isFunction,isNumber,arrayValueExists,defaultVal,defaultStr,isNonNullString,defaultBool,defaultDecimal} from "$utils";
 import {Component as AppComponent} from "$react";
 import {observable,addObserver} from "$observable";
 import {Validator} from "$validator";
@@ -47,8 +47,11 @@ export default class Field extends AppComponent {
             render_filter,
             maxLength,
             validParams,
+            jsType,
+            type,
         } = props;
         Object.defineProperties(this,{
+            type : {value : defaultStr(jsType,type,"text").trim().toLowerCase()},
             __disabledSymbol : {value : Symbol('_disabled'),override:false,writable:false},
             __isDisabledSymbol : { value : Symbol('_isDisabled'),override:false,writable:false},
             __isReadOnlySymbol : { value : Symbol('_isReadOnly'),override:false,writable:false},
@@ -89,7 +92,7 @@ export default class Field extends AppComponent {
             },
             /** si la valeur valide à retourner par le field est de type decimal */
             canValueBeDecimal : {
-                value : this.isTextField() && arrayValueExists(['number','decimal'],this.props.type)
+                value : this.isTextField() && arrayValueExists(['number','decimal'],this.type)
                 ,override : false, writable : false
             },
             wrapperRef : {
@@ -240,6 +243,12 @@ export default class Field extends AppComponent {
         });
     }
     onValidatorValid(args){
+        if(!this.isFilter() && ((this.props.allowWhiteSpaces === false) || ((this.type ==='id' || this.type =='piece') && this.props.allowWhiteSpaces !== true))){
+            const value = isNonNullString(args.value) && args.value.replaceAll("/","").replaceAll("\\",'') || undefined;
+            if(value && (value.contains(" ") || !isValidDataFileName(value))){
+                return "Veuillez renseigner une valeur ne contenant pas d'espace ou de caractère accentués";
+            }
+        }
         if(isFunction(this.props.onValidatorValid)){
             return this.props.onValidatorValid(args);
         }
@@ -321,7 +330,7 @@ export default class Field extends AppComponent {
      * sont pas par défaut définies comme champ de formulaire
     */
     parseDecimal(v){
-        return parseDecimal(v,defaultStr(this.props.type,this.type));
+        return parseDecimal(v,this.type);
     }
     getInvalidValue(){
         return this.state.invalidValue;
@@ -876,7 +885,7 @@ export default class Field extends AppComponent {
         delete rest.archivable;
 
         this.___formattedField = undefined;
-        let _type = this.type = defaultStr(jsType,this.props.type,this.type,"text").trim().toLowerCase();
+        let _type = this.type;
         format = defaultStr(format).toLowerCase().trim();
         tooltip = defaultVal(tooltip,title);
 
@@ -1063,6 +1072,10 @@ Field.propTypes = {
         elle doit toujours être définie dans la classe qui hérite directement au composant Field
     */
     /////getFieldInstance : PropTypes.func.IsRequired,
+    /***allowWhiteSpace, si le champ aceeptera les espaces où les caractères accentuées 
+     * lorsque allowWhiteSpace === false alors on vérifiera si le champ n'admet pas des caractères accentuées
+    */
+    allowWhiteSpaces : PropTypes.bool,
 }
 
 const styles = StyleSheet.create({

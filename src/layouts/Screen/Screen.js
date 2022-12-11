@@ -4,10 +4,14 @@
 
 import Container from "$cauth/Container";
 import ScreenWithOrWithoutAuthContainer from "./ScreenWithOrWithoutAuthContainer";
+import ProfilAvatar from "$elayouts/ProfilAvatar";
 
 export default function MainScreenComponent(props){
     return <ScreenWithOrWithoutAuthContainer
       {...props}
+      renderProfilAvatar = {(props)=>{
+          return <ProfilAvatar withLabel = {false}  {...props} />
+      }}
       renderChildren = {({containerProps,children})=>{
           return <Container {...containerProps}>
             {children}

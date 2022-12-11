@@ -1,17 +1,24 @@
 import Drawer,{DrawerItems} from "$ecomponents/Drawer";
-import ProfilAvatar from "./ProfilAvatar";
+import ProfilAvatar from "$elayouts/ProfilAvatar";
 import React from "$react";
 import items,{isItemActive,refresh as refreshItems} from "./items";
 import APP from "$capp/instance";
 import Auth from "$cauth";
 import Login from "$eauth/Login";
 import {navigate} from "$cnavigation";
+import theme from "$theme";
+import Label from "$ecomponents/Label";
+import Logo  from "$ecomponents/Logo";
 
 const DrawerNavigator = React.forwardRef(({content,children,state,...props},ref)=>{
     const drawerRef = React.useRef(null);
     const mergedRefs = React.useMergeRefs(drawerRef,ref);
     const headerCB = ({isMinimized})=>{
-        return isMinimized ? null : <ProfilAvatar ref={uProfileRef} drawerRef={drawerRef}/>;
+        if(isMinimized) return null;
+        if(!theme.showAvatarProfileOnDrawer){
+            return <Logo height = {70} withImage = {false} style={[theme.styles.justifyContentFlexStart,{maxWidth:220,overflow:'hidden'}]}/>
+        }
+        return <ProfilAvatar ref={uProfileRef} drawerRef={drawerRef}/>;
     };
     const isAuthLoggedIn = Auth.isLoggedIn();
     const [isLoggedIn,setIsLoggedIn] = React.useState(isAuthLoggedIn);

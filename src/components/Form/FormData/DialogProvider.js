@@ -79,7 +79,9 @@ const FormDataDialogProvider = React.forwardRef((props,innerRef)=>{
         dialogProps = {dialogProps}
         controlled={false} 
         onDismiss = {(e)=>{
-            setState({...state,visible:false});
+            if(state.visible){
+                setState({...state,visible:false});
+            }
             if(typeof state.onDismiss =='function'){
                 state.onDismiss({context,state});
             } else if(onDismiss){

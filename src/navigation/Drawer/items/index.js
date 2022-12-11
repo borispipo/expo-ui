@@ -9,9 +9,10 @@ import APP from "$capp";
 ///les items du drawer
 import items from "$drawerItems";
 import { screenName as aboutScreenName} from "$escreens/Help/About";
+import theme from "$theme";
 
 export const getItems = (force)=>{
-    const name = APP.getName();
+    const name = !theme.showAvatarProfileOnDrawer ? 'Dashboard' : APP.getName();
     const itx = typeof items === "function" ? items() : items;
     const handleHelp =  appConfig.get("handleHelpScreen") !== false ? true : false;
     const r = [

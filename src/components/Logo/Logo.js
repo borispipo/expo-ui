@@ -4,16 +4,18 @@ import View from "$ecomponents/View";
 import React from "$react";
 import theme,{remToPixel,Colors,flattenStyle} from '$theme';
 import {StyleSheet} from "react-native";
-import {defaultStr} from "$utils";
+import {defaultStr,defaultObj,defaultNumber} from "$utils";
 import LogoComponent from "$logoComponent";
 
 export const height = 150;
 export const width = undefined;//300;
-export default class Logo extends Component {
-    render(props){
-        let {icon,color,style,testID,logo,text} = this.props;
+export default function Logo (props) {
+    let {icon,color,style,testID,containerProps,smallStyle,largeStyle,mediumStyle,height:customHeight,withImage,withText} = props;
         testID = defaultStr(testID,"RN_LogoComponent");
-        const styles = getStyle(style,color);
+        containerProps = defaultObj(containerProps);
+        customHeight  =defaultNumber(customHeight,height);
+        const hasHeight = customHeight && customHeight != height? true : false;
+        const styles = getStyle({style,color,height:hasHeight?customHeight:undefined,smallStyle,largeStyle,mediumStyle});
         let logoImage = null,img,txt=null,hasTwice = false;
         if(LogoComponent){
             hasTwice = React.isComponent(LogoComponent.Image) && React.isComponent(LogoComponent.Text);
@@ -23,26 +25,30 @@ export default class Logo extends Component {
                 img = icon !== false ? <View testID={testID+"_ContentContainer"} style={styles.logoImage}>
                     <LogoComponent.Image styles={styles}/>
                 </View> : null;
-                txt = text !== false ? <LogoComponent.Text style={styles.logoContent} styles={styles}/> : null;
+                txt = withText !== false && React.isComponent(LogoComponent.Text) ? <LogoComponent.Text style={styles.logoContent} styles={styles}/> : null;
             }
         }
-        return <View testID={testID} style={styles.container}> 
-            {hasTwice ? img : null}
+        return <View testID={testID} style={[styles.container,hasHeight && {height:customHeight}]}> 
+            {hasTwice && withImage !== false ? img : null}
             {hasTwice? txt : null}
             {!hasTwice ? logoImage : null}
         </View>
-    }
-    
-}
+}   
 
-const getStyle = (style,color)=>{
-    const cColor = flattenStyle([{color:Colors.isValid(color)? color : theme.colors.primary}]);
+const getStyle = ({style,color,height:customHeight,smallStyle,mediumStyle,largeStyle})=>{
+    const cColor = flattenStyle([{color:Colors.isValid(color)? color : theme.colors.primaryOnSurface}]);
+    let size = 5;
+    if(typeof customHeight =='number' && customHeight <= customHeight){
+        const divider = Math.min(size,Math.max(Math.ceil(height/customHeight),2));
+        size = divider <= 2 ? 2 : divider;
+    }
+    let smallSize = size/2, medium = (3/4)*size;
     return  {
         ...styles,
-        container : flattenStyle([styles.container,cColor,style]),
-        firstText : flattenStyle([styles.medium,cColor]),
-        large : flattenStyle([styles.medium,styles.large,cColor]),
-        small : flattenStyle([styles.medium,cColor,styles.small]),
+        container : flattenStyle([styles.container,style]),
+        large : flattenStyle([styles.large,styles.large,{color:theme.colors.secondaryOnSurface,fontSize:remToPixel(size)},largeStyle]),
+        medium : flattenStyle([styles.medium,cColor,{fontSize:remToPixel(medium)},mediumStyle]),
+        small : flattenStyle([styles.small,cColor,styles.small,{fontSize:remToPixel(smallSize)},smallStyle]),
     };
 }
 
@@ -89,3 +95,4 @@ const styles = StyleSheet.create({
 
 Logo.height = height;
 Logo.width = width;
+Logo.displayName = "ExpoLogoComponent";

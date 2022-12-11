@@ -51,12 +51,17 @@ export default function MainScreenScreenWithOrWithoutAuthContainer(props) {
     screenName,
     containerProps,
     testID,
+    profilAvatarProps,
+    profilAvatarContainerProps,
     renderChildren,
+    renderProfilAvatar,
     ...rest
   } = getScreenProps(props);
   const insets = useSafeAreaInsets();
   testID = defaultStr(testID,"RN_MainScreenScreenWithOrWithoutAuthContainer")
   containerProps = defaultObj(containerProps);
+  profilAvatarContainerProps = defaultObj(profilAvatarContainerProps);
+  profilAvatarProps = defaultObj(profilAvatarProps);
   const backgroundColor = theme.colors.background;
   const containerStyle = [
     styles.container,
@@ -83,6 +88,7 @@ export default function MainScreenScreenWithOrWithoutAuthContainer(props) {
   if(authRequired === false){
     withFab = false;
   }
+  const withProfilAvatarOnAppBar = withDrawer && !theme.showAvatarProfileOnDrawer ? true : false;
   React.useEffect(() => {
     if((title||subtitle) && navigation && navigation.setOptions){
       const appName = APP.getName().toUpperCase();
@@ -107,11 +113,22 @@ export default function MainScreenScreenWithOrWithoutAuthContainer(props) {
       {...fabProps}
       screenName={screenName}
   />  : null;
+  const profilAvatar = typeof renderProfilAvatar =='function'? renderProfilAvatar(profilAvatarProps) : null;
   const child = <>
       {withStatusBar !== false ? <StatusBar/> : null}
       <ErrorBoundary testID={testID+"_ScreenLayoutErrorBoundary"}>
         <View testID={testID} {...containerProps}  style={[styles.container,{backgroundColor},modal && styles.modal]}>
-          {appBar === false ? null : React.isValidElement(appBar)? state.AppBar :  <AppBar testID={testID+'_AppBar'} {...appBarProps} backAction = {defaultVal(appBarProps.backAction,backAction)} elevation={defaultNumber(appBarProps.elevation,elevation)} withDrawer={withDrawer} options={options} ref={appBarRef} title={title} subtitle={subtitle}/>}
+          {appBar === false ? null : React.isValidElement(appBar)? state.AppBar :  <AppBar 
+              testID={testID+'_AppBar'} {...appBarProps} 
+              backAction = {defaultVal(appBarProps.backAction,backAction)} 
+              elevation={defaultNumber(appBarProps.elevation,elevation)} 
+              withDrawer={withDrawer} options={options} 
+              ref={appBarRef} title={title} 
+              subtitle={subtitle}
+              right = {withProfilAvatarOnAppBar && <View testID={testID+"_ProfilAvatar_Container"}  {...profilAvatarContainerProps} style={[profilAvatarContainerProps.style,styles.profilAvatarContainer]} >
+                {React.isValidElement(profilAvatar) && profilAvatar || null}
+            </View> || null}
+          />}
           {withScrollView !== false ? (
             <ScrollView
               testID = {testID+'_ScreenContentScrollView'}

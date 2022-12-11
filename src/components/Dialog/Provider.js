@@ -46,19 +46,23 @@ const Provider = React.forwardRef((props,innerRef)=>{
     const [state,setState] = React.useState({
         visible : defaultBool(props.visible,false),
     });
-    const [context] = React.useState({
+    const context = {
         open : (props)=>{
+            if(state.visible) return;
             let bfOpen = typeof state.beforeOpen == 'function'? state.beforeOpen : typeof beforeOpen =='function'? beforeOpen : x=>true;
             if(bfOpen(state) === false) return;
             return setState({onDismiss:undefined,...defaultObj(props),visible:true})
         },
         close : (props)=>{
-            return setState({...state,...props,visible:false});
+            if(!state.visible) return;
+           return setState({...state,...props,visible:false});
         },
-    });
+    };
     React.setRef(ref,context);        
     return <Dialog {...props} {...state} controlled onDismiss = {(e)=>{
-        setState({...state,visible:false});
+        if(state.visible){
+            setState({...state,visible:false});
+        }
         if(typeof state.onDismiss =='function'){
             state.onDismiss({context,state});
         } else if(onDismiss){

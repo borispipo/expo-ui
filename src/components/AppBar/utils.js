@@ -14,7 +14,7 @@ export const ACTION_ICON_SIZE = 30;
 export const TITLE_FONT_SIZE = 16;
 
 export const getMaxActions = (windowWidth) => {
-    let iWidth = typeof windowWidth =='number' && windowWidth > 200 ? windowWidth : getWindowSizes().width;
+    let iWidth = typeof windowWidth =='number' && windowWidth > 200 ? windowWidth : getWindowSizes().width - 100;
     return iWidth >= 3000 ? 8 : iWidth >= 2500? 7 : iWidth >= 2000 ? 6 : iWidth >= 1600 ? 5 : iWidth >= 1300 ? 4 : iWidth >= 800 ? 2 : iWidth >= 600 ? 1 : 0
 }
 

@@ -8,7 +8,7 @@ import {SignIn2SignOut} from "$cauth";
 import React from "$react";
 import avatarProps from "$eauth/avatarProps";
 
-export const screenName = "UserProfile";
+import {screenName} from "./utils";
 
 export default function UserProfileScreen(prs){
     const props = getScreenProps(prs);

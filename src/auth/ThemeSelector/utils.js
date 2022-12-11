@@ -33,6 +33,13 @@ export const fields = {
             }
         }
     },
+    profilAvatarPosition : {
+        type : 'switch',
+        checkedValue : "drawer",
+        uncheckedValue : "appBar",
+        label : "Profil affiché sur le drawer",
+        checkedTooltip : "Votre profil avatar sera affiché sur la barre de navigation latéralle de l'application"
+    },
     textFieldMode : {
         type : 'select',
         items : {...modesObject,none:{code:'',label:'Dynamique'}},

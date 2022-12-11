@@ -7,7 +7,7 @@ import theme,{Colors,flattenStyle} from "$theme";
 import {StyleSheet} from "react-native";
 import {goBack as navGoBack,useNavigation,useRoute,useScreenOptions } from "$cnavigation";
 import PropTypes from "prop-types";
-import { Dimensions,TouchableWithoutFeedback} from "react-native";
+import { Dimensions,View,TouchableWithoutFeedback} from "react-native";
 import Content from "./Content";
 import Icon from "$ecomponents/Icon";
 import {Elevations} from "$ecomponents/Surface";
@@ -35,6 +35,7 @@ const AppBarComponent = React.forwardRef((props,ref)=> {
       onUnmount,drawerType,options,allowDrawer,back,menuProps,appBarType, 
       drawerRef,beforeGoBack,title,subtitle,titleProps,backAction,backActionProps,
       subtitleProps,testID,
+      right,
       onBackActionPress : customOnBackActionPress,actions,backActionRef,route,
       ...appBarProps} = props;
     const customOptions = options;
@@ -99,6 +100,7 @@ const AppBarComponent = React.forwardRef((props,ref)=> {
     context.forceUpdate = ()=>{
       return setLayout({...Dimensions.get("window")});
     }
+    const rightContent = typeof right =='function' ? right ({drawerRef,context,isMobile:Dimensions.isMobileMedia(),isDesktop:Dimensions.isDesktopMedia(),isTablet:Dimensions.isTabletMedia(),isPhone:Dimensions.isPhoneMedia(),dimensions,...dimensions}): right;
     const splitedActions = isSplitedActions(actions)? actions:  splitActions({...appBarProps,windowWidth:layout.width,canGoBack:back || options.back?true:false,isAppBarAction:true,onBackActionPress,goBack,route,navigation,actions});
     const onPageResize = bindResizeEvent !== false ? (e)=>{
           if(!e || !e.nativeEvent || !e.nativeEvent.layout) return null;
@@ -128,6 +130,7 @@ const AppBarComponent = React.forwardRef((props,ref)=> {
             color : anchorStyle.color,
            }
         })}
+        {React.isValidElement(rightContent) && rightContent || right}
       </Appbar.Header>
     );
 });
@@ -144,7 +147,7 @@ const styles = StyleSheet.create({
   header : {
     paddingHorizontal : 5,
     paddingRight : 10,
-  }
+  },
 })
 
 AppBarComponent.GO_BACK_EVENT = GO_BACK_EVENT;

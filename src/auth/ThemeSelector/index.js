@@ -51,6 +51,7 @@ export const getThemeFieldProps = (props,ref)=>{
         const title = data && data.name ? ("Modifier ["+data.name+"]") : ('Nouv theme['+user.code+"]");
         const isEditing = isDocEditing(data);
         fields.textFieldMode.defaultValue = theme.textFieldMode;
+        fields.profilAvatarPosition.defaultValue = theme.profilAvatarPosition;
         Provider.open({
             cancelButton : true,
             dialogProps : {
@@ -81,7 +82,8 @@ export const getThemeFieldProps = (props,ref)=>{
                     }
                     data.custom = true;
                     customThemes[data.name] = data;
-                    itemsRef.current = user.customThemes = customThemes;
+                    itemsRef.current = {...customThemes,...getColors()};
+                    user.customThemes = customThemes;
                     open((isEditing?"Modification ":"Enregistrement ")+"du thème...");
                     Auth.upsertUser(user,false).then(()=>{
                         if(Auth.getLoggedUserCode() == user.code){

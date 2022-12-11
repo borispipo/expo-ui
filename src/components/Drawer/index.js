@@ -220,7 +220,7 @@ const DrawerComponent = React.forwardRef((props,ref)=>{
 
     const getDrawerRef = x=> drawerRef;
     ///lorsque le drawer est en mode permanent, l'icone par défaut est l'icon devant le dépingler du mode permanent
-    const backIcon = isLeftPosition ? "arrow-left" : "arrow-right";
+    const backIcon = "window-close";//isLeftPosition ? "arrow-left" : "arrow-right";
     const chevronIcon = isLeftPosition ? "chevron-left":"chevron-right";
     temporaryToggleIcon = React.isValidElement(temporaryToggleIcon)? temporaryToggleIcon : backIcon;
     permanentToggleIcon = React.isValidElement(permanentToggleIcon)? permanentToggleIcon : chevronIcon;

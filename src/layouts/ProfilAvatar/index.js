@@ -48,7 +48,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,chevronIconProps
     const tooltip = "Pressez longtemps pour définir un identifiant unique pour l'appareil";
     const children = <View style={[styles.labelContainer,!withLabel && theme.styles.justifyContentCenter]}>
         <Label splitText numberOfLines={1} style={{color:theme.colors.primaryOnSurface,fontSize:15}}>{pseudo}</Label>
-        <Label splitText numberOfLines={1} style={{fontSize:12,color:theme.colors.secondaryOnSurface,marginTop:6}}>
+        <Label splitText numberOfLines={1} style={[{fontSize:12,color:theme.colors.secondaryOnSurface,marginTop:6},!withLabel && {textAlign:'center'}]}>
             {label}
         </Label>
         {deviceName && <Label.withRef textBold splitText title={"Identifiant unique de l'application, installé sur cet appareil"} ref={deviceNameRef} secondary style={{fontSize:10}}>

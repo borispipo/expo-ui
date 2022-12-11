@@ -6,6 +6,7 @@ import stableHash from 'stable-hash';
 import Chart from "./appexChart";
 
 /**** le composant Chart s'appuie sur le composant appexChart : https://apexcharts.com/ 
+ * pour le formattage des date, voir : https://apexcharts.com/docs/datetime/
  * les props requis duduit composant sont : 
  *  type {string}, le type de chart
  *  series {array} - //les series appexchart 

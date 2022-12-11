@@ -8,6 +8,7 @@ import PropTypes from "prop-types";
 import React,{ createContext} from "$react";
 import {isIos} from "$cplatform";
 import theme,{Colors} from "$theme";
+import Dimensions from "$dimensions";
 
 export const PRELOADERS = {};
 
@@ -85,6 +86,8 @@ const PreloaderComponent = React.forwardRef((props,ref)=>{
             unsubscribe(preloaderId);
         }
     },[]);
+    const {width} = Dimensions.get("window");
+    const maxWidth  = Dimensions.isMobileMedia() ? (90*width)/100 : Dimensions.isTabletMedia()? Math.max((70*width/100),350) : 500
     return <Dialog 
                 animate = {false}
                 overlayProps = {{elevation:5}}
@@ -98,9 +101,9 @@ const PreloaderComponent = React.forwardRef((props,ref)=>{
                 ref = {context.dialogRef}
                 isPreloader
             >
-            <View style={[styles.container]}>
+            <View style={[styles.container,{maxWidth}]}>
                 {!right ? <ActivityIndicator {...indicatorProps}/>:null}
-                {content ? <Label {...contentProps} style={[styles.text,contentProps.style]}>{content}</Label> : null}
+                {content ? <Label numberOfLines={10} {...contentProps} style={[styles.text,contentProps.style]}>{content}</Label> : null}
                 {right ? <ActivityIndicator {...indicatorProps}/> : null}
             </View>    
         </Dialog>

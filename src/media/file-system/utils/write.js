@@ -6,6 +6,7 @@ const FileSaver = require('file-saver');
 const mime = require('mime-types')
 const XLSX = require("xlsx");
 import Preloader from "$preloader";
+import Base64 from "$base64";
 
 /**** sauvegarde un fichier sur le disque 
      *  @param {object} {
@@ -28,7 +29,7 @@ import Preloader from "$preloader";
             reject({status:false,msg:'Nom de fichier invalide'});
             return;
         }
-        content = isBlob(content)? content : new Blob(content,contentType);
+        content = isBlob(content)? content : new Blob([content], { type: content?.type||contentType})
         try {
             FileSaver.saveAs(content, fileName);
             setTimeout(() => {
@@ -42,6 +43,12 @@ import Preloader from "$preloader";
 
 export const writeText = (args)=>{
     return write({...args,contentType:mime.contentType(".txt")});
+}
+function s2ab(s) {
+  var buf = new ArrayBuffer(s.length);
+  var view = new Uint8Array(buf);
+  for (var i=0; i!=s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+  return buf;
 }
 /***
  * @see https://ourtechroom.com/tech/mime-type-for-excel/ for excel mimesTypes
@@ -66,3 +73,25 @@ export const writeExcel = ({workbook,content,contentType,fileName,...rest})=>{
         Preloader.close();
     },1000);
 }
+/*** @see : https://stackoverflow.com/questions/34993292/how-to-save-xlsx-data-to-file-as-a-blob */
+function base64toBlob(base64Data, contentType) {
+    contentType = contentType || '';
+    let sliceSize = 1024;
+    let byteCharacters = atob(base64Data);
+    let bytesLength = byteCharacters.length;
+    let slicesCount = Math.ceil(bytesLength / sliceSize);
+    let byteArrays = new Array(slicesCount);
+    for (let sliceIndex = 0; sliceIndex < slicesCount; ++sliceIndex) {
+        let begin = sliceIndex * sliceSize;
+        let end = Math.min(begin + sliceSize, bytesLength);
+
+        let bytes = new Array(end - begin);
+        for (var offset = begin, i = 0; offset < end; ++i, ++offset) {
+            bytes[i] = byteCharacters[offset].charCodeAt(0);
+        }
+        byteArrays[sliceIndex] = new Uint8Array(bytes);
+    }
+    return new Blob(byteArrays, { type: contentType });
+}
+
+

@@ -1,12 +1,12 @@
 // Copyright 2022 @fto-consult/Boris Fouomene. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
-import {defaultStr,isNonNullString,getFileName,getFileExtension,defaultNumber,defaultBool,dataURLToBase64,isBlob,isBase64,isDataURL} from "$utils";
+import {defaultStr,base64toBlob,isNonNullString,getFileName,getFileExtension,defaultNumber,defaultBool,dataURLToBase64,isBlob,isBase64,isDataURL} from "$utils";
 const FileSaver = require('file-saver');
 const mime = require('mime-types')
 const XLSX = require("xlsx");
 import Preloader from "$preloader";
-import Base64 from "$base64";
+
 
 /**** sauvegarde un fichier sur le disque 
      *  @param {object} {
@@ -64,6 +64,9 @@ export const writeExcel = ({workbook,content,contentType,fileName,...rest})=>{
     if(!isNonNullString(fileName)){
         return Promise.reject({status:false,message:'Nom de fichier invalide pour le contenu excel à créer'});
     }
+    if(isBase64(content)){
+        content = new Blob([base64toBlob(content, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')], {});
+    }
     if(isBlob(content)){
         return write({...rest,content,fileName,contentType})
     }
@@ -72,26 +75,6 @@ export const writeExcel = ({workbook,content,contentType,fileName,...rest})=>{
     setTimeout(()=>{
         Preloader.close();
     },1000);
-}
-/*** @see : https://stackoverflow.com/questions/34993292/how-to-save-xlsx-data-to-file-as-a-blob */
-function base64toBlob(base64Data, contentType) {
-    contentType = contentType || '';
-    let sliceSize = 1024;
-    let byteCharacters = atob(base64Data);
-    let bytesLength = byteCharacters.length;
-    let slicesCount = Math.ceil(bytesLength / sliceSize);
-    let byteArrays = new Array(slicesCount);
-    for (let sliceIndex = 0; sliceIndex < slicesCount; ++sliceIndex) {
-        let begin = sliceIndex * sliceSize;
-        let end = Math.min(begin + sliceSize, bytesLength);
-
-        let bytes = new Array(end - begin);
-        for (var offset = begin, i = 0; offset < end; ++i, ++offset) {
-            bytes[i] = byteCharacters[offset].charCodeAt(0);
-        }
-        byteArrays[sliceIndex] = new Uint8Array(bytes);
-    }
-    return new Blob(byteArrays, { type: contentType });
 }
 
 

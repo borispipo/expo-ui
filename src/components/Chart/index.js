@@ -1,6 +1,6 @@
 import React from '$react'
 import PropTypes from 'prop-types'
-import {defaultStr,defaultObj,uniqid} from "$utils";
+import {defaultStr,defaultObj,uniqid,defaultNumber} from "$utils";
 import {extend} from "./utils"
 import stableHash from 'stable-hash';
 import Chart from "./appexChart";
@@ -33,6 +33,12 @@ const ChartComponent = React.forwardRef(({type, height,chartId, width, series, o
   const prevWidth = React.usePrevious(width), prevHeight = React.usePrevious(height);
   const prevOptions = React.usePrevious(options,JSON.stringify);
   const prevSeries = React.usePrevious(series,JSON.stringify);
+  /***change size chart, @see : https://apexcharts.com/docs/chart-types/line-chart/ */
+  options.xaxis = defaultObj(options.xaxis);
+  options.xaxis.stroke = defaultObj(options.xaxis.stroke);
+  options.xaxis.stroke.width = defaultNumber(options.xaxis.stroke.width,2);
+  options.xaxis.stroke.height = defaultNumber(options.xaxis.height,1);
+
   React.useEffect(()=>{
     if(chartContext.current && chartContext.current.updateOptions){
         if((prevSeries == series) || width != prevWidth || height != prevHeight){

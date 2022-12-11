@@ -59,7 +59,7 @@ export default function DatabaseStatisticContainer (props){
         left = {(aProps)=>{
             return <Avatar suffix={index} {...aProps} icon= {icon} size={40} label={title}/>
         }}
-        title = {<Label splitText numberOfLines={1} primary style={[{fontSize:15}]}>{title}</Label>}
+        title = {<Label splitText numberOfLines={1} color={theme.colors.primaryOnSurface} style={[{fontSize:15}]}>{title}</Label>}
         titleProps = {{primary : true}}
         description = {isLoading?<View style={[theme.styles.justifyContentFlexStart,theme.styles.alignItemsFlexStart]}>
             <ActivityIndicator color={theme.colors.primary}/>

@@ -7,7 +7,6 @@ import Auth from "$cauth";
 import Login from "$eauth/Login";
 import {navigate} from "$cnavigation";
 import theme from "$theme";
-import Label from "$ecomponents/Label";
 import Logo  from "$ecomponents/Logo";
 
 const DrawerNavigator = React.forwardRef(({content,children,state,...props},ref)=>{
@@ -15,7 +14,7 @@ const DrawerNavigator = React.forwardRef(({content,children,state,...props},ref)
     const mergedRefs = React.useMergeRefs(drawerRef,ref);
     const headerCB = ({isMinimized})=>{
         if(isMinimized) return null;
-        if(!theme.showAvatarProfileOnDrawer){
+        if(!theme.showProfilAvatarOnDrawer){
             return <Logo height = {70} withImage = {false} style={[theme.styles.justifyContentFlexStart,{maxWidth:220,overflow:'hidden'}]}/>
         }
         return <ProfilAvatar ref={uProfileRef} drawerRef={drawerRef}/>;

@@ -14,7 +14,7 @@ import Dropdown from "$ecomponents/Dropdown";
 import {defaultObj} from "$utils";
 import Icon from "$ecomponents/Icon";
 import {open,close} from "$preloader";
-import {fields,getThemeData} from "./utils";
+import {fields,getThemeData} from "$theme/utils";
 
 const getStyle = (color)=>{
     if(!Colors.isValid(color)) return {};

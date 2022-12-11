@@ -30,9 +30,9 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,chevronIconProps
         return typeof cb =='function'? cb() : null;
     }
     if(withLabel === undefined){
-        withLabel = theme.showAvatarProfileOnDrawer;
+        withLabel = theme.showProfilAvatarOnDrawer;
     }
-    withLabel = withLabel !== false ? true : false;
+     withLabel = withLabel !== false ? true : false;
     props.src = u.avatar;
     size = defaultNumber(size,!withLabel?40:40);
     const userPseudo = Auth.getUserPseudo();
@@ -46,7 +46,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,chevronIconProps
         });
     };
     const tooltip = "Pressez longtemps pour définir un identifiant unique pour l'appareil";
-    const children = <View style={styles.labelContainer}>
+    const children = <View style={[styles.labelContainer,!withLabel && theme.styles.justifyContentCenter]}>
         <Label splitText numberOfLines={1} style={{color:theme.colors.primaryOnSurface,fontSize:15}}>{pseudo}</Label>
         <Label splitText numberOfLines={1} style={{fontSize:12,color:theme.colors.secondaryOnSurface,marginTop:6}}>
             {label}

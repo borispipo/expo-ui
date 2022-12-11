@@ -1,4 +1,3 @@
-import { Component } from "react";
 import {isNativeMobile} from "$cplatform";
 import View from "$ecomponents/View";
 import React from "$react";
@@ -80,7 +79,7 @@ const styles = StyleSheet.create({
     },
     small : {
         fontSize:remToPixel(2.5),
-        marginLeft:isNativeMobile()? -25 : -20
+        marginLeft:isNativeMobile()? -15 : -10
     },
     medium : {
         fontSize:remToPixel(3),

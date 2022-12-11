@@ -10,7 +10,7 @@ const defaultSelectable = canTextBeSelectable();
 
 export const EllipsizeMode = {'head':'head','middle':'middle', 'tail':'tail' , 'clip':'clip'}
 
-const LabelComponent = React.forwardRef(({ children,upperCase,fontSize,testID,wrap,nativeID,wrapText,error,underlined,splitText,secondary,primary,bold,textBold,disabled,text,style,...rest},ref)=> {
+const LabelComponent = React.forwardRef(({ children,color,upperCase,fontSize,testID,wrap,nativeID,wrapText,error,underlined,splitText,secondary,primary,bold,textBold,disabled,text,style,...rest},ref)=> {
     children = defaultVal(children,text);
     let isText = false;
     if(!React.isValidElement(children) && Array.isArray(children) && children.length){
@@ -36,6 +36,9 @@ const LabelComponent = React.forwardRef(({ children,upperCase,fontSize,testID,wr
     }
     if(underlined){
         r1.textDecorationLine = 'underline';
+    }
+    if(Colors.isValid(color)){
+        r1.color = color;
     }
     
     style = Object.assign({},StyleSheet.flatten(style));
@@ -101,6 +104,7 @@ LabelComponentExported.propTypes = {
     primary : PropTypes.bool,
     error : PropTypes.bool,///si le label est liée à une text field sur laquelle il  y a erreur
     secondary : PropTypes.bool,
+    color : PropTypes.bool,
     selectable : PropTypes.bool, //si le texte est sélectionnable
     underlined : PropTypes.bool,//si le style underlined sera appliqué au label
     splitText : PropTypes.bool,///si le texte lorsqu'il est long sera splité

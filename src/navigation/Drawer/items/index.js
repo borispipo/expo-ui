@@ -12,7 +12,7 @@ import { screenName as aboutScreenName} from "$escreens/Help/About";
 import theme from "$theme";
 
 export const getItems = (force)=>{
-    const name = !theme.showAvatarProfileOnDrawer ? 'Dashboard' : APP.getName();
+    const name = !theme.showProfilAvatarOnDrawer ? 'Dashboard' : APP.getName();
     const itx = typeof items === "function" ? items() : items;
     const handleHelp =  appConfig.get("handleHelpScreen") !== false ? true : false;
     const r = [
@@ -39,7 +39,7 @@ export const getItems = (force)=>{
             items : [
                 {
                     icon : 'help',
-                    label : 'A propos de '+name,
+                    label : 'A propos de '+APP.getName(),
                     routeName : aboutScreenName,
                 }
             ]

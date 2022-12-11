@@ -53,6 +53,7 @@ export default function MainScreenScreenWithOrWithoutAuthContainer(props) {
     testID,
     profilAvatarProps,
     profilAvatarContainerProps,
+    withProfilAvatarOnAppBar:cWithPorilAvatarOnAppbar,
     renderChildren,
     renderProfilAvatar,
     ...rest
@@ -88,7 +89,7 @@ export default function MainScreenScreenWithOrWithoutAuthContainer(props) {
   if(authRequired === false){
     withFab = false;
   }
-  const withProfilAvatarOnAppBar = withDrawer && !theme.showAvatarProfileOnDrawer ? true : false;
+  const withProfilAvatarOnAppBar = cWithPorilAvatarOnAppbar !== false && withDrawer && !theme.showProfilAvatarOnDrawer ? true : false;
   React.useEffect(() => {
     if((title||subtitle) && navigation && navigation.setOptions){
       const appName = APP.getName().toUpperCase();

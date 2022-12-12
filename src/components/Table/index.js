@@ -364,7 +364,8 @@ const ColumnType = PropTypes.shape({
 const RowType = PropTypes.shape({
 
 });
-const styles = StyleSheet.create({
+
+export const styles = StyleSheet.create({
     datagrid : {
         flex:1,
     },

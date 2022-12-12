@@ -190,6 +190,7 @@ const DatagridFactory = (Factory)=>{
                     }] : [])
                 ]
             }   
+            const {width,height} = Dimensions.get("window");
             const rPagination = showPagination ? <View style={[styles.paginationContainer]}>
                 <ScrollView horizontal showsHorizontalScrollIndicator={!isLoading} style={styles.paginationContainerStyle} contentContainerStyle={styles.minW100}>
                     <View style={[styles.paginationContent]}>
@@ -307,16 +308,16 @@ const DatagridFactory = (Factory)=>{
                     </View>
                 </ScrollView>
             </View> : null;
-            return <View style={[styles.container]} pointerEvents={pointerEvents}>
+            return <View style={[styles.container,{maxHeight:height-100}]} pointerEvents={pointerEvents}>
                 <View ref={this.layoutRef}>
-                    <DatagridActions 
+                    {this.props.showActions !== false ? <DatagridActions 
                         pointerEvents = {pointerEvents}
                         title = {title}
                         context = {this}
                         selectedRows = {Object.assign({},this.selectedRows)}
                         selectedRowsActions = {this.renderSelectedRowsActions.bind(this)}
                         actions = {actions}
-                    />
+                    /> : null}
                     {rPagination}
                     {_progressBar}  
                 </View>

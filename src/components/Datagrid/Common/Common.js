@@ -24,7 +24,7 @@ import { StyleSheet,Dimensions,useWindowDimensions} from "react-native";
 import Preloader from "$ecomponents/Preloader";
 import Checkbox from "../Checkbox";
 import { TouchableRipple } from "react-native-paper";
-import { evalSingleValue } from "../Footer";
+import { evalSingleValue,Footer } from "../Footer";
 import i18n from "$i18n";
 import { makePhoneCall,canMakePhoneCall as canMakeCall} from "$makePhoneCall";
 import copyToClipboard from "$capp/clipboard";
@@ -36,6 +36,7 @@ import DatagridProgressBar from "./ProgressBar";
 import {Flag} from "$ecomponents/Countries"
 import View from "$ecomponents/View";
 import {Menu} from "$ecomponents/BottomSheet";
+import {styles as tableStyles} from "$ecomponents/Table";
 
 export const arrayValueSeparator = ", ";
 
@@ -807,7 +808,7 @@ export default class CommonDatagridComponent extends AppComponent {
         const customMenu = []
         Object.map(this.props.customMenu,(menu,i)=>{
             if(isObj(menu)){
-                const {onPress,menu,label,text,children,...rest} = menu;
+                const {onPress,label,text,children,...rest} = menu;
                 const args = {context:this,refresh:this.refresh.bind(this)};
                 const lCB = defaultVal(children,label,text);
                 const labelText = typeof lCB ==='function'? lCB(args) : lCB;
@@ -1440,11 +1441,42 @@ export default class CommonDatagridComponent extends AppComponent {
                 rowStyle.push(style);
             }
         }
-        if(isObj(this.sectionListHeaderFooters[key])){
-            console.log(this.sectionListHeaderFooters[key]," is value of keyeees");
+        let cells = null;
+        if(this.state.showFooters && isObj(this.sectionListHeaderFooters[key])){
+            const {visibleColumnsNames,widths} = defaultObj(this.preparedColumns);
+            if(isObj(visibleColumnsNames) &&isObj(widths)){
+                cells = [];
+                const footers = this.sectionListHeaderFooters[key];
+                Object.map(visibleColumnsNames,(v,column)=>{
+                    if(typeof widths[column] !== 'number') return null;
+                    const width = widths[column];
+                    if(!column) return null;
+                    const key = key+column;
+                    if(!column || !this.state.columns[column] || !footers[column]) {
+                        if(this.isAccordion()) return null;
+                        cells.push(<View key={key} testID={testID+"_FooterCellContainer"+key} style={[tableStyles.headerItemOrCell,{width}]}>
+                            
+                        </View>)
+                    } else {
+                        const footer = footers[column];
+                        cells.push(<View key={key} testID={testID+"_FooterCellContainer"+key} style={[tableStyles.headerItemOrCell,{width,alignItems:'flex-start',justifyContent:'flex-start'}]}>
+                            <Footer
+                                key = {key}
+                                testID={testID+"_FooterItem_"+key}
+                                {...footer}
+                                displayLabel = {false}
+                                //anchorProps = {{style:[theme.styles.ph1,theme.styles.mh05]}}
+                            />  
+                        </View>)
+                    }
+                    
+                });
+            }
         }
-        return <View testID={testID+"_ContentContainer"}  style={[theme.styles.w100,theme.styles,theme.styles.justifyContentCenter,theme.styles.pt1,theme.styles.pb1,theme.styles.alignItemsCenter,theme.styles.ml1,theme.styles.mr1,cStyle]}>
+        return <View testID={testID+"_ContentContainer"}  style={[theme.styles.w100,theme.styles,theme.styles.justifyContentCenter,theme.styles.pt1,theme.styles.pb1,theme.styles.alignItemsCenter,!cells && theme.styles.ml1,theme.styles.mr1,cStyle]}>
             <Label testID={testID+"_Label"} splitText numberOfLines={3} textBold style={[theme.styles.w100,lStyle]}>{label}</Label>
+            {cells ? <View style = {[theme.styles.w100,theme.styles.row,theme.styles.alignItemsFlexStart]}
+            >{cells}</View> : null}
         </View>
     }
     isRowSelected(rowKey,rowIndex){
@@ -2174,6 +2206,7 @@ CommonDatagridComponent.propTypes = {
         PropTypes.bool,
         PropTypes.object,
     ]),
+    showActions : PropTypes.bool,//si on affichera les actions du datagrid
     /*** affiche ou masque les filtres */
     showFilters : PropTypes.bool,
     /*** si le pied de page sera affiché */

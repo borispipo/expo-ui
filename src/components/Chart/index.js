@@ -5,6 +5,7 @@ import {extend} from "./utils"
 import stableHash from 'stable-hash';
 import Chart from "./appexChart";
 
+/**** pour le rendu webview chart, voir : https://github.com/flexmonster/react-native-flexmonster/blob/master/src/index.js */
 /**** le composant Chart s'appuie sur le composant appexChart : https://apexcharts.com/ 
  * pour le formattage des date, voir : https://apexcharts.com/docs/datetime/
  * les props requis duduit composant sont : 

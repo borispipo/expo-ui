@@ -83,6 +83,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         ListFooterComponent,
         testID,
         autoSort,
+        handleQueryLimit,
         ...rest
     } = props;
     rest = defaultObj(rest);
@@ -130,7 +131,8 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     const totalRef = React.useRef(0);
     const isFetchingRef = React.useRef(false);
     const pageRef = React.useRef(1);
-    const limitRef = React.useRef(defaultNumber(getSessionData("limit"),500));
+    const canHandleLimit = handleQueryLimit !== false ? true : false;
+    const limitRef = React.useRef(!canHandleLimit ?0 : defaultNumber(getSessionData("limit"),500));
     const isInitializedRef = React.useRef(false);
     testID = defaultStr(testID,"RNSWRDatagridComponent")
     const {error, isValidating,isLoading,refresh} = useSWR(fetchPath,{
@@ -142,8 +144,14 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             opts = extendObj({},opts,fetchOptionsRef.current);
             opts.queryParams = defaultObj(opts.queryParams);
             opts.queryParams.withTotal = true;
-            opts.queryParams.limit = limitRef.current;
-            opts.queryParams.page = pageRef.current -1;
+            if(canHandleLimit){
+                opts.queryParams.limit = limitRef.current;
+                opts.queryParams.page = pageRef.current -1;
+            } else {
+                delete opts.queryParams.limit;
+                delete opts.queryParams.page;
+                delete opts.queryParams.offset;
+            }
             if(isObj(opts.sort)){
                 opts.queryParams.sort = opts.sort;
             }
@@ -197,17 +205,17 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         };
         refresh();
     }
-    const canPagninate = ()=>{
-        if(typeof totalRef.current !=='number' || typeof pageRef.current !='number' || typeof limitRef.current !='number') return false;
+    const canPaginate = ()=>{
+        if(canHandleLimit && typeof totalRef.current !=='number' || typeof pageRef.current !='number' || typeof limitRef.current !='number') return false;
         if(limitRef.current <= 0) return false;
         return true;
     }
     const getTotalPages = ()=>{
-        if(!canPagninate()) return false;
+        if(!canPaginate()) return false;
         return Math.ceil(totalRef.current / limitRef.current);;
     };
     const getNextPage = ()=>{
-        if(!canPagninate()) return false;
+        if(!canPaginate()) return false;
         const totalPages = getTotalPages();
         let nPage = pageRef.current+1;
         if(nPage > totalPages){
@@ -218,7 +226,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         }
         return nPage;
     },getPrevPage = ()=>{
-        if(!canPagninate()) return false;
+        if(!canPaginate()) return false;
         let pPage = pageRef.current - 1;
         if(pPage < firstPage){
             pPage  = firstPage;
@@ -228,7 +236,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         }
         return pPage;
     }, canSortRemotely = ()=>{
-        if(!canPagninate() || autoSort === true) return false;
+        if(!canPaginate() || autoSort === true) return false;
         ///si le nombre total d'élements est inférieur au nombre limite alors le trie peut être fait localement
         return totalRef.current > limitRef.current && true || false;
     }
@@ -260,7 +268,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                 return false;
             }}
             renderCustomPagination = {({context})=>{
-                if(!canPagninate()) return null;
+                if(!canPaginate()) return null;
                 const page = pageRef.current, totalPages = getTotalPages(), prevPage = getPrevPage(),nextPage = getNextPage();
                 const iconProp = {
                     size : 25,

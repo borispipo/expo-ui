@@ -564,7 +564,7 @@ const DatagridFactory = (Factory)=>{
         return <View testID={testID+"_Container"} pointerEvents={pointerEvents} style={[styles.container]} collapsable={false}>
                 { <View testID={testID+"_ContentContainer"} style={[this.bindResizeEvents()?{height:this.renderedListHeight}:undefined]}> 
                     <View testID={testID+"_AccordionHeader"} style={[styles.accordionHeader]} ref={this.layoutRef} onLayout={this.updateLayout.bind(this)}>
-                        <DatagridActions 
+                        {this.props.showActions !== false ? <DatagridActions 
                             testID={testID+"_Actions"}
                             pointerEvents = {pointerEvents}
                             title = {title}
@@ -572,7 +572,7 @@ const DatagridFactory = (Factory)=>{
                             selectedRows = {Object.assign({},this.selectedRows)}
                             selectedRowsActions = {this.renderSelectedRowsActions.bind(this)}
                             actions = {actions}
-                        />
+                        /> : null}
                         {datagridHeader}
                         {_progressBar}
                         {showFooters ? (

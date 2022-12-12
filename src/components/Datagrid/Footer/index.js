@@ -4,7 +4,7 @@ import React from "$react";
 import memoize from "$react/memoize";
 export {default as FooterItem} from "./Footer";
 
-export const evalSingleValue = ({data,columnDef,field,result,displayLabel,onlyVisible})=>{
+export const evalSingleValue = ({data,columnDef,field,result,result2,displayLabel,onlyVisible})=>{
     result = defaultObj(result)
     data = data || {}
     if(!isNonNullString(field) || !isObj(columnDef)) return result;
@@ -33,6 +33,9 @@ export const evalSingleValue = ({data,columnDef,field,result,displayLabel,onlyVi
     obj.count = isDecimal(obj.count) ? (obj.count = obj.count +1) : 1;
     obj.sum = isDecimal(obj.sum) ? (parseFloat((obj.sum+val).toFixed(10))) : val;
     obj.average = obj.sum / obj.count;
+    if(isObj(result2)){
+        result2[field] = defaultObj(result2[field]);
+    }
     return result;
 }
 export const evalValues = memoize(({data,columns,onlyVisible,displayLabel})=>{

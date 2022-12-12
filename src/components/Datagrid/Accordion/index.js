@@ -55,6 +55,7 @@ const DatagridFactory = (Factory)=>{
             return true;
         }
         renderRowCell (arg){
+            if(arg.renderRowCell === false || arg.isSectionListHeader === true) return super.renderRowCell(arg);
             const {columnDef,columnField} = arg;
             if(!columnDef.visible || columnDef.accordion === false || this.isSelectableColumn(columnDef,columnField)) return null;
             let {render,key,style} = super.renderRowCell(arg);
@@ -171,7 +172,19 @@ const DatagridFactory = (Factory)=>{
             return this.renderingItemsProps[rKey];
         }
         renderItem(args){
-            const {index,numColumns,item,isScrolling:_isScrolling,style,setSize} = args;
+            const {index,numColumns,item,isSectionListHeader,isScrolling:_isScrolling,style,setSize} = args;
+            args.isAccordion = true;
+            if(isSectionListHeader){
+                const rowStyle = style ? [style] : [];
+                const rowProps = {};
+                const it = this.renderFlashListItem({...args,rowProps,rowStyle});
+                if(React.isValidElement(it)){
+                    return 
+                }
+                return <View testID={"RNDatagridAccordionSectionHeader"} {...rowProps} style={[rowProps.style,rowStyle]}>
+                    {it}
+                </View>;
+            }
             if(!(item) || typeof item !== 'object') return null;
             const rowKey = this.getRowKey(item,index);
             return <DatagridAccordionRow 
@@ -591,6 +604,7 @@ const DatagridFactory = (Factory)=>{
                         itemHeight = {undefined}
                         responsive = {defaultBool(responsive,accordionProps.responsive,true)}
                         filter = {filter}
+                        getItemType = {this.getFlashListItemType.bind(this)}
                         renderItem = {this.renderItem.bind(this)}
                         items = {this.state.data}
                         isLoading = {isLoading}

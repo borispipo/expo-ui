@@ -43,7 +43,7 @@ const getOnScrollCb = (refs,pos,cb2)=>{
     return isMobileNative()? cb : debounce(cb,200);
 }
 
-const TableComponent = React.forwardRef(({containerProps,renderEmpty,isRowSelected,headerScrollViewProps,footerScrollViewProps,scrollViewProps,showFooters,renderFooterCell,footerCellContainerProps,filterCellContainerProps,headerContainerProps,headerCellContainerProps,headerProps,rowProps:customRowProps,renderCell,cellContainerProps,hasFooters,renderHeaderCell,renderFilterCell,columnProps,getRowKey,columnsWidths,colsWidths,footerContainerProps,showFilters,columns,data,testID,...props},tableRef)=>{
+const TableComponent = React.forwardRef(({containerProps,renderEmpty,renderItem,isRowSelected,headerScrollViewProps,footerScrollViewProps,scrollViewProps,showFooters,renderFooterCell,footerCellContainerProps,filterCellContainerProps,headerContainerProps,headerCellContainerProps,headerProps,rowProps:customRowProps,renderCell,cellContainerProps,hasFooters,renderHeaderCell,renderFilterCell,columnProps,getRowKey,columnsWidths,colsWidths,footerContainerProps,showFilters,columns,data,testID,...props},tableRef)=>{
     containerProps = defaultObj(containerProps);
     testID = defaultStr(testID,"RN_TableComponent");
     cellContainerProps = defaultObj(cellContainerProps);
@@ -263,7 +263,6 @@ const TableComponent = React.forwardRef(({containerProps,renderEmpty,isRowSelect
             >  
                 <FlashList
                     containerProps = {{style:[cStyle]}}
-                    //prepareItems = {Array.isArray(items)? false : undefined}
                     estimatedItemSize = {200}
                     {...props}
                     onContentSizeChange = {(width,height)=>{
@@ -311,7 +310,14 @@ const TableComponent = React.forwardRef(({containerProps,renderEmpty,isRowSelect
                     })}
                     renderItem = {(arg)=>{
                         const item = arg.item, data = arg.item,allData=Array.isArray(item.items)? item.items : data;
-                        const cells = visibleColumns.map((i,index)=>{
+                        arg.allData = arg.allData;arg.isTable  = true; arg.isAccordion = false;
+                        arg.columns = visibleColumns;
+                        const selected = typeof isRowSelected=='function'? isRowSelected(item,arg.index):undefined;
+                        const rowArgs = {...arg,selected,isTable:true,allData,row:data,rowData:data,rowIndex:arg.index};
+                        const rProps = getRowProps ? getRowProps(rowArgs) : {};
+                        const rowStyle = getRowStyle(rowArgs);
+                        const sItem = typeof renderItem == 'function'? renderItem({...arg,rowProps:rProps,rowStyle}) : undefined;
+                        const cells = sItem && React.isValidElement(sItem) ? sItem : !isObj(item) ? null : visibleColumns.map((i,index)=>{
                             const cellValue = data[i];
                             const col = defaultObj(cols[i]);
                             const cellArgs = {...col,...arg,containerProps:{},columnIndex:col.index,style:{width:col.width},cellValue,data,rowData:data,row:data,rowIndex:arg.index};
@@ -328,13 +334,9 @@ const TableComponent = React.forwardRef(({containerProps,renderEmpty,isRowSelect
                                 {content}
                             </View>);
                         });
-                        const selected = typeof isRowSelected=='function'? isRowSelected(item,arg.index):undefined;
-                        const rowArgs = {...arg,selected,isTable:true,allData,row:data,cells,rowData:data,rowIndex:arg.index};
-                        const rProps = getRowProps ? getRowProps(rowArgs) : {};
-                        const rowStyle = getRowStyle(rowArgs);
-                        return <View testID={testID+"_Row_"+arg.index} {...rowProps} {...rProps} style={[styles.row,rowProps.style,rowStyle,styles.rowNoPadding,rProps.style]}>
+                        return cells ? <View testID={testID+"_Row_"+arg.index} {...rowProps} {...rProps} style={[styles.row,rowProps.style,rowStyle,styles.rowNoPadding,rProps.style]}>
                             {cells}
-                        </View>;
+                        </View> : null
                     }}
                 />
                     <AbsoluteScrollView
@@ -490,6 +492,7 @@ TableComponent.popTypes = {
       PropTypes.func,  
       PropTypes.object
     ]),
+    renderItem : PropTypes.func,//la fonction permettant de gérer le rendu des item
     headerScrollViewProps : PropTypes.object,
     footerScrollViewProps : PropTypes.object,
 }

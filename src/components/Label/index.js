@@ -104,7 +104,7 @@ LabelComponentExported.propTypes = {
     primary : PropTypes.bool,
     error : PropTypes.bool,///si le label est liée à une text field sur laquelle il  y a erreur
     secondary : PropTypes.bool,
-    color : PropTypes.bool,
+    color : PropTypes.string,
     selectable : PropTypes.bool, //si le texte est sélectionnable
     underlined : PropTypes.bool,//si le style underlined sera appliqué au label
     splitText : PropTypes.bool,///si le texte lorsqu'il est long sera splité

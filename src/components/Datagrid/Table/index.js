@@ -28,6 +28,7 @@ const DatagridFactory = (Factory)=>{
             return true;
         }
         renderRowCell(args){
+            if(args.renderRowCell === false || args.isSectionListHeader === true) return super.renderRowCell(args);
             const {render} = super.renderRowCell(args);
             return render;
         }
@@ -321,6 +322,8 @@ const DatagridFactory = (Factory)=>{
                 <Table
                     ref = {this.listRef}
                     {...rest}
+                    getItemType = {this.getFlashListItemType.bind(this)}
+                    renderItem = {this.renderFlashListItem.bind(this)}
                     hasFooters = {hasFooterFields}
                     showFilters = {showFilters}
                     showFooters = {showFooters}

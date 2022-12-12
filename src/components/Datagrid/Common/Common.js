@@ -13,7 +13,7 @@ import Image from "$ecomponents/Image";
 import Icon,{COPY_ICON} from "$ecomponents/Icon";
 import filterUtils from "$cfilters";
 import Hashtag from "$ecomponents/Hashtag";
-import {sortBy,isDecimal,extendObj,isObjOrArray,isOb,defaultNumber,defaultStr,isFunction,defaultBool,defaultArray,defaultObj,isNonNullString,defaultDecimal} from "$utils";
+import {sortBy,isDecimal,extendObj,isObjOrArray,isObj,defaultNumber,defaultStr,isFunction,defaultBool,defaultArray,defaultObj,isNonNullString,defaultDecimal} from "$utils";
 import {Datagrid as DatagridContentLoader} from "$ecomponents/ContentLoader";
 import React from "$react";
 import DateLib from "$lib/date";
@@ -54,6 +54,7 @@ export default class CommonDatagridComponent extends AppComponent {
         let {
             data,
             selectedRows,
+            sectionListColumns : cSectionListColumns,//les colonnes à utiliser pour le rendue des sectionList
             ...rest
         } = props;
         if(this.bindResizeEvents()){
@@ -107,7 +108,11 @@ export default class CommonDatagridComponent extends AppComponent {
             isLoadingRef : {
                 value : {current:false}
             },
-            currentFilteringColumns : {value:{}}
+            currentFilteringColumns : {value:{}},
+            emptySectionListHeaderValue : {value : uniqid("empty-section-list-header-val").toUpperCase()},
+            getSectionListHeaderProp : {value : typeof this.props.getSectionListHeader =='function'? this.props.getSectionListHeader : undefined},
+            sectionListData : {value : {}},//l'ensemble des données de sectionList
+            hasFoundSectionData : {value : {current: false}},
         }) 
         this.isLoading = this.isLoading.bind(this);
         this.getProgressBar = this.getProgressBar.bind(this);
@@ -137,7 +142,8 @@ export default class CommonDatagridComponent extends AppComponent {
         })
         this.state.filteredColumns = defaultObj(this.getSessionData("filteredColumns"+this.getSessionNameKey()),this.props.filters);
         this.filtersSelectors = {selector:this.getFilters()};
-        this.prepareColumns();
+        const {sectionListColumns} = this.prepareColumns();
+        this.state.sectionListColumns = sectionListColumns;
         if(this.canHandleColumnResize()){
             this.state.columnsWidths = this.preparedColumns.widths;
         }
@@ -185,6 +191,16 @@ export default class CommonDatagridComponent extends AppComponent {
         } else {
             this.currentDataSources = Object.toArray(this.currentDataSources);
         }
+    }
+    prepareSectionListColumns(props){
+        props = defaultObj(props,this.props);
+        return Array.isArray(props.sectionListColumns) ? props.sectionListColumns : [];
+    }
+    /*** récupère la liste des colonnes à utiliser pour le rendu des sectionList, ces colonnes doivent figurer dans la liste des colonnes du tableu */
+    getSectionListColumns(prepared){
+        if(Array.isArray(this.state.sectionListColumns) && this.state.sectionListColumns.length) return this.state.sectionListColumns;
+        if(prepared === false) return [];
+        return this.prepareSectionListColumns();
     }
     bindResizeEvents(){
         return false;
@@ -949,6 +965,14 @@ export default class CommonDatagridComponent extends AppComponent {
    prepareColumns (args){
        this.beforePrepareColumns();
        args = defaultObj(args);
+       const sectionListColumns = [];
+       const sListColumns = this.getSectionListColumns();
+       const allSlistColumns = {};
+       Object.map(sListColumns,(i)=>{
+            if(isNonNullString(i)){
+                allSlistColumns[i.trim()] = true;
+             }
+       });
        const filteredColumns = isObjOrArray(args.filteredColumns)?args.filteredColumns : isObjOrArray(this.state.filteredColumns) ? this.state.filteredColumns : {};
        const columns = args.columns || this.state.columns;
        const currentSortedColumn = isObj(args.sortedColumn) && args.sortedColumn.column? args.sortedColumn : defaultObj(this.sortRef.current);
@@ -1016,6 +1040,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 icon : visible?CHECKED_ICON_NAME : null,
             });
             restCol.field = header.field;
+            
             restCol.label = defaultStr(header.text,header.label) ;
             restCol.type = type;
             if(!restCol.label){
@@ -1036,6 +1061,9 @@ export default class CommonDatagridComponent extends AppComponent {
                 }      
                 sortedColumns[field] = restCol.label;
                 sortedColumnsLength++;
+            }
+            if(this.props.groupable !== false && header.groupable !== false && allSlistColumns[field]){
+                sectionListColumns.push(field);///les colonnes de sections
             }
             colFilter = colFilter && filters !== false ? true : false;
             const sortedProps =  isColumnSorted ? {...sortedColumn} : {};
@@ -1106,6 +1134,7 @@ export default class CommonDatagridComponent extends AppComponent {
         this.preparedColumns.filteredColumns = filteredColumns;
         this.preparedColumns.widths = widths;
         this.preparedColumns.totalWidths = totalWidths;
+        this.preparedColumns.sectionListColumns = sectionListColumns;
         return this.preparedColumns;
    }
    getPaginatedSelectedRows(data){
@@ -1118,6 +1147,28 @@ export default class CommonDatagridComponent extends AppComponent {
    getFooterValues(){
         return defaultObj(this.___evaluatedFootersValues);
    }
+   
+   /**** s'il s'agit d'une section list */
+   isSectionList(){
+        return !this.isPivotDatagrid() && Array.isArray(this.state.sectionListColumns) && this.state.sectionListColumns.length ? true : false;
+   }
+   /**** si le datagrid admet les sectionDatas */
+   hasSectionListData(){
+    return this.hasFoundSectionData.current;
+   }
+   /*** vérifie si l'on a la colonne passée en paramètre */
+   hasColumn(column){
+        column = isObj(column)? defaultStr(column.field) : defaultStr(column);
+        if(!column) return false;
+        return isObj(this.state.columns) && this.state.columns[column]&& true || false;
+   }
+    formatSectionListHeader(sectionListHeader){
+        if(!isNonNullString(sectionListHeader)) return "";
+        if(this.props.sectoonListHeaderUpperCase !== false){
+            sectionListHeader = sectionListHeader.toUpperCase();
+        }
+        return sectionListHeader.trim();
+    }
     prepareData(args,cb){
         let {pagination,data,force,updateFooters} = defaultObj(args);
         cb = typeof cb ==='function'? cb : typeof args.cb == 'function'? args.cb : undefined;
@@ -1126,12 +1177,29 @@ export default class CommonDatagridComponent extends AppComponent {
         const hasLocalFilter = this.props.filters !== false && this.hasLocalFilters;
         let footersColumns = this.getFooterFields(),hasFooterFields = Object.size(footersColumns,true);
         const canUpdateFooters = !!(updateFooters !== false && hasFooterFields);
-        if(hasLocalFilter || !isArr || canUpdateFooters) {
+        this.hasFoundSectionData.current = false;
+        if(hasLocalFilter || !isArr || canUpdateFooters || this.isSectionList()) {
             if(canUpdateFooters){
                 this.___evaluatedFootersValues = {}
             }
             const newData = [];
-            Object.map(data,(d,i)=>{
+            const columns = {};
+            let hasSectionColumns = false;
+            let sectionListColumnsSize = 0;
+            if(this.isSectionList()){
+                Object.map(this.sectionListData,(v,i)=>{
+                    delete this.sectionListData[i];
+                });
+                Object.map(this.getSectionListColumns(false),(col)=>{
+                    if(this.hasColumn(col)){
+                        columns[col]= this.state.columns[col];
+                        hasSectionColumns = true;
+                        sectionListColumnsSize++;
+                    }
+                })
+            }
+            const sectionListData = this.sectionListData;//l'ensemble des données de sectionList
+            Object.map(data,(d,i,rowIndex)=>{
                 if(!isObj(d) || (hasLocalFilter && this.doLocalFilter({rowData:d,rowIndex:i}) === false)){
                     return;
                 }
@@ -1140,27 +1208,56 @@ export default class CommonDatagridComponent extends AppComponent {
                         evalSingleValue({data:d,columnDef,field,result:this.___evaluatedFootersValues,displayLabel:false})
                     });
                 }
+                if(hasSectionColumns){
+                    let sHeader = this.getSectionListHeader({data:d,columnsLength : sectionListColumnsSize,fieldsSize:sectionListColumnsSize,sectionListColumnsLength:sectionListColumnsSize,sectionListColumnsSize,allData:data,rowData:d,index:i,rowIndex,context:this,columns,fields:columns});
+                    if(sHeader === false) return;//on omet la donnée si la fonction de récupération de son header retourne false
+                    if(!isNonNullString(sHeader)){
+                        if(this.props.ignoreEmptySectionListHeader !== false){
+                            sHeader = this.emptySectionListHeaderValue;
+                        } else return;
+                    }
+                    let r  = this.formatSectionListHeader(sHeader);
+                    sectionListData[r] = defaultArray(sectionListData[r]);
+                    sectionListData[r].push(d); 
+                    this.hasFoundSectionData.current = true;
+                }
                 newData.push(d);
                 //push(d,i);
             });
             data = newData;
         }      
+        let sortConfig = null;
         if(this.canAutoSort() && isNonNullString(this.sortRef.current.column)){
             if(isObj(this.state.columns) && this.state.columns[this.sortRef.current.column]){
                 let field = this.state.columns[this.sortRef.current.column];
-                const cfg = Object.assign({},this.sortRef.current);
-                cfg.getItem = (item,columnName,{getItem})=>{
+                sortConfig = Object.assign({},this.sortRef.current);
+                sortConfig.getItem = (item,columnName,{getItem})=>{
                     if(isObj(item) && (field.type =='decimal' || field.type =="number")){
                         const v = item[columnName];
                         return isDecimal(v)? v : isNonNullString(v)? parseDecimal(v) : 0;
                     }
                     return getItem(item,columnName);
                 }
-                data = sortBy(data,cfg);//on trie tout d'abord les données
+                //data = sortBy(data,sortConfig);//on trie tout d'abord les données
+            }
+        }
+        if(this.hasFoundSectionData.current){
+            data = [];
+            for(let i in this.sectionListData){
+                this.sectionListData[i] = sortConfig ? sortBy(this.sectionListData[i],sortConfig):this.sectionListData[i];
+                //const v = i;// === this.emptySectionListHeaderValue ? "" : i;
+                data.push({isSectionListHeader:true,sectionListHeaderKey:i});
+                this.sectionListData[i].map((d)=>{
+                    data.push(d);
+                })
+            }
+        } else {
+            if(sortConfig){
+                data = sortBy(data,sortConfig);
             }
         }
         this.INITIAL_STATE.data = data;
-        if(this.canPaginateData()){
+        if(!this.hasSectionListData() && this.canPaginateData()){
             pagination = this.initPagination(pagination);
             pagination.rows = data.length;    
             this._pagination = pagination;
@@ -1174,6 +1271,58 @@ export default class CommonDatagridComponent extends AppComponent {
             cb(state);
         }
         return state;
+    }
+    getSectionListHeader(args){
+        if(this.getSectionListHeaderProp){
+           return this.getSectionListHeaderProp(args);
+        }
+        const {fields,sectionListColumnsSize,data} = args;
+        const d = [];
+        Object.map(fields,(field,i)=>{
+            const txt = this.renderRowCell({
+                ...args,
+                columnDef : field,
+                renderRowCell : false,
+                isSectionListHeader : true,
+                columnField : defaultStr(field.field,i),
+            });
+            if(!isNonNullString(txt) && typeof txt !=='number') return;
+            if(sectionListColumnsSize == 1){
+                d.push(txt);
+            } else {
+                d.push("{0} : {0}".sprintf(defaultStr(field.label,field.txt),txt))
+            }
+        })
+        return d.length ? d.join(",") : undefined;
+     }
+    /*** retourne le type d'item à rendre à la fonction flashlist 
+     * @see : https://shopify.github.io/flash-list/docs/guides/section-list
+    */
+    getFlashListItemType(item){
+        return typeof item === "string" || isObj(item) && item.isSectionListHeader === true ? "sectionHeader" : "row";;
+    }
+    /****permet de faire le rendu flashlist */
+    renderFlashListItem(args){
+        if(!this.hasSectionListData()) return null;
+        args = defaultObj(args);
+        let {item,rowProps,rowStyle} = args;
+        if(!isObj(item) || item.isSectionListHeader !== true) return null;
+        args.isAccordion = this.isAccordion();
+        args.columns = this.preparedColumns.visibleColumns;
+        args.columnsNames = this.preparedColumns.visibleColumnsNames;
+        const label = item.sectionListHeaderKey === this.emptySectionListHeaderValue ? "Valeur vide" : item.sectionListHeaderKey;
+        const style = typeof this.props.getSectionListHeaderStyle =='function' ? this.props.getSectionListHeaderStyle(args) : null;
+        rowProps = defaultObj(rowProps);
+        rowProps.testID = "RN_DatagridSectionListHeder_"+defaultVal(args.rowIndex,args.index)
+        if(Array.isArray(rowStyle)){
+            rowStyle.push(theme.styles.justifyContentCenter);
+            rowStyle.push(theme.styles.alignItemsCenter);
+            rowStyle.push(theme.styles.ml1,theme.styles.mr1);
+            if(style){
+                rowStyle.push(style);
+            }
+        }
+        return <Label textBold fontSize={16} testID={"RN_DatagridSectionListHeader_"+args.index} style={[theme.styles.w100]}>{label}</Label>
     }
     isRowSelected(rowKey,rowIndex){
         if(isObj(rowKey)){
@@ -1627,6 +1776,10 @@ export default class CommonDatagridComponent extends AppComponent {
     canScrollTo(){
         return this.state.data.length? true :false;
     }
+    /**** permet d'afficher le menu item lié aux champs triables */
+    getSortableMenuMenuItem(){
+
+    }
     renderSelectableCheckboxCell(props){
         const {containerProps} = props;
         if(isObj(containerProps)){
@@ -1652,14 +1805,16 @@ export default class CommonDatagridComponent extends AppComponent {
             différent du td d'un table et ne doit pas être un TableColumn de md
     */
     renderRowCell (arg){
-        let {rowData,rowKey,handleSelectableColumn,rowIndex,index,rowCounterIndex,columnDef,columnField} = arg;
+        let {rowData,renderRowCell:customRenderRowCell,isSectionListHeader,rowKey,handleSelectableColumn,rowIndex,index,rowCounterIndex,columnDef,columnField} = arg;
+        const renderText = isSectionListHeader === true || customRenderRowCell === false ? true : false;
         rowIndex = isDecimal(rowIndex)? rowIndex : isDecimal(index)? index : undefined;
         rowCounterIndex = isDecimal(rowCounterIndex) ? rowCounterIndex : isDecimal(rowIndex)? rowIndex+1 : defaultDecimal(rowCounterIndex);
-        if(!isObj(rowData)) return {render:null,extra:{}};
+        if(!isObj(rowData)) return renderText ? null : {render:null,extra:{}};
          let _render = null;
          columnDef = defaultObj(columnDef);
          let _type = defaultStr(columnDef.jsType,columnDef.type).trim().toLowerCase();
          if(this.isSelectableColumn(columnDef,columnField)){
+            if(renderText) return null;
              rowKey = rowKey ? rowKey : this.getRowKey(rowData,rowIndex);
              return {render :handleSelectableColumn === false ? null : this.renderSelectableCheckboxCell({
                 ...arg,
@@ -1671,7 +1826,8 @@ export default class CommonDatagridComponent extends AppComponent {
                     this.handleRowToggle({row:rowData,rowData,rowIndex,rowKey,selected:checked})
                 }
              }),style:{},extra:{style:{}}};
-         } else if(columnField == this.getIndexColumnName()){
+         } else if((columnField == this.getIndexColumnName())){
+            if(renderText) return null;
             return {render : rowCounterIndex.formatNumber(),style:{},extra:{}};
          }
          let renderProps = undefined;
@@ -1679,7 +1835,7 @@ export default class CommonDatagridComponent extends AppComponent {
              renderProps = columnDef.datagrid.renderProps;
          }
         const style = Object.assign({},StyleSheet.flatten(columnDef.style));
-        if(columnDef.visible === false){
+        if(!renderText && columnDef.visible === false){
             style.display = "none";
         }
         let extra = {style},renderArgs = arg;
@@ -1694,7 +1850,7 @@ export default class CommonDatagridComponent extends AppComponent {
             _render = defaultDecimal(columnDef.multiplicater({...renderArgs,value:rowData[columnField]}),rowData[columnField]);
         } else {
              _render = defaultValue;
-             if(defaultStr(columnDef.format).toLowerCase() === 'hashtag'){
+             if(!renderText && defaultStr(columnDef.format).toLowerCase() === 'hashtag'){
                 _render = <Hashtag>{_render}</Hashtag>
              } else if(typeof columnDef.render === "function"){
                  _render = columnDef.render.call(this,renderArgs);
@@ -1714,11 +1870,11 @@ export default class CommonDatagridComponent extends AppComponent {
                      _render = checkedLabel;
                  } else _render = uncheckedLabel;
              }
-             else if(_type =='select_country' || _type =='selectcountry'){
+             else if(!renderText && (_type =='select_country' || _type =='selectcountry')){
                 _render = <Flag withCode {...columnDef} length={undefined} width={undefined} height={undefined} code={defaultValue}/>
              }
              ///le lien vers le table data se fait via la colonne ayant la propriété foreignKeyTable de type chaine de caractère non nulle
-             else if(isNonNullString(columnDef.foreignKeyTable) || columnDef.primaryKey === true || arrayValueExists(['id','piece'],_type)){
+             else if(!renderText && (isNonNullString(columnDef.foreignKeyTable) || columnDef.primaryKey === true || arrayValueExists(['id','piece'],_type))){
                 const id = rowData[columnField]?.toString();
                 if(isNonNullString(id)){
                     _render = <TableLink 
@@ -1772,6 +1928,7 @@ export default class CommonDatagridComponent extends AppComponent {
                      }
                  }
              } else if(_type == 'image'){
+                if(renderText) return null;
                  columnDef = defaultObj(columnDef)
                  columnDef = {...columnDef,...defaultObj(columnDef.datagrid)};
                  columnDef.size = defaultDecimal(columnDef.size,50);
@@ -1825,7 +1982,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 _render = _render.formatNumber();
             //}
          }
-         if(_render && isObj(renderProps)){
+         if(!renderText && _render && isObj(renderProps)){
              let Component = defaultVal(renderProps.Component,Label);
              delete renderProps.Component;
              _render = <Component {...renderProps}>{_render}</Component>
@@ -1833,9 +1990,13 @@ export default class CommonDatagridComponent extends AppComponent {
          if(typeof _render =='boolean'){
             _render = _render ? "Oui" : "Non";
          }
-         if(typeof _render ==='string' || typeof _render =='number'){
+         if(renderText){
+            return React.getTextContent(_render);
+         }
+         if((typeof _render ==='string' || typeof _render =='number')){
              _render = <Label selectable>{_render}</Label>
          }
+
          _render = React.isValidElement(_render)|| Array.isArray(_render)?_render:null;
          return {render:_render,style,extra,key};
     }
@@ -1986,7 +2147,7 @@ CommonDatagridComponent.propTypes = {
      * si c'est un objet, alors il peut être de la forme :  
      * {
      *   title : PropTypes.node , //le titre du header
-     *   avatar : PropTypes.string(dataUrl,src,other) || PropType.node, ///l'avatar,
+     *   avatar : PropTypes.string(dataUrl,src,other) || PropTypes.node, ///l'avatar,
      *   rowClassName : la class à appliquer à la ligne
      *   rowProps : les props à appliquer à la ligne de la liste
      *   headerClassName : la class à appliquer au header de la ligne
@@ -2007,6 +2168,19 @@ CommonDatagridComponent.propTypes = {
         PropTypes.arrayOf(PropTypes.object),
         PropTypes.objectOf(PropTypes.object),
     ]),
+    ignoreCaseOnSectionListHeader : PropTypes.bool,//si l'on ignorera la casse dans le sectionlISThEADER
+    sectoonListHeaderUpperCase : PropTypes.bool, //si le sectionListHeader sera en majuscule
+    getSectionListHeaderStyle : PropTypes.func, // la fonction permettant de récupérer les propriétés particulières à appliquer au style passé en paramètre
+    /*** spécifie si le datagrid est groupable et si l'on utilisera les sectionList du composant FLashList pour le rendu du tableau 
+     * si une colonne n'est pas groupable alors elle ne peut pas apparaître dans les sectionList
+    */
+    groupable : PropTypes.bool,
+    /*la fonction permettant de récupérer l'entête de la sectionList pour la données passée en paramètre
+        @param {object : {data:{object},context:{this},allData:[]}}
+        @return {string}
+    */
+    getSectionListHeader : PropTypes.func,
+    ignoreEmptySectionListHeader : PropTypes.bool, // si l'on ignorera les sectionList data dont l'entête, le sectionListHeader est empty
     /**** la fonction permettant de faire le rendu dun contenu paginé, personalisé */
     renderCustomPagination : PropTypes.func,
     getActionsArgs : PropTypes.func,//fonction permettant de récupérer les props supplémentaires à passer aux actions du datagrid

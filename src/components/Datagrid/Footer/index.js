@@ -3,9 +3,9 @@ import View from "$ecomponents/View";
 import React from "$react";
 import memoize from "$react/memoize";
 export {default as FooterItem} from "./Footer";
+import {parseDecimal} from "$utils";
 
-export const evalSingleValue = ({data,columnDef,field,result,result2,displayLabel,onlyVisible})=>{
-    result = defaultObj(result)
+export const evalSingleValue = ({data,columnDef,field,result,displayLabel,onlyVisible})=>{
     data = data || {}
     if(!isNonNullString(field) || !isObj(columnDef)) return result;
     onlyVisible = defaultBool(onlyVisible,true);
@@ -17,25 +17,26 @@ export const evalSingleValue = ({data,columnDef,field,result,result2,displayLabe
     if(!isDecimal(val)){
         return result;
     }
-    if(!isObj(result[field])){
-        let label = defaultStr(columnDef.label,columnDef.text);
-        if(!label && displayLabel !== false) return result;
-        result[field] = {
-            label,
-            visible : columnDef.visible,
-            format : defaultStr(columnDef.format).toLowerCase()
+    val = parseDecimal(val.toFixed(10));
+    (Array.isArray(result) ? result : [result]).map((currentResult)=>{
+        currentResult = defaultObj(currentResult);
+        if(!isObj(currentResult[field])){
+            let label = defaultStr(columnDef.label,columnDef.text);
+            if(!label && displayLabel !== false) return currentResult;
+            currentResult[field] = {
+                label,
+                visible : columnDef.visible,
+                format : defaultStr(columnDef.format).toLowerCase()
+            }
         }
-    }
-    let obj = result[field];
-    val = parseFloat(val.toFixed(10));
-    obj.max = isDecimal(obj.max) ? Math.max(obj.max,val) : val;
-    obj.min = isDecimal(obj.min) ? Math.min(obj.min,val) : val;
-    obj.count = isDecimal(obj.count) ? (obj.count = obj.count +1) : 1;
-    obj.sum = isDecimal(obj.sum) ? (parseFloat((obj.sum+val).toFixed(10))) : val;
-    obj.average = obj.sum / obj.count;
-    if(isObj(result2)){
-        result2[field] = defaultObj(result2[field]);
-    }
+        const obj = currentResult[field];
+        obj.max = isDecimal(obj.max) ? Math.max(obj.max,val) : val;
+        obj.min = isDecimal(obj.min) ? Math.min(obj.min,val) : val;
+        obj.count = isDecimal(obj.count) ? (obj.count = obj.count +1) : 1;
+        obj.sum = isDecimal(obj.sum) ? (parseDecimal((obj.sum+val).toFixed(10))) : val;
+        obj.average = obj.sum / obj.count;
+        return currentResult;
+    })
     return result;
 }
 export const evalValues = memoize(({data,columns,onlyVisible,displayLabel})=>{

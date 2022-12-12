@@ -498,6 +498,7 @@ const DatagridFactory = (Factory)=>{
                                 context = {this}
                             />
                         </View> : null}
+                        {this.renderSectionListMenu()}
                         <View testID={testID+"_HeaderPagination"} style = {styles.paginationItem}>
                             <Menu 
                                 testID={testID+"_HeaderMenus"}

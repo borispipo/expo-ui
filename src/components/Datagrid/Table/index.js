@@ -175,14 +175,14 @@ const DatagridFactory = (Factory)=>{
                 restItems = [
                     ...this.renderCustomMenu(),
                     ...(selectableMultiple ? [{
-                        label : "Sélect "+max,
+                        label : "Sélectionner "+max.formatNumber(),
                         icon : "select-all",
                         onPress : (x,event)=>{
                             this.handleAllRowsToggle(true);
                         }
                     },
                     {
-                        label : "Tout désélec",
+                        label : "Tout désélectionner",
                         onPress : (x,event)=>{
                             this.handleAllRowsToggle(false);
                         },
@@ -278,6 +278,7 @@ const DatagridFactory = (Factory)=>{
                             ] : visibleColumns}
                         
                         />
+                        {this.renderSectionListMenu()}
                         <View testID={testID+"_HeaderPagination"} style = {styles.paginationItem}>
                             <BottomSheetMenu
                                 testID={testID+"_HeaderMenus"}

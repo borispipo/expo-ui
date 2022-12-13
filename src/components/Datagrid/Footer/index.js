@@ -5,7 +5,7 @@ import memoize from "$react/memoize";
 export {default as FooterItem} from "./Footer";
 import {parseDecimal} from "$utils";
 
-export const evalSingleValue = ({data,columnDef,field,result,displayLabel,onlyVisible})=>{
+export const evalSingleValue = ({data,columnDef,field,result,withLabel,displayLabel,onlyVisible})=>{
     data = data || {}
     if(!isNonNullString(field) || !isObj(columnDef)) return result;
     onlyVisible = defaultBool(onlyVisible,true);
@@ -22,7 +22,7 @@ export const evalSingleValue = ({data,columnDef,field,result,displayLabel,onlyVi
         currentResult = defaultObj(currentResult);
         if(!isObj(currentResult[field])){
             let label = defaultStr(columnDef.label,columnDef.text);
-            if(!label && displayLabel !== false) return currentResult;
+            if(!label && displayLabel !== false && withLabel !== false) return currentResult;
             currentResult[field] = {
                 label,
                 visible : columnDef.visible,
@@ -39,12 +39,12 @@ export const evalSingleValue = ({data,columnDef,field,result,displayLabel,onlyVi
     })
     return result;
 }
-export const evalValues = memoize(({data,columns,onlyVisible,displayLabel})=>{
+export const evalValues = memoize(({data,columns,onlyVisible,withLabel,displayLabel})=>{
     let result = {};
     Object.map(data,(rowData,i)=>{
         if(!isObj(rowData)) return result;
         Object.map(columns,(columnDef,field)=>{
-            result = evalSingleValue({data:rowData,columnDef,field,result,displayLabel,onlyVisible})
+            result = evalSingleValue({data:rowData,columnDef,field,result,withLabel,displayLabel,onlyVisible})
         })
     })
     return result;
@@ -95,3 +95,5 @@ export default function DGGridFooters (props){
         })}
     </Component>
 }
+
+export {_Footer as Footer};

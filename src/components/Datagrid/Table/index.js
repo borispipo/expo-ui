@@ -82,10 +82,6 @@ const DatagridFactory = (Factory)=>{
             }
             return null;
         }
-        updateLayout(e){
-            if(this.state.fixedTable === false) return;
-            return super.updateLayout(e);
-        }
         scrollToEnd(){
             if(!this.canScrollTo()) return;
             if(this.listRef.current && this.listRef.current.scrollToEnd){
@@ -112,7 +108,8 @@ const DatagridFactory = (Factory)=>{
             }
         }
         render(){
-            let {title,testID,actions,selectableMultiple,
+            let {title,testID,actions,
+                selectableMultiple,
                 sortable,
                 autoSort,
                 exportable,
@@ -144,7 +141,7 @@ const DatagridFactory = (Factory)=>{
             exportable = defaultBool(exportable,true);
             let isMobile = isMobileOrTabletMedia();
             selectable = defaultVal(selectable,true);
-            selectableMultiple = defaultBool(selectableMultiple,true);
+            selectableMultiple = this.isSelectableMultiple();
             pagin = defaultVal(pagin,true)
             showPagination = defaultVal(showPagination,true);
 
@@ -162,18 +159,15 @@ const DatagridFactory = (Factory)=>{
             const {visibleColumns} = this.preparedColumns;
             const hasFooterFields = this.hasFooterFields();
             const {columnsWidths:widths,showFilters,showFooters} = this.state;
-            let isAllRowsSelected = this.isAllRowsSelected();
             const isLoading = this.isLoading();
             let _progressBar = this.getProgressBar();
-            const pointerEvents = isLoading? "none":"auto"; 
+            const pointerEvents = this.getPointerEvents(); 
 
-            let selectAllRowsToggleTitle = isAllRowsSelected?"Tout Déselec":"Tout Select"
-            let restItems = [];
+            let restItems = [...this.renderCustomMenu()];
             let max = this.getMaxSelectableRows();
-            if(selectableMultiple && max && defaultBool(this.props.selectableMultiple,true)){
+            if(selectableMultiple && max){
                 max = max.formatNumber();
                 restItems = [
-                    ...this.renderCustomMenu(),
                     ...(selectableMultiple ? [{
                         label : "Sélectionner "+max.formatNumber(),
                         icon : "select-all",
@@ -190,6 +184,17 @@ const DatagridFactory = (Factory)=>{
                     }] : [])
                 ]
             }   
+            const {width,height:winheight} = Dimensions.get("window");
+            const {layout} = this.state;
+            let maxHeight = winheight-100;
+            if(layout && typeof layout.windowHeight =='number' && layout.windowHeight){
+                const diff = winheight - Math.max(defaultNumber(layout.y,layout.top),150);
+                if(winheight<=300){
+                    maxHeight = 300;
+                } else {
+                    maxHeight = diff;
+                }
+            }
             const rPagination = showPagination ? <View style={[styles.paginationContainer]}>
                 <ScrollView horizontal showsHorizontalScrollIndicator={!isLoading} style={styles.paginationContainerStyle} contentContainerStyle={styles.minW100}>
                     <View style={[styles.paginationContent]}>
@@ -201,7 +206,7 @@ const DatagridFactory = (Factory)=>{
                             <Button normal style={[styles.paginationItem]} icon = {"refresh"} onPress = {this.refresh.bind(this)}>
                                 Rafraichir
                             </Button>
-                            {filters !== false && (
+                            {this.isFilterable() && (
                                 <Button
                                     normal
                                     style={styles.paginationItem}
@@ -214,7 +219,7 @@ const DatagridFactory = (Factory)=>{
                             {hasFooterFields ? <Button
                                 normal
                                 style={styles.paginationItem}
-                                onPress =  {()=>{showFooters?this.hideFooter():this.showFooters()} }   
+                                onPress =  {()=>{this.toggleFooters(!showFooters)} }   
                                 icon = {showFooters?'view-column':'view-module'}
                             >   
                                     {showFooters?'Masquer/Ligne des totaux':'Afficher/Ligne des totaux'}
@@ -264,13 +269,13 @@ const DatagridFactory = (Factory)=>{
                                     closeOnPress : false,
                                     items : visibleColumns
                                 },
-                                isMobile && filters !== false?{
+                                isMobile && this.isFilterable() ?{
                                     onPress :  ()=>{showFilters?this.hideFilters():this.showFilters()}    
                                     ,icon :  showFilters?'eye-off':'eye'
                                     ,text : (showFilters?'Masquer/Filtres':'Afficher/Filtres')
                                 } : null,
                                 isMobile && hasFooterFields?{
-                                    onPress :  ()=>{showFooters?this.hideFooter():this.showFooters()}    
+                                    onPress :  ()=>{this.toggleFooters(!showFooters)}    
                                     ,icon :  showFooters?'view-column':'view-module'
                                     ,text : (showFooters?'Masquer/Ligne des totaux':'Afficher/Ligne des totaux')
                                 } : null,
@@ -307,22 +312,28 @@ const DatagridFactory = (Factory)=>{
                     </View>
                 </ScrollView>
             </View> : null;
-            return <View style={[styles.container]} pointerEvents={pointerEvents}>
+            return <View style={[styles.container,{maxHeight}]} pointerEvents={pointerEvents}>
                 <View ref={this.layoutRef}>
-                    <DatagridActions 
+                    {this.props.showActions !== false ? <DatagridActions 
                         pointerEvents = {pointerEvents}
                         title = {title}
                         context = {this}
                         selectedRows = {Object.assign({},this.selectedRows)}
                         selectedRowsActions = {this.renderSelectedRowsActions.bind(this)}
                         actions = {actions}
-                    />
+                    /> : null}
                     {rPagination}
                     {_progressBar}  
                 </View>
                 <Table
                     ref = {this.listRef}
                     {...rest}
+                    onLayout = {(args)=>{
+                        if(rest.onLayout){
+                            rest.onLayout(args);
+                        }
+                        this.updateLayout(args);
+                    }}
                     getItemType = {this.getFlashListItemType.bind(this)}
                     renderItem = {this.renderFlashListItem.bind(this)}
                     hasFooters = {hasFooterFields}

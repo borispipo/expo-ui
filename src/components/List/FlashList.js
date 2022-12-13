@@ -12,8 +12,8 @@ const FlashListComponent = React.forwardRef((props,ref)=>{
                 ListHeaderComponent={() => (
                     <View testID={(testID||'RN_FlashListComponent')+"_Header"}>{props.children}</View>
                 )}
-                disableAutoLayout
-                disableHorizontalListHeightMeasurement = {props.horizontal?undefined : true}
+                //disableAutoLayout
+                //disableHorizontalListHeightMeasurement = {props.horizontal?undefined : true}
                 {...props}
                 contentContainerStyle = {undefined}
                 style = {undefined}

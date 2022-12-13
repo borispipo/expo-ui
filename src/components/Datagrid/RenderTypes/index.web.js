@@ -1,6 +1,6 @@
 import { fixedIcon,virtualIcon } from "./utils"
 export default {
-    fixed : {
+    fixed : false && {
         code:'fixed',icon:fixedIcon,
         label:'Tableau virtuel optimisé',
         desktop:true,

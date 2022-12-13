@@ -18,7 +18,7 @@ const DatagridRenderTypeComponent = (props)=>{
     let type = defaultStr(get(typeKey),isDesk? "fixed":'accordion').toLowerCase().trim();
     const rTypes = [
         {...getActiveProps(type,'accordion'),tooltip:"Les éléments de liste s'affichent de manière optimisé pour téléphone mobile",code:'accordion',icon:accordionIcon,label:'Mobile',labelText:'environnement optimisé pour téléphone mobile'},
-        {...getActiveProps(type,'table'),tooltip:"Les éléments de listes s'affichent dans un tableau rééel",code:'table',icon:tableIcon,label:'Tableau réel avec pagination'}
+        //{...getActiveProps(type,'table'),tooltip:"Les éléments de listes s'affichent dans un tableau rééel",code:'table',icon:tableIcon,label:'Tableau réel avec pagination'}
     ]  
     Object.map(rendersTypes,(t,i)=>{
         if(isObj(t)){

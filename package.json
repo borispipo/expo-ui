@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "2.18.6",
+  "version": "2.19.7",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "index.js",
   "scripts": {
@@ -103,6 +103,7 @@
     "react-native-webview": "11.23.1",
     "sharp-cli": "^2.1.0",
     "tippy.js": "^6.3.7",
+    "use-event-callback": "^0.1.0",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

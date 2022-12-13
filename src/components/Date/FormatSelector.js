@@ -82,6 +82,7 @@ export const selectDateFormatFieldProps = ({onAdd:customOnAdd,onAddCustomFormat,
         ...defaultObj(props),
         onAdd,
         onAdd : undefined,
+        showAdd : false,
     }
 }
 export const getDateFormatSelectorItems = x=> Object.map(DateLib.formats,(format)=>{
@@ -89,7 +90,7 @@ export const getDateFormatSelectorItems = x=> Object.map(DateLib.formats,(format
 });
 
 export const dateFormatSelectorRenderItem = ({item})=>{
-    return "{0}, EX : {1}".sprintf(item.code,item.label);
+    return "{0} [{1}]".sprintf(item.label,item.code);
 }
 
 DateFormatSelector.propTypes = {

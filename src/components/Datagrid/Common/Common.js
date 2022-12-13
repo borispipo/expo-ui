@@ -118,6 +118,7 @@ export default class CommonDatagridComponent extends AppComponent {
             sectionListHeaderFooters : {value : {}},
             sectionListDataSize : {value : {current : 0}},
             enablePointerEventsRef : {value : {current:false}},
+            configureSectionListSelectedValues : {value : {}},
             sectionListColumnsSize : {value : {current:0}}, //la taille du nombre d'éléments de section dans les colonnes
         }) 
         this.isLoading = this.isLoading.bind(this);
@@ -1004,12 +1005,13 @@ export default class CommonDatagridComponent extends AppComponent {
         if(type.contains("date") || type =='time'){
             return new Promise((resolve,reject)=>{
                 DialogProvider.open({
+                    title : 'Format de date',
                     fields : {
                         dateFormat : {
                             type : 'select_dateformat',
                             required : true,
                             text : 'Sélectionnez un format de date',
-                            defaultValue : "dd/mm/yyyy",
+                            defaultValue : defaultStr(this.configureSectionListSelectedValues[column.field],"dd/mm/yyyy"),
                         }
                     },
                     onCancelButtonPress : ()=>{
@@ -1021,6 +1023,7 @@ export default class CommonDatagridComponent extends AppComponent {
                         icon : "check",
                         onPress : ({data})=>{
                             column.format = data.dateFormat;
+                            this.configureSectionListSelectedValues[column.field] = data.dateFormat;
                             DialogProvider.close();
                             setTimeout(()=>{
                                 resolve(column);
@@ -1058,7 +1061,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 return cb();
             }
             return this.configureSectionListColumn(sectionListColumns[columnName]).then(cb).catch(notify.error)
-        }, 200);
+        }, 100);
    }
    removeAllColumnsInSectionList(){
         const {sectionListColumns} = this.prepareColumns({sectionListColumns:{}});
@@ -1097,7 +1100,7 @@ export default class CommonDatagridComponent extends AppComponent {
                     onPress : ()=>{
                         setTimeout(()=>{
                             this.removeAllColumnsInSectionList();
-                        },300)
+                        },100)
                     }
                 },
                 ...m,
@@ -1176,7 +1179,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 onPress : ()=>{
                     setTimeout(() => {
                         this.toggleColumnVisibility(header.field);
-                    },300);
+                    },100);
                     return false;
                 },
                 title : title,
@@ -1896,7 +1899,7 @@ export default class CommonDatagridComponent extends AppComponent {
         }
         cb && setTimeout(() => {
             cb();
-        }, 500);
+        }, 200);
     }
     isAllRowsSelected(update){
         return this.selectedRowsCount && this.selectedRowsCount === this.getMaxSelectableRows()? true : false;

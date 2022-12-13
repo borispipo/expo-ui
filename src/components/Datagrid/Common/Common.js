@@ -2067,10 +2067,10 @@ export default class CommonDatagridComponent extends AppComponent {
                 _render = <Hashtag>{_render}</Hashtag>
              } else if(typeof columnDef.render === "function"){
                  _render = columnDef.render.call(this,renderArgs);
-             } else if(arrayValueExists( _type,["date","datetime","time"]) && isNonNullString(rowData[columnField])){
+             } else if(arrayValueExists( _type,["date","datetime","time"])){
                  let _dd =DateLib.parse(rowData[columnField],_type === 'time'?DateLib.isoTimeFormat:DateLib.SQLDateFormat);
                  if(DateLib.isDateObj(_dd)){
-                     _render = DateLib.format(_dd,(_type === 'time'?DateLib.defaultTimeFormat:DateLib.masks.defaultDate));
+                     _render = DateLib.format(_dd,defaultStr(columnDef.format,(_type === 'time'?DateLib.defaultTimeFormat:DateLib.masks.defaultDate)));
                  }
                  if(!_render) _render = rowData[columnField]
              } else if(arrayValueExists(_type,['switch','checkbox'])){

@@ -168,12 +168,11 @@ const DatagridFactory = (Factory)=>{
             let _progressBar = this.getProgressBar();
             const pointerEvents = isLoading? "none":"auto"; 
 
-            let restItems = [];
+            let restItems = [...this.renderCustomMenu()];
             let max = this.getMaxSelectableRows();
             if(selectableMultiple && max){
                 max = max.formatNumber();
                 restItems = [
-                    ...this.renderCustomMenu(),
                     ...(selectableMultiple ? [{
                         label : "Sélectionner "+max.formatNumber(),
                         icon : "select-all",

@@ -215,6 +215,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flexDirection: 'row',
+    flexWrap : "wrap",
     justifyContent: 'space-between',
     margin: 8,
     borderRadius: 4,

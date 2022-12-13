@@ -84,6 +84,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         testID,
         autoSort,
         handleQueryLimit,
+        onFetchData,
         ...rest
     } = props;
     rest = defaultObj(rest);
@@ -166,6 +167,9 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                  */
                 dataRef.current = data;
                 hasResultRef.current = true;
+                if(onFetchData && typeof onFetchData =='function'){
+                    onFetchData({allData:data,total,data,context:innerRef.current})
+                }
                 return data;
             };
             hasResultRef.current = false;

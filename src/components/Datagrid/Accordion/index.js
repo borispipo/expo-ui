@@ -317,7 +317,7 @@ const DatagridFactory = (Factory)=>{
         }
         render (){
             let {
-                filters,
+                filters:customFilters,
                 filter,
                 actions,
                 sortable,
@@ -396,10 +396,6 @@ const DatagridFactory = (Factory)=>{
             let exportTableProps = this.getExportableProps();
     
             filter = defaultFunc(filter,x=>true);
-            filters = defaultVal(filters,true);
-            if(toggleFilters === false){
-                filters = false;
-            }
             let {showFilters,showFooters} = this.state;
             let max = this.getMaxSelectableRows();
             let restItems = [];
@@ -429,8 +425,7 @@ const DatagridFactory = (Factory)=>{
             this.renderedListHeight = Math.max(300,containerHeight - (this.hasScrollViewParent() ? 50:0));
             const isLoading = this.isLoading();
             const _progressBar = this.getProgressBar();
-            const pointerEvents = isLoading || _progressBar ? "none":"auto"; 
-            
+            const pointerEvents = this.getPointerEvents(); 
             const {
                 sortedColumns:sortColumns,
                 sortedColumnsLength,
@@ -486,7 +481,7 @@ const DatagridFactory = (Factory)=>{
                                 }}
                             />
                         </View> : null}
-                        {filters !== false ? <View>
+                        {this.isFilterable() && showFilters ? <View>
                             <FiltersAccordionComponent
                                 testID={testID+"_HeaderFilters"}
                                 isLoading = {isLoading}
@@ -516,7 +511,7 @@ const DatagridFactory = (Factory)=>{
                                         closeOnPress : false,
                                     } : null,
                                     hasFooterFields ? {
-                                        onPress :  ()=>{showFooters?this.hideFooter():this.showFooters()}    
+                                        onPress :  ()=>{this.toggleFooters(!showFooters)}    
                                         ,icon :  showFooters?'view-column':'view-module'
                                         ,text : (showFooters?'Masquer/Ligne des totaux':'Afficher/Ligne des totaux')
                                     }:null,

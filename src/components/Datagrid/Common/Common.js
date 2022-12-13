@@ -76,11 +76,11 @@ export default class CommonDatagridComponent extends AppComponent {
         });
         selectedRows = sRows;
         let sData = this.getSessionData()
-        sData.showFooters = defaultVal(sData.showFooters,true);
+        sData.showFooters = defaultVal(sData.showFooters,this.isTableData());
         sData.fixedTable = defaultBool(sData.fixedTable,false);
         extendObj(this.state, {
             data,
-            showFilters : defaultBool(props.showFilters,(sData.showFilter? true : this.isPivotDatagrid())),
+            showFilters : this.isFilterable() && defaultBool(props.showFilters,(sData.showFilter? true : this.isPivotDatagrid())) || false,
             showFooters : defaultBool(props.showFooters,(sData.showFooters? true : false)),
             fixedTable : sData.fixedTable
         });
@@ -116,6 +116,7 @@ export default class CommonDatagridComponent extends AppComponent {
             hasFoundSectionData : {value : {current: false}},
             sectionListHeaderFooters : {value : {}},
             sectionListDataSize : {value : {current : 0}},
+            enablePointerEventsRef : {value : {current:false}},
             sectionListColumnsSize : {value : {current:0}}, //la taille du nombre d'éléments de section dans les colonnes
         }) 
         this.isLoading = this.isLoading.bind(this);
@@ -874,9 +875,11 @@ export default class CommonDatagridComponent extends AppComponent {
         value = defaultDecimal(value);
         this.handlePagination(0, value, 1);
     };
-
+   isFilterable(){
+        return this.props.filterable !== false && this.props.filters !== false ? true : false;
+   }
    showFilters(){
-       if(!this._isMounted()) {
+       if(!this._isMounted() || !this.isFilterable()) {
             this.isUpdating = false;
             return;
        }
@@ -888,7 +891,7 @@ export default class CommonDatagridComponent extends AppComponent {
        })
    }
   hideFilters (){
-       if(!this._isMounted()) {
+       if(!this._isMounted() || !this.isFilterable()) {
           this.isUpdating = false;
           return;
        }
@@ -899,33 +902,42 @@ export default class CommonDatagridComponent extends AppComponent {
        })
    }
 
-
-    showFooters(){
+    toggleFooters(showOrHide){
+        if(typeof showOrHide !=='boolean' || this.state.showFooters === showOrHide) return;
         if(!this._isMounted()) {
             this.isUpdating = false;
             return;
         }
         if(this.isUpdating) return false;
         this.isUpdating = true;
-        this.setState( {showFooters:true},()=>{
-            this.isUpdating = false;
-            this.setSessionData({showFooters:true})
-        })
+        setTimeout(()=>{
+            if(this.hasSectionListData() && this.getSectionListDataSize()){
+                return this.setIsLoading(true,()=>{
+                    this.prepareData({data:this.INITIAL_STATE.data},(state)=>{
+                        this.setState({...state,showFooters:showOrHide},()=>{
+                            this.setIsLoading(false,false);
+                            this.isUpdating = false;
+                            this.setSessionData({showFooters:showOrHide});
+                        })
+                    })
+                },true)
+            }
+            this.setState( {showFooters:showOrHide},()=>{
+                this.isUpdating = false;
+                this.setSessionData({showFooters:showOrHide})
+            })
+        },200)
+    }
+    showFooters(){
+        return this.toggleFooters(true);
+    }
+    hideFooters (){
+        return this.toggleFooters(false);
     }
     setState(a,b){
         super.setState(a,b);
     }
-    hideFooter (){
-        if(!this._isMounted()) {
-             this.isUpdating = false;
-             return;
-        }
-        if(this.isUpdating) return false;
-        this.setState({showFooters:false},()=>{
-            this.isUpdating = false;
-            this.setSessionData({showFooters:false});
-        })
-    }
+    
    
    toggleFixedTableState(){
        const fixedTable = !this.state.fixedTable;
@@ -993,19 +1005,23 @@ export default class CommonDatagridComponent extends AppComponent {
             sectionListColumns[columnName] = {};
         }
         const {sectionListColumns:pSListColumns} = this.prepareColumns({sectionListColumns});
-        this.prepareData({data:this.INITIAL_STATE.data,sectionListColumns:pSListColumns},(state)=>{
-            this.setState({...state,sectionListColumns:pSListColumns},()=>{
-                this.setIsLoading(false);
+        this.setIsLoading(true,()=>{
+            this.prepareData({data:this.INITIAL_STATE.data,sectionListColumns:pSListColumns},(state)=>{
+                this.setState({...state,sectionListColumns:pSListColumns},()=>{
+                    this.setIsLoading(false,false);
+                });
             });
-        });
+        },true);
    }
    removeAllColumnsInSectionList(){
         const {sectionListColumns} = this.prepareColumns({sectionListColumns:{}});
-        this.prepareData({data:this.INITIAL_STATE.data,sectionListColumns},(state)=>{
-            this.setState({...state,sectionListColumns},()=>{
-                this.setIsLoading(false);
+        this.setIsLoading(true,()=>{
+            this.prepareData({data:this.INITIAL_STATE.data,sectionListColumns},(state)=>{
+                this.setState({...state,sectionListColumns},()=>{
+                    this.setIsLoading(false,false);
+                });
             });
-        });
+        },true);
    }
    /*** permet d'effectuer le rendu des colonnes groupable dans le menu item */
    renderSectionListMenu(){
@@ -1470,7 +1486,7 @@ export default class CommonDatagridComponent extends AppComponent {
             }
         }
         return <View testID={testID+"_ContentContainer"}  style={[theme.styles.w100,theme.styles,theme.styles.justifyContentCenter,theme.styles.pt1,theme.styles.pb1,theme.styles.alignItemsCenter,!cells && theme.styles.ml1,theme.styles.mr1,cStyle]}>
-            <Label testID={testID+"_Label"} splitText numberOfLines={3} textBold style={[theme.styles.w100,lStyle]}>{label}</Label>
+            <Label testID={testID+"_Label"} splitText numberOfLines={3} textBold style={[theme.styles.w100,{color:theme.colors.primaryOnSurface,fontSize:16},lStyle]}>{label}</Label>
             {cells ? <View style = {[theme.styles.w100,theme.styles.row,theme.styles.alignItemsFlexStart]}
             >{cells}</View> : null}
         </View>
@@ -1627,6 +1643,22 @@ export default class CommonDatagridComponent extends AppComponent {
     }
     beforeFetchData(){}
     fetchData({fetchOptions}){
+        if(typeof this.props.fetchData =='function'){
+            const r = this.props.fetchData(fetchOptions);
+            if(isPromise(r)){
+                return r.then((data)=>{
+                    if(isObjOrArray(data)){
+                        this.setIsLoading(true,()=>{
+                            this.prepareData({data},(state)=>{
+                                this.setState(state,()=>{
+                                    this.setIsLoading(false,false);
+                                })
+                            })
+                        },true)
+                    }
+                })
+            }
+        }
         return Promise.resolve(this.state.data);
     }
     /****  Filtre le tableau */
@@ -1728,6 +1760,9 @@ export default class CommonDatagridComponent extends AppComponent {
             if(isFunction(cb)){
                 cb(data);
             }
+            if(typeof this.props.onRefreshDatagrid ==='function'){
+                this.props.onRefreshDatagrid({context:this,force});
+            }
         })
     }
     onResizePage(){}
@@ -1782,7 +1817,20 @@ export default class CommonDatagridComponent extends AppComponent {
     canSetIsLoading(){
         return isObj(this.progressBarRef.current) && typeof this.progressBarRef.current.setIsLoading =='function' ? true : false;
     }
-    setIsLoading(loading,cb){
+    /***
+     * @param {boolean} loading
+     * @param {function | boolean} cb | enablePointerEvents
+     * @param {boolean|function} enablePointerEvents
+     */
+    setIsLoading(loading,cb,enablePointerEvents){
+        if(typeof cb =='boolean'){
+            const t = enablePointerEvents;
+            enablePointerEvents = cb;
+            cb = t;
+        }
+        if(typeof enablePointerEvents =='boolean'){
+            this.enablePointerEventsRef.current = enablePointerEvents;
+        }
         if(this.canSetIsLoading() && typeof loading =='boolean'){
             return this.progressBarRef.current.setIsLoading(loading,()=>{
                 if(typeof cb =='function'){
@@ -1839,6 +1887,13 @@ export default class CommonDatagridComponent extends AppComponent {
             layout,
         }
     }
+    getPointerEvents(){
+        if(this.props.isLoading){
+            return "none";
+        }
+        if(this.enablePointerEventsRef.current) return true;
+        return this.isLoading()? "none":"auto";
+    }
     updateLayout(p){
         this.measureLayout(state=>{
             if(isObj(state)){
@@ -1859,9 +1914,13 @@ export default class CommonDatagridComponent extends AppComponent {
             }
             return false;
         }
-        this.prepareData({...nextProps,force:true},(state)=>{
-            this.setState(state)
-        });
+        this.setIsLoading(true,()=>{
+            this.prepareData({...nextProps,force:true},(state)=>{
+                this.setState(state,()=>{
+                    this.setIsLoading(false,false);
+                })
+            });
+        },true);
     }
     getDefaultPreloader(props){
         return CommonDatagridComponent.getDefaultPreloader();
@@ -2174,6 +2233,7 @@ CommonDatagridComponent.propTypes = {
         PropTypes.object,
         PropTypes.func,
     ]),
+    filterable : PropTypes.bool, //si le composant peut être filtrable
     /*** si les filtres de données seront convertis au format SQL avant d'effectuer la requête distante */
     convertFiltersToSQL : PropTypes.bool,
     isLoading : PropTypes.bool,///si les données sont en train d'être chargées
@@ -2297,6 +2357,7 @@ CommonDatagridComponent.propTypes = {
     ///pour l'affichage où non des filtres
     toggleFilters : PropTypes.bool,
     desktop: PropTypes.bool,
+    onRefreshDatagrid : PropTypes.func,//lorsque le datagrid est actualisé, rafraichir
     ///les props à apppliquer à l'accordion
     /**** l'accordion peut rendre un objet ou un objet react ou null 
      * si c'est un objet, alors il peut être de la forme :  

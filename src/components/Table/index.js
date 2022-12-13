@@ -250,9 +250,13 @@ const TableComponent = React.forwardRef(({containerProps,renderEmpty,renderItem,
                         absoluteScrollViewRef.current.checkVisibility(nativeEvent);
                     }
                 })} 
-                onLayout={({nativeEvent:{layout}}) => {
+                onLayout={(args) => {
+                    const {nativeEvent:{layout}} = args;
                     scrollViewLayoutRef.current.layout = layout;
                     toggleAbsoluteScrollVisible();
+                    if(typeof props.onContainerLayout =='function'){
+                        props.onContainerLayout(args);
+                    }
                 }}
                 ref={scrollViewRef} 
                 testID={testID+"_ScrollView"}

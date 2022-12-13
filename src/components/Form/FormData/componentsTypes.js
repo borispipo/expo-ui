@@ -14,8 +14,9 @@ const componentTypes =  {
     piece : Fields.PieceField,
     select : Fields.SelectField,
     switch : Fields.Switch,
-    select_country : Fields.SelectCountry,
     selectcountry : Fields.SelectCountry,
+    selectdateformat : Fields.SelectDateFormat,
+    dateformat : Fields.SelectDateFormat,
     date : Fields.Date,
     time : Fields.Time,
     datetime  : Fields.DateTime,
@@ -97,9 +98,15 @@ export const getFilterComponentProps = (_props)=>{
         component = type == 'datetime' ? Fields.DateTime : type === 'date'? Fields.Date : Fields.Time;
     }  else if(type == 'color' || type =='colorpicker') {
         component = Fields.ColorPicker;
-    } else if(React.isComponent(componentTypes[type])) {
+    } else if(type == 'dateformat' || type =='select_dateformat' || type =='select_date_format') {
+        component = Fields.SelectDateFormat;
+    } else if(React.isComponent()) {
         component = componentTypes[type];
     }else {
+        const tt = type.replaceAll("_","").toLowerCase();
+        if(React.isComponent(componentTypes[tt])){
+            component = componentTypes[tt];
+        } 
         delete props.dbName;
         delete props.tableName;
         props.label = label; 

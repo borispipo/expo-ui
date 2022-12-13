@@ -18,6 +18,7 @@ import Html from "./Html";
 import * as eFormFields from "$extendFormFields";
 import "$utils";
 import React from "$react";
+import SelectDateFormat from "./SelectDateFormat";
 
 export * from "$extendFormFields";
 
@@ -38,6 +39,7 @@ const defFormFields = {
     ,Time
     ,Image
     ,Tel
+    ,SelectDateFormat
     ,Html
 }
 
@@ -67,5 +69,6 @@ export {
     ,Time
     ,Image
     ,Tel
+    ,SelectDateFormat
     ,Html
 }

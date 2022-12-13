@@ -118,6 +118,7 @@ const Snackbar = ({
     paddingBottom: bottom,
     paddingHorizontal: Math.max(left, right),
   };
+  action = React.isValidElement(action)? action : null;
   return (
     <View
       testID={testID+"_Container"}
@@ -150,13 +151,13 @@ const Snackbar = ({
             style
         ]}
       >
-        {<View testID={testID+"_Content"} {...contentProps} style={[styles.content,contentProps.style]}>
+        {<View testID={testID+"_Content"} {...contentProps} style={[styles.content,contentProps.style,action && theme.styles.pr1]}>
             {typeof children =='string' || typeof children ==='string' ?
              <Label {...labelProps} style={[{color:flattenStyle.color,backgroundColor:flattenStyle.backgroundColor},labelProps.style]}>
                 {children}
             </Label> : React.isValidElement(children)? children : null}
         </View>}
-        {React.isValidElement(action)? action : null}
+        {action}
       </Surface>
     </View>
   );

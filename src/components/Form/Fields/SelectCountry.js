@@ -1,6 +1,5 @@
 import SelectField from "./SelectField";
 import {getCountryFieldProps} from "$ecomponents/Countries";
-import {defaultVal} from "$utils";
 
 export default class FormFieldSelectCountry extends SelectField{
     getComponentProps(props){
@@ -9,4 +8,7 @@ export default class FormFieldSelectCountry extends SelectField{
     _render(props){
         return super._render(this.getComponentProps(props))
     }
+}
+FormFieldSelectCountry.propTypes = {
+    ...SelectField.propTypes,
 }

@@ -37,6 +37,7 @@ import {Flag} from "$ecomponents/Countries"
 import View from "$ecomponents/View";
 import {Menu} from "$ecomponents/BottomSheet";
 import {styles as tableStyles} from "$ecomponents/Table";
+import {DialogProvider} from "$ecomponents/Form/FormData";
 
 export const arrayValueSeparator = ", ";
 
@@ -993,6 +994,44 @@ export default class CommonDatagridComponent extends AppComponent {
         }
         return null;
    }
+   /*** configure la  */
+   configureSectionListColumn(column){
+        if(!isObj(column) || !isNonNullString(column.field) || !isObj(this.state.columns[column.field])){
+            return Promise.reject({message : 'type de colonne invalide, impossible de configurer la colonne, pour permettre qu\elle soit ajoutée dans les colonnes de groupe du tableau'})
+        }
+        const col = this.state.columns[column.field];
+        const type = defaultStr(col.jsType,col.type).toLowerCase();
+        if(type.contains("date") || type =='time'){
+            return new Promise((resolve,reject)=>{
+                DialogProvider.open({
+                    fields : {
+                        dateFormat : {
+                            type : 'select_dateformat',
+                            required : true,
+                            text : 'Sélectionnez un format de date',
+                            defaultValue : "dd/mm/yyyy",
+                        }
+                    },
+                    onCancelButtonPress : ()=>{
+                        DialogProvider.close();
+                        reject({msg:'aucun format sélectionné'})
+                    },
+                    actions : [{
+                        text : "Sélectionnez",
+                        icon : "check",
+                        onPress : ({data})=>{
+                            column.format = data.dateFormat;
+                            DialogProvider.close();
+                            setTimeout(()=>{
+                                resolve(column);
+                            },100)
+                        },
+                    }]
+                })
+            })
+        }
+        return Promise.resolve(column);
+   }
    toggleColumnInSectionList(columnName){
         if(!isNonNullString(columnName) || !isObj(this.state.columns[columnName])) return;
         if(!isObj(this.state.sectionListColumns) || !Array.isArray(this.preparedColumns?.sectionListColumnsMenuItems))return;
@@ -1002,16 +1041,24 @@ export default class CommonDatagridComponent extends AppComponent {
         if(isObj(sectionListColumns[columnName])){
             delete sectionListColumns[columnName];
         } else {
-            sectionListColumns[columnName] = {};
+            sectionListColumns[columnName] = {field:columnName};
         }
-        const {sectionListColumns:pSListColumns} = this.prepareColumns({sectionListColumns});
-        this.setIsLoading(true,()=>{
-            this.prepareData({data:this.INITIAL_STATE.data,sectionListColumns:pSListColumns},(state)=>{
-                this.setState({...state,sectionListColumns:pSListColumns},()=>{
-                    this.setIsLoading(false,false);
+        const cb =()=>{
+            const {sectionListColumns:pSListColumns} = this.prepareColumns({sectionListColumns});
+            this.setIsLoading(true,()=>{
+                this.prepareData({data:this.INITIAL_STATE.data,sectionListColumns:pSListColumns},(state)=>{
+                    this.setState({...state,sectionListColumns:pSListColumns},()=>{
+                        this.setIsLoading(false,false);
+                    });
                 });
-            });
-        },true);
+            },true);
+        }
+        setTimeout(() => {
+            if(!isObj(sectionListColumns[columnName])){
+                return cb();
+            }
+            return this.configureSectionListColumn(sectionListColumns[columnName]).then(cb).catch(notify.error)
+        }, 200);
    }
    removeAllColumnsInSectionList(){
         const {sectionListColumns} = this.prepareColumns({sectionListColumns:{}});
@@ -1230,9 +1277,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 sectionListColumnsMenuItems.push({
                     field,
                     onPress : ()=>{
-                        setTimeout(()=>{
-                            this.toggleColumnInSectionList(field);
-                        },300)
+                        this.toggleColumnInSectionList(field);
                         return false;
                     },
                     title : title,

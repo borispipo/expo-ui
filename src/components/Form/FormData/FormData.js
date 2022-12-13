@@ -10,7 +10,7 @@ import PropTypes from "prop-types";
 import {renderActions} from "$ecomponents/Dialog/utils";
 //import {isDocUpdate} from "$database/utils";
 import {handleBeforeSaveCallback} from "./utils";
-import componentTypes from "./componentsTypes";
+import componentsTypes from "./componentsTypes";
 import { keyboardShortcuts } from "../utils";
 
 export default class FormDataComponent extends AppComponent{
@@ -191,7 +191,7 @@ export default class FormDataComponent extends AppComponent{
             } else if(isObj(field) && field.form !== false) {
                 const name = defaultStr(field.name,field.field,index);
                 const type = defaultStr(field.jsType,field.type,"text").trim().toLowerCase().replaceAll("_","");
-                const Component = componentTypes[type] || componentTypes.default;
+                const Component = componentsTypes[type] || componentsTypes.default;
                 let {defaultValue,useDefaultValueFromData,hidden,renderFormDataField,getMediaQueryStyle,printLabels,queryLimit,selected,value,visible,dataFilesInterest,perm,ignore,form,responsiveProps:customResponsiveProps,...rest} = field;
                 rest = Object.assign({},rest);
                 delete rest.import;

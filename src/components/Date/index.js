@@ -11,3 +11,6 @@ export default DateComponent;
 export {default as Time} from "./Time";
 
 export {default as DateTime} from "./DateTime";
+
+export * from "./FormatSelector";
+export {default as FormatSelector} from "./FormatSelector";

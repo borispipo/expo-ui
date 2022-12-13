@@ -993,23 +993,19 @@ export default class CommonDatagridComponent extends AppComponent {
             sectionListColumns[columnName] = {};
         }
         const {sectionListColumns:pSListColumns} = this.prepareColumns({sectionListColumns});
-        this.setIsLoading(true,()=>{
-            this.prepareData({data:this.INITIAL_STATE.data,sectionListColumns:pSListColumns},(state)=>{
-                this.setState({...state,sectionListColumns:pSListColumns},()=>{
-                    this.setIsLoading(false);
-                });
+        this.prepareData({data:this.INITIAL_STATE.data,sectionListColumns:pSListColumns},(state)=>{
+            this.setState({...state,sectionListColumns:pSListColumns},()=>{
+                this.setIsLoading(false);
             });
-        })
+        });
    }
    removeAllColumnsInSectionList(){
         const {sectionListColumns} = this.prepareColumns({sectionListColumns:{}});
-        this.setIsLoading(true,()=>{
-            this.prepareData({data:this.INITIAL_STATE.data,sectionListColumns},(state)=>{
-                this.setState({...state,sectionListColumns},()=>{
-                    this.setIsLoading(false);
-                });
+        this.prepareData({data:this.INITIAL_STATE.data,sectionListColumns},(state)=>{
+            this.setState({...state,sectionListColumns},()=>{
+                this.setIsLoading(false);
             });
-        })
+        });
    }
    /*** permet d'effectuer le rendu des colonnes groupable dans le menu item */
    renderSectionListMenu(){
@@ -1885,8 +1881,11 @@ export default class CommonDatagridComponent extends AppComponent {
     canAutoSort(){
         return this.isSortable() && this.props.autoSort !==false ? true : false;
     }
+    isSelectable(){
+        return this.props.selectable !== false ? true : false;
+    }
     isSelectableMultiple(){
-        return defaultBool(this.props.selectableMultiple,true)
+        return this.isSelectable() && defaultBool(this.props.selectableMultiple,true)
     }
     getSort(){
         return defaultObj(this.sortRef.current);

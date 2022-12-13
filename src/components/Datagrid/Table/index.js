@@ -112,7 +112,8 @@ const DatagridFactory = (Factory)=>{
             }
         }
         render(){
-            let {title,testID,actions,selectableMultiple,
+            let {title,testID,actions,
+                selectableMultiple,
                 sortable,
                 autoSort,
                 exportable,
@@ -144,7 +145,7 @@ const DatagridFactory = (Factory)=>{
             exportable = defaultBool(exportable,true);
             let isMobile = isMobileOrTabletMedia();
             selectable = defaultVal(selectable,true);
-            selectableMultiple = defaultBool(selectableMultiple,true);
+            selectableMultiple = this.isSelectableMultiple();
             pagin = defaultVal(pagin,true)
             showPagination = defaultVal(showPagination,true);
 
@@ -167,10 +168,9 @@ const DatagridFactory = (Factory)=>{
             let _progressBar = this.getProgressBar();
             const pointerEvents = isLoading? "none":"auto"; 
 
-            let selectAllRowsToggleTitle = isAllRowsSelected?"Tout Déselec":"Tout Select"
             let restItems = [];
             let max = this.getMaxSelectableRows();
-            if(selectableMultiple && max && defaultBool(this.props.selectableMultiple,true)){
+            if(selectableMultiple && max){
                 max = max.formatNumber();
                 restItems = [
                     ...this.renderCustomMenu(),

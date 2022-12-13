@@ -1151,7 +1151,7 @@ export default class CommonDatagridComponent extends AppComponent {
                     sortedColumn.header = header;
                     sortedColumn.label = restCol.label;
                     const isDesc = currentSortedColumn.dir === "desc";
-                    const prefix = (sortType =='number' || sortType == 'decimal') ? "numeric" : sortType =='boolean'?'bool' : sortType =='date'? 'calendar': sortType =='time'? 'clock' : 'alphabetical'; 
+                    const prefix = (sortType =='number' || sortType == 'decimal') ? "numeric" : sortType =='boolean'?'bool' : sortType.contains('date') ? 'calendar': sortType =='time'? 'clock' : 'alphabetical'; 
                     sortedColumn.icon = 'sort-'+prefix+'-'+(isDesc ? "descending" : "ascending");
                     sortedColumn.title = (isDesc ? "Trié par ordre décroissant":"Trié par ordre croissant ")+ " du champ ["+restCol.label+"]";
                 }      

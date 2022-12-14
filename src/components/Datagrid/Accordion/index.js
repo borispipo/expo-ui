@@ -339,8 +339,11 @@ const DatagridFactory = (Factory)=>{
                 backToTopProps,
                 testID,
                 renderEmpty,
+                chartContainerProps,
                 ...rest
             } = this.props
+            chartContainerProps = defaultObj(chartContainerProps);
+            const canRenderChart = this.canRenderChart();
             const hasData = this.state.data.length ? true : false;
             testID = defaultStr(testID,"RN_DatagridAccordion");
             backToTopProps = defaultObj(backToTopProps);
@@ -504,25 +507,25 @@ const DatagridFactory = (Factory)=>{
                                         icon : "refresh",
                                         onPress : this.refresh.bind(this)
                                     },
-                                    visibleColumns.length ? {
+                                    !canRenderChart && visibleColumns.length ? {
                                         text : 'colonnes',
                                         icon : "view-column",
                                         items : visibleColumns,
                                         closeOnPress : false,
                                     } : null,
-                                    hasFooterFields ? {
+                                    !canRenderChart && hasFooterFields ? {
                                         onPress :  ()=>{this.toggleFooters(!showFooters)}    
                                         ,icon :  showFooters?'view-column':'view-module'
                                         ,text : (showFooters?'Masquer/Ligne des totaux':'Afficher/Ligne des totaux')
                                     }:null,
                                     ...this.renderCustomMenu(),
                                     ...restItems,
-                                    this.canScrollTo() &&  {
+                                    !canRenderChart && this.canScrollTo() &&  {
                                         text : 'Retour en haut',
                                         icon : "arrow-up-bold",
                                         onPress : this.scrollToTop.bind(this)
                                     },
-                                    this.canScrollTo() && {
+                                    !canRenderChart && this.canScrollTo() && {
                                         text : 'Aller à la dernière ligne',
                                         icon : "arrow-down-bold",
                                         onPress : this.scrollToEnd.bind(this)
@@ -570,7 +573,7 @@ const DatagridFactory = (Factory)=>{
                         /> : null}
                         {datagridHeader}
                         {_progressBar}
-                        {showFooters ? (
+                        {!canRenderChart && showFooters ? (
                             <View  testID={testID+"_FooterContainer"} pointerEvents={pointerEvents} style={[{justifyContent:'center'}]}>
                                 <View  testID={testID+"_FooterContentContainer"} style={[styles.footersContainer]}>
                                     <ScrollView testID={testID+"_FooterScrollView"} horizontal contentContainerStyle={[styles.contentContainerStyle]}>
@@ -589,7 +592,7 @@ const DatagridFactory = (Factory)=>{
                             </View>
                         ) : null}
                     </View>
-                    {hasData ? <FlashList
+                    {hasData && !canRenderChart ? <FlashList
                         estimatedItemSize = {150}
                         prepareItems = {false}
                         {...rest}
@@ -609,11 +612,13 @@ const DatagridFactory = (Factory)=>{
                             return this.backToTopRef.current;
                         }:false}
                         keyExtractor = {this.getRowKey.bind(this)}
-                    /> : <View style={styles.hasNotData}>
+                    /> : canRenderChart    ?<View testID={testID+"_ChartContainer"} {...chartContainerProps} style={[theme.styles.w100,chartContainerProps.style]}>
+                        {this.renderChart()}
+                    </View> :  <View style={styles.hasNotData}>
                         {this.renderEmpty()}
                     </View>}
                 </View>}
-                {backToTopRef ? <BackToTop testID={testID+"_BackToTop"} {...backToTopProps} ref={this.backToTopRef} style={[styles.backToTop,backToTopProps.style]} onPress={this.scrollToTop.bind(this)}/>:null}
+                {!canRenderChart && backToTopRef ? <BackToTop testID={testID+"_BackToTop"} {...backToTopProps} ref={this.backToTopRef} style={[styles.backToTop,backToTopProps.style]} onPress={this.scrollToTop.bind(this)}/>:null}
                 <BottomSheet
                     testID = {testID+"_BottomSheet"}
                     renderMenuContent = {false}

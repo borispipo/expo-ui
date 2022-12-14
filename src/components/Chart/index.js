@@ -1,6 +1,6 @@
 import React from '$react'
 import PropTypes from 'prop-types'
-import {defaultStr,defaultObj,uniqid,defaultNumber} from "$utils";
+import {defaultStr,defaultVal,extendObj,defaultObj,uniqid,defaultNumber} from "$utils";
 import {extend} from "./utils"
 import stableHash from 'stable-hash';
 import Chart from "./appexChart";
@@ -16,20 +16,15 @@ import Chart from "./appexChart";
  *  options {number} - les options supplémentaires au chart
  * 
 */
-const ChartComponent = React.forwardRef(({type, height,chartId, width, series, options,testID,webViewProps, ...props },ref)=>{
+const ChartComponent = React.forwardRef(({options,height,width,chartId,testID,webViewProps, ...props },ref)=>{
   const chartContext = React.useRef(null);
   options = defaultObj(options);
-  const chartIdRef = React.useRef(defaultStr(chartId,options.chart?.id,uniqid("chart-id")));
-  const config = extend(options,{
-    chart: {
-      type,
-      height,
-      width,
-      id : chartIdRef.current
-    },
-    series,
-  });
-  config.chart.id = chartIdRef.current;
+  const series = options.series;
+  options.chart = defaultObj(options.chart);
+  const chartIdRef = React.useRef(defaultStr(chartId,options.chart.id,uniqid("chart-id")));
+  width = options.chart.width = defaultVal(options.chart.width,width);
+  height = options.chart.height = defaultVal(options.chart.height,height)
+  options.chart.id = chartIdRef.current;
   testID = defaultStr(testID,"RN_ChartComponent");
   const prevWidth = React.usePrevious(width), prevHeight = React.usePrevious(height);
   const prevOptions = React.usePrevious(options,JSON.stringify);
@@ -40,21 +35,21 @@ const ChartComponent = React.forwardRef(({type, height,chartId, width, series, o
   options.xaxis.stroke.width = defaultNumber(options.xaxis.stroke.width,2);
   options.xaxis.stroke.height = defaultNumber(options.xaxis.height,1);
 
+  console.log(options,' is optssss');
   React.useEffect(()=>{
     if(chartContext.current && chartContext.current.updateOptions){
         if((prevSeries == series) || width != prevWidth || height != prevHeight){
-            chartContext.current.updateOptions(config);
+            chartContext.current.updateOptions(options);
         } else if(prevOptions != options){
             chartContext.current.updateSeries(series);
         } 
     }
-  },[stableHash({type,options,series,width,height})])
-  return <Chart {...props} options={config} chartId={chartIdRef.current} chartContext={chartContext} testID={testID} ref={ref}/>
+  },[stableHash({options,series,width,height})])
+  return <Chart {...props} options={options} chartId={chartIdRef.current} chartContext={chartContext} testID={testID} ref={ref}/>
 });
 
 
 ChartComponent.propTypes = {
-  type: PropTypes.string.isRequired,
   width: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.number,
@@ -63,9 +58,12 @@ ChartComponent.propTypes = {
     PropTypes.string,
     PropTypes.number,
   ]),
-  series: PropTypes.array.isRequired,
   options: PropTypes.shape({
+    chart : PropTypes.shape({
+      type: PropTypes.string,
+    }),
     xaxis : PropTypes.object,
+    series: PropTypes.array.isRequired,
   }).isRequired,
   ///lorsque le chart est rendu en environnement native, les props du webView
   webViewProps : PropTypes.object,

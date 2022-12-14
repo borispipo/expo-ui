@@ -318,6 +318,9 @@ export default class Field extends AppComponent {
     getName (){
         return this.name;
     }
+    getLabel (){
+        return defaultStr(this.label,this.props.label,this.props.text,this.props.title,this.name);
+    }
     getFormName(){
         return this.formName;
     }

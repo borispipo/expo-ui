@@ -116,9 +116,12 @@ const DatagridFactory = (Factory)=>{
                 selectable,pagin,showPagination,
                 sessionName,onMount,onUnmount,onFetchData,dataSourceSelector,dataSourceSelectorProps,queryLimit,
                 filters,
+                chartContainerProps,
                 accordion, //pour le rendu du header en accordion
                 ...rest
             } = this.props;
+            const canRenderChart = this.canRenderChart();
+            chartContainerProps = defaultObj(chartContainerProps);
             testID = defaultStr(testID,'RN_DatagridTableComponent');
             rest = defaultObj(rest);
             let showDataSourceSelector = false;
@@ -168,7 +171,7 @@ const DatagridFactory = (Factory)=>{
             if(selectableMultiple && max){
                 max = max.formatNumber();
                 restItems = [
-                    ...(selectableMultiple ? [{
+                    ...(selectableMultiple && !canRenderChart ? [{
                         label : "Sélectionner "+max.formatNumber(),
                         icon : "select-all",
                         onPress : (x,event)=>{
@@ -188,9 +191,9 @@ const DatagridFactory = (Factory)=>{
             const {layout} = this.state;
             let maxHeight = winheight-100;
             if(layout && typeof layout.windowHeight =='number' && layout.windowHeight){
-                const diff = winheight - Math.max(defaultNumber(layout.y,layout.top),150);
-                if(winheight<=300){
-                    maxHeight = 300;
+                const diff = winheight - Math.max(defaultNumber(layout.y,layout.top),100);
+                if(winheight<=350){
+                    maxHeight = 350;
                 } else {
                     maxHeight = diff;
                 }
@@ -216,7 +219,7 @@ const DatagridFactory = (Factory)=>{
                                         {showFilters?'Masquer/Filtres':'Afficher/Filtres'}
                                 </Button>
                             )}
-                            {hasFooterFields ? <Button
+                            {hasFooterFields && !canRenderChart ? <Button
                                 normal
                                 style={styles.paginationItem}
                                 onPress =  {()=>{this.toggleFooters(!showFooters)} }   
@@ -326,7 +329,8 @@ const DatagridFactory = (Factory)=>{
                     {rPagination}
                     {_progressBar}  
                 </View>
-                <Table
+                {<Table
+                    renderListContent = {canRenderChart? false:true}
                     ref = {this.listRef}
                     {...rest}
                     onLayout = {(args)=>{
@@ -335,11 +339,15 @@ const DatagridFactory = (Factory)=>{
                         }
                         this.updateLayout(args);
                     }}
+                    children = {canRenderChart ? <View testID={testID+"_ChartContainer"} {...chartContainerProps} style={[theme.styles.w100,chartContainerProps.style]}>
+                        {this.renderChart()}
+                    </View> : null}
                     getItemType = {this.getFlashListItemType.bind(this)}
                     renderItem = {this.renderFlashListItem.bind(this)}
-                    hasFooters = {hasFooterFields}
+                    hasFooters = {hasFooterFields && !canRenderChart ? true : false}
                     showFilters = {showFilters}
-                    showFooters = {showFooters}
+                    showFooters = {showFooters && !canRenderChart ? true : false}
+                    showHeaders = { canRenderChart ? !!showFilters : true}
                     headerContainerProps = {{}}
                     headerCellContainerProps = {{
                         style : showFilters?{justifyContent:'flex-start'}:null
@@ -360,7 +368,7 @@ const DatagridFactory = (Factory)=>{
                     renderFilterCell={this.renderFilterCell.bind(this)}
                     renderFooterCell={this.renderFooterCell.bind(this)}
                     renderEmpty = {this.renderEmpty.bind(this)}
-                />
+                />}
             </View>
         }
     }

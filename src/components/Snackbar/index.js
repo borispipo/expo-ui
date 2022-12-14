@@ -124,7 +124,7 @@ const Snackbar = ({
       testID={testID+"_Container"}
       {...containerProps}
       pointerEvents="box-none"
-      style={[styles.wrapper, containerPaddings,containerProps.style]}
+      style={[styles.wrapper, containerPaddings,action && theme.styles.pr1,containerProps.style]}
     >
       <Surface
         pointerEvents="box-none"

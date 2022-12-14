@@ -39,33 +39,40 @@ import {Menu} from "$ecomponents/BottomSheet";
 import {styles as tableStyles} from "$ecomponents/Table";
 import {DialogProvider} from "$ecomponents/Form/FormData";
 import Chart from "$ecomponents/Chart";
+import { aggregatorFunctions} from "../Footer/Footer";
 
+const chart = "chart";
 export const displayTypes = {
     table : {
         code : "table",
+        isChart : false,
         label : 'Tableau',
         icon : "table",
         type : 'table',
     },
-    /*lineChart : {
-        code : 'lineChart',
+    lineChart : {
+        code : "lineChart",
+        isChart : true,
         label : 'Graphique|Linéaire',
         icon : "chart-areaspline",
         type : 'line',
     },
     areaChart : {
+        isChart : true,
         code : 'areaChart',
         label : 'Graphique|Surface',
         icon : "chart-areaspline-variant",
         type: 'area',
     },
     barChart : {
+        isChart : true,
         code : 'barChart',
         label : 'Graphique|Barres',
         icon : "chart-bar",
         type: 'bar'
     },
-    donutChar : {
+    /*donutChart : {
+        isChart : true,
         code : 'donutChart',
         label : 'Graphique|Circulaire',
         icon : "chart-donut",
@@ -200,8 +207,9 @@ export default class CommonDatagridComponent extends AppComponent {
         if(this.canHandleColumnResize()){
             this.state.columnsWidths = this.preparedColumns.widths;
         }
-        const dType = defaultStr(this.props.displayType,this.getSessionData("diplayType"),"table");
-        this.state.displayType = this.displayTypes[dType] ? this.displayTypes[dType].code : "table" in this.displayTypes ? "table" : Object.keys(this.displayTypes)[0];
+        this.state.chartConfig = defaultObj(this.props.chartConfig,this.getSessionData("chartConfig"));
+        const dType = defaultStr(this.props.displayType,this.getSessionData("displayType"),"table");
+        this.state.displayType = this.displayTypes[dType] ? this.displayTypes[dType].code : "table" in this.displayTypes ? "table" : Object.keys(this.displayTypes)[0]?.code;
         extendObj(this.state,this.prepareData({data}));
         const {width:windowWidth,height:windowHeight} = Dimensions.get("window");
         this.state.layout = {
@@ -281,7 +289,7 @@ export default class CommonDatagridComponent extends AppComponent {
         let sessionName = this.props.sessionName;
         let isDatagrid = this.isDatagrid()
         if(!isNonNullString(sessionName)){
-            sessionName = 'datagrid';
+            //sessionName = 'datagrid';
         }
         let userCode = Auth.getLoggedUserCode();
         Object.defineProperties(this,{
@@ -1046,58 +1054,63 @@ export default class CommonDatagridComponent extends AppComponent {
         }
         return null;
    }
-   /*** configure la  */
-   configureSectionListColumn(column){
+   isSectionListColumnConfigurable(column){
         if(!isObj(column) || !isNonNullString(column.field) || !isObj(this.state.columns[column.field])){
-            return Promise.reject({message : 'type de colonne invalide, impossible de configurer la colonne, pour permettre qu\elle soit ajoutée dans les colonnes de groupe du tableau'})
+            return false;
         }
-        const col = this.state.columns[column.field];
-        const type = defaultStr(col.jsType,col.type).toLowerCase();
-        if(type.contains("date") || type =='time'){
-            return new Promise((resolve,reject)=>{
-                DialogProvider.open({
-                    title : 'Format de date',
-                    fields : {
-                        dateFormat : {
-                            type : 'select_dateformat',
-                            required : true,
-                            text : 'Sélectionnez un format de date',
-                            defaultValue : defaultStr(this.configureSectionListSelectedValues[column.field],"dd/mm/yyyy"),
-                        }
-                    },
-                    onCancelButtonPress : ()=>{
-                        DialogProvider.close();
-                        reject({msg:'aucun format sélectionné'})
-                    },
-                    actions : [{
-                        text : "Sélectionnez",
-                        icon : "check",
-                        onPress : ({data})=>{
-                            column.format = data.dateFormat;
-                            this.configureSectionListSelectedValues[column.field] = data.dateFormat;
-                            DialogProvider.close();
-                            setTimeout(()=>{
-                                resolve(column);
-                            },100)
-                        },
-                    }]
-                })
-            })
-        }
-        return Promise.resolve(column);
+        const type = defaultStr(column.jsType,column.type).toLowerCase();
+        return type.contains("date") || type =='time' ? true : false;
    }
-   toggleColumnInSectionList(columnName){
+   /*** configure la  */
+   configureSectionListColumn(column,toggleSectionList){
+        if(!this.isSectionListColumnConfigurable(column)) return Promise.reject({message : 'type de colonne invalide, impossible de configurer la colonne, pour permettre qu\elle soit ajoutée dans les colonnes de groupe du tableau'});
+        const format = defaultStr(defaultObj(this.configureSectionListSelectedValues[column.field]).format,"dd/mm/yyyy")
+        return new Promise((resolve,reject)=>{
+            DialogProvider.open({
+                title : 'Format de date',
+                subtitle : false,
+                fields : {
+                    dateFormat : {
+                        type : 'select_dateformat',
+                        required : true,
+                        text : 'Sélectionnez un format de date',
+                        defaultValue : format,
+                    }
+                },
+                onCancelButtonPress : ()=>{
+                    DialogProvider.close();
+                    reject({msg:'aucun format sélectionné'})
+                },
+                actions : [{
+                    text : "Sélectionnez",
+                    icon : "check",
+                    onPress : ({data})=>{
+                        column.format = data.dateFormat;
+                        this.configureSectionListSelectedValues[column.field] = {format:column.format}
+                        DialogProvider.close();
+                        setTimeout(()=>{
+                            resolve(column);
+                            if(toggleSectionList !== false){
+                                this.toggleColumnInSectionList(column.field,true);
+                            }
+                        },100)
+                    },
+                }]
+            })
+        })
+   }
+   toggleColumnInSectionList(columnName,enable){
         if(!isNonNullString(columnName) || !isObj(this.state.columns[columnName])) return;
         if(!isObj(this.state.sectionListColumns) || !Array.isArray(this.preparedColumns?.sectionListColumnsMenuItems))return;
         const menuItems = this.preparedColumns?.sectionListColumnsMenuItems;
         if(!menuItems.length) return;
         const sectionListColumns = {...this.state.sectionListColumns};
-        if(isObj(sectionListColumns[columnName])){
+        if(enable !== true && isObj(sectionListColumns[columnName])){
             delete sectionListColumns[columnName];
         } else {
             sectionListColumns[columnName] = {field:columnName};
         }
-        const cb =()=>{
+        setTimeout(() => {
             const {sectionListColumns:pSListColumns} = this.prepareColumns({sectionListColumns});
             this.setIsLoading(true,()=>{
                 this.prepareData({data:this.INITIAL_STATE.data,sectionListColumns:pSListColumns},(state)=>{
@@ -1107,12 +1120,6 @@ export default class CommonDatagridComponent extends AppComponent {
                     });
                 });
             },true);
-        }
-        setTimeout(() => {
-            if(!isObj(sectionListColumns[columnName])){
-                return cb();
-            }
-            return this.configureSectionListColumn(sectionListColumns[columnName]).then(cb).catch(notify.error)
         }, 100);
    }
    removeAllColumnsInSectionList(){
@@ -1131,34 +1138,162 @@ export default class CommonDatagridComponent extends AppComponent {
    }
    /*** si l'on peut rendre le contenu de type graphique */
    isChartRendable(){
-     return !this.isPivotDatagrid() && this.hasFooterFields()  && this.isSectionList();
+     return !this.isPivotDatagrid() && this.hasFooterFields();
+   }
+   isValidChartConfig(config){
+        config = defaultObj(config,this.state.chartConfig);
+        return isNonNullString(config.x) && isNonNullString(config.y);
    }
    canRenderChart(){
-        return this.isChartRendable() && this.state.displayType.toLowerCase().contains("chart");
+        return this.isChartRendable() && isNonNullString(this.state.displayType) && displayTypes[this.state.displayType]?.isChart === true ? true : false;
+   }
+   persistDisplayType(displayType){
+    this.setSessionData("displayType",displayType);
    }
    /***modifie le type de données d'affichage du tableau */
-   setDisplay(type){
+   setDisplayType(type){
         if(!isObj(type) || !isNonNullString(type.code) || !displayTypes[type.code]) return;
         const tt = displayTypes[type.code];
+        if(this.state.displayType == tt.code) return; 
+        const displayType = tt.code;
         if(tt.code == 'table'){
-            if(this.state.displayType == 'table') return;
             return this.setIsLoading(true,()=>{
-                this.setState({displayTypes:'table'},()=>{
+                this.setState({displayType},()=>{
                     this.setIsLoading(false,false);
+                    this.persistDisplayType(displayType);
                 });
             },true)
         } else {
-            DialogProvider.open({
-                title : 'Configuration de la courbe'
-            })
+            const cb = (chartConfig)=>{
+                this.setIsLoading(true,()=>{
+                    this.setState({chartConfig,displayType},()=>{
+                        this.setIsLoading(false,false);
+                        this.persistDisplayType(displayType);
+                    })
+                },true);
+            }
+            if(!this.isValidChartConfig()){
+                return this.configureChart(false).then((chartConfig)=>{
+                    cb(chartConfig);
+                });
+            }
+            cb({...this.state.chartConfig});
         }
+   }
+   configureChart(refreshChart){
+        if(!this.isChartRendable()){
+            return Promise.reject({message:'Impossible de configurer le graphe car le type de données ne permet pas de rendu de type graphe'});
+        }
+        const xItems = {},yItems = {},config = defaultObj(this.state.chartConfig);
+        const series = {};
+        let hasSeries = false;
+        const isValidConfig = this.isValidChartConfig();
+        Object.map(this.state.columns,(field,f)=>{
+            if(isObj(field) && !this.isSelectableColumn(field) && !this.isIndexColumn(field)){
+                xItems[f] = field;
+                const type = defaultStr(field.jsType,field.type).toLowerCase();
+                if(type === 'number' || type=='decimal'){
+                    yItems[f] = field;
+                    series[f] = field;
+                }
+            }
+        });
+        const onValidatorValid = ({context,value})=>{
+            if(context && value){
+                const name = context.getName();
+                const isHorizontal = name =="x";
+                const oContext = context.getField(isHorizontal ? "y" : "x");
+                if(!oContext) return;
+                const v2 = oContext.getValue()
+                if(v2 === value){
+                    return "la valeur du champ [{0}] doit être différent de celle du champ [{1}]".sprintf(context.getLabel(),oContext.getLabel())
+                }
+                oContext.validate({value:v2,context:oContext});
+            }
+        }
+        return new Promise((resolve,reject)=>{
+            DialogProvider.open({
+                title : 'Configuration des graphes',
+                subtitle : false,
+                fields : {
+                    x : {
+                        text : 'Axe des x[horizontal]',
+                        type : "select",
+                        required : true,
+                        items : xItems,
+                        defaultValue : config.x,
+                        onValidatorValid,
+                    },
+                    y :  {
+                        text : 'Axe des y[Vertical]',
+                        type : "select",
+                        required : true,
+                        items : yItems,
+                        defaultValue : config.y,
+                        onValidatorValid,
+                    },
+                    series : hasSeries && {
+                        text : 'Series',
+                        type : "select",
+                        items : series,
+                        multiple : true,
+                    },
+                    aggregatorFunction : {
+                        type  : 'select',
+                        text : "Foncton d'aggrégation",
+                        required : true, 
+                        multiple : false,
+                        defaultValue : "sum",
+                        items : aggregatorFunctions,
+                    }
+                },
+                actions : [
+                    {
+                        text : "Configurer",
+                        icon : "check",
+                        onPress : ({data})=>{
+                            const chartConfig = {...config,...data};
+                            this.setSessionData("chartConfig",chartConfig);
+                            DialogProvider.close();
+                            if(false && !isValidConfig && refreshChart !== false){
+                                return this.setState({chartConfig},()=>{
+                                    resolve(chartConfig)
+                                })
+                            }
+                            resolve(chartConfig);
+                        }
+                    }
+                ]
+            })
+        })
+   }
+   getCharConfig(){
+      return defaultObj(this.state.chartConfig);
    }
    renderDisplayTypes(){
         const m = [];
-        let activeType = null;
+        let activeType = null,hasFoundChart = false,hasFoundTable = false;
+        const hasConfig = this.isValidChartConfig();
         Object.map(this.displayTypes,(type,k)=>{
-            let c = k.toLowerCase();
-            if(c.contains('chart') && !this.isChartRendable()) return null;
+            if(type.isChart === true ) {
+                if(!this.isChartRendable()){
+                    return null;
+                }
+                if(!hasFoundChart){
+                    if(hasFoundTable){
+                        m.push({divider:true});
+                    }
+                    hasFoundChart = true;
+                    m.push({
+                        divider : true,
+                        text : "Configurer les graphes",
+                        icon :"material-settings",
+                        onPress : this.configureChart.bind(this)
+                    });
+                }
+            } else if(k === 'table'){
+                hasFoundTable = true;
+            }
             const active = this.state.displayType === k;
             if(active){
                 activeType = type;
@@ -1166,10 +1301,14 @@ export default class CommonDatagridComponent extends AppComponent {
             m.push({
                 ...type,
                 labelStyle : active &&  {fontWeight:'bold',color:theme.colors.primaryOnSurface} || null,
+                right : <>
+                    {active ? <Icon color={theme.colors.primaryOnSurface} name="check"/>: null}
+                </>,
+                disabled : type.isChart && !hasConfig ? true : undefined,
                 onPress:()=>{
-                    this.setDisplay(type); 
+                    this.setDisplayType(type); 
                 }
-            })
+            });
         });
         if(m.length <= 1 || !activeType) return null;
         if(!isMobileOrTabletMedia()){
@@ -1187,17 +1326,117 @@ export default class CommonDatagridComponent extends AppComponent {
             }}
         />
    }
+   getEmptyDataValue(){
+        return "N/A";
+   }
    renderChart(){
         if(!this.canRenderChart()) return null;
+        if(!this.isValidChartConfig()) return null;
+        const chartType = displayTypes[this.state.displayType];
+        if(!isObj(chartType) || !isNonNullString(chartType.type)) return null;
+        const config = this.getCharConfig();
+        if(!this.state.columns[config.y]) return null;
+        const yaxis = this.state.columns[config.y];
+        const type = defaultStr(yaxis.jsType,yaxis.type).toLowerCase();
+        if(type !== 'number'&& type !== 'decimal') return null;
+        const isEmptyY = config.x === this.emptySectionListHeaderValue;
+        const seriesConfig = Array.isArray(config.series) && config.series.length ? config.series : [yaxis.field];
+        let xaxis = null;
+        if(!isEmptyY){
+            if(!this.state.columns[config.x]){
+                return null;
+            }
+            xaxis = this.state.columns[config.x];
+        }
+        let aggregatorFunction = typeof config.aggregatorFunction =='string' && aggregatorFunctions[config.aggregatorFunction]?aggregatorFunctions[config.aggregatorFunction] :aggregatorFunctions.sum;
+        if(isObj(aggregatorFunction) && typeof aggregatorFunction.eval =='function'){
+            aggregatorFunction = aggregatorFunction.eval;
+        } else {
+            aggregatorFunction = aggregatorFunctions.sum.eval;
+        }
+        if(this.isSectionList()){
+            return null;
+        }
+        const emptyValue = this.getEmptyDataValue();
+        const indexes = {}
+        let count = 0;
+        this.state.data.map((data,index)=>{
+            if(!isObj(data))return null;
+            const txt = this.renderRowCell({
+                data,
+                rowData : data,
+                rowCounterIndex : index,
+                rowIndex : index,
+                columnDef : xaxis,
+                renderRowCell : false,
+                columnField : xaxis.field,
+            });
+            const text = isNonNullString(txt)? txt : emptyValue;
+            Object.map(seriesConfig,(s,v)=>{
+                if(!isNonNullString(s) || !this.state.columns[s]) return null;
+                const col = this.state.columns[s];
+                if(!isObj(col)) return null;
+                const value = defaultNumber(data[col.field]);
+                indexes[s] = defaultObj(indexes[s]);
+                const current = indexes[s];
+                current[text] = typeof current[text] =="number"? current[text] : 0;
+                current[text] = aggregatorFunction(value,current[text],count);
+            })
+        });
+        const series = [];
+        Object.map(indexes,(values,serieName)=>{
+            const col = this.state.columns[serieName];
+            const name = defaultStr(col?.label,col?.text,serieName),data = [];
+            Object.map(values,(v,i)=>{
+                data.push({
+                    x : i,
+                    y : v,
+                })
+            })
+            series.push({
+                name,
+                type : chartType.type,
+                data,
+            })
+        })
+        const {width,height:winheight} = Dimensions.get("window");
+        const {layout} = this.state;
+        let maxHeight = winheight-100;
+        if(layout && typeof layout.windowHeight =='number' && layout.windowHeight){
+            const diff = winheight - Math.max(defaultNumber(layout.y,layout.top),100);
+            if(winheight<=350){
+                maxHeight = 350;
+            } else {
+                 maxHeight = diff;
+            }
+        }
+        const chartProps = defaultObj(chartProps);
+        return <Chart
+            options = {{
+                ...defaultObj(chartProps.options),
+                series,
+                chart : {
+                    height :350,
+                    maxHeight,
+                    ...defaultObj(chartProps.chart),
+                    type : chartType.type,
+                },
+                xaxis: {
+                    ...defaultObj(chartProps.xaxis),
+                    type: 'category'
+                }
+            }}
+        />
    }
    toggleDisplayOnlySectionListHeaders(){
         if(!this.canDisplayOnlySectionListHeaders()) return
         setTimeout(()=>{
+            const showFooters = true;
             const displayOnlySectionListHeaders = !!!this.state.displayOnlySectionListHeaders;
             this.setSessionData("displayOnlySectionListHeaders",displayOnlySectionListHeaders);
             if(!displayOnlySectionListHeaders){
                 return this.prepareData({data:this.INITIAL_STATE.data,displayOnlySectionListHeaders},(state)=>{
-                    this.setState(state)
+                    this.setState({...state,showFooters})
                 })
             } else {
                 this.setIsLoading(true,()=>{
@@ -1207,7 +1446,7 @@ export default class CommonDatagridComponent extends AppComponent {
                             data.push(d);
                         }
                     });
-                    this.setState({data,displayOnlySectionListHeaders},()=>{
+                    this.setState({data,displayOnlySectionListHeaders,showFooters},()=>{
                         this.setIsLoading(false),false;
                     });
                 },true)
@@ -1293,6 +1532,7 @@ export default class CommonDatagridComponent extends AppComponent {
             } = header;
             restCol = Object.clone(defaultObj(restCol));
             let colFilter = defaultVal(restCol.filter,true);
+            const format  = defaultStr(restCol.format).toLowerCase();
             field = header.field = defaultStr(header.field,field,headerIndex);
             delete restCol.filter;
             
@@ -1420,19 +1660,32 @@ export default class CommonDatagridComponent extends AppComponent {
                         ...header,
                          width,
                          type,
+                         ...defaultObj(this.configureSectionListSelectedValues[field]),
                         ...sListColumns[field],
                     };///les colonnes de sections
                     this.sectionListColumnsSize.current++;
                 }
-                sectionListColumnsMenuItems.push({
+                const mItem = {
                     field,
+                    type,
+                    format,
                     onPress : ()=>{
                         this.toggleColumnInSectionList(field);
                         return false;
                     },
                     title : title,
                     icon : isInSectionListHeader?CHECKED_ICON_NAME : null,
-                });
+                };
+                if(this.isSectionListColumnConfigurable(mItem)){
+                    mItem.right = (p)=>{
+                        return <Icon name="material-settings" {...p} onPress={(e)=>{
+                            React.stopEventPropagation(e);
+                            this.configureSectionListColumn(mItem);
+                            return false;
+                        }}/>
+                    }
+                }
+                sectionListColumnsMenuItems.push(mItem);
             }
             columnIndex++;
             visibleColumnIndex++;
@@ -2424,7 +2677,11 @@ export const ProgressBar = CommonDatagridComponent.LinesProgressBar;
 CommonDatagridComponent.getDefaultPreloader = (props)=>{
     return <Preloader {...defaultObj(props)}/>
 }
-const allDTypes = Object.keys(displayTypes);
+
+const chartDisplayType = PropTypes.oneOf(Object.keys(displayTypes).filter(type=>{
+    const x = displayTypes[type];
+    return typeof x =='object' && x && typeof x.disabled !== true && x.isChart === true && true || false;
+}));
 CommonDatagridComponent.propTypes = {
     canMakePhoneCall : PropTypes.bool,//si l'on peut faire un appel sur la données sélectionnées
     makePhoneCallProps : PropTypes.oneOfType([
@@ -2602,12 +2859,16 @@ CommonDatagridComponent.propTypes = {
     renderCustomPagination : PropTypes.func,
     getActionsArgs : PropTypes.func,//fonction permettant de récupérer les props supplémentaires à passer aux actions du datagrid
     displayOnlySectionListHeaders : PropTypes.bool,// si uniquement les entêtes des sections seront affichés, valides uniquement en affichage des sectionHeader 
-
-    /*** types d'affichage displayTypes */
-    /** les types d'affichage supportés */
-    displayType : PropTypes.oneOf(allDTypes),
+    /*** les options de configuration du graphe */
+    chartConfig : PropTypes.shape({
+        //type : PropTypes.oneOfType(chartDisplayType).isRequired,//le type de graphe : l'une des valeurs parmis les éléments cités plus haut
+        x : PropTypes.string.isRequired, //l'axe horizontal
+        y : PropTypes.string.isRequired, //l'axe des y, les colonnes de type nombre
+        series : PropTypes.arrayOf([PropTypes.string]), //les séries, le nombre de courbe a afficher sur le graphe, en fonction du type
+    }),
+    displayType : chartDisplayType,
     /*** les types d'afichates supportés par l'application */
-    displayTypes : PropTypes.arrayOf(PropTypes.oneOf(allDTypes)) 
+    displayTypes : PropTypes.arrayOf(chartDisplayType) 
 }
 
 const styles = StyleSheet.create({

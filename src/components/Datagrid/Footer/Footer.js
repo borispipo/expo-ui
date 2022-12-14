@@ -14,6 +14,50 @@ let methods = {
     max : 'Maximum',
     count : "Nombre",
 }
+/*** les fonction d'aggreations */
+export const aggregatorFunctions = {
+    sum : {
+        code : "sum",
+        label : "Somme",
+        eval : (current,prev,count)=>{
+            current = typeof current =='number'?current : 0;
+            prev = typeof prev =='number'? prev : 0;
+            return current+prev;
+        }
+    },
+    /*average : {
+        code : "average",
+        label : "Moyenne",
+        eval : ()=>{
+
+        }
+    },*/
+    min : {
+        code : "min",
+        label : "Minimum",
+        eval : (current,prev,count)=>{
+            current = typeof current =='number'?current : 0;
+            prev = typeof prev =='number'? prev : 0;
+            return Math.min(current,prev);
+        },
+    },
+    max : {
+        code : "max",
+        label: 'Maximum',
+        eval : (current,prev,count)=>{
+            current = typeof current =='number'?current : 0;
+            prev = typeof prev =='number'? prev : 0;
+            return Math.max(current,prev);
+        },
+    },
+    count : {
+        code : "count",
+        label : "Nombre",
+        eval : (current,prev,count)=>{
+            return (typeof count =='number'? count : 0)+1;
+        }
+    },
+}
 const formatValue = ({value,format,method})=>{
     return (format === 'money' && method != 'count')? value.formatMoney():value.formatNumber();
 }

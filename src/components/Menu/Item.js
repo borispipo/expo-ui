@@ -9,7 +9,7 @@ import theme,{black,white,Colors,StylePropTypes,DISABLED_OPACITY} from "$theme";
 import PropTypes from "prop-types";
 import { Dimensions } from 'react-native';
 import View from "$ecomponents/View";
-import {defaultVal} from "$utils";
+import {defaultVal,isNonNullString,defaultStr,defaultObj} from "$utils";
 import Tooltip from "$ecomponents/Tooltip";
 import Label from "$ecomponents/Label";
 
@@ -34,8 +34,10 @@ const MenuItemComponent = React.forwardRef(({
   isBottomSheetItem,
   accessibilityLabel,
   right,
+  contentContainerProps,
   ...rest
 },ref) => {
+  contentContainerProps = defaultObj(contentContainerProps);
   title = defaultVal(label,text,title);
   const disabledColor = color(theme.dark ? white : black)
     .alpha(0.32)
@@ -64,6 +66,7 @@ const MenuItemComponent = React.forwardRef(({
   const maxWidthStyle = isBottomSheetItem ? {width:winW,maxWidth:null} : undefined;
   const maxWidthTextStyle = isBottomSheetItem ? {width:winW-50} : null;
   right = typeof right =='function'? right ({color:titleColor}) : right;
+  if(!React.isValidElement(right)) right = null;
   return (
     <Tooltip
       {...defaultObj(rest)}
@@ -85,28 +88,31 @@ const MenuItemComponent = React.forwardRef(({
           </View>
         ) : null}
         <View
-          testID={testID+"_LabelContainer"}
+          testID={testID+"_Right2LabelContainer"}
+          pointerEvents={!right?"none":"auto"}
+          {...contentContainerProps}
           style={[
             styles.item,
             styles.content,
             !maxWidthStyle && icon ? styles.widthWithIcon : null,
             contentStyle,
             !icon?styles.titleNoIcon:null,
-            maxWidthStyle
+            right && theme.styles.row,
+            maxWidthStyle,
+            contentContainerProps.style
           ]}
-          pointerEvents="none"
         >
           <Label
             testID={testID+"_Label"}
             selectable={false}
             numberOfLines={1}
             ellipsizeMode = {"tail"}
-            style={[styles.title, { color: titleColor }, labelStyle,styles.noMargin,maxWidthTextStyle]}
+            style={[styles.title, { color: titleColor }, labelStyle,styles.noMargin,!right ? maxWidthTextStyle : null]}
           >
             {title}
           </Label>
+          {right}
         </View>
-        {React.isValidElement(right) && right || null}
       </View>
     </Tooltip>
   );
@@ -155,6 +161,9 @@ const styles = StyleSheet.create({
     maxWidth: maxWidth - 16,
   },
   widthWithIcon: {
+    maxWidth: maxWidth - iconWidth /*+ 48*/,
+  },
+  widthWithRight: {
     maxWidth: maxWidth - iconWidth /*+ 48*/,
   },
   titleNoIcon : {

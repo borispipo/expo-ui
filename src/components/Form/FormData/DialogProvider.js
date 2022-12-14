@@ -48,6 +48,7 @@ const FormDataDialogProvider = React.forwardRef((props,innerRef)=>{
     return <Dialog 
         responsive
         withScrollView
+        subtitle ={false}
         {...props} 
         {...state} 
         formProps = {formProps}

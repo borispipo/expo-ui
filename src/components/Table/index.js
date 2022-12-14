@@ -43,7 +43,7 @@ const getOnScrollCb = (refs,pos,cb2)=>{
     return isMobileNative()? cb : debounce(cb,200);
 }
 
-const TableComponent = React.forwardRef(({containerProps,renderEmpty,renderItem,isRowSelected,headerScrollViewProps,footerScrollViewProps,scrollViewProps,showFooters,renderFooterCell,footerCellContainerProps,filterCellContainerProps,headerContainerProps,headerCellContainerProps,headerProps,rowProps:customRowProps,renderCell,cellContainerProps,hasFooters,renderHeaderCell,renderFilterCell,columnProps,getRowKey,columnsWidths,colsWidths,footerContainerProps,showFilters,columns,data,testID,...props},tableRef)=>{
+const TableComponent = React.forwardRef(({containerProps,renderListContent,children,renderEmpty,renderItem,isRowSelected,headerScrollViewProps,footerScrollViewProps,scrollViewProps,showFooters,renderFooterCell,footerCellContainerProps,filterCellContainerProps,headerContainerProps,headerCellContainerProps,headerProps,rowProps:customRowProps,renderCell,cellContainerProps,hasFooters,renderHeaderCell,renderFilterCell,columnProps,getRowKey,columnsWidths,colsWidths,footerContainerProps,showHeaders,showFilters,columns,data,testID,...props},tableRef)=>{
     containerProps = defaultObj(containerProps);
     testID = defaultStr(testID,"RN_TableComponent");
     cellContainerProps = defaultObj(cellContainerProps);
@@ -138,7 +138,7 @@ const TableComponent = React.forwardRef(({containerProps,renderEmpty,renderItem,
     React.useEffect(()=>{
         setState({...state,...prepareState()});
     },[data,columns]);
-    const emptyData = typeof renderEmpty =='function' && !Object.size(data,true)? renderEmpty() : null;
+    const emptyData = renderListContent === false ?null : typeof renderEmpty =='function' && !Object.size(data,true)? renderEmpty() : null;
     const hasEmptyData = emptyData && React.isValidElement(emptyData);
     const {visibleColumns,columns:cols,headers,footers,filters} = state;
     headerContainerProps = defaultObj(headerContainerProps);
@@ -199,10 +199,11 @@ const TableComponent = React.forwardRef(({containerProps,renderEmpty,renderItem,
         get scrollViewContext(){ return scrollViewRef.current},
         get headerScrollViewContext(){return headerScrollViewRef.current},
     }
-    const hContent = h.length ? <View testID={testID+"_Header"}{...hProps} {...headerContainerProps} style={[styles.header,headerContainerProps.style,hProps.style,f.length]}>
+    const showTableHeaders = showHeaders !== false || showFilters ;
+    const hContent = showTableHeaders &&  h.length ? <View testID={testID+"_Header"}{...hProps} {...headerContainerProps} style={[styles.header,headerContainerProps.style,hProps.style,f.length]}>
         {h}
     </View> : null,
-    fContent = f.length ? <View testID={testID+"_Footer"} {...footerContainerProps} style={[styles.header,styles.footers,footerContainerProps.style,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}>
+    fContent = showTableHeaders && f.length ? <View testID={testID+"_Footer"} {...footerContainerProps} style={[styles.header,styles.footers,footerContainerProps.style,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}>
         {f}
     </View> : null,
     filtersContent = fFilters.length ? <View testID={testID+"_Filters"} style={[styles.header,styles.footers,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}>
@@ -241,7 +242,8 @@ const TableComponent = React.forwardRef(({containerProps,renderEmpty,renderItem,
                     </View>
                 </ScrollView>
             </RNView>
-            {hasEmptyData ? <View testID={testID+"_Empty"} style={styles.hasNotData}>
+            {renderListContent === false ? (React.isValidElement(children)? children : null) :
+                hasEmptyData ? <View testID={testID+"_Empty"} style={styles.hasNotData}>
                     {emptyData}
             </View> : <ScrollView {...scrollViewProps} scrollEventThrottle = {scrollEventThrottle} horizontal contentContainerStyle={[scrollContentContainerStyle,scrollViewProps.contentContainerStyle]} showsVerticalScrollIndicator={false}  
                 onScroll = {getOnScrollCb([headerScrollViewRef,footerScrollViewRef],null,(args)=>{
@@ -379,7 +381,7 @@ export const styles = StyleSheet.create({
     container : {
         width : '100%',
         minHeight : 300,
-        paddingBottom : 50,
+        paddingBottom : 10,
         paddingLeft : 10,
         paddingRight : 0,
         flex : 1,
@@ -497,6 +499,7 @@ TableComponent.popTypes = {
       PropTypes.func,  
       PropTypes.object
     ]),
+    renderListContent : PropTypes.bool,//si l'on devra rendre le contenu de la FlashList
     renderItem : PropTypes.func,//la fonction permettant de gérer le rendu des item
     headerScrollViewProps : PropTypes.object,
     footerScrollViewProps : PropTypes.object,

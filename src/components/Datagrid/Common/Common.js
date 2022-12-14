@@ -1255,7 +1255,7 @@ export default class CommonDatagridComponent extends AppComponent {
                             const chartConfig = {...config,...data};
                             this.setSessionData("chartConfig",chartConfig);
                             DialogProvider.close();
-                            if(false && !isValidConfig && refreshChart !== false){
+                            if(!isValidConfig && refreshChart !== false){
                                 return this.setState({chartConfig},()=>{
                                     resolve(chartConfig)
                                 })

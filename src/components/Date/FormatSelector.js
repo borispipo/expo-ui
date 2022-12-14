@@ -85,7 +85,7 @@ export const selectDateFormatFieldProps = ({onAdd:customOnAdd,onAddCustomFormat,
         showAdd : false,
     }
 }
-export const getDateFormatSelectorItems = x=> Object.map(DateLib.formats,(format)=>{
+export const getDateFormatSelectorItems = x=> Object.map(DateLib.sortedFormats,(format)=>{
     return {code : format,label:new Date().toFormat(format)}
 });
 

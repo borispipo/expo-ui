@@ -1,5 +1,6 @@
 import PhoneInput from "$ecomponents/PhoneInput";
 import Field from "./Field";
+import appConfig from "$capp/config";
 
 export default class FormPhoneInputField extends Field {
     canFocus(){
@@ -9,6 +10,7 @@ export default class FormPhoneInputField extends Field {
         props.onChange = (args)=>{
             this.validate(args);
         }
+        props.country = defaultStr(props.country,appConfig.countryCode,appConfig.get("countryCode","country"))
         return <PhoneInput
             {...props}
             setRef = {setRef}

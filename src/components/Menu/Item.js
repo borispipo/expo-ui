@@ -27,12 +27,13 @@ const MenuItemComponent = React.forwardRef(({
   style,
   contentStyle,
   testID,
-  titleStyle,
+  labelStyle,
   primary,
   secondary,
   iconProps,
   isBottomSheetItem,
   accessibilityLabel,
+  right,
   ...rest
 },ref) => {
   title = defaultVal(label,text,title);
@@ -49,20 +50,20 @@ const MenuItemComponent = React.forwardRef(({
     ? disabledColor
     : color(theme.colors.text).alpha(theme.ALPHA).rgb().string();
   iconProps = defaultObj(iconProps);
-  titleStyle = Object.assign({},StyleSheet.flatten(titleStyle));
+  labelStyle = Object.assign({},StyleSheet.flatten(labelStyle));
   style = Object.assign({},StyleSheet.flatten(style));
 
-  if(Colors.isValid(titleStyle.color)){
-     iconColor = titleStyle.color;
+  if(Colors.isValid(labelStyle.color)){
+     iconColor = labelStyle.color;
   } else if(Colors.isValid(style.color)){
     titleColor = iconColor = style.color;
   }
-
   const pointerEvents = disabled ? 'none' : 'auto';
   const disabledStyle = disabled ? {opacity:DISABLED_OPACITY} : null;
   const winW = Dimensions.get("window").width-30;
   const maxWidthStyle = isBottomSheetItem ? {width:winW,maxWidth:null} : undefined;
   const maxWidthTextStyle = isBottomSheetItem ? {width:winW-50} : null;
+  right = typeof right =='function'? right ({color:titleColor}) : right;
   return (
     <Tooltip
       {...defaultObj(rest)}
@@ -77,13 +78,14 @@ const MenuItemComponent = React.forwardRef(({
       accessibilityState={{ disabled }}
       pointerEvents = {pointerEvents}
     >
-      <View style={[styles.row]} ref={ref}>
+      <View style={[styles.row]} ref={ref} testID={testID+"_ContentContainer"}>
         {icon ? (
-          <View style={[styles.item, styles.icon]} pointerEvents="box-none">
+          <View testID={testID+"_IconContainer"} style={[styles.item, styles.icon]} pointerEvents="box-none">
             <Icon source={icon} size={24} {...iconProps} style={[iconProps.style,styles.iconT]} color={iconColor} />
           </View>
         ) : null}
         <View
+          testID={testID+"_LabelContainer"}
           style={[
             styles.item,
             styles.content,
@@ -95,14 +97,16 @@ const MenuItemComponent = React.forwardRef(({
           pointerEvents="none"
         >
           <Label
+            testID={testID+"_Label"}
             selectable={false}
             numberOfLines={1}
             ellipsizeMode = {"tail"}
-            style={[styles.title, { color: titleColor }, titleStyle,styles.noMargin,maxWidthTextStyle]}
+            style={[styles.title, { color: titleColor }, labelStyle,styles.noMargin,maxWidthTextStyle]}
           >
             {title}
           </Label>
         </View>
+        {React.isValidElement(right) && right || null}
       </View>
     </Tooltip>
   );
@@ -185,7 +189,7 @@ MenuItemComponent.propTypes = {
      */
     style: StylePropTypes,
     contentStyle: StylePropTypes,
-    titleStyle : StylePropTypes,
+    labelStyle : StylePropTypes,
     /**
      * @optional
      */

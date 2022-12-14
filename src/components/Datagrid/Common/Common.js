@@ -38,6 +38,40 @@ import View from "$ecomponents/View";
 import {Menu} from "$ecomponents/BottomSheet";
 import {styles as tableStyles} from "$ecomponents/Table";
 import {DialogProvider} from "$ecomponents/Form/FormData";
+import Chart from "$ecomponents/Chart";
+
+export const displayTypes = {
+    table : {
+        code : "table",
+        label : 'Tableau',
+        icon : "table",
+        type : 'table',
+    },
+    /*lineChart : {
+        code : 'lineChart',
+        label : 'Graphique|Linéaire',
+        icon : "chart-areaspline",
+        type : 'line',
+    },
+    areaChart : {
+        code : 'areaChart',
+        label : 'Graphique|Surface',
+        icon : "chart-areaspline-variant",
+        type: 'area',
+    },
+    barChart : {
+        code : 'barChart',
+        label : 'Graphique|Barres',
+        icon : "chart-bar",
+        type: 'bar'
+    },
+    donutChar : {
+        code : 'donutChart',
+        label : 'Graphique|Circulaire',
+        icon : "chart-donut",
+        type: 'donut'
+    },*/
+}
 
 export const arrayValueSeparator = ", ";
 
@@ -85,6 +119,17 @@ export default class CommonDatagridComponent extends AppComponent {
             showFooters : defaultBool(props.showFooters,(sData.showFooters? true : false)),
             fixedTable : sData.fixedTable
         });
+        const disTypes = {};
+        let hasFoundDisplayTypes = false;
+        Object.map(this.props.displayTypes,(dType,v)=>{
+            if(isNonNullString(dType)){
+                dType = dType.toLowerCase().trim();
+                if(displayTypes[dType]){
+                    disTypes[dType] = Object.clone(displayTypes[dType]);
+                }
+                hasFoundDisplayTypes = true;
+            }
+        });
         Object.defineProperties(this,{
             layoutRef : {
                 value : React.createRef(null),
@@ -119,6 +164,8 @@ export default class CommonDatagridComponent extends AppComponent {
             sectionListDataSize : {value : {current : 0}},
             enablePointerEventsRef : {value : {current:false}},
             configureSectionListSelectedValues : {value : {}},
+            ///les types d'affichage
+            displayTypes : {value : hasFoundDisplayTypes ? disTypes : Object.clone(displayTypes)},
             sectionListColumnsSize : {value : {current:0}}, //la taille du nombre d'éléments de section dans les colonnes
         }) 
         this.isLoading = this.isLoading.bind(this);
@@ -150,10 +197,11 @@ export default class CommonDatagridComponent extends AppComponent {
         this.state.filteredColumns = defaultObj(this.getSessionData("filteredColumns"+this.getSessionNameKey()),this.props.filters);
         this.filtersSelectors = {selector:this.getFilters()};
         const {sectionListColumns} = this.prepareColumns();
-        this.state.sectionListColumns = sectionListColumns;
         if(this.canHandleColumnResize()){
             this.state.columnsWidths = this.preparedColumns.widths;
         }
+        const dType = defaultStr(this.props.displayType,this.getSessionData("diplayType"),"table");
+        this.state.displayType = this.displayTypes[dType] ? this.displayTypes[dType].code : "table" in this.displayTypes ? "table" : Object.keys(this.displayTypes)[0];
         extendObj(this.state,this.prepareData({data}));
         const {width:windowWidth,height:windowHeight} = Dimensions.get("window");
         this.state.layout = {
@@ -198,7 +246,10 @@ export default class CommonDatagridComponent extends AppComponent {
         } else {
             this.currentDataSources = Object.toArray(this.currentDataSources);
         }
+        this.state.sectionListColumns = sectionListColumns;
+        this.state.displayOnlySectionListHeaders = defaultBool(this.getSessionData("displayOnlySectionListHeaders"),this.props.displayOnlySectionListHeaders,false)
     }
+
     /*** si une ligne peut être selectionable */
     canSelectRow(row){
         return isObj(row) && row.isSectionListHeader !== true ? true : false;
@@ -206,7 +257,7 @@ export default class CommonDatagridComponent extends AppComponent {
     prepareSectionListColumns(props){
         props = defaultObj(props,this.props);
         const l = {};
-        (Array.isArray(props.sectionListColumns) ? props.sectionListColumns : []).map((col)=>{
+        (Array.isArray(props.sectionListColumns) ? props.sectionListColumns : defaultArray(this.getSessionData("sectionListColumns"))).map((col)=>{
             if(isNonNullString(col)){
                 l[col.trim()] = {};
             }
@@ -1052,6 +1103,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 this.prepareData({data:this.INITIAL_STATE.data,sectionListColumns:pSListColumns},(state)=>{
                     this.setState({...state,sectionListColumns:pSListColumns},()=>{
                         this.setIsLoading(false,false);
+                        this.setSessionData("sectionListColumns",Object.keys(pSListColumns));
                     });
                 });
             },true);
@@ -1069,9 +1121,98 @@ export default class CommonDatagridComponent extends AppComponent {
             this.prepareData({data:this.INITIAL_STATE.data,sectionListColumns},(state)=>{
                 this.setState({...state,sectionListColumns},()=>{
                     this.setIsLoading(false,false);
+                    this.setSessionData("sectionListColumns",null);
                 });
             });
         },true);
+   }
+   canDisplayOnlySectionListHeaders(){
+        return this.hasFooterFields() && this.isSectionList() && this.hasSectionListData();
+   }
+   /*** si l'on peut rendre le contenu de type graphique */
+   isChartRendable(){
+     return !this.isPivotDatagrid() && this.hasFooterFields()  && this.isSectionList();
+   }
+   canRenderChart(){
+        return this.isChartRendable() && this.state.displayType.toLowerCase().contains("chart");
+   }
+   /***modifie le type de données d'affichage du tableau */
+   setDisplay(type){
+        if(!isObj(type) || !isNonNullString(type.code) || !displayTypes[type.code]) return;
+        const tt = displayTypes[type.code];
+        if(tt.code == 'table'){
+            if(this.state.displayType == 'table') return;
+            return this.setIsLoading(true,()=>{
+                this.setState({displayTypes:'table'},()=>{
+                    this.setIsLoading(false,false);
+                });
+            },true)
+        } else {
+            DialogProvider.open({
+                title : 'Configuration de la courbe'
+            })
+        }
+   }
+   renderDisplayTypes(){
+        const m = [];
+        let activeType = null;
+        Object.map(this.displayTypes,(type,k)=>{
+            let c = k.toLowerCase();
+            if(c.contains('chart') && !this.isChartRendable()) return null;
+            const active = this.state.displayType === k;
+            if(active){
+                activeType = type;
+            }
+            m.push({
+                ...type,
+                labelStyle : active &&  {fontWeight:'bold',color:theme.colors.primaryOnSurface} || null,
+                onPress:()=>{
+                    this.setDisplay(type); 
+                }
+            })
+        });
+        if(m.length <= 1 || !activeType) return null;
+        if(!isMobileOrTabletMedia()){
+            m.unshift({text:"Type d'affichage des données",divider:true});
+        }
+        return <Menu
+            title = "Type d'affichage"
+            items = {m}
+            anchor = {(p)=>{
+                return <Icon
+                    {...p}
+                    name = {activeType.icon}
+                    title = {"Les données s'affichent actuellement en {0}. Cliquez pour modifier le type d'affichage".sprintf(activeType.label)}
+                />
+            }}
+        />
+   }
+   renderChart(){
+        if(!this.canRenderChart()) return null;
+   }
+   toggleDisplayOnlySectionListHeaders(){
+        if(!this.canDisplayOnlySectionListHeaders()) return
+        setTimeout(()=>{
+            const displayOnlySectionListHeaders = !!!this.state.displayOnlySectionListHeaders;
+            this.setSessionData("displayOnlySectionListHeaders",displayOnlySectionListHeaders);
+            if(!displayOnlySectionListHeaders){
+                return this.prepareData({data:this.INITIAL_STATE.data,displayOnlySectionListHeaders},(state)=>{
+                    this.setState(state)
+                })
+            } else {
+                this.setIsLoading(true,()=>{
+                    const data = [];
+                    this.state.data.map((d)=>{
+                        if(isObj(d) && d.isSectionListHeader === true){
+                            data.push(d);
+                        }
+                    });
+                    this.setState({data,displayOnlySectionListHeaders},()=>{
+                        this.setIsLoading(false),false;
+                    });
+                },true)
+            }
+        },100);
    }
    /*** permet d'effectuer le rendu des colonnes groupable dans le menu item */
    renderSectionListMenu(){
@@ -1079,6 +1220,7 @@ export default class CommonDatagridComponent extends AppComponent {
         if(!m.length){
             return null;
         }
+        const hasList = this.sectionListColumnsSize.current;
         const isMobile = isMobileOrTabletMedia();
         return <Menu
             title = {"Grouper les données du tableau"}
@@ -1093,7 +1235,12 @@ export default class CommonDatagridComponent extends AppComponent {
                     closeOnPress : false,
                     divider : true,
                 },
-                this.sectionListColumnsSize.current && {
+                this.canDisplayOnlySectionListHeaders() && {
+                    text : "Afficher uniquement totaux",
+                    icon : this.state.displayOnlySectionListHeaders?"check":null,
+                    onPress : this.toggleDisplayOnlySectionListHeaders.bind(this)
+                },
+                hasList && {
                     text : "Supprimer les groupes",
                     icon: "ungroup",
                     divider : true,
@@ -1314,9 +1461,9 @@ export default class CommonDatagridComponent extends AppComponent {
    getFooterValues(){
         return defaultObj(this.___evaluatedFootersValues);
    }
-   
+
    /**** s'il s'agit d'une section list */
-   isSectionList(sectionListColumns){
+   isSectionList (sectionListColumns){
         sectionListColumns = isObj(sectionListColumns) ? sectionListColumns : this.state.sectionListColumns;
         return !this.isPivotDatagrid() && isObj(sectionListColumns) && Object.size(sectionListColumns,true) ? true : false;
    }
@@ -1341,13 +1488,14 @@ export default class CommonDatagridComponent extends AppComponent {
         return defaultNumber(this.sectionListDataSize.current)
     }
     prepareData(args,cb){
-        let {pagination,data,force,sectionListColumns,updateFooters} = defaultObj(args);
+        let {pagination,displayOnlySectionListHeaders:cdisplayOnlySectionListHeaders,data,force,sectionListColumns,updateFooters} = defaultObj(args);
         cb = typeof cb ==='function'? cb : typeof args.cb == 'function'? args.cb : undefined;
         sectionListColumns = isObj(sectionListColumns) ? sectionListColumns : this.state.sectionListColumns;
+        const displayOnlySectionListHeaders = typeof cdisplayOnlySectionListHeaders == 'boolean'?cdisplayOnlySectionListHeaders : this.state.displayOnlySectionListHeaders;
         let isArr = Array.isArray(data);
         //let push = (d,index) => isArr ? newData.push(d) : newData[index] = d;
         const hasLocalFilter = this.props.filters !== false && this.hasLocalFilters;
-        let footersColumns = this.getFooterFields(),hasFooterFields = Object.size(footersColumns,true);
+        let footersColumns = this.getFooterFields(),hasFooterFields = this.hasFooterFields();
         const canUpdateFooters = !!(updateFooters !== false && hasFooterFields);
         this.hasFoundSectionData.current = false;
         this.sectionListDataSize.current = 0;
@@ -1430,9 +1578,11 @@ export default class CommonDatagridComponent extends AppComponent {
                 //this.sectionListData[i] = sortConfig ? sortBy(this.sectionListData[i],sortConfig):this.sectionListData[i];
                 //const v = i;// === this.emptySectionListHeaderValue ? "" : i;
                 data.push({isSectionListHeader:true,sectionListHeaderKey:i});
-                this.sectionListData[i].map((d)=>{
-                    data.push(d);
-                })
+                if(!displayOnlySectionListHeaders){
+                    this.sectionListData[i].map((d)=>{
+                        data.push(d);
+                    })
+                }
             }
         } 
         if(!this.hasSectionListData() && this.canPaginateData()){
@@ -1444,7 +1594,7 @@ export default class CommonDatagridComponent extends AppComponent {
         } else if(force){
             this.setSelectedRows();
         }
-        const state = {data};
+        const state = {data,displayOnlySectionListHeaders};
         if((cb)){
             cb(state);
         }
@@ -2274,7 +2424,7 @@ export const ProgressBar = CommonDatagridComponent.LinesProgressBar;
 CommonDatagridComponent.getDefaultPreloader = (props)=>{
     return <Preloader {...defaultObj(props)}/>
 }
-
+const allDTypes = Object.keys(displayTypes);
 CommonDatagridComponent.propTypes = {
     canMakePhoneCall : PropTypes.bool,//si l'on peut faire un appel sur la données sélectionnées
     makePhoneCallProps : PropTypes.oneOfType([
@@ -2451,6 +2601,13 @@ CommonDatagridComponent.propTypes = {
     /**** la fonction permettant de faire le rendu dun contenu paginé, personalisé */
     renderCustomPagination : PropTypes.func,
     getActionsArgs : PropTypes.func,//fonction permettant de récupérer les props supplémentaires à passer aux actions du datagrid
+    displayOnlySectionListHeaders : PropTypes.bool,// si uniquement les entêtes des sections seront affichés, valides uniquement en affichage des sectionHeader 
+
+    /*** types d'affichage displayTypes */
+    /** les types d'affichage supportés */
+    displayType : PropTypes.oneOf(allDTypes),
+    /*** les types d'afichates supportés par l'application */
+    displayTypes : PropTypes.arrayOf(PropTypes.oneOf(allDTypes)) 
 }
 
 const styles = StyleSheet.create({

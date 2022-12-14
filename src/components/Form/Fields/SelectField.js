@@ -2,6 +2,7 @@ import Field from "./Field";
 import Dropdown from "$ecomponents/Dropdown";
 import PropTypes from "prop-types";
 import {isObj} from "$utils";
+import appConfig from "$capp/config";
 
 export default class FormSelectField extends Field{
     constructor(props) {
@@ -115,8 +116,9 @@ export default class FormSelectField extends Field{
         delete props.format;
         delete props.import;
         delete props.exports;
-        if( defaultStr(props.name,this.name) === 'country' && props.multiple !== true){
-            props.defaultValue = defaultStr(props.defaultValue);
+        const isCountry = this.type.contains('country');
+        if( isCountry && props.multiple !== true){
+            props.defaultValue = defaultStr(props.defaultValue,appConfig.countryCode,appConfig.get("countryCode","country"));
         }
         return <Dropdown
             {...props}

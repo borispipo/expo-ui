@@ -284,6 +284,7 @@ const DatagridFactory = (Factory)=>{
                         
                         />
                         {this.renderSectionListMenu()}
+                        {this.renderDisplayTypes()}
                         <View testID={testID+"_HeaderPagination"} style = {styles.paginationItem}>
                             <BottomSheetMenu
                                 testID={testID+"_HeaderMenus"}

@@ -1737,7 +1737,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 return <Icon {...props} name='format-list-group' title={"Grouper les éléments du tableau"}></Icon>
             }}
             items = {[
-                !isMobile && {
+                {
                     text : "Grouper par",
                     icon : "group",
                     closeOnPress : false,

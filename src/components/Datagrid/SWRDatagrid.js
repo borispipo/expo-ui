@@ -83,8 +83,10 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         ListFooterComponent,
         testID,
         autoSort,
+        fetchOptions:customFetchOptions,
         handleQueryLimit,
         onFetchData,
+        beforeFetchData,
         ...rest
     } = props;
     rest = defaultObj(rest);
@@ -122,7 +124,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         fileName : rest.exportTableProps.fileName,
         title
     },rest.exportTableProps.pdf);
-    const fetchOptionsRef = React.useRef({});
+    const fetchOptionsRef = React.useRef(defaultObj(customFetchOptions));
     const refreshCBRef = React.useRef(null);
     fetchPath = defaultStr(fetchPath,table.queryPath,tableName.toLowerCase()).trim();
     const innerRef = React.useRef(null);
@@ -390,7 +392,9 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             handlePagination = {false}
             autoSort = {canSortRemotely()? false : true}
             isLoading = {loading && !error && showProgressRef.current && true || false}
-            beforeFetchData = {({fetchOptions:opts,force})=>{
+            beforeFetchData = {(args)=>{
+                let {fetchOptions:opts,force} = args;
+                if(typeof beforeFetchData =="function" && beforeFetchData(fetchData)==false) return;
                 opts.fields = fetchFields;
                 opts = getFetchOptions({showError:showProgressRef.current,...opts});
                 isInitializedRef.current = true;

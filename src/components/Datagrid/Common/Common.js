@@ -122,7 +122,7 @@ export default class CommonDatagridComponent extends AppComponent {
         sData.fixedTable = defaultBool(sData.fixedTable,false);
         extendObj(this.state, {
             data,
-            showFilters : this.isFilterable() && defaultBool(props.showFilters,(sData.showFilter? true : this.isPivotDatagrid())) || false,
+            showFilters : this.isFilterable() && defaultBool(props.showFilters,(sData.showFilters? true : this.isPivotDatagrid())) || false,
             showFooters : defaultBool(props.showFooters,(sData.showFooters? true : false)),
             fixedTable : sData.fixedTable
         });
@@ -204,12 +204,17 @@ export default class CommonDatagridComponent extends AppComponent {
         this.state.filteredColumns = defaultObj(this.getSessionData("filteredColumns"+this.getSessionNameKey()),this.props.filters);
         this.filtersSelectors = {selector:this.getFilters()};
         const {sectionListColumns} = this.prepareColumns();
+        this.state.sectionListColumns = sectionListColumns;
         if(this.canHandleColumnResize()){
             this.state.columnsWidths = this.preparedColumns.widths;
         }
         this.state.chartConfig = defaultObj(this.props.chartConfig,this.getSessionData("chartConfig"));
         const dType = defaultStr(this.props.displayType,this.getSessionData("displayType"),"table");
         this.state.displayType = this.displayTypes[dType] ? this.displayTypes[dType].code : "table" in this.displayTypes ? "table" : Object.keys(this.displayTypes)[0]?.code;
+        this.state.displayOnlySectionListHeaders = defaultBool(this.getSessionData("displayOnlySectionListHeaders"),this.props.displayOnlySectionListHeaders,false)
+        if(this.state.displayOnlySectionListHeaders){
+            this.state.showFooters = true;
+        }
         extendObj(this.state,this.prepareData({data}));
         const {width:windowWidth,height:windowHeight} = Dimensions.get("window");
         this.state.layout = {
@@ -254,8 +259,6 @@ export default class CommonDatagridComponent extends AppComponent {
         } else {
             this.currentDataSources = Object.toArray(this.currentDataSources);
         }
-        this.state.sectionListColumns = sectionListColumns;
-        this.state.displayOnlySectionListHeaders = defaultBool(this.getSessionData("displayOnlySectionListHeaders"),this.props.displayOnlySectionListHeaders,false)
     }
 
     /*** si une ligne peut être selectionable */
@@ -948,7 +951,7 @@ export default class CommonDatagridComponent extends AppComponent {
        this.isUpdating = true;
        this.setState( {showFilters:true},()=>{
            this.isUpdating = false;
-           this.setSessionData({showFilter:true});
+           this.setSessionData({showFilters:true});
        })
    }
   hideFilters (){
@@ -959,12 +962,12 @@ export default class CommonDatagridComponent extends AppComponent {
        if(this.isUpdating) return false;
        this.setState({showFilters:false},()=>{
             this.isUpdating = false;
-            this.setSessionData({showFilter:false})
+            this.setSessionData({showFilters:false})
        })
    }
 
     toggleFooters(showOrHide){
-        if(typeof showOrHide !=='boolean' || this.state.showFooters === showOrHide) return;
+        if(typeof showOrHide !=='boolean' || this.canShowFooters() === showOrHide) return;
         if(!this._isMounted()) {
             this.isUpdating = false;
             return;
@@ -1428,6 +1431,12 @@ export default class CommonDatagridComponent extends AppComponent {
             }}
         />
    }
+   canShowFooters(){
+      return this.state.showFooters || this.hasSectionListData() && this.state.displayOnlySectionListHeaders;
+   }
+   canShowFilters(){
+        return this.state.showFilters
+   }
    toggleDisplayOnlySectionListHeaders(){
         if(!this.canDisplayOnlySectionListHeaders()) return
         setTimeout(()=>{
@@ -1588,9 +1597,13 @@ export default class CommonDatagridComponent extends AppComponent {
                     sortedColumn.header = header;
                     sortedColumn.label = restCol.label;
                     const isDesc = currentSortedColumn.dir === "desc";
+                    const sortDir = isDesc ? "descending" : "ascending";
                     const prefix = (sortType =='number' || sortType == 'decimal') ? "numeric" : sortType =='boolean'?'bool' : sortType.contains('date') ? 'calendar': sortType =='time'? 'clock' : 'alphabetical'; 
-                    sortedColumn.icon = 'sort-'+prefix+'-'+(isDesc ? "descending" : "ascending");
+                    sortedColumn.icon = 'sort-'+prefix+'-'+sortDir;
                     sortedColumn.title = (isDesc ? "Trié par ordre décroissant":"Trié par ordre croissant ")+ " du champ ["+restCol.label+"]";
+                    if(sortType.contains('date') || sortType.contains("time")){
+                        sortedColumn.title = "le champ {0} est actuellement trié du plus {1} au plus {2}".sprintf(restCol.label,isDesc?"récent":"ancien",isDesc?"ancien":"récent")
+                    } 
                 }      
                 sortedColumns[field] = restCol.label;
                 sortedColumnsLength++;
@@ -1753,6 +1766,20 @@ export default class CommonDatagridComponent extends AppComponent {
         this.hasFoundSectionData.current = false;
         this.sectionListDataSize.current = 0;
         const isSList = this.isSectionList(sectionListColumns);
+        if(this.canAutoSort() && isNonNullString(this.sortRef.current.column)){
+            if(isObj(this.state.columns) && this.state.columns[this.sortRef.current.column]){
+                let field = this.state.columns[this.sortRef.current.column];
+                const sortConfig = Object.assign({},this.sortRef.current);
+                sortConfig.getItem = (item,columnName,{getItem})=>{
+                    if(isObj(item) && (field.type =='decimal' || field.type =="number")){
+                        const v = item[columnName];
+                        return isDecimal(v)? v : isNonNullString(v)? parseDecimal(v) : 0;
+                    }
+                    return getItem(item,columnName);
+                }
+                data = sortBy(data,sortConfig);//on trie tout d'abord les données
+            }
+        }
         if(hasLocalFilter || !isArr || canUpdateFooters || isSList) {
             if(canUpdateFooters){
                 this.___evaluatedFootersValues = {}
@@ -1765,10 +1792,12 @@ export default class CommonDatagridComponent extends AppComponent {
                 Object.map(this.sectionListData,(v,i)=>{
                     delete this.sectionListData[i];
                 });
-                //on réinnitialise tous les footes
-                Object.map(this.sectionListHeaderFooters,(v,i)=>{
-                    delete this.sectionListHeaderFooters[i];
-                })
+                if(canUpdateFooters){
+                    //on réinnitialise tous les footes
+                    Object.map(this.sectionListHeaderFooters,(v,i)=>{
+                        delete this.sectionListHeaderFooters[i];
+                    })
+                }
             }
             let currentSectionListFooter = null;
             const sectionListData = this.sectionListData;//l'ensemble des données de sectionList
@@ -1810,20 +1839,6 @@ export default class CommonDatagridComponent extends AppComponent {
             });
             data = newData;
         } 
-        if(this.canAutoSort() && isNonNullString(this.sortRef.current.column)){
-            if(isObj(this.state.columns) && this.state.columns[this.sortRef.current.column]){
-                let field = this.state.columns[this.sortRef.current.column];
-                const sortConfig = Object.assign({},this.sortRef.current);
-                sortConfig.getItem = (item,columnName,{getItem})=>{
-                    if(isObj(item) && (field.type =='decimal' || field.type =="number")){
-                        const v = item[columnName];
-                        return isDecimal(v)? v : isNonNullString(v)? parseDecimal(v) : 0;
-                    }
-                    return getItem(item,columnName);
-                }
-                data = sortBy(data,sortConfig);//on trie tout d'abord les données
-            }
-        }
         this.INITIAL_STATE.data = data;
         if(this.hasFoundSectionData.current){
             data = [];
@@ -1905,7 +1920,7 @@ export default class CommonDatagridComponent extends AppComponent {
             }
         }
         let cells = null;
-        if(this.state.showFooters && isObj(this.sectionListHeaderFooters[key])){
+        if(this.canShowFooters() && isObj(this.sectionListHeaderFooters[key])){
             const {visibleColumnsNames,widths} = defaultObj(this.preparedColumns);
             if(isObj(visibleColumnsNames) &&isObj(widths)){
                 cells = [];

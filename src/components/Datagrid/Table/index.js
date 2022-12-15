@@ -161,7 +161,8 @@ const DatagridFactory = (Factory)=>{
             })*/
             const {visibleColumns} = this.preparedColumns;
             const hasFooterFields = this.hasFooterFields();
-            const {columnsWidths:widths,showFilters,showFooters} = this.state;
+            const {columnsWidths:widths} = this.state;
+            const showFooters = this.canShowFooters(), showFilters = this.canShowFilters();
             const isLoading = this.isLoading();
             let _progressBar = this.getProgressBar();
             const pointerEvents = this.getPointerEvents(); 
@@ -225,7 +226,7 @@ const DatagridFactory = (Factory)=>{
                                 onPress =  {()=>{this.toggleFooters(!showFooters)} }   
                                 icon = {showFooters?'view-column':'view-module'}
                             >   
-                                    {showFooters?'Masquer/Ligne des totaux':'Afficher/Ligne des totaux'}
+                                    {showFooters?'Masquer les totaux':'Afficher les totaux'}
                             </Button>:null}
                             {restItems.map((item,index)=>{
                                 return <Button 

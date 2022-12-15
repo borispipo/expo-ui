@@ -263,13 +263,13 @@ const DatagridFactory = (Factory)=>{
                  this.isUpdating = false;
                  return;
             }
-            this.setSessionData({showFilter:true});
+            this.setSessionData({showFilters:true});
         }
         hideFilters (){
             if(!this._isMounted()) {
                return;
             }
-            this.setSessionData({showFilter:false});
+            this.setSessionData({showFilters:false});
         } 
         toggleFilterColumnVisibility(field,visible){
             if(!isNonNullString(field)) return;
@@ -399,7 +399,8 @@ const DatagridFactory = (Factory)=>{
             let exportTableProps = this.getExportableProps();
     
             filter = defaultFunc(filter,x=>true);
-            let {showFilters,showFooters} = this.state;
+            const showFooters = this.canShowFooters();
+            const showFilters = this.canShowFilters();
             let max = this.getMaxSelectableRows();
             let restItems = [];
             
@@ -516,7 +517,7 @@ const DatagridFactory = (Factory)=>{
                                     !canRenderChart && hasFooterFields ? {
                                         onPress :  ()=>{this.toggleFooters(!showFooters)}    
                                         ,icon :  showFooters?'view-column':'view-module'
-                                        ,text : (showFooters?'Masquer/Ligne des totaux':'Afficher/Ligne des totaux')
+                                        ,text : (showFooters?'Masquer les totaux':'Afficher les totaux')
                                     }:null,
                                     ...this.renderCustomMenu(),
                                     ...restItems,

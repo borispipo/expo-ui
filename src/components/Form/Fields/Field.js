@@ -889,7 +889,7 @@ export default class Field extends AppComponent {
 
         this.___formattedField = undefined;
         let _type = this.type;
-        format = defaultStr(format).toLowerCase().trim();
+        format = defaultStr(format);
         tooltip = defaultVal(tooltip,title);
 
         const isEditable = rest.disabled !== true && rest.readOnly !== true && rest.editable !== false ? true : false;

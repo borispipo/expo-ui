@@ -439,7 +439,7 @@ const DatagridFactory = (Factory)=>{
                 filteredColumns,
                 filters :headerFilters,
             } = this.preparedColumns;
-            const hasFooterFields = this.hasFooterFields();
+            const hasFootersFields = this.hasFootersFields();
             const datagridHeader = <View testID={testID+"_HeaderContainer"} pointerEvents={pointerEvents} style={[styles.datagridHeader]}>
                 <ScrollView testID={testID+"_HeaderScrollView"} horizontal contentContainerStyle={StyleSheet.flatten([styles.contentContainerStyle,styles.minW100])}>
                     <View testID={testID+"_HeaderContentCntainer"} style={[styles.table,styles.pullRight]}>
@@ -514,7 +514,7 @@ const DatagridFactory = (Factory)=>{
                                         items : visibleColumns,
                                         closeOnPress : false,
                                     } : null,
-                                    !canRenderChart && hasFooterFields ? {
+                                    !canRenderChart && hasFootersFields ? {
                                         onPress :  ()=>{this.toggleFooters(!showFooters)}    
                                         ,icon :  showFooters?'view-column':'view-module'
                                         ,text : (showFooters?'Masquer les totaux':'Afficher les totaux')

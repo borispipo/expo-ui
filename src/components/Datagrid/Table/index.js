@@ -53,7 +53,7 @@ const DatagridFactory = (Factory)=>{
         renderFooterCell(props){
             const {columnField,style} = props;
             let footersValues = this.getFooterValues();
-            const footerFields = this.getFooterFields();
+            const footerFields = this.getFootersFields();
             if(isObj(footerFields[columnField])){
                 return <Footer
                     //{...footerFields[columnField]}
@@ -160,7 +160,7 @@ const DatagridFactory = (Factory)=>{
                 total:pagination.rows,pages:countPages
             })*/
             const {visibleColumns} = this.preparedColumns;
-            const hasFooterFields = this.hasFooterFields();
+            const hasFootersFields = this.hasFootersFields();
             const {columnsWidths:widths} = this.state;
             const showFooters = this.canShowFooters(), showFilters = this.canShowFilters();
             const isLoading = this.isLoading();
@@ -220,7 +220,7 @@ const DatagridFactory = (Factory)=>{
                                         {showFilters?'Masquer/Filtres':'Afficher/Filtres'}
                                 </Button>
                             )}
-                            {hasFooterFields && !canRenderChart ? <Button
+                            {hasFootersFields && !canRenderChart ? <Button
                                 normal
                                 style={styles.paginationItem}
                                 onPress =  {()=>{this.toggleFooters(!showFooters)} }   
@@ -278,7 +278,7 @@ const DatagridFactory = (Factory)=>{
                                     ,icon :  showFilters?'eye-off':'eye'
                                     ,text : (showFilters?'Masquer/Filtres':'Afficher/Filtres')
                                 } : null,
-                                isMobile && hasFooterFields?{
+                                isMobile && hasFootersFields?{
                                     onPress :  ()=>{this.toggleFooters(!showFooters)}    
                                     ,icon :  showFooters?'view-column':'view-module'
                                     ,text : (showFooters?'Masquer/Ligne des totaux':'Afficher/Ligne des totaux')
@@ -345,7 +345,7 @@ const DatagridFactory = (Factory)=>{
                     </View> : null}
                     getItemType = {this.getFlashListItemType.bind(this)}
                     renderItem = {this.renderFlashListItem.bind(this)}
-                    hasFooters = {hasFooterFields && !canRenderChart ? true : false}
+                    hasFooters = {hasFootersFields && !canRenderChart ? true : false}
                     showFilters = {showFilters}
                     showFooters = {showFooters && !canRenderChart ? true : false}
                     showHeaders = { canRenderChart ? !!showFilters : true}

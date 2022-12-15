@@ -24,7 +24,7 @@ import { StyleSheet,Dimensions,useWindowDimensions} from "react-native";
 import Preloader from "$ecomponents/Preloader";
 import Checkbox from "../Checkbox";
 import { TouchableRipple } from "react-native-paper";
-import { evalSingleValue,Footer } from "../Footer";
+import { evalSingleValue,Footer,getFooterColumnValue } from "../Footer";
 import i18n from "$i18n";
 import { makePhoneCall,canMakePhoneCall as canMakeCall} from "$makePhoneCall";
 import copyToClipboard from "$capp/clipboard";
@@ -38,10 +38,20 @@ import View from "$ecomponents/View";
 import {Menu} from "$ecomponents/BottomSheet";
 import {styles as tableStyles} from "$ecomponents/Table";
 import {DialogProvider} from "$ecomponents/Form/FormData";
-import Chart from "$ecomponents/Chart";
+import Chart,{getMaxSupportedSeriesSize} from "$ecomponents/Chart";
 import { aggregatorFunctions} from "../Footer/Footer";
 
 const chart = "chart";
+export const donutChart = {
+    isChart : true,
+    code : 'donutChart',
+    label : 'Graphique|Circulaire',
+    icon : "chart-donut",
+    type: 'donut',
+    isDonut : true,
+    isRendable : ({displayOnlySectionListHeaders,isSectionList})=>false,//isSectionList && displayOnlySectionListHeaders,
+    tooltip : "Pour pouvoir visulaiser ce type de graphe, vous devez : grouper les données du tableau selon le criètre de votre choix, puis afficher uniquement les totaux des données groupées"
+}
 export const displayTypes = {
     table : {
         code : "table",
@@ -69,14 +79,31 @@ export const displayTypes = {
         code : 'barChart',
         label : 'Graphique|Barres',
         icon : "chart-bar",
-        type: 'bar'
+        type: 'bar',
+        isBar : true,
     },
-    /*donutChart : {
+    donutChart,
+    /*rangeChart : {
+        code : "rangeChart",
         isChart : true,
-        code : 'donutChart',
-        label : 'Graphique|Circulaire',
-        icon : "chart-donut",
-        type: 'donut'
+        label : 'Graphique|Bar Interval',
+        icon : "chart-timeline",
+        type: 'boxPlot'
+    },*/
+   /*chartBoxPlot : {
+        code : "chartBoxPlot",
+        isChart : true,
+        label : 'Graphique|Box plot',
+        icon : "chart-waterfall",
+        type: 'boxPlot'
+    },*/
+    //@see : https://apexcharts.com/docs/chart-types/treemap-chart/
+    /*treeMap : {
+        code : "treeMap",
+        isChart : true,
+        label : 'Graphique|Aborescente',
+        icon : "chart-tree",
+        type: 'treemap'
     },*/
 }
 
@@ -208,7 +235,7 @@ export default class CommonDatagridComponent extends AppComponent {
         if(this.canHandleColumnResize()){
             this.state.columnsWidths = this.preparedColumns.widths;
         }
-        this.state.chartConfig = defaultObj(this.props.chartConfig,this.getSessionData("chartConfig"));
+        this.state.chartConfig = extendObj({},this.getSessionData("chartConfig"),this.props.chartConfig);
         const dType = defaultStr(this.props.displayType,this.getSessionData("displayType"),"table");
         this.state.displayType = this.displayTypes[dType] ? this.displayTypes[dType].code : "table" in this.displayTypes ? "table" : Object.keys(this.displayTypes)[0]?.code;
         this.state.displayOnlySectionListHeaders = defaultBool(this.getSessionData("displayOnlySectionListHeaders"),this.props.displayOnlySectionListHeaders,false)
@@ -609,7 +636,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 }
             }
         }
-        let footers = this.getFooterFields(true);
+        const footers = this.getFootersFields(true);
         let isAccordion = this.isAccordion();
         Object.mapToArray(columns,(headerCol1,headerIndex)=>{
             if(!isObj(headerCol1)) return;
@@ -617,6 +644,7 @@ export default class CommonDatagridComponent extends AppComponent {
             if(isAccordion && headerCol.accordion === false) return null;
             let header = {...headerCol};
             header.field = defaultStr(header.field, headerIndex)
+            header.type = defaultStr(header.jsType,header.type,"text").toLowerCase();
             /**** pour ignorer une colonne du datagrid, il suffit de passer le paramètre datagrid à false */
             if(!isNonNullString(header.field) || header.datagrid === false) {
                 return;
@@ -627,7 +655,7 @@ export default class CommonDatagridComponent extends AppComponent {
             this.state.columns[header.field] = header;
             /*** les pieds de pages sont les données de type decimal, où qu'on peut compter */
             if(header.footer !== false && ((arrayValueExists(['decimal','number','money'],header.type) && header.format) || header.format == 'money' || header.format =='number')){
-                footers[header.field] = header;
+                footers[header.field] = Object.clone(header);
             }
             if(!this.hasColumnsHalreadyInitialized){
                 this.initColumnsCallback({...header,colIndex,columnField:header.field});
@@ -635,12 +663,12 @@ export default class CommonDatagridComponent extends AppComponent {
         })
         return footers;
     }
-    getFooterFields(init){
+    getFootersFields(init){
         this[this.footerFieldName] = init === true ? {} : defaultObj(this[this.footerFieldName]);
         return this[this.footerFieldName];
     }
-    hasFooterFields(){
-        return Object.size(this.getFooterFields(),true) ? true : false;
+    hasFootersFields(){
+        return Object.size(this.getFootersFields(),true) ? true : false;
     }
     getActionsArgs(selected){
         const r = isObj(selected)? selected : {};
@@ -1033,7 +1061,7 @@ export default class CommonDatagridComponent extends AppComponent {
         if(!isNonNullString(field)) return;
         let columns = {...this.state.columns};
         columns[field].visible = !columns[field].visible;
-        let footers = this.getFooterFields();
+        let footers = this.getFootersFields();
         if(isObj(footers[field])){
             footers[field].visible = columns[field].visible;
         }
@@ -1041,6 +1069,10 @@ export default class CommonDatagridComponent extends AppComponent {
         this.setState({columns},()=>{
             if(removeFocus) document.body.click();
         });
+   }
+   /****le nombre maximum de courbes supportées */
+   getMaxSeriesSize(){
+        return getMaxSupportedSeriesSize();
    }
    prepareFilter(props,filteredColumns){
         filteredColumns.push(props);
@@ -1067,7 +1099,7 @@ export default class CommonDatagridComponent extends AppComponent {
    /*** configure la  */
    configureSectionListColumn(column,toggleSectionList){
         if(!this.isSectionListColumnConfigurable(column)) return Promise.reject({message : 'type de colonne invalide, impossible de configurer la colonne, pour permettre qu\elle soit ajoutée dans les colonnes de groupe du tableau'});
-        const format = defaultStr(defaultObj(this.configureSectionListSelectedValues[column.field]).format,"dd/mm/yyyy")
+        const format = defaultStr(defaultObj(this.configureSectionListSelectedValues[column.field]).format,column.format,"dd/mm/yyyy")
         return new Promise((resolve,reject)=>{
             DialogProvider.open({
                 title : 'Format de date',
@@ -1129,19 +1161,20 @@ export default class CommonDatagridComponent extends AppComponent {
         const {sectionListColumns} = this.prepareColumns({sectionListColumns:{}});
         this.setIsLoading(true,()=>{
             this.prepareData({data:this.INITIAL_STATE.data,sectionListColumns},(state)=>{
-                this.setState({...state,sectionListColumns},()=>{
+                this.setState({...state,sectionListColumns,displayOnlySectionListHeaders:false},()=>{
                     this.setIsLoading(false,false);
                     this.setSessionData("sectionListColumns",null);
+                    this.setSessionData("displayOnlySectionListHeaders",false);
                 });
             });
         },true);
    }
    canDisplayOnlySectionListHeaders(){
-        return this.hasFooterFields() && this.isSectionList() && this.hasSectionListData();
+        return this.hasFootersFields() && this.isSectionList() && this.hasSectionListData();
    }
    /*** si l'on peut rendre le contenu de type graphique */
    isChartRendable(){
-     return !this.isPivotDatagrid() && this.hasFooterFields();
+     return !this.isPivotDatagrid() && this.hasFootersFields();
    }
    isValidChartConfig(config){
         config = defaultObj(config,this.state.chartConfig);
@@ -1168,12 +1201,14 @@ export default class CommonDatagridComponent extends AppComponent {
             },true)
         } else {
             const cb = (chartConfig)=>{
-                this.setIsLoading(true,()=>{
-                    this.setState({chartConfig,displayType},()=>{
-                        this.setIsLoading(false,false);
-                        this.persistDisplayType(displayType);
-                    })
-                },true);
+                setTimeout(()=>{
+                    this.setIsLoading(true,()=>{
+                        this.setState({chartConfig,displayType},()=>{
+                            this.setIsLoading(false,false);
+                            this.persistDisplayType(displayType);
+                        })
+                    },true);
+                },200);
             }
             if(!this.isValidChartConfig()){
                 return this.configureChart(false).then((chartConfig)=>{
@@ -1189,15 +1224,15 @@ export default class CommonDatagridComponent extends AppComponent {
         }
         const xItems = {},yItems = {},config = defaultObj(this.state.chartConfig);
         const series = {};
-        let hasSeries = false;
         const isValidConfig = this.isValidChartConfig();
         Object.map(this.state.columns,(field,f)=>{
             if(isObj(field) && !this.isSelectableColumn(field) && !this.isIndexColumn(field)){
-                xItems[f] = field;
                 const type = defaultStr(field.jsType,field.type).toLowerCase();
                 if(type === 'number' || type=='decimal'){
                     yItems[f] = field;
                     series[f] = field;
+                } else {
+                    xItems[f] = field;
                 }
             }
         });
@@ -1218,6 +1253,7 @@ export default class CommonDatagridComponent extends AppComponent {
             DialogProvider.open({
                 title : 'Configuration des graphes',
                 subtitle : false,
+                data : this.getCharConfig(),
                 fields : {
                     x : {
                         text : 'Axe des x[horizontal]',
@@ -1235,10 +1271,16 @@ export default class CommonDatagridComponent extends AppComponent {
                         defaultValue : config.y,
                         onValidatorValid,
                     },
-                    series : hasSeries && {
+                    series : {
                         text : 'Series',
                         type : "select",
                         items : series,
+                        multiple : true,
+                    },
+                    sectionListHeadersSeries : {
+                        text : "Series des données groupées",
+                        type : "select",
+                        items : yItems,
                         multiple : true,
                     },
                     aggregatorFunction : {
@@ -1248,7 +1290,22 @@ export default class CommonDatagridComponent extends AppComponent {
                         multiple : false,
                         defaultValue : "sum",
                         items : aggregatorFunctions,
-                    }
+                    },
+                    stacked : {
+                        type : 'switch',
+                        text : "Graphe empilé?",
+                        disabled : this.state.displayType !== "barChart",
+                        checkedValue : true,
+                        uncheckedValue : false,
+                    },
+                    title : {
+                        text : "Titre du graphe",
+                        format :'hashtag',
+                    },
+                    titleColor: {
+                        text : "Couleur de titre",
+                        type :"color",
+                    },
                 },
                 actions : [
                     {
@@ -1273,15 +1330,24 @@ export default class CommonDatagridComponent extends AppComponent {
    getCharConfig(){
       return defaultObj(this.state.chartConfig);
    }
+   getChartIsRendableArgs(){
+        return {
+            context:this,isSectionList:this.isSectionList(),hasSectionListData:this.hasSectionListData(),
+            data : this.state.data,
+            displayOnlySectionListHeaders : this.canDisplayOnlySectionListHeaders(),
+        };
+   }
    renderDisplayTypes(){
         const m = [];
         let activeType = null,hasFoundChart = false,hasFoundTable = false;
         const hasConfig = this.isValidChartConfig();
         Object.map(this.displayTypes,(type,k)=>{
+            let isChartDisabled = false;
             if(type.isChart === true ) {
                 if(!this.isChartRendable()){
                     return null;
                 }
+                isChartDisabled = typeof type.isRendable =='function' && type.isRendable(this.getChartIsRendableArgs()) === false ? true : false;
                 if(!hasFoundChart){
                     if(hasFoundTable){
                         m.push({divider:true});
@@ -1291,7 +1357,16 @@ export default class CommonDatagridComponent extends AppComponent {
                         divider : true,
                         text : "Configurer les graphes",
                         icon :"material-settings",
-                        onPress : this.configureChart.bind(this)
+                        onPress : ()=>{
+                            this.configureChart(false).then((chartConfig)=>{
+                                this.setIsLoading(true,()=>{
+                                    this.setState({chartConfig},()=>{
+                                        this.setSessionData("chartConfig",chartConfig);
+                                        this.setIsLoading(false,false);
+                                    });
+                                },true)
+                            })
+                        }
                     });
                 }
             } else if(k === 'table'){
@@ -1307,7 +1382,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 right : <>
                     {active ? <Icon color={theme.colors.primaryOnSurface} name="check"/>: null}
                 </>,
-                disabled : type.isChart && !hasConfig ? true : undefined,
+                disabled : isChartDisabled || type.isChart && !hasConfig ? true : undefined,
                 onPress:()=>{
                     this.setDisplayType(type); 
                 }
@@ -1332,101 +1407,236 @@ export default class CommonDatagridComponent extends AppComponent {
    getEmptyDataValue(){
         return "N/A";
    }
+   /*** retourne les sectionHeaderSeries par défautt */
+   getDefaultSectionHeadersSeries(){
+      if(!this.isSectionList() || !this.hasFootersFields()) return [];
+      const footersFields = this.getFootersFields();
+      const r = [],max = this.getMaxSeriesSize();
+      let counter = 0;
+      for(let i in footersFields){
+            const footer = footersFields[i];
+            if(!isObj(footer)) continue;
+            if(counter >= max) break;
+            r.push(i);
+      }
+      return r;
+   }
+   formatChartDataValue({value,column,options}){
+        return value;
+   }
+   /***** 
+    *   retourne les paramètres à passer au chart, lorsque les données sont groupées, ie les sectionsListColumns est non nulle
+    *   @param {object} de la forme suivante : 
+    *       @param {object} chartType le type de chart, l'un des types du tableau displayTypes en haut du présent fichier
+    *       @param {object} yAxisColumn la colonne de l'axe vertical y
+    *       @param {object} xAxisColumn la colonne de l'axe des x de la courbe, pris dans les configurations du chart, chartConfig
+    *       @param {object} la fonction d'aggrégation, l'une des fonctions issues des fonctions d'aggrégations aggregatorsFuncions, @see : dans $components/Datagrid/Footer
+    *   en affichage des tableaux de type sectionList, seul les colonnes de totalisation sont utilisées pour l'affichage du graphe
+    *   Le nombre de graphes (series) à afficher est valable pour tous les graphes sauf les graphes de type pie/donut. 
+    *   il est récupéré dans la variable chartConfig des configuration du chart, où par défaut le nombre de colonnes de totalisation des tableau (inférieur au nombre maximum de courbes surpportées par appexchart)
+    */
+   getSectionListHeadersChartOptions({chartType,yAxisColumn,xAxisColumn,aggregatorFunction}){
+        if(!this.isSectionList()) return null;
+        if(!isObj(chartType) || !isObj(yAxisColumn) || !yAxisColumn.field) return null;
+        if(!isObj(aggregatorFunction) || !isNonNullString(aggregatorFunction.code) || !aggregatorFunctions[aggregatorFunction.code]){
+            aggregatorFunction = aggregatorFunctions.sum;
+        }
+        const code = aggregatorFunction.code;
+        const isDonut = chartType.isDonut || chartType.isRadial;
+        const config = this.getCharConfig();
+        //@see : https://apexcharts.com/docs/series/
+        ///lorsqu'on affiche uniquement les totaux des sections, alors la visualition se fait sur uniquement sur la base des valeurs
+        ///on parcoure uniquement les entêtes des sectionLis
+        const dataIndexes={},dataInexesNames = {};
+        //la variable sectionListHeaderSeries, permet de récupérer les colonnes de type montant à utiliser pour le rendu du chart
+        let serieName = "";
+        const tableFooters = this.getFootersFields();
+        const defaultSectionListHeadersSeries = this.getDefaultSectionHeadersSeries();
+        let seriesConfig = isDonut ? [] : Array.isArray(config.sectionListHeadersSeries) && config.sectionListHeadersSeries.length ? config.sectionListHeadersSeries : [];
+        if(!isDonut){
+            if(seriesConfig.length){
+                const ss = [];
+                seriesConfig.map((s)=>{
+                    if(!isNonNullString(s) || !tableFooters[s]) return null;
+                    ss.push(s);
+                });
+                seriesConfig = ss;
+            }
+            if(!seriesConfig.length){
+                seriesConfig = defaultSectionListHeadersSeries;
+            }
+        }
+        /**** boucle sur chaque éléments trouvée dans le tableau des données sectionListData */
+        const loopForFooter = ({column,serieName,footers,header})=>{
+            if(!isObj(column) || !isObj(footers)) return null;
+            if(!isObj(footers[column.field])) return null;
+            const footer = footers[column.field]
+            if(typeof footer[code] !== 'number') return null;
+            const label = defaultStr(footer.label,footer.text,footer.field);
+            if(typeof footer[code] !== 'number') return null;
+            if(isDonut){
+                serieName = label;
+                dataIndexes[header] = footer[code];
+            } else {
+                dataIndexes[serieName] = defaultArray(dataIndexes[serieName]);
+                dataIndexes[serieName].push({x:header,y:footer[code]});
+            }
+        }
+        Object.map(this.sectionListData,(data,header)=>{
+            if(!isObj(this.sectionListHeaderFooters[header])) return null;
+            const footers = this.sectionListHeaderFooters[header];
+            if(isDonut){
+                loopForFooter({footers,header,column:yAxisColumn})
+            } else {
+                seriesConfig.map((s)=>{
+                    const serie = this.state.columns[s];
+                    const serieName = defaultStr(s.label,s.text,s);
+                    loopForFooter({footers,serie,serieName,header,column:tableFooters[s]})
+                })
+            }
+        });
+        if(isDonut){
+            const series = [],labels = [];
+            Object.map(dataIndexes,(serie,index)=>{
+                series.push(serie);
+                labels.push(index);
+            });
+            return {
+                series,
+                labels,
+            }
+        } else {
+            const series = [];
+            Object.map(dataIndexes,(data,name)=>{
+                series.push({name,data});
+            });
+            return {
+                series
+            }
+        }
+   }
    renderChart(){
         if(!this.canRenderChart()) return null;
         if(!this.isValidChartConfig()) return null;
         const chartType = displayTypes[this.state.displayType];
         if(!isObj(chartType) || !isNonNullString(chartType.type)) return null;
+        if(typeof chartType.isRendable =='function' && chartType.isRendable(this.getChartIsRendableArgs()) === false) {
+            console.warn("impossible d'afficher le graphe de type ",chartType.label," car le type de données requis pour le rendu de ce graphe est invalide")
+            return null;
+        }
         const config = this.getCharConfig();
         if(!this.state.columns[config.y]) return null;
-        const yaxis = this.state.columns[config.y];
-        const type = defaultStr(yaxis.jsType,yaxis.type).toLowerCase();
+        const yAxisColumn = this.state.columns[config.y];
+        const type = defaultStr(yAxisColumn.jsType,yAxisColumn.type).toLowerCase();
         if(type !== 'number'&& type !== 'decimal') return null;
         const isEmptyY = config.x === this.emptySectionListHeaderValue;
-        const seriesConfig = Array.isArray(config.series) && config.series.length ? config.series : [yaxis.field];
-        let xaxis = null;
+        let seriesConfig = Array.isArray(config.series) && config.series.length ? config.series : [yAxisColumn.field];
+        const snConfig = [];
+        Object.map(seriesConfig,(s,v)=>{
+            if(!isNonNullString(s) || !this.state.columns[s]) return null;
+            snConfig.push(s);
+        });
+        seriesConfig = snConfig.length> 0 ? snConfig : [yAxisColumn.field];
+        let xAxisColumn = null;
         if(!isEmptyY){
             if(!this.state.columns[config.x]){
                 return null;
             }
-            xaxis = this.state.columns[config.x];
+            xAxisColumn = this.state.columns[config.x];
         }
         let aggregatorFunction = typeof config.aggregatorFunction =='string' && aggregatorFunctions[config.aggregatorFunction]?aggregatorFunctions[config.aggregatorFunction] :aggregatorFunctions.sum;
-        if(isObj(aggregatorFunction) && typeof aggregatorFunction.eval =='function'){
-            aggregatorFunction = aggregatorFunction.eval;
-        } else {
-            aggregatorFunction = aggregatorFunctions.sum.eval;
-        }
-        if(this.isSectionList()){
-            return null;
-        }
         const emptyValue = this.getEmptyDataValue();
-        const indexes = {}
+        const indexes = {};
+        let series = [],xaxis = {},customConfig = {};
         let count = 0;
-        this.state.data.map((data,index)=>{
-            if(!isObj(data))return null;
-            const txt = this.renderRowCell({
-                data,
-                rowData : data,
-                rowCounterIndex : index,
-                rowIndex : index,
-                columnDef : xaxis,
-                renderRowCell : false,
-                columnField : xaxis.field,
+        if(!this.isSectionList()){
+            if(isObj(aggregatorFunction) && typeof aggregatorFunction.eval =='function'){
+                aggregatorFunction = aggregatorFunction.eval;
+            } else {
+                aggregatorFunction = aggregatorFunctions.sum.eval;
+            }
+            this.state.data.map((data,index)=>{
+                if(!isObj(data))return null;
+                const txt = this.renderRowCell({
+                    data,
+                    rowData : data,
+                    rowCounterIndex : index,
+                    rowIndex : index,
+                    columnDef : xAxisColumn,
+                    renderRowCell : false,
+                    columnField : xAxisColumn.field,
+                });
+                const text = isNonNullString(txt)? txt : emptyValue;
+                Object.map(seriesConfig,(s,v)=>{
+                    if(!isNonNullString(s) || !this.state.columns[s]) return null;
+                    const columnDef = this.state.columns[s];
+                    if(!isObj(columnDef)) return null;
+                    indexes[s] = defaultObj(indexes[s]);
+                    const current = indexes[s];
+                    current[text] =  typeof current[text] =="number"? current[text] : 0;
+                    const value = getFooterColumnValue({data,columnDef,columnField:columnDef.field});
+                    current[text] = aggregatorFunction(value,current[text],count);
+                })
             });
-            const text = isNonNullString(txt)? txt : emptyValue;
-            Object.map(seriesConfig,(s,v)=>{
-                if(!isNonNullString(s) || !this.state.columns[s]) return null;
-                const col = this.state.columns[s];
-                if(!isObj(col)) return null;
-                const value = defaultNumber(data[col.field]);
-                indexes[s] = defaultObj(indexes[s]);
-                const current = indexes[s];
-                current[text] = typeof current[text] =="number"? current[text] : 0;
-                current[text] = aggregatorFunction(value,current[text],count);
-            })
-        });
-        const series = [];
-        Object.map(indexes,(values,serieName)=>{
-            const col = this.state.columns[serieName];
-            const name = defaultStr(col?.label,col?.text,serieName),data = [];
-            Object.map(values,(v,i)=>{
-                data.push({
-                    x : i,
-                    y : v,
+            Object.map(indexes,(values,serieName)=>{
+                const col = this.state.columns[serieName];
+                const name = defaultStr(col?.label,col?.text,serieName),data = [];
+                Object.map(values,(v,i)=>{
+                    data.push({
+                        x : i,
+                        y : v,
+                    })
+                })
+                series.push({
+                    name,
+                    type : chartType.type,
+                    data,
                 })
             })
-            series.push({
-                name,
-                type : chartType.type,
-                data,
-            })
-        })
-        const {width,height:winheight} = Dimensions.get("window");
-        const {layout} = this.state;
-        let maxHeight = winheight-100;
-        if(layout && typeof layout.windowHeight =='number' && layout.windowHeight){
-            const diff = winheight - Math.max(defaultNumber(layout.y,layout.top),100);
-            if(winheight<=350){
-                maxHeight = 350;
+        } else {
+            const configs = this.getSectionListHeadersChartOptions({chartType,aggregatorFunction,xAxisColumn,yAxisColumn});
+            if(isObj(configs)){
+                const {series :customSeries,xaxis:customXaxis,...rest} = configs;
+                series = Array.isArray(customSeries) ? customSeries : series;
+                xaxis = isObj(customXaxis)? customXaxis : xaxis;
+                customConfig = rest;
             } else {
-                 maxHeight = diff;
+                return null;
             }
         }
-        const chartProps = defaultObj(chartProps);
+        customConfig = defaultObj(customConfig);
+        customConfig.chart = defaultObj(customConfig.chart);
+        const chartProps = extendObj(true,{},this.props.chartProps,customConfig);
+        if(chartType.isBar){
+            chartProps.chart.stacked = !!config.stacked;
+        } else chartProps.chart.stacked = undefined;
         return <Chart
             options = {{
-                ...defaultObj(chartProps.options),
+                ...chartProps,
+                title : {
+                    text: defaultStr(config.title,chartProps.title),
+                    align: 'left',
+                    //margin: 10,
+                    //offsetX: 0,
+                    //offsetY: 0,
+                    //floating: false,
+                    style: {
+                      //fontSize:  '14px',
+                      //fontWeight:  'bold',
+                      //fontFamily:  undefined,
+                      color: theme.Colors.isValid(config.titleColor)?config.titleColor : undefined,
+                    },
+                },
                 series,
                 chart : {
                     height :350,
-                    maxHeight,
                     ...defaultObj(chartProps.chart),
                     type : chartType.type,
                 },
                 xaxis: {
                     ...defaultObj(chartProps.xaxis),
-                    type: 'category'
+                    type: 'category',
+                    ...defaultObj(xaxis)
                 }
             }}
         />
@@ -1541,7 +1751,6 @@ export default class CommonDatagridComponent extends AppComponent {
             } = header;
             restCol = Object.clone(defaultObj(restCol));
             let colFilter = defaultVal(restCol.filter,true);
-            const format  = defaultStr(restCol.format).toLowerCase();
             field = header.field = defaultStr(header.field,field,headerIndex);
             delete restCol.filter;
             
@@ -1673,15 +1882,15 @@ export default class CommonDatagridComponent extends AppComponent {
                         ...header,
                          width,
                          type,
+                         ...sListColumns[field],
                          ...defaultObj(this.configureSectionListSelectedValues[field]),
-                        ...sListColumns[field],
                     };///les colonnes de sections
                     this.sectionListColumnsSize.current++;
                 }
                 const mItem = {
+                    ...header,
                     field,
                     type,
-                    format,
                     onPress : ()=>{
                         this.toggleColumnInSectionList(field);
                         return false;
@@ -1692,9 +1901,9 @@ export default class CommonDatagridComponent extends AppComponent {
                 if(this.isSectionListColumnConfigurable(mItem)){
                     mItem.right = (p)=>{
                         return <Icon name="material-settings" {...p} onPress={(e)=>{
-                            React.stopEventPropagation(e);
+                            //React.stopEventPropagation(e);
                             this.configureSectionListColumn(mItem);
-                            return false;
+                            //return false;
                         }}/>
                     }
                 }
@@ -1761,8 +1970,8 @@ export default class CommonDatagridComponent extends AppComponent {
         let isArr = Array.isArray(data);
         //let push = (d,index) => isArr ? newData.push(d) : newData[index] = d;
         const hasLocalFilter = this.props.filters !== false && this.hasLocalFilters;
-        let footersColumns = this.getFooterFields(),hasFooterFields = this.hasFooterFields();
-        const canUpdateFooters = !!(updateFooters !== false && hasFooterFields);
+        const footersColumns = this.getFootersFields(),hasFootersFields = this.hasFootersFields();
+        const canUpdateFooters = !!(updateFooters !== false && hasFootersFields);
         this.hasFoundSectionData.current = false;
         this.sectionListDataSize.current = 0;
         const isSList = this.isSectionList(sectionListColumns);
@@ -1820,6 +2029,7 @@ export default class CommonDatagridComponent extends AppComponent {
                     }
                     sectionListData[r].push(d); 
                     if(canUpdateFooters){
+                        ///garde pour chaque éléments de groue, la valeur des champs de son footer
                         this.sectionListHeaderFooters[r] = defaultObj(this.sectionListHeaderFooters[r]);
                         currentSectionListFooter = this.sectionListHeaderFooters[r];
                     }
@@ -2880,6 +3090,8 @@ CommonDatagridComponent.propTypes = {
         x : PropTypes.string.isRequired, //l'axe horizontal
         y : PropTypes.string.isRequired, //l'axe des y, les colonnes de type nombre
         series : PropTypes.arrayOf([PropTypes.string]), //les séries, le nombre de courbe a afficher sur le graphe, en fonction du type
+        /**** les series à utiliser pour l'affichage des données lorsque les colonnes sont groupées, ie les montant de totalisation sont utilisés */
+        sectionListHeadersSeries : PropTypes.arrayOf([PropTypes.string]),
     }),
     displayType : chartDisplayType,
     /*** les types d'afichates supportés par l'application */

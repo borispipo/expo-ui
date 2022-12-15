@@ -3,21 +3,27 @@ import View from "$ecomponents/View";
 import React from "$react";
 import memoize from "$react/memoize";
 export {default as FooterItem} from "./Footer";
-import {parseDecimal} from "$utils";
+import {parseDecimal,defaultObj,defaultStr,isNonNullString} from "$utils";
 
-export const evalSingleValue = ({data,columnDef,field,result,withLabel,displayLabel,onlyVisible})=>{
-    data = data || {}
+export * from "./Footer";
+
+/***évalue la valeur décimale selon les paramètres */
+export const getFooterColumnValue = ({data,columnDef,field,result,columnField}) =>{
+    data = defaultObj(data)
+    columnDef = defaultObj(columnDef);
+    columnField = defaultStr(columnField,columnDef.field,field);
+    let val = data[columnField];
+    if(typeof columnDef.multiplicater ==='function'){
+        val = defaultDecimal(columnDef.multiplicater({value:val,columnField,field,columnDef,rowData:data,item:data}),val)
+    }
+    return typeof val =='number'? parseDecimal(val.toFixed(12)) : 0;
+}
+
+export const evalSingleValue = ({data,columnDef,field,columnField,withLabel,result,displayLabel,onlyVisible})=>{
     if(!isNonNullString(field) || !isObj(columnDef)) return result;
     onlyVisible = defaultBool(onlyVisible,true);
     if(onlyVisible === true && !(columnDef.visible !== false)) result;
-    let val = data[field];
-    if(isFunction(columnDef.multiplicater)){
-        val = defaultDecimal(columnDef.multiplicater({value:val,columnField:field,field,columnDef,rowData:data,item:data}),val)
-    }
-    if(!isDecimal(val)){
-        return result;
-    }
-    val = parseDecimal(val.toFixed(10));
+    let val = getFooterColumnValue({data,columnDef,columnField,result,field});
     (Array.isArray(result) ? result : [result]).map((currentResult)=>{
         currentResult = defaultObj(currentResult);
         if(!isObj(currentResult[field])){

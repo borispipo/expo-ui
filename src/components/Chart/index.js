@@ -1,9 +1,10 @@
 import React from '$react'
 import PropTypes from 'prop-types'
 import {defaultStr,defaultVal,extendObj,defaultObj,uniqid,defaultNumber} from "$utils";
-import {extend} from "./utils"
 import stableHash from 'stable-hash';
 import Chart from "./appexChart";
+
+export * from "./utils";
 
 /**** pour le rendu webview chart, voir : https://github.com/flexmonster/react-native-flexmonster/blob/master/src/index.js */
 /**** le composant Chart s'appuie sur le composant appexChart : https://apexcharts.com/ 
@@ -16,35 +17,23 @@ import Chart from "./appexChart";
  *  options {number} - les options supplémentaires au chart
  * 
 */
-const ChartComponent = React.forwardRef(({options,height,width,chartId,testID,webViewProps, ...props },ref)=>{
+const ChartComponent = React.forwardRef(({options:customOptions,height,width,chartId,testID,webViewProps, ...props },ref)=>{
   const chartContext = React.useRef(null);
-  options = defaultObj(options);
-  const series = options.series;
+  const {series,xaxis:customXaxis,...options} = customOptions;
+  const xaxis = defaultObj(customXaxis);
   options.chart = defaultObj(options.chart);
   const chartIdRef = React.useRef(defaultStr(chartId,options.chart.id,uniqid("chart-id")));
   width = options.chart.width = defaultVal(options.chart.width,width);
   height = options.chart.height = defaultVal(options.chart.height,height)
   options.chart.id = chartIdRef.current;
   testID = defaultStr(testID,"RN_ChartComponent");
-  const prevWidth = React.usePrevious(width), prevHeight = React.usePrevious(height);
-  const prevOptions = React.usePrevious(options,JSON.stringify);
-  const prevSeries = React.usePrevious(series,JSON.stringify);
-  /***change size chart, @see : https://apexcharts.com/docs/chart-types/line-chart/ */
-  options.xaxis = defaultObj(options.xaxis);
-  options.xaxis.stroke = defaultObj(options.xaxis.stroke);
-  options.xaxis.stroke.width = defaultNumber(options.xaxis.stroke.width,2);
-  options.xaxis.stroke.height = defaultNumber(options.xaxis.height,1);
-
-  console.log(options,' is optssss');
+  options.xaxis = xaxis;
+  options.series = series;
   React.useEffect(()=>{
     if(chartContext.current && chartContext.current.updateOptions){
-        if((prevSeries == series) || width != prevWidth || height != prevHeight){
-            chartContext.current.updateOptions(options);
-        } else if(prevOptions != options){
-            chartContext.current.updateSeries(series);
-        } 
+        chartContext.current.updateOptions(options);
     }
-  },[stableHash({options,series,width,height})])
+  },[stableHash(options)])
   return <Chart {...props} options={options} chartId={chartIdRef.current} chartContext={chartContext} testID={testID} ref={ref}/>
 });
 

@@ -24,7 +24,7 @@ import { StyleSheet,Dimensions,useWindowDimensions} from "react-native";
 import Preloader from "$ecomponents/Preloader";
 import Checkbox from "../Checkbox";
 import { TouchableRipple } from "react-native-paper";
-import { evalSingleValue,Footer,getFooterColumnValue } from "../Footer";
+import { evalSingleValue,Footer,getFooterColumnValue,isValidAggregator,extendAggreagatorFunctions} from "../Footer";
 import i18n from "$i18n";
 import { makePhoneCall,canMakePhoneCall as canMakeCall} from "$makePhoneCall";
 import copyToClipboard from "$capp/clipboard";
@@ -39,7 +39,6 @@ import {Menu} from "$ecomponents/BottomSheet";
 import {styles as tableStyles} from "$ecomponents/Table";
 import {DialogProvider} from "$ecomponents/Form/FormData";
 import Chart,{getMaxSupportedSeriesSize} from "$ecomponents/Chart";
-import { aggregatorFunctions} from "../Footer/Footer";
 
 const chart = "chart";
 export const donutChart = {
@@ -198,10 +197,15 @@ export default class CommonDatagridComponent extends AppComponent {
             sectionListDataSize : {value : {current : 0}},
             enablePointerEventsRef : {value : {current:false}},
             configureSectionListSelectedValues : {value : {}},
+            ///la liste des fonctions d'aggregations supportées
+            aggregatorFunctions : {value : extendAggreagatorFunctions(this.props.aggregatorFunctions)},
             ///les types d'affichage
             displayTypes : {value : hasFoundDisplayTypes ? disTypes : Object.clone(displayTypes)},
             sectionListColumnsSize : {value : {current:0}}, //la taille du nombre d'éléments de section dans les colonnes
         }) 
+        const sessionAggregator = defaultStr(this.getSessionData("aggregatorFunction")).trim();
+        const aggregatorProps = defaultStr(this.props.aggregatorFunction).trim();
+        this.state.aggregatorFunction= aggregatorProps && isValidAggregator(this.aggregatorFunctions[aggregatorProps]) ? aggregatorProps ? isNonNullString(sessionAggregator) && isValidAggregator(this.aggregatorFunctions[sessionAggregator]) : sessionAggregator : Object.keys(this.aggregatorFunctions)[0];
         this.isLoading = this.isLoading.bind(this);
         this.getProgressBar = this.getProgressBar.bind(this);
         this.sortRef.current.dir = defaultStr(this.sortRef.current.dir,this.sortRef.current.column == "date"?"desc":'asc')
@@ -1218,6 +1222,64 @@ export default class CommonDatagridComponent extends AppComponent {
             cb({...this.state.chartConfig});
         }
    }
+   getActiveAggregatorFunction(){
+        if(isNonNullString(this.state.aggregatorFunction) && this.aggregatorFunctions[this.state.aggregatorFunction]){
+            return this.aggregatorFunctions[this.state.aggregatorFunction]
+        }
+        return this.aggregatorFunctions[Object.keys(this.aggregatorFunctions)[0]];
+   }
+   /**** récupère l'item de menu permettant lié à la sélection de la fonction d'aggggrégation */
+   getAggregatorFunctionsMenuItems(withDivider){
+        if(!this.hasFootersFields()) return [];
+        const m = [];
+        const aggregatorFunction = this.getActiveAggregatorFunction().code;
+        Object.map(this.aggregatorFunctions,(ag)=>{
+            const active = ag.code == aggregatorFunction;
+            m.push({
+                ...ag,
+                icon : active?"check":null,
+                onPress : active ? undefined : ()=>{
+                    this.toggleActiveAggregatorFunction(ag);
+                }
+            })
+        });
+        if(m.length){
+            m.unshift({
+                text : "Fonctions d'aggrégation",
+                icon : "material-functions",
+                divider : true,
+            });
+            if(withDivider !== false){
+                m.unshift({divider:true});
+            }
+            if(withDivider !== false){
+                m[m.length-1].divider = true;
+            }
+        }
+        return m;
+   }
+   toggleActiveAggregatorFunction(ag){
+        if(!isValidAggregator(ag) || ag.code == this.state.aggregatorFunction) return null;
+        setTimeout(()=>{
+            this.setIsLoading(true,()=>{
+                this.prepareData({data:this.INITIAL_STATE.data},(state)=>{
+                    this.setState({...state,aggregatorFunction:ag.code},()=>{
+                        this.setSessionData("aggregatorFunction",ag.code);
+                        this.setIsLoading(false,false);
+                    })
+                })
+            },true);
+        },200);
+   }
+   renderAggregatorFunctionsMenu(){
+        const m = this.getAggregatorFunctionsMenuItems(false,false);
+        if(!m.length) return null;
+        return <Menu
+            items = {m}
+            title = "Fonctions d'aggrégations. Veuillez sélectionner la fonction à utiliser par défaut pour la totalisation des données des colonnes de type nombre"
+            anchor = {(p)=><Icon name="material-functions" {...p}/>}
+        />
+   }
    configureChart(refreshChart){
         if(!this.isChartRendable()){
             return Promise.reject({message:'Impossible de configurer le graphe car le type de données ne permet pas de rendu de type graphe'});
@@ -1282,14 +1344,6 @@ export default class CommonDatagridComponent extends AppComponent {
                         type : "select",
                         items : yItems,
                         multiple : true,
-                    },
-                    aggregatorFunction : {
-                        type  : 'select',
-                        text : "Foncton d'aggrégation",
-                        required : true, 
-                        multiple : false,
-                        defaultValue : "sum",
-                        items : aggregatorFunctions,
                     },
                     stacked : {
                         type : 'switch',
@@ -1438,8 +1492,8 @@ export default class CommonDatagridComponent extends AppComponent {
    getSectionListHeadersChartOptions({chartType,yAxisColumn,xAxisColumn,aggregatorFunction}){
         if(!this.isSectionList()) return null;
         if(!isObj(chartType) || !isObj(yAxisColumn) || !yAxisColumn.field) return null;
-        if(!isObj(aggregatorFunction) || !isNonNullString(aggregatorFunction.code) || !aggregatorFunctions[aggregatorFunction.code]){
-            aggregatorFunction = aggregatorFunctions.sum;
+        if(!isValidAggregator(aggregatorFunction)){
+            aggregatorFunction = this.getActiveAggregatorFunction();
         }
         const code = aggregatorFunction.code;
         const isDonut = chartType.isDonut || chartType.isRadial;
@@ -1544,17 +1598,12 @@ export default class CommonDatagridComponent extends AppComponent {
             }
             xAxisColumn = this.state.columns[config.x];
         }
-        let aggregatorFunction = typeof config.aggregatorFunction =='string' && aggregatorFunctions[config.aggregatorFunction]?aggregatorFunctions[config.aggregatorFunction] :aggregatorFunctions.sum;
+        const aggregatorFunction = this.getActiveAggregatorFunction().eval;
         const emptyValue = this.getEmptyDataValue();
         const indexes = {};
         let series = [],xaxis = {},customConfig = {};
         let count = 0;
         if(!this.isSectionList()){
-            if(isObj(aggregatorFunction) && typeof aggregatorFunction.eval =='function'){
-                aggregatorFunction = aggregatorFunction.eval;
-            } else {
-                aggregatorFunction = aggregatorFunctions.sum.eval;
-            }
             this.state.data.map((data,index)=>{
                 if(!isObj(data))return null;
                 const txt = this.renderRowCell({
@@ -1575,8 +1624,9 @@ export default class CommonDatagridComponent extends AppComponent {
                     const current = indexes[s];
                     current[text] =  typeof current[text] =="number"? current[text] : 0;
                     const value = getFooterColumnValue({data,columnDef,columnField:columnDef.field});
-                    current[text] = aggregatorFunction(value,current[text],count);
-                })
+                    const rArgs = aggregatorFunction =='average'?{sum:current[text]+value,count:count+1} : {};
+                    current[text] = aggregatorFunction({value,total:current[text],data,columnDef,columnField:columnDef.field,count,...rArgs});
+                });
             });
             Object.map(indexes,(values,serieName)=>{
                 const col = this.state.columns[serieName];
@@ -2041,7 +2091,7 @@ export default class CommonDatagridComponent extends AppComponent {
                         result.push(currentSectionListFooter);
                     }
                     Object.map(footersColumns,(columnDef,field)=>{
-                        evalSingleValue({data:d,columnDef,field,result,displayLabel:false})
+                        evalSingleValue({data:d,aggregatorFunction:this.getActiveAggregatorFunction(),aggregatorFunctions:this.aggregatorFunctions,columnDef,field,result,displayLabel:false})
                     });
                 }
                 newData.push(d);
@@ -2152,6 +2202,8 @@ export default class CommonDatagridComponent extends AppComponent {
                                 key = {key}
                                 testID={testID+"_FooterItem_"+key}
                                 {...footer}
+                                aggregatorFunction = {this.getActiveAggregatorFunction().code}
+                                aggregatorFunctions = {this.aggregatorFunctions}
                                 displayLabel = {false}
                                 //anchorProps = {{style:[theme.styles.ph1,theme.styles.mh05]}}
                             />  
@@ -2483,10 +2535,18 @@ export default class CommonDatagridComponent extends AppComponent {
     getMaxSelectedRows(){
         return 0;
     }
+    ///retourne la longueur réelle du nombre d'éléments du tableau en excluant les valerus d'entêtes de section
+    getStateDataSize(includeSectionListDataSize){
+        const dSize = defaultNumber(this.state.data.length);
+        if(!dSize) return 0;
+        if(includeSectionListDataSize === false) return dSize;
+        return Math.max(dSize - this.getSectionListDataSize(),0);
+    }
     getMaxSelectableRows(){
         let max = this.getMaxSelectedRows();
-        if(this.state.data && typeof this.state.data.length ==='number'){
-            max = max ? Math.min(max,this.state.data.length,max) : this.state.data.length;
+        const dataSize = this.getStateDataSize();
+        if(dataSize){
+            max = max ? Math.min(max,dataSize,max) : dataSize;
         }
         return Math.max(max-this.getSectionListDataSize(),0);
     }
@@ -3095,7 +3155,9 @@ CommonDatagridComponent.propTypes = {
     }),
     displayType : chartDisplayType,
     /*** les types d'afichates supportés par l'application */
-    displayTypes : PropTypes.arrayOf(chartDisplayType) 
+    displayTypes : PropTypes.arrayOf(chartDisplayType),
+    /***le code de la fonction d'aggregation à utilier par défaut, dans la liste des fonctions d'aggrégations du composant */
+    aggregatorFunction : PropTypes.string,
 }
 
 const styles = StyleSheet.create({

@@ -2,66 +2,89 @@ import Menu from "$ecomponents/BottomSheet/Menu";
 import View from "$ecomponents/View";
 import {Pressable,StyleSheet} from "react-native";
 import Label from "$ecomponents/Label";
-import {defaultVal,defaultObj} from "$utils";
+import {defaultVal,defaultObj,isNonNullString,isObj} from "$utils";
 import React from "$react";
 import theme from "$theme"
+import appConfig from "$capp/config";
 
-let methods = {
-    sum : "Somme",
-    average : "Moyenne",
-    min : "Minimum",
-    max : 'Maximum',
-    count : "Nombre",
-}
 /*** les fonction d'aggreations */
 export const aggregatorFunctions = {
     sum : {
         code : "sum",
         label : "Somme",
-        eval : (current,prev,count)=>{
-            current = typeof current =='number'?current : 0;
-            prev = typeof prev =='number'? prev : 0;
-            return current+prev;
+        eval : ({value,total,count})=>{
+            value = typeof value =='number'?value : 0;
+            total = typeof total =='number'? total : 0;
+            return value+total;
         }
     },
-    /*average : {
-        code : "average",
-        label : "Moyenne",
-        eval : ()=>{
-
-        }
-    },*/
     min : {
         code : "min",
         label : "Minimum",
-        eval : (current,prev,count)=>{
-            current = typeof current =='number'?current : 0;
-            prev = typeof prev =='number'? prev : 0;
-            return Math.min(current,prev);
+        eval : ({value,total,count})=>{
+            value = typeof value =='number'?value : 0;
+            total = typeof total =='number'? total : 0;
+            return Math.min(value,total);
         },
     },
     max : {
         code : "max",
         label: 'Maximum',
-        eval : (current,prev,count)=>{
-            current = typeof current =='number'?current : 0;
-            prev = typeof prev =='number'? prev : 0;
-            return Math.max(current,prev);
+        eval : ({value,total,count})=>{
+            value = typeof value =='number'?value : 0;
+            total = typeof total =='number'? total : 0;
+            return Math.max(value,total);
         },
     },
     count : {
         code : "count",
         label : "Nombre",
-        eval : (current,prev,count)=>{
+        eval : ({value,total,count})=>{
             return (typeof count =='number'? count : 0)+1;
         }
     },
+    average : {
+        code : "average",
+        label : "Moyenne",
+        eval : ({count,sum})=>{
+            return typeof count =='number' && count > 0 && typeof sum =='number'? sum/count : 0;
+        }
+    },
 }
-const formatValue = ({value,format,method})=>{
-    return (format === 'money' && method != 'count')? value.formatMoney():value.formatNumber();
+/**** 
+ * Vérifie si la fonction d'aggregation est valide
+*/
+export const isValidAggregator = (aggregatorFunctionObject)=>{
+    return isObj(aggregatorFunctionObject) && isNonNullString(aggregatorFunctionObject.code) && typeof aggregatorFunctionObject.eval =='function' && true || false;
+}
+/*** permet d'étendre les fonction d'aggregations 
+ * @param {object|Array} liste des functions d'aggregation supplémentaires, de la forme 
+ *  {
+ *      code {string} le code de la fonction d'aggrégation
+ *      label {string} le libele
+ *      eval {function} la function a utiiser pour évaluer la données via l'aggregator
+
+ * }
+*/
+export function extendAggreagatorFunctions(aFunctions){
+    const r = {...aggregatorFunctions};
+    loopForAggregator(appConfig.get("datagridAggregatorFunctions"),r);
+    loopForAggregator(aFunctions,r);
+    return r;
+}
+const loopForAggregator = (aggregatorFunctions,result)=>{
+    result = defaultObj(result);
+    Object.map(aggregatorFunctions,(aggregatorObj,key)=>{
+        if(!isValidAggregator(aggregatorObj)) return null;
+        result[aggregatorObj.code] = aggregatorObj;
+    });
+}
+const formatValue = ({value,format,aggregatorFunction})=>{
+    return (format === 'money' && aggregatorFunction != 'count')? value.formatMoney():value.formatNumber();
 }
 export default function DGGridFooterValue (props){
-    let {label,text,displayLabel,style,format,testID,anchorProps} = props;
+    let {label,text,displayLabel,style,aggregatorFunctions,aggregatorFunction,format,testID,anchorProps} = props;
+    aggregatorFunctions = defaultObj(aggregatorFunctions);
     anchorProps = defaultObj(anchorProps);
     testID = defaultStr(testID,"RN_DatagridFooterComponent");
     label = defaultVal(label,text);
@@ -69,27 +92,28 @@ export default function DGGridFooterValue (props){
     if(displayLabel !== false){
         if(!label || !React.isValidElement(label,true)) return null;
     } else label = undefined;
-    const [active,setActive] = React.useState(isNonNullString(props.method) && props.method in methods ? props.method : "sum")
+    const [active,setActive] = React.useState(isNonNullString(aggregatorFunction) && aggregatorFunction in aggregatorFunctions ? aggregatorFunction : aggregatorFunctions[Object.keys(aggregatorFunctions)[0]]?.code)
     React.useEffect(()=>{
-        if(isNonNullString(props.method) && props.method in methods){
-            setActive(props.method)
+        if(aggregatorFunction !== active && isNonNullString(aggregatorFunction) && aggregatorFunction in aggregatorFunctions){
+            setActive(aggregatorFunction)
         }
-    },[props.method])
+    },[aggregatorFunction])
     let title = "";
     let menuItems = []
     const activeStyle = {color:theme.colors.primaryOnSurface};
-    for(let method in methods){
-        let val = defaultDecimal(props[method]);
+    for(let aggregatorFunction in aggregatorFunctions){
+        let val = defaultDecimal(props[aggregatorFunction]);
         if(isDecimal(val)){
-            let fText = formatValue({value:val,format,method});
-            title +=(title? ", ":"")+methods[method]+" : "+fText
+            let fText = formatValue({value:val,format,aggregatorFunction});
+            const mText = defaultStr(aggregatorFunctions[aggregatorFunction].label,aggregatorFunctions[aggregatorFunction].code,aggregatorFunction);
+            title +=(title? ", ":"")+mText +" : "+fText
             menuItems.push({
-                text : methods[method] + " : "+fText,
-                icon : active == method ? "check" : null,
-                style : [{paddingHorizontal:0},active ===method ?activeStyle:null],
+                text : mText + " : "+fText,
+                icon : active == aggregatorFunction ? "check" : null,
+                style : [{paddingHorizontal:0},active ===aggregatorFunction ?activeStyle:null],
                 onPress : (e)=>{
                     React.stopEventPropagation(e);
-                    setActive(method)
+                    setActive(aggregatorFunction)
                 }
             })
         }
@@ -108,7 +132,7 @@ export default function DGGridFooterValue (props){
                     </>
                 : null}
                 <Label testID={testID+"_LabelContent"} primary style={[styles.value]}>
-                    {formatValue({value:defaultDecimal(props[active]),method:active,format})}
+                    {formatValue({value:defaultDecimal(props[active]),aggregatorFunction:active,format})}
                 </Label>
             </Pressable>
         }}

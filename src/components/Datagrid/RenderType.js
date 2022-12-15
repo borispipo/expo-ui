@@ -18,9 +18,9 @@ const DatagridRenderTypeComponent = (props)=>{
     let type = defaultStr(get(typeKey),isDesk? "fixed":'accordion').toLowerCase().trim();
     const rTypes = [
         {...getActiveProps(type,'accordion'),tooltip:"Les éléments de liste s'affichent de manière optimisé pour téléphone mobile",code:'accordion',icon:accordionIcon,label:'Mobile',labelText:'environnement optimisé pour téléphone mobile'},
-        //{...getActiveProps(type,'table'),tooltip:"Les éléments de listes s'affichent dans un tableau rééel",code:'table',icon:tableIcon,label:'Tableau réel avec pagination'}
+        {...getActiveProps(type,'table'),tooltip:"Les éléments de listes s'affichent dans un tableau",code:'table',icon:tableIcon,label:'Tableau'}
     ]  
-    Object.map(rendersTypes,(t,i)=>{
+    /*Object.map(rendersTypes,(t,i)=>{
         if(isObj(t)){
             if((isDesk && t.desktop) || (!isDesk && t.mobile)){
                 rTypes.push({
@@ -29,7 +29,7 @@ const DatagridRenderTypeComponent = (props)=>{
                 })
             }
         }
-    });
+    });*/
     let typeObj = {};
     Object.map(rTypes,(t)=>{
         if(isObj(t) && t.code == type){

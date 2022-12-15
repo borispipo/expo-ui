@@ -344,7 +344,7 @@ const DatagridFactory = (Factory)=>{
             } = this.props
             chartContainerProps = defaultObj(chartContainerProps);
             const canRenderChart = this.canRenderChart();
-            const hasData = this.state.data.length ? true : false;
+            const hasData = this.getStateDataSize(false) ? true : false;
             testID = defaultStr(testID,"RN_DatagridAccordion");
             backToTopProps = defaultObj(backToTopProps);
             accordionProps = defaultObj(accordionProps);
@@ -445,7 +445,7 @@ const DatagridFactory = (Factory)=>{
                     <View testID={testID+"_HeaderContentCntainer"} style={[styles.table,styles.pullRight]}>
                         {dbSelector}
                         <View testID={testID+"_HeaderQueryLimit"} style={[styles.paginationItem]}>
-                            {this.renderQueryLimit(this.state.data.length.formatNumber())}
+                            {this.renderQueryLimit(this.getStateDataSize().formatNumber())}
                         </View>
                         {this.renderCustomPagination()}
                         {sortedColumnsLength ? <View testID={testID+"_HeaderSortedColumns"} style={[styles.sortableItems,styles.paginationItem,{paddingRight:10}]}>
@@ -519,6 +519,7 @@ const DatagridFactory = (Factory)=>{
                                         ,icon :  showFooters?'view-column':'view-module'
                                         ,text : (showFooters?'Masquer les totaux':'Afficher les totaux')
                                     }:null,
+                                    ...this.getAggregatorFunctionsMenuItems(),
                                     ...this.renderCustomMenu(),
                                     ...restItems,
                                     !canRenderChart && this.canScrollTo() &&  {
@@ -584,6 +585,8 @@ const DatagridFactory = (Factory)=>{
                                                     key = {field}
                                                     testID={testID+"_FooterItem_"+field}
                                                     {...footer}
+                                                    aggregatorFunction = {this.getActiveAggregatorFunction().code}
+                                                    aggregatorFunctions = {this.aggregatorFunctions}
                                                     anchorProps = {{style:[theme.styles.ph1,theme.styles.mh05]}}
                                                 />
                                             })}

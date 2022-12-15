@@ -56,10 +56,11 @@ const DatagridFactory = (Factory)=>{
             const footerFields = this.getFootersFields();
             if(isObj(footerFields[columnField])){
                 return <Footer
-                    //{...footerFields[columnField]}
                     {...defaultObj(footersValues[columnField])}
                     displayLabel = {false}
                     style = {[style]}
+                    aggregatorFunction = {this.getActiveAggregatorFunction().code}   
+                    aggregatorFunctions = {this.aggregatorFunctions}                               
                 />
             }
             return null;
@@ -203,7 +204,7 @@ const DatagridFactory = (Factory)=>{
                 <ScrollView horizontal showsHorizontalScrollIndicator={!isLoading} style={styles.paginationContainerStyle} contentContainerStyle={styles.minW100}>
                     <View style={[styles.paginationContent]}>
                         <View testID={testID+"_HeaderQueryLimit"}>
-                            {this.renderQueryLimit(this.state.data.length.formatNumber())}
+                            {this.renderQueryLimit(this.getStateDataSize().formatNumber())}
                         </View>
                         {this.renderCustomPagination()}
                         {!isMobile && <>
@@ -283,12 +284,14 @@ const DatagridFactory = (Factory)=>{
                                     ,icon :  showFooters?'view-column':'view-module'
                                     ,text : (showFooters?'Masquer/Ligne des totaux':'Afficher/Ligne des totaux')
                                 } : null,
+                                ...this.getAggregatorFunctionsMenuItems(),
                                 ...(selectableMultiple ? restItems : [])
                             ] : visibleColumns}
                         
                         />
                         {this.renderSectionListMenu()}
                         {this.renderDisplayTypes()}
+                        {!isMobile && this.renderAggregatorFunctionsMenu() || null}
                         <View testID={testID+"_HeaderPagination"} style = {styles.paginationItem}>
                             <BottomSheetMenu
                                 testID={testID+"_HeaderMenus"}

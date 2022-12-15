@@ -8,4 +8,7 @@
 
     /*** le nombre maximal de courbes qu'on peut afficher sur le même graphe***/
     maxSupportedChartSeries {number}
+
+    /***les fonctions d'aggregations du datagrid**/
+    datagridAggregatorFunctions : {objectOf({code:{string},label:{string},eval:{function}})|| arrayOf({code:{string},label:{string},eval:{function}})}
  }

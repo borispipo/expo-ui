@@ -4,7 +4,7 @@ import React from "$react";
 import memoize from "$react/memoize";
 export {default as FooterItem} from "./Footer";
 import {parseDecimal,defaultObj,defaultStr,isNonNullString} from "$utils";
-
+import { aggregatorFunctions as mAggregatorFunctions } from "./Footer";
 export * from "./Footer";
 
 /***évalue la valeur décimale selon les paramètres */
@@ -19,8 +19,9 @@ export const getFooterColumnValue = ({data,columnDef,field,result,columnField}) 
     return typeof val =='number'? parseDecimal(val.toFixed(12)) : 0;
 }
 
-export const evalSingleValue = ({data,columnDef,field,columnField,withLabel,result,displayLabel,onlyVisible})=>{
-    if(!isNonNullString(field) || !isObj(columnDef)) return result;
+export const evalSingleValue = ({data,columnDef,field,count,columnField,aggregatorFunctions,withLabel,result,displayLabel,onlyVisible})=>{
+    if(!isNonNullString(field) || !isObj(columnDef) || !isObj(data)) return result;
+    aggregatorFunctions = defaultObj(aggregatorFunctions,mAggregatorFunctions);
     onlyVisible = defaultBool(onlyVisible,true);
     if(onlyVisible === true && !(columnDef.visible !== false)) result;
     let val = getFooterColumnValue({data,columnDef,columnField,result,field});
@@ -36,21 +37,27 @@ export const evalSingleValue = ({data,columnDef,field,columnField,withLabel,resu
             }
         }
         const obj = currentResult[field];
-        obj.max = isDecimal(obj.max) ? Math.max(obj.max,val) : val;
-        obj.min = isDecimal(obj.min) ? Math.min(obj.min,val) : val;
-        obj.count = isDecimal(obj.count) ? (obj.count = obj.count +1) : 1;
-        obj.sum = isDecimal(obj.sum) ? (parseDecimal((obj.sum+val).toFixed(10))) : val;
-        obj.average = obj.sum / obj.count;
+        //obj.max = isDecimal(obj.max) ? Math.max(obj.max,val) : val;
+        //obj.min = isDecimal(obj.min) ? Math.min(obj.min,val) : val;
+        //obj.count = isDecimal(obj.count) ? obj.count : 0;
+        //obj.sum = isDecimal(obj.sum) ? (parseDecimal((obj.sum+val).toFixed(10))) : val;
+        Object.map(aggregatorFunctions,(aggegatorFunction,key)=>{
+            const code = aggegatorFunction.code;
+            obj[code] = aggegatorFunction.eval({columnDef,columnField,data,value : val,count,...obj,total:defaultNumber(obj[code])});
+        });
+        if(typeof obj.count =='number' && obj.count >0 && typeof obj.sum =='number'){
+            obj.average = obj.sum / obj.count;
+        }
         return currentResult;
     })
     return result;
 }
-export const evalValues = memoize(({data,columns,onlyVisible,withLabel,displayLabel})=>{
+export const evalValues = memoize(({data,columns,aggregatorFunctions,onlyVisible,withLabel,displayLabel})=>{
     let result = {};
     Object.map(data,(rowData,i)=>{
         if(!isObj(rowData)) return result;
         Object.map(columns,(columnDef,field)=>{
-            result = evalSingleValue({data:rowData,columnDef,field,result,withLabel,displayLabel,onlyVisible})
+            result = evalSingleValue({data:rowData,aggregatorFunctions,columnDef,field,result,withLabel,displayLabel,onlyVisible})
         })
     })
     return result;
@@ -65,7 +72,7 @@ export const evalValues = memoize(({data,columns,onlyVisible,withLabel,displayLa
  * @param : children {func}, fonction permettant de générer le contenu du footer
  */
 export default function DGGridFooters (props){
-    let {columns,children,displayLabel,Component,data,onlyVisible,...rest} = props;
+    let {columns,children,displayLabel,aggregatorFunctions,Component,data,onlyVisible,...rest} = props;
     rest = defaultObj(rest)
     if(Component === false){
         Component = React.Fragment;
@@ -83,7 +90,7 @@ export default function DGGridFooters (props){
     React.useEffect(()=>{
         setState({...state,data:props.data})
     },[props.data]);
-    let footers = evalValues({data:state.data,columns:state.columns,onlyVisible,displayLabel});
+    let footers = evalValues({data:state.data,aggregatorFunctions,columns:state.columns,onlyVisible,displayLabel});
     return <Component {...rest}>
         {children({
             footers,

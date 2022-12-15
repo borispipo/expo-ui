@@ -18,7 +18,7 @@ const DatagridMainComponent = React.forwardRef((props,ref)=>{
     const AccordionComponent = isTableDataRef.current ? TableDataAccordion : Accordion;
     let Component = TableComponent;
     const canRenderAccordion = (isFunction(props.accordion) || (isObj(props.accordionProps) && isFunction(props.accordionProps.accordion)) || props.accordion === true);
-    let renderType = defaultStr(getRenderType(),isDesk? "fixed":'accordion').trim().toLowerCase()
+    let renderType = defaultStr(getRenderType(),isDesk? "table":'accordion').trim().toLowerCase()
     if(renderType == 'accordion' && canRenderAccordion){
         Component = AccordionComponent;
     } else if(renderType =='table'){

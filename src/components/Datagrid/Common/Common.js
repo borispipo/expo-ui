@@ -48,7 +48,7 @@ export const donutChart = {
     icon : "chart-donut",
     type: 'donut',
     isDonut : true,
-    isRendable : ({displayOnlySectionListHeaders,isSectionList})=>false,//isSectionList && displayOnlySectionListHeaders,
+    isRendable : ({displayOnlySectionListHeaders,isSectionList})=>isSectionList && displayOnlySectionListHeaders,
     tooltip : "Pour pouvoir visulaiser ce type de graphe, vous devez : grouper les données du tableau selon le criètre de votre choix, puis afficher uniquement les totaux des données groupées"
 }
 export const displayTypes = {
@@ -1416,7 +1416,6 @@ export default class CommonDatagridComponent extends AppComponent {
                             this.configureChart(false).then((chartConfig)=>{
                                 this.setIsLoading(true,()=>{
                                     this.setState({chartConfig},()=>{
-                                        this.setSessionData("chartConfig",chartConfig);
                                         this.setIsLoading(false,false);
                                     });
                                 },true)
@@ -1545,7 +1544,7 @@ export default class CommonDatagridComponent extends AppComponent {
             } else {
                 seriesConfig.map((s)=>{
                     const serie = this.state.columns[s];
-                    const serieName = defaultStr(s.label,s.text,s);
+                    const serieName = defaultStr(serie.label,serie.text,s);
                     loopForFooter({footers,serie,serieName,header,column:tableFooters[s]})
                 })
             }

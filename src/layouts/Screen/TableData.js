@@ -349,8 +349,12 @@ export default class TableDataScreenComponent extends FormDataScreen{
         rActionsArg.formProps = formProps;
         return rActionsArg;
     }
-    renderTabs(){
-        return null;
+    renderTabs(args){
+        const tabs = this.getMainProps().tabs;
+        if(typeof tabs =='function'){
+            return tabs(args);
+        }
+        return tabs;
     }
     handleCustomRender(){
         return true;

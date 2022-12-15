@@ -1276,8 +1276,9 @@ export default class CommonDatagridComponent extends AppComponent {
         if(!m.length) return null;
         return <Menu
             items = {m}
-            title = "Fonctions d'aggrégations. Veuillez sélectionner la fonction à utiliser par défaut pour la totalisation des données des colonnes de type nombre"
-            anchor = {(p)=><Icon name="material-functions" {...p}/>}
+            anchor = {(p)=><Icon name="material-functions" {...p}
+                title = "Fonctions d'aggrégations. Veuillez sélectionner la fonction à utiliser par défaut pour la totalisation des données des colonnes de type nombre"
+            />}
         />
    }
    configureChart(refreshChart){

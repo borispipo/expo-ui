@@ -1725,11 +1725,17 @@ export default class CommonDatagridComponent extends AppComponent {
    /*** permet d'effectuer le rendu des colonnes groupable dans le menu item */
    renderSectionListMenu(){
         const m = Array.isArray(this.preparedColumns?.sectionListColumnsMenuItems)? this.preparedColumns?.sectionListColumnsMenuItems : [];
-        if(!m.length){
+        const mm = [];
+        Object.map(m,(_)=>{
+            mm.push({
+                ..._,
+                items : undefined,
+            })
+        })
+        if(!mm.length){
             return null;
         }
         const hasList = this.sectionListColumnsSize.current;
-        const isMobile = isMobileOrTabletMedia();
         return <Menu
             title = {"Grouper les données du tableau"}
             testID = {"RN_DatagridSectionListMenu"}
@@ -1758,7 +1764,7 @@ export default class CommonDatagridComponent extends AppComponent {
                         },100)
                     }
                 },
-                ...m,
+                ...mm,
             ]}
         />
    }

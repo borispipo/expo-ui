@@ -14,6 +14,7 @@ const OptimizedHeavyScreen = React.forwardRef(({
   ),
   style,
   children,
+  isLoading,
   timeout,
   testID,
   transitionTimeout,
@@ -30,7 +31,7 @@ const OptimizedHeavyScreen = React.forwardRef(({
       style={[{flex:1},style]}
       ref={React.useMergeRefs(transitionRef,ref)}
     >
-      {areInteractionsComplete ? (children) :  placeholder}
+      {areInteractionsComplete && isLoading !==true ? (children) :  placeholder}
     </Transitioning.View>
   )
 });
@@ -46,7 +47,8 @@ OptimizedHeavyScreen.propTypes = {
     placeholder : PropTypes.oneOfType([
         PropTypes.node,
         PropTypes.element,
-    ])
+    ]),
+    isLoading : PropTypes.bool,//si l'écan où les données sont en train d'être chargé
   }
 
   OptimizedHeavyScreen.displayName = "OptimizedHeavyScreenComponent";

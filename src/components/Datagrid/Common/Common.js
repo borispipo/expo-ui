@@ -1261,8 +1261,8 @@ export default class CommonDatagridComponent extends AppComponent {
         if(!isValidAggregator(ag) || ag.code == this.state.aggregatorFunction) return null;
         setTimeout(()=>{
             this.setIsLoading(true,()=>{
-                this.prepareData({data:this.INITIAL_STATE.data},(state)=>{
-                    this.setState({...state,aggregatorFunction:ag.code},()=>{
+                this.prepareData({data:this.INITIAL_STATE.data,aggregatorFunction:ag.code},(state)=>{
+                    this.setState(state,()=>{
                         this.setSessionData("aggregatorFunction",ag.code);
                         this.setIsLoading(false,false);
                     })
@@ -2018,8 +2018,9 @@ export default class CommonDatagridComponent extends AppComponent {
         return defaultNumber(this.sectionListDataSize.current)
     }
     prepareData(args,cb){
-        let {pagination,displayOnlySectionListHeaders:cdisplayOnlySectionListHeaders,data,force,sectionListColumns,updateFooters} = defaultObj(args);
+        let {pagination,aggregatorFunction:customAggregatorFunction,displayOnlySectionListHeaders:cdisplayOnlySectionListHeaders,data,force,sectionListColumns,updateFooters} = defaultObj(args);
         cb = typeof cb ==='function'? cb : typeof args.cb == 'function'? args.cb : undefined;
+        const aggregatorFunction = isNonNullString(customAggregatorFunction) && customAggregatorFunction in  this.aggregatorFunctions ? this.aggregatorFunctions[customAggregatorFunction] : this.getActiveAggregatorFunction();
         sectionListColumns = isObj(sectionListColumns) ? sectionListColumns : this.state.sectionListColumns;
         const displayOnlySectionListHeaders = typeof cdisplayOnlySectionListHeaders == 'boolean'?cdisplayOnlySectionListHeaders : this.state.displayOnlySectionListHeaders;
         let isArr = Array.isArray(data);
@@ -2096,7 +2097,7 @@ export default class CommonDatagridComponent extends AppComponent {
                         result.push(currentSectionListFooter);
                     }
                     Object.map(footersColumns,(columnDef,field)=>{
-                        evalSingleValue({data:d,aggregatorFunction:this.getActiveAggregatorFunction(),aggregatorFunctions:this.aggregatorFunctions,columnDef,field,result,displayLabel:false})
+                        evalSingleValue({data:d,aggregatorFunction,aggregatorFunctions:this.aggregatorFunctions,columnDef,field,result,displayLabel:false})
                     });
                 }
                 newData.push(d);
@@ -2127,7 +2128,7 @@ export default class CommonDatagridComponent extends AppComponent {
         } else if(force){
             this.setSelectedRows();
         }
-        const state = {data,displayOnlySectionListHeaders};
+        const state = {data,displayOnlySectionListHeaders,aggregatorFunction:aggregatorFunction.code};
         if((cb)){
             cb(state);
         }
@@ -2263,9 +2264,10 @@ export default class CommonDatagridComponent extends AppComponent {
         if(typeof props !=='object' || !props){
             props = {};
         }
-        const children = React.isValidElement(this.props.progressBar) ? this.props.progressBar : 
+        const ProgressBar = this.props.progressBar;
+        const children = React.isValidElement(ProgressBar) ? ProgressBar : 
             this.props.useLinesProgressBar === true || this.props.useLineProgressBar === true ? CommonDatagridComponent.LineProgressBar(props)
-            : this.getDefaultPreloader(props);
+            : React.isComponent(ProgressBar) ?<ProgressBar/> : this.getDefaultPreloader(props);
         return <DatagridProgressBar
             {...props}
             onChange = {(context)=>{
@@ -3172,6 +3174,7 @@ CommonDatagridComponent.propTypes = {
     aggregatorFunction : PropTypes.string,
     /*** permet de faire une mutation sur les options de la recherche, immédiatement avant le lancement de la recherche */
     fetchOptionsMutator : PropTypes.func,
+    useLinesProgressBar  : PropTypes.bool,//si le progress bar lignes horizontale seront utilisés
 }
 
 const styles = StyleSheet.create({

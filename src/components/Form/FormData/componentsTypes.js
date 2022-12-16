@@ -8,7 +8,6 @@ const componentTypes =  {
     ...Fields,
     id : Fields.IdField,
     selecttabledata : Fields.SelectTableData,
-    select_tabledata : Fields.SelectTableData,
     idfield : Fields.IdField,
     piecefield : Fields.PieceField,
     piece : Fields.PieceField,
@@ -16,6 +15,7 @@ const componentTypes =  {
     switch : Fields.Switch,
     selectcountry : Fields.SelectCountry,
     selectdateformat : Fields.SelectDateFormat,
+    selectcurrency : Fields.SelectCurrency,
     dateformat : Fields.SelectDateFormat,
     date : Fields.Date,
     time : Fields.Time,
@@ -100,9 +100,11 @@ export const getFilterComponentProps = (_props)=>{
         component = Fields.ColorPicker;
     } else if(type == 'dateformat' || type =='select_dateformat' || type =='select_date_format') {
         component = Fields.SelectDateFormat;
-    } else if(React.isComponent()) {
+    } else if(React.isComponent(componentTypes[type])) {
         component = componentTypes[type];
-    }else {
+    } else if(React.isComponent(componentTypes[type.replaceAll("_","")])){
+        component = componentTypes[type.replaceAll("_","")];
+    } else {
         const tt = type.replaceAll("_","").toLowerCase();
         if(React.isComponent(componentTypes[tt])){
             component = componentTypes[tt];

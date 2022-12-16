@@ -797,7 +797,7 @@ export default class Field extends AppComponent {
             jsType,
             fieldToPopulateOnBlur,
             ...rest
-        } = this.props;
+        } = this.getComponentProps(this.props);
         if(this.state.caughtAnError){
             return <ErrorMessage
                 error={this.state.caughtError}

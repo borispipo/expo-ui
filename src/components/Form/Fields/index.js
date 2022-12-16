@@ -4,6 +4,7 @@ import SelectField from "./SelectField";
 import Switch from "./Switch";
 import Checkbox from "./Checkbox";
 import SelectTableData from "./SelectTableData";
+import SelectCurrency from "./SelectCurrency";
 //import IdField from "./IdField";
 //import PieceField from "./PieceField";
 import Slider from "./Slider";
@@ -27,7 +28,8 @@ const defFormFields = {
     TextField, 
     SelectField,
     SelectTableData,
-    SelectCountry
+    SelectCountry,
+    SelectCurrency
     ,Switch
     ,Checkbox
     //,IdField
@@ -58,6 +60,7 @@ export {
     SelectField,
     SelectTableData,
     SelectCountry
+    ,SelectCurrency
     ,Switch
     ,Checkbox
     //,IdField

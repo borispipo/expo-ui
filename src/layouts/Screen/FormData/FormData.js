@@ -68,13 +68,14 @@ export default class FormDataLayout extends FormDataActions {
             preloader,
             preloaderProps,
             testID,
+            isLoading,
         } = this.props;
         wProps = defaultObj(wProps);
-        const useHeavyScreen = withHeavyScreen !== false ? true : false;
+        const useHeavyScreen = withHeavyScreen !== false || isLoading == true? true : false;
         const Wrapper = useHeavyScreen ? HeavyScreen : React.Fragment;
         testID = defaultStr(wProps.testID,testID,"RN_FormDataScren");
         const placeholder = React.isValidElement(preloader)? preloader : <FormLoader {...defaultObj(preloaderProps)}/>;
-        const wrapperProps = useHeavyScreen ? {...wProps,placeholder,testID:testID+"_HeavyScreen"} : {}
+        const wrapperProps = useHeavyScreen ? {...wProps,isLoading,placeholder,testID:testID+"_HeavyScreen"} : {}
         return <Wrapper {...wrapperProps}>
             {content}
         </Wrapper>
@@ -94,6 +95,7 @@ FormDataLayout.propTypes = {
     withHeavyScreen : PropTypes.bool,
     withAppBar : PropTypes.bool, ///si l'appBar sera affiché 
     preloader : PropTypes.node,
+    isLoading : PropTypes.bool,//Si l'écran est en mode chargement des données
     preloaderProps : PropTypes.object,
     header : PropTypes.oneOfType([
         PropTypes.element,

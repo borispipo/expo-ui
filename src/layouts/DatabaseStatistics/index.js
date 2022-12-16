@@ -19,7 +19,7 @@ export default function DatabaseStatisticScreen ({withScreen,title:customTitle,c
         }
         let content = [];
         Object.map(tables,(table,index,suffix)=>{
-            if(isObj(table) && table.databaseStatistic !== false){
+            if(isObj(table) && table.databaseStatistic !== false && table.databaseStatistics !== false){
                 content.push(
                     <Cell elevation = {5} withSurface mobileSize={12} desktopSize={3} tabletSize={4} {...contentProps} key = {index} >
                         <DatabaseStatistic

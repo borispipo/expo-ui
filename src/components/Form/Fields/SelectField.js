@@ -130,7 +130,9 @@ export default class FormSelectField extends Field{
             }}
             onChange = {(args)=>{
                 this.validateWithCallOnChange(args);
-                if(typeof this.props.onChange =='function'){
+                if(typeof props.onChange =='function'){
+                    props.onChange(args);
+                } else if(this.props.onChange =='function'){
                     this.props.onChange(args);
                 }
             }}

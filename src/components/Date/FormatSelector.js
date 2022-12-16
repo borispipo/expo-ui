@@ -6,13 +6,12 @@ import React from "$react";
 import {defaultObj,isNonNullString} from "$utils";
 import SimpleSelect from "$ecomponents/SimpleSelect";
 import Provider from "$ecomponents/Dialog/Provider";
-import TextField from "$components/TextField";
-import Label from "$components/Label";
+import TextField from "$ecomponents/TextField";
+import Label from "$ecomponents/Label";
 import theme from "$theme";
 import notify from "$notify";
 import { View } from "react-native";
-import Icon from "$components/Icon";
-import PropTypes from "prop-types";
+import Icon from "$ecomponents/Icon";
 
 const DateFormatSelector = React.forwardRef((props,ref)=>{
     return <SimpleSelect ref={ref} {...selectDateFormatFieldProps(props)}/>

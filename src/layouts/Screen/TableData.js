@@ -1,4 +1,5 @@
 import {defaultStr,isNumber,isPromise,defaultVal,extendObj,defaultObj,uniqid,isObj,isObjOrArray} from "$utils";
+import stableHash from "stable-hash";
 import {FormData} from "$ecomponents/Form";
 import FormDataScreen from "./FormData";
 import ScreenContainer from "./Screen";
@@ -71,18 +72,8 @@ export const isDocEditing = (data,fields,checkPrimaryKey)=>{
 export default class TableDataScreenComponent extends FormDataScreen{
     constructor(props){
         super(props);
-        let cDatas = [];
         const mainProps = getScreenProps(props);
-        const hasManyData = isObjOrArray(mainProps.datas) && Object.size(mainProps.datas,true) > 0 ? true : false;
-        if(hasManyData){
-            cDatas = Object.toArray(mainProps.datas);
-        }
-        extendObj(this.state,{
-            hasManyData,
-            datas : cDatas,
-            currentIndex : 0,
-            data : hasManyData ? defaultObj(cDatas[0]) : isObj(mainProps.data)? mainProps.data : {}
-        });
+        extendObj(this.state,this.prepareStateData(mainProps));
         const table = defaultObj(mainProps.table);
         const fields = {},primaryKeyFields = {};
         Object.map(table.fields,(field,i)=>{
@@ -157,6 +148,20 @@ export default class TableDataScreenComponent extends FormDataScreen{
         this.hidePreloader = this.hidePreloader.bind(this);
         this.showPreloader = this.showPreloader.bind(this);
     };
+    prepareStateData(props){
+        const mainProps = defaultObj(props,this.props);
+        const hasManyData = isObjOrArray(mainProps.datas) && Object.size(mainProps.datas,true) > 0 ? true : false;
+        let cDatas = [];
+        if(hasManyData){
+            cDatas = Object.toArray(mainProps.datas);
+        }
+        return {
+            hasManyData,
+            datas : cDatas,
+            currentIndex : 0,
+            data : hasManyData ? defaultObj(cDatas[0]) : isObj(mainProps.data)? mainProps.data : {}
+        };
+    }
     isCurrentDocEditingUpdate(){
         return this.isDocEditingRef.current === true ? true : false;
     }
@@ -560,6 +565,14 @@ export default class TableDataScreenComponent extends FormDataScreen{
             hidePreloader();
         },typeof timeoutCallback =='number'? timeoutCallback : HIDE_PRELOADER_TIMEOUT);
         return this.hidePreloaderTimeout;
+    }
+    UNSAFE_componentWillReceiveProps(nextProps){
+        const props = getScreenProps(nextProps);
+        const {data,datas}= props;
+        if(stableHash({data,datas}) != stableHash({data:this.state.data,datas:this.state.datas})){
+            this.setState(this.prepareStateData(props));
+        }
+        return;
     }
     reset (args,cb){
         if(!this._isMounted()) return;

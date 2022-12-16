@@ -1245,6 +1245,7 @@ export default class CommonDatagridComponent extends AppComponent {
             m.unshift({
                 text : "Fonctions d'aggrégation",
                 icon : "material-functions",
+                style : [{fontWeight:'bold'}],
                 //divider : true,
             });
             if(withDivider !== false){

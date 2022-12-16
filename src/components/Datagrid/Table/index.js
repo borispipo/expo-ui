@@ -284,14 +284,13 @@ const DatagridFactory = (Factory)=>{
                                     ,icon :  showFooters?'view-column':'view-module'
                                     ,text : (showFooters?'Masquer/Ligne des totaux':'Afficher/Ligne des totaux')
                                 } : null,
-                                ...this.getAggregatorFunctionsMenuItems(),
                                 ...(selectableMultiple ? restItems : [])
                             ] : visibleColumns}
                         
                         />
                         {this.renderSectionListMenu()}
                         {this.renderDisplayTypes()}
-                        {!isMobile && this.renderAggregatorFunctionsMenu() || null}
+                        {this.renderAggregatorFunctionsMenu()}
                         <View testID={testID+"_HeaderPagination"} style = {styles.paginationItem}>
                             <BottomSheetMenu
                                 testID={testID+"_HeaderMenus"}

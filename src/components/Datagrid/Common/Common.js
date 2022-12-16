@@ -974,28 +974,26 @@ export default class CommonDatagridComponent extends AppComponent {
    isFilterable(){
         return this.props.filterable !== false && this.props.filters !== false ? true : false;
    }
+   toggleFilters(showFilters,cb){
+        if(!this._isMounted() || !this.isFilterable()) {
+                this.isUpdating = false;
+                return;
+        }
+        if(this.isUpdating) return false;
+        if(typeof showFilters !=='boolean' || showFilters === this.state.showFilters) return;
+        this.isUpdating = true;
+        setTimeout(()=>{
+            this.setState( {showFilters},()=>{
+                this.isUpdating = false;
+                this.setSessionData({showFilters});
+            })
+       },100);
+   }
    showFilters(){
-       if(!this._isMounted() || !this.isFilterable()) {
-            this.isUpdating = false;
-            return;
-       }
-       if(this.isUpdating) return false;
-       this.isUpdating = true;
-       this.setState( {showFilters:true},()=>{
-           this.isUpdating = false;
-           this.setSessionData({showFilters:true});
-       })
+       return this.toggleFilters(false);
    }
   hideFilters (){
-       if(!this._isMounted() || !this.isFilterable()) {
-          this.isUpdating = false;
-          return;
-       }
-       if(this.isUpdating) return false;
-       this.setState({showFilters:false},()=>{
-            this.isUpdating = false;
-            this.setSessionData({showFilters:false})
-       })
+       return this.toggleFilters(true);
    }
 
     toggleFooters(showOrHide){
@@ -2355,10 +2353,17 @@ export default class CommonDatagridComponent extends AppComponent {
     willConvertFiltersToSQL(){
         return !!defaultVal(this.props.convertFiltersToSQL,willConvertFiltersToSQL());;
     }
-    getFilters(){
-        this.filters = extendObj(true,{},this.filteredValues,this.filters)
-        const preparedFilters = prepareFilters(this.filters,{filter:this.canHandleFilterVal.bind(this),convertToSQL:this.willConvertFiltersToSQL()});
-        return preparedFilters;
+    /*** récupère les filtres en cours du datagrid
+     * @param {boolean} prepare si les filtres seront apprêtés grace à la méthode prepareFilters de $cFilters 
+     * @param {boolean} convertFiltersToSQL si les filtres seront convertis au formatSQL
+     */
+    getFilters(args){
+        args = defaultObj(args);
+        const prepare = typeof args.prepare =='boolean'? args.prepare : typeof args.prepareFilters =='boolean' ? args.prepareFilters : true;
+        this.filters = extendObj(true,{},this.filteredValues,this.filters);
+        const convertFiltersToSQL = typeof args.convertToSQL =="boolean"? args.convertToSQL : typeof args.convertFiltersToSQL =="boolean"? args.convertFiltersToSQL : false;
+        if(prepare === false) return this.filters;
+        return prepareFilters(this.filters,{filter:this.canHandleFilterVal.bind(this),convertToSQL:convertFiltersToSQL});
     }
     onChangeDataSources(args){
         let {dataSources,server} = args;
@@ -3164,6 +3169,8 @@ CommonDatagridComponent.propTypes = {
     displayTypes : PropTypes.arrayOf(chartDisplayType),
     /***le code de la fonction d'aggregation à utilier par défaut, dans la liste des fonctions d'aggrégations du composant */
     aggregatorFunction : PropTypes.string,
+    /*** permet de faire une mutation sur les options de la recherche, immédiatement avant le lancement de la recherche */
+    fetchOptionsMutator : PropTypes.func,
 }
 
 const styles = StyleSheet.create({

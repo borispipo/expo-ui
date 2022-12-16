@@ -1,7 +1,12 @@
 import CommonDatagrid from "./Common";
 import {defaultObj,extendObj,defaultStr,isNonNullString,isFunction,isPromise} from "$utils";
 import PropTypes from "prop-types";
-
+import {convertToSQL} from "$ecomponents/Filter";
+/**** 
+ *      la fonction fetchOptionsMutator permet éventuellemnt de faire une mutations sur les options fetchOptions avant qu'elle ne soit appliquée pour la recherche. elle
+ *      est appelée avant que la fonction convertToSQL ne soit appelée, bien évidemement si la props convertToSQL est active pour le datagrid
+ *      la fonction beforeFetchData est appelée immédiatement avant l'execution de la requête fetch et après que la fonction converttoSQL soit appelée
+ */
 export default class CommonTableDatagrid extends CommonDatagrid{
     constructor(props){
         super(props);
@@ -76,8 +81,9 @@ export default class CommonTableDatagrid extends CommonDatagrid{
                     force = cb;
                     cb = undefined;
                 }
-                const fetchFilters = this.getFilters();
-                fetchOptions = isObj(fetchOptions)?Object.clone(fetchOptions):{};
+                const fetchFilters = this.getFilters({convertToSQL:false});
+                fetchOptions = defaultObj(fetchOptions);
+                fetchOptions = Object.clone(fetchOptions);
                 fetchOptions.selector = defaultObj(fetchOptions.selector);
                 fetchOptions.dataSources = this.currentDataSources;
                 fetchOptions = extendObj(true,true,{},fetchOptions,{selector : fetchFilters});
@@ -91,7 +97,14 @@ export default class CommonTableDatagrid extends CommonDatagrid{
                         delete fetchOptions.limit
                     }
                 }
+                if(typeof this.props.fetchOptionsMutator =='function' && this.props.fetchOptionsMutator(fetchOptions) === false){
+                    this.isFetchingData = false;
+                    return resolve(this.state.data);
+                }
                 this.beforeFetchData(fetchOptions);
+                if(this.willConvertFiltersToSQL()){
+                    fetchOptions.selector = convertToSQL(fetchOptions.selector);
+                }
                 if(typeof this.props.beforeFetchData =='function' && this.props.beforeFetchData({...rest,context:this,force,fetchOptions,options:fetchOptions}) === false){
                     this.isFetchingData = false;
                     return resolve(this.state.data);
@@ -105,7 +118,7 @@ export default class CommonTableDatagrid extends CommonDatagrid{
                     fetchData = this.props.fetchData.call(this,fetchOptions);
                 }
                 fetchData = isFunction(fetchData)? fetchData.call(this,fetchOptions) : fetchData;
-                this.updateProgress(true,()=>{
+                this.setIsLoading(true,()=>{
                     if(isPromise(fetchData)){
                         return fetchData.then(data=>{
                            return this.resolveFetchedDataPromise({cb,data,force}).then((data)=>{
@@ -133,7 +146,7 @@ export default class CommonTableDatagrid extends CommonDatagrid{
                             reject(e);
                         });
                     }     
-                });
+                },true);
             },1);
         })
         return this.fetchingPromiseData;
@@ -153,6 +166,7 @@ export default class CommonTableDatagrid extends CommonDatagrid{
                     } 
                     resolve(data);
                     this.isFetchingData = undefined;
+                    this.setIsLoading(false,false);
                 })
             });
         })

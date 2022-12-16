@@ -393,8 +393,8 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             autoSort = {canSortRemotely()? false : true}
             isLoading = {loading && !error && showProgressRef.current && true || false}
             beforeFetchData = {(args)=>{
+                if(typeof beforeFetchData =="function" && beforeFetchData(args)==false) return;
                 let {fetchOptions:opts,force} = args;
-                if(typeof beforeFetchData =="function" && beforeFetchData(fetchData)==false) return;
                 opts.fields = fetchFields;
                 opts = getFetchOptions({showError:showProgressRef.current,...opts});
                 isInitializedRef.current = true;

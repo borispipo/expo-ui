@@ -151,6 +151,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
             printProp : {value : typeof mainProps.print =='function' && mainProps.print || undefined},
             archiveProp : {value : typeof mainProps.archive =='function' && mainProps.archive || undefined },
             testIDProp : {value : defaultStr(mainProps.testID)},
+            showPreloaderOnUpsert : {value : mainProps.showPreloaderOnUpsert},
             isDocEditingProp : {value : typeof mainProps.isDocEditing =='function'? mainProps.isDocEditing : typeof mainProps.isDocUpdate =='function'? mainProps.isDocUpdate : undefined}
         });
         this.hidePreloader = this.hidePreloader.bind(this);
@@ -360,6 +361,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
         return true;
     }
     componentWillRender(rActionsArg){
+        rActionsArg.context = this;
         const rActions = renderActions.call(this,rActionsArg);
         const renderedActs = this.renderActions(rActionsArg);
         if(!rActionsArg.archived){
@@ -591,7 +593,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
         return Object.assign({},this.getCurrentData());
     }
     getAppBarActionsProps(props){
-        return super.getAppBarActionsProps({...props,data:this.getCurrentData()})
+        return {...super.getAppBarActionsProps(props),data:this.getCurrentData()}
     }
     /**** cette fonction est appelée immédiatement lorsque l'on clique sur le bouton enregistrer de l'un des actions du formulaire */
     onPressToSaveFormData(args){
@@ -636,7 +638,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
             const isUpdated = this.isDocEditing(data);
             let isPOpened = true;
             const closePreloader = ()=>{
-                if(isPOpened){
+                if(isPOpened && this.showPreloaderOnUpsert !==false){
                     hidePreloader();
                 }
                 isPOpened = false;
@@ -648,7 +650,9 @@ export default class TableDataScreenComponent extends FormDataScreen{
                     goBack(true);
                 }
             }
-            showPreloader(this.getConfirmTitle()+"\n"+(isUpdated?'Modification':'Enregistrement')+" en cours...");
+            if(this.showPreloaderOnUpsert !== false){
+                showPreloader(this.getConfirmTitle()+"\n"+(isUpdated?'Modification':'Enregistrement')+" en cours...");
+            }
             const hasManyData = this.hasManyData();
             const context = this;
             const tableName = this.tableName;
@@ -851,6 +855,7 @@ TableDataScreenComponent.propTypes = {
         PropTypes.node,
         PropTypes.element,
     ]),
+    showPreloaderOnUpsert : PropTypes.bool,//Si le preloader sera afficher en cas d'insertion/modification
     autoSetDefaultValue : PropTypes.bool,//si la valeur par défaut sera définie pour les champs de types date et time
 }
 

@@ -976,11 +976,11 @@ export default class CommonDatagridComponent extends AppComponent {
    }
    toggleFilters(showFilters,cb){
         if(!this._isMounted() || !this.isFilterable()) {
-                this.isUpdating = false;
-                return;
+            this.isUpdating = false;
+            return;
         }
-        if(this.isUpdating) return false;
         if(typeof showFilters !=='boolean' || showFilters === this.state.showFilters) return;
+        if(this.isUpdating) return false;
         this.isUpdating = true;
         setTimeout(()=>{
             this.setState( {showFilters},()=>{
@@ -990,10 +990,10 @@ export default class CommonDatagridComponent extends AppComponent {
        },100);
    }
    showFilters(){
-       return this.toggleFilters(false);
-   }
-  hideFilters (){
        return this.toggleFilters(true);
+   }
+    hideFilters (){
+       return this.toggleFilters(false);
    }
 
     toggleFooters(showOrHide){

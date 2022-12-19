@@ -237,7 +237,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
             containerProps : customContainerProps,
             formProps : customFormProps,
             newElementLabel,
-            prepareField,
+            prepareFields,
             ...rest
         } = getScreenProps(props);
         const table = this.table;
@@ -281,17 +281,22 @@ export default class TableDataScreenComponent extends FormDataScreen{
                 }
                 
             }
-            ///on effectue une mutator sur le champ en cours de modification
-            if(typeof prepareField =='function'){
-                const name = isObj(currentField) && defaultStr(currentField.field,i) || "";
-                const isPrimary = name && this.primaryKeyFields[name] && true || false;
-                const f = prepareField({field:defaultObj(currentField),isUpdate:isUpdated,name,index:i,counterIndex,isPrimary,fields,contex:this,data,datas,currentIndex,isUpdated,tableName,table});  
-                if(f === false) return;
-            }
             fields[i] = currentField;
         })
         if(isObj(customFields)){
             extendObj(true,fields,customFields);
+        }
+        ///on effectue une mutator sur le champ en cours de modification
+        if(typeof prepareFields =='function'){
+            Object.map(fields,(field,i,counterIndex)=>{
+                if(!isObj(field)) return;
+                const name = defaultStr(field.field,i) || "";
+                const isPrimary = this.primaryKeyFields[name] && true || false;
+                const f = prepareFields({field,isUpdate:isUpdated,name,index:i,counterIndex,isPrimary,fields,contex:this,data,datas,currentIndex,isUpdated,tableName,table});  
+                if(f === false) {
+                    delete fields[i];
+                }
+            });
         }
         const context = this;
         const formProps = ({
@@ -831,7 +836,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
 
 TableDataScreenComponent.propTypes = {
     ...defaultObj(FormData.propTypes),
-    prepareField : PropTypes.func,//La fonction permettant de faire des mutations sur le champ field à passer au formulaire form. si elle retourne false alors la field ne sera pas pris een compte
+    prepareFields : PropTypes.func,//La fonction permettant de faire des mutations sur le champ field à passer au formulaire form. si elle retourne false alors la field ne sera pas pris een compte
     table : PropTypes.shape({
         tableName : PropTypes.string,
         table : PropTypes.string,

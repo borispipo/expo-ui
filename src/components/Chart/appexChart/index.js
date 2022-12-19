@@ -11,6 +11,7 @@ const AppexChartComponent = React.forwardRef(({chartContext,style,options,...pro
       chartContext.current.render();
       React.setRef(ref,chartContext.current)
       return ()=>{
+        React.setRef(ref,chartContext.current)
         destroyChart(chartContext.current);
       }
     },[]);

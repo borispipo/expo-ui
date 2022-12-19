@@ -25,8 +25,8 @@ const ChartComponent = React.forwardRef(({options,style,height,width,chartId:cus
   options.chart = defaultObj(options.chart);
   const chartIdRef = React.useRef(options.chart.id,customChartID,uniqid("chart-id"));
   const chartId = chartIdRef.current;
-  width = options.chart.width = defaultVal(options.chart.width,width);
-  height = options.chart.height = defaultVal(options.chart.height,height)
+  options.chart.width = defaultVal(options.chart.width,width);
+  options.chart.height = defaultVal(options.chart.height,height,350)
   options.chart.id = chartId;
   testID = defaultStr(testID,"RN_ChartComponent");
   React.useEffect(()=>{

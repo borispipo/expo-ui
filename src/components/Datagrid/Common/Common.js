@@ -48,7 +48,7 @@ export const donutChart = {
     type: 'donut',
     key : "donut",
     isDonut : true,
-    isRendable : ({displayOnlySectionListHeaders,isSectionList})=> false && isSectionList && displayOnlySectionListHeaders,
+    isRendable : ({displayOnlySectionListHeaders,isSectionList})=> isSectionList && displayOnlySectionListHeaders,
     tooltip : "Pour pouvoir visulaiser ce type de graphe, vous devez : grouper les données du tableau selon le criètre de votre choix, puis afficher uniquement les totaux des données groupées"
 }
 const stackSettings = {
@@ -1631,7 +1631,7 @@ export default class CommonDatagridComponent extends AppComponent {
         const aggregatorFunction = this.getActiveAggregatorFunction().eval;
         const emptyValue = this.getEmptyDataValue();
         const indexes = {};
-        let series = [],xaxis = {},customConfig = {};
+        let series = [],xaxis = {},customConfig = {},seriesNamesToColumns={};
         let count = 0;
         if(!this.isSectionList()){
             this.state.data.map((data,index)=>{
@@ -1723,13 +1723,16 @@ export default class CommonDatagridComponent extends AppComponent {
             xLabels.style = defaultObj(xLabels.style)
             xLabels.style.colors = (Array.isArray(xLabels.style.colors) && xLabels.style.colors.length || theme.Colors.isValid(xLabels.style.colors)) ? xLabels.style.colors : labelColor;
             chartOptions.yaxis = extendObj(true,{},{type: 'category'},chartProps.yaxis);
-            const yLabels = chartOptions.yaxis.labels = defaultObj(chartOptions.yaxis.labels);
-            yLabels.style = defaultObj(yLabels.style)
-            yLabels.style.colors = (Array.isArray(yLabels.style.colors) && yLabels.style.colors.length || theme.Colors.isValid(yLabels.style.colors)) ? yLabels.style.colors : labelColor;
-            
         } else {
             delete chartOptions.xaxis;
-            delete chartOptions.yaxis;
+            //delete chartOptions.yaxis;
+        }
+        const yLabels = chartOptions.yaxis.labels = defaultObj(chartOptions.yaxis.labels);
+        yLabels.style = defaultObj(yLabels.style)
+        yLabels.style.colors = (Array.isArray(yLabels.style.colors) && yLabels.style.colors.length || theme.Colors.isValid(yLabels.style.colors)) ? yLabels.style.colors : labelColor;
+        yLabels.formatter = (value)=>{
+            if(typeof value =="number") return value.formatNumber();
+            return value;
         }
         chartOptions.chart.id = this.chartIdPrefix+defaultStr(chartType.key,"no-key")
         return <Chart

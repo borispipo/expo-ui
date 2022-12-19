@@ -286,9 +286,9 @@ export default class TableDataScreenComponent extends FormDataScreen{
         if(typeof prepareField =='function'){
             Object.map(fields,(field,i,counterIndex)=>{
                 if(!isObj(field)) return;
-                const name = defaultStr(field.field,i) || "";
+                const name = defaultStr(field.field,i);
                 const isPrimary = this.primaryKeyFields[name] && true || false;
-                const f = prepareField({field,isUpdate:isUpdated,name,index:i,counterIndex,isPrimary,fields,contex:this,data,datas,currentIndex,isUpdated,tableName,table});  
+                const f = prepareField({field,columnField:name,columnDef:field,isUpdate:isUpdated,name,index:i,counterIndex,isPrimary,fields,contex:this,data,datas,currentIndex,isUpdated,tableName,table});  
                 if(f === false) {
                     delete fields[i];
                 }

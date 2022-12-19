@@ -3,12 +3,15 @@ import PropTypes from 'prop-types'
 import {defaultStr,defaultVal,extendObj,defaultObj,uniqid,defaultNumber} from "$utils";
 import stableHash from 'stable-hash';
 import Chart from "./appexChart";
+import theme from "$theme";
+import { destroyChart } from './appexChart/utils';
 
 export * from "./utils";
 
 /**** pour le rendu webview chart, voir : https://github.com/flexmonster/react-native-flexmonster/blob/master/src/index.js */
 /**** le composant Chart s'appuie sur le composant appexChart : https://apexcharts.com/ 
  * pour le formattage des date, voir : https://apexcharts.com/docs/datetime/
+ * @see : https://apexcharts.com/docs/methods/
  * les props requis duduit composant sont : 
  *  type {string}, le type de chart
  *  series {array} - //les series appexchart 
@@ -17,24 +20,28 @@ export * from "./utils";
  *  options {number} - les options supplémentaires au chart
  * 
 */
-const ChartComponent = React.forwardRef(({options:customOptions,height,width,chartId,testID,webViewProps, ...props },ref)=>{
+const ChartComponent = React.forwardRef(({options,style,height,width,chartId:customChartID,testID,webViewProps, ...props },ref)=>{
   const chartContext = React.useRef(null);
-  const {series,xaxis:customXaxis,...options} = customOptions;
-  const xaxis = defaultObj(customXaxis);
   options.chart = defaultObj(options.chart);
-  const chartIdRef = React.useRef(defaultStr(chartId,options.chart.id,uniqid("chart-id")));
+  const chartIdRef = React.useRef(options.chart.id,customChartID,uniqid("chart-id"));
+  const chartId = chartIdRef.current;
   width = options.chart.width = defaultVal(options.chart.width,width);
   height = options.chart.height = defaultVal(options.chart.height,height)
-  options.chart.id = chartIdRef.current;
+  options.chart.id = chartId;
   testID = defaultStr(testID,"RN_ChartComponent");
-  options.xaxis = xaxis;
-  options.series = series;
   React.useEffect(()=>{
-    if(chartContext.current && chartContext.current.updateOptions){
+    if(chartContext.current){
+      if(chartContext.current.updateOptions){
         chartContext.current.updateOptions(options);
+      }
     }
-  },[stableHash(options)])
-  return <Chart {...props} options={options} chartId={chartIdRef.current} chartContext={chartContext} testID={testID} ref={ref}/>
+  },[stableHash(options)]);
+  React.useEffect(()=>{
+      return ()=>{
+        destroyChart(chartContext.current);
+      }
+  },[])
+  return <Chart {...props} ref={ref} chartId={chartId} style={[theme.styles.pb1,style]} options={options} chartContext={chartContext} testID={testID}/>
 });
 
 

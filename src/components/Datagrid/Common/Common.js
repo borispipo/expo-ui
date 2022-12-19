@@ -40,16 +40,24 @@ import {styles as tableStyles} from "$ecomponents/Table";
 import {DialogProvider} from "$ecomponents/Form/FormData";
 import Chart,{getMaxSupportedSeriesSize} from "$ecomponents/Chart";
 
-const chart = "chart";
 export const donutChart = {
     isChart : true,
     code : 'donutChart',
-    label : 'Graphique|Circulaire',
+    label : 'Donut',
     icon : "chart-donut",
     type: 'donut',
+    key : "donut",
     isDonut : true,
-    isRendable : ({displayOnlySectionListHeaders,isSectionList})=>isSectionList && displayOnlySectionListHeaders,
+    isRendable : ({displayOnlySectionListHeaders,isSectionList})=> false && isSectionList && displayOnlySectionListHeaders,
     tooltip : "Pour pouvoir visulaiser ce type de graphe, vous devez : grouper les données du tableau selon le criètre de votre choix, puis afficher uniquement les totaux des données groupées"
+}
+const stackSettings = {
+    type : 'switch',
+    text : "Graphe empilé?",
+    checkedValue : true,
+    uncheckedValue : false,
+    //le nom de la propriétés dans les propriétés du tableau
+    settingKey : "chart",
 }
 export const displayTypes = {
     table : {
@@ -62,26 +70,49 @@ export const displayTypes = {
     lineChart : {
         code : "lineChart",
         isChart : true,
-        label : 'Graphique|Linéaire',
+        label : 'Linéaire',
         icon : "chart-areaspline",
         type : 'line',
+        key : "line",
     },
     areaChart : {
         isChart : true,
         code : 'areaChart',
-        label : 'Graphique|Surface',
+        label : 'Surface',
         icon : "chart-areaspline-variant",
         type: 'area',
+        key : "line",
     },
     barChart : {
         isChart : true,
         code : 'barChart',
-        label : 'Graphique|Barres',
+        label : 'Histogramme',
         icon : "chart-bar",
         type: 'bar',
-        isBar : true,
+        key : "line",
+        settings : {
+            stacked : stackSettings,
+        }
+    },
+    pieChart : {
+        ...donutChart,
+        code : 'pieChart',
+        label : 'Pie',
+        icon : "chart-pie",
+        type: 'pie',
     },
     donutChart,
+    radarChart : {
+        isChart : true,
+        code : 'radarChart',
+        label : 'Radar',
+        icon : "radar",
+        type: 'radar',
+        key : "line",
+        settings : {
+            stacked : stackSettings,
+        }
+    }
     /*rangeChart : {
         code : "rangeChart",
         isChart : true,
@@ -197,6 +228,7 @@ export default class CommonDatagridComponent extends AppComponent {
             sectionListDataSize : {value : {current : 0}},
             enablePointerEventsRef : {value : {current:false}},
             configureSectionListSelectedValues : {value : {}},
+            chartIdPrefix : {value : uniqid("datagrid-chart-id-prefix")},
             ///la liste des fonctions d'aggregations supportées
             aggregatorFunctions : {value : extendAggreagatorFunctions(this.props.aggregatorFunctions)},
             ///les types d'affichage
@@ -1345,13 +1377,7 @@ export default class CommonDatagridComponent extends AppComponent {
                         items : yItems,
                         multiple : true,
                     },
-                    stacked : {
-                        type : 'switch',
-                        text : "Graphe empilé?",
-                        disabled : this.state.displayType !== "barChart",
-                        checkedValue : true,
-                        uncheckedValue : false,
-                    },
+                    stacked : stackSettings,
                     title : {
                         text : "Titre du graphe",
                         format :'hashtag',
@@ -1494,6 +1520,7 @@ export default class CommonDatagridComponent extends AppComponent {
         if(!isValidAggregator(aggregatorFunction)){
             aggregatorFunction = this.getActiveAggregatorFunction();
         }
+                
         const code = aggregatorFunction.code;
         const isDonut = chartType.isDonut || chartType.isRadial;
         const config = this.getCharConfig();
@@ -1523,12 +1550,10 @@ export default class CommonDatagridComponent extends AppComponent {
         const loopForFooter = ({column,serieName,footers,header})=>{
             if(!isObj(column) || !isObj(footers)) return null;
             if(!isObj(footers[column.field])) return null;
-            const footer = footers[column.field]
+            const footer = footers[column.field];
             if(typeof footer[code] !== 'number') return null;
-            const label = defaultStr(footer.label,footer.text,footer.field);
             if(typeof footer[code] !== 'number') return null;
             if(isDonut){
-                serieName = label;
                 dataIndexes[header] = footer[code];
             } else {
                 dataIndexes[serieName] = defaultArray(dataIndexes[serieName]);
@@ -1555,6 +1580,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 labels.push(index);
             });
             return {
+                name : defaultStr(yAxisColumn.label,yAxisColumn.text,yAxisColumn.field),
                 series,
                 labels,
             }
@@ -1568,6 +1594,10 @@ export default class CommonDatagridComponent extends AppComponent {
             }
         }
    }
+   /*** permet de formatter les valeurs de la courbe en fonction du type passé en paramètre */
+   chartValueFormattter(value,columnType){
+        
+   }
    renderChart(){
         if(!this.canRenderChart()) return null;
         if(!this.isValidChartConfig()) return null;
@@ -1577,6 +1607,7 @@ export default class CommonDatagridComponent extends AppComponent {
             console.warn("impossible d'afficher le graphe de type ",chartType.label," car le type de données requis pour le rendu de ce graphe est invalide")
             return null;
         }
+        const isDonut = chartType.isDonut || chartType.isRadial;
         const config = this.getCharConfig();
         if(!this.state.columns[config.y]) return null;
         const yAxisColumn = this.state.columns[config.y];
@@ -1656,38 +1687,54 @@ export default class CommonDatagridComponent extends AppComponent {
         customConfig = defaultObj(customConfig);
         customConfig.chart = defaultObj(customConfig.chart);
         const chartProps = extendObj(true,{},this.props.chartProps,customConfig);
-        if(chartType.isBar){
-            chartProps.chart.stacked = !!config.stacked;
-        } else chartProps.chart.stacked = undefined;
+        const settings = defaultObj(chartType.settings);
+        Object.map(settings,(s,key)=>{
+            if(!isObj(s) || !(key in config)) return null;
+            const settingKey = defaultStr(s.settingKey,"chart");
+            chartProps[settingKey] = defaultObj(chartProps[settingKey]);
+            chartProps[settingKey][key] = config[key];
+        });
+        const chartOptions = {
+            ...chartProps,
+            title :extendObj(true,{}, {
+                text: defaultStr(config.title,chartProps.title),
+                align: 'left',
+                //margin: 10,
+                //offsetX: 0,
+                //offsetY: 0,
+                //floating: false,
+                style: {
+                  //fontSize:  '14px',
+                  //fontWeight:  'bold',
+                  //fontFamily:  undefined,
+                  color: theme.Colors.isValid(config.titleColor)?config.titleColor : undefined,
+                },
+            },chartProps.title),
+            series,
+            chart : extendObj(true,{},{height :350},chartProps.chart,{
+                type : chartType.type,
+            })
+        }
+        //console.log(chartOptions," is chart options");
+        const labelColor = theme.Colors.isValid(config.labelColor)? config.labelColor : theme.colors.text; 
+        if(!isDonut){
+            chartOptions.xaxis = extendObj(true,{},{type: 'category'},chartProps.xaxis,{xaxis});
+            const xLabels = chartOptions.xaxis.labels = defaultObj(chartOptions.xaxis.labels);
+            xLabels.style = defaultObj(xLabels.style)
+            xLabels.style.colors = (Array.isArray(xLabels.style.colors) && xLabels.style.colors.length || theme.Colors.isValid(xLabels.style.colors)) ? xLabels.style.colors : labelColor;
+            chartOptions.yaxis = extendObj(true,{},{type: 'category'},chartProps.yaxis);
+            const yLabels = chartOptions.yaxis.labels = defaultObj(chartOptions.yaxis.labels);
+            yLabels.style = defaultObj(yLabels.style)
+            yLabels.style.colors = (Array.isArray(yLabels.style.colors) && yLabels.style.colors.length || theme.Colors.isValid(yLabels.style.colors)) ? yLabels.style.colors : labelColor;
+            
+        } else {
+            delete chartOptions.xaxis;
+            delete chartOptions.yaxis;
+        }
+        chartOptions.chart.id = this.chartIdPrefix+defaultStr(chartType.key,"no-key")
         return <Chart
-            options = {{
-                ...chartProps,
-                title : {
-                    text: defaultStr(config.title,chartProps.title),
-                    align: 'left',
-                    //margin: 10,
-                    //offsetX: 0,
-                    //offsetY: 0,
-                    //floating: false,
-                    style: {
-                      //fontSize:  '14px',
-                      //fontWeight:  'bold',
-                      //fontFamily:  undefined,
-                      color: theme.Colors.isValid(config.titleColor)?config.titleColor : undefined,
-                    },
-                },
-                series,
-                chart : {
-                    height :350,
-                    ...defaultObj(chartProps.chart),
-                    type : chartType.type,
-                },
-                xaxis: {
-                    ...defaultObj(chartProps.xaxis),
-                    type: 'category',
-                    ...defaultObj(xaxis)
-                }
-            }}
+            options = {chartOptions}
+            key = {chartOptions.chart.id}
         />
    }
    canShowFooters(){

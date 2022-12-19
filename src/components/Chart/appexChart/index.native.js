@@ -3,11 +3,12 @@ import React from "$react";
 import WebView from "$ecomponents/WebView";
 import {defaultStr,defaultObj,uniqid} from "$utils";
 import View from "$ecomponents/View";
+import { methodsNames } from "./utils";
 
-export const ChartComponent = React.forwardRef(({chartContext,testID,webViewProps,options,...props},ref)=>{
+export const ChartComponent = React.forwardRef(({chartContext,testID,chartId,id,webViewProps,options,...props},ref)=>{
     webViewProps = defaultObj(webViewProps);
     const webViewRef = React.useRef(null);
-    const chartId = React.useRef(uniqid("chart-webview-id"));
+    const chartId = React.useRef(defaultStr(chartId,id,options?.chart?.id,uniqid("chart-webview-id")));
     const jsonOptions = JSON.stringify(options);
     const exec = (method,a)=>{
         if(!webViewRef.current) return;
@@ -33,12 +34,14 @@ export const ChartComponent = React.forwardRef(({chartContext,testID,webViewProp
     testID = defaultStr(testID,"RN_AppexChartComponentNative");
     chartContext.current = React.useRef({});
     chartContext.current.exec = exec;
-    ["updateOptions","updateSeries","destroy"].map((cb)=>{
-        chartContext.current[cb]=(a,b,c)=>{
-           return exec(cb,a,b,c);
+    //@see : https://apexcharts.com/docs/methods/
+    methodsNames.map((cb)=>{
+        if(cb !=='exec'){
+            chartContext.current[cb]=(a,b,c,d,e)=>{
+                return exec(cb,a,b,c,d,e);
+            }
         }
     });
-
     return <View ref={ref} {...props} testID={testID} style={[{flex:1},props.style]}>
         <WebView.Local
             originWhitelist={["*"]}

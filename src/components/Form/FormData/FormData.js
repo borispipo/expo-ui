@@ -225,7 +225,8 @@ export default class FormDataComponent extends AppComponent{
                     if(isDate && rest.required === true ){
                         rest.defaultValue = new Date();
                     } else if(!isDate && isNonNullString(rest.appConfigDefaultValueKey)){
-                        rest.defaultValue = appConfigDefaultValueKey.get(rest.appConfigDefaultValueKey);
+                        rest.defaultValue = appConfig.get(rest.appConfigDefaultValueKey);
+                        console.log(rest.defaultValue,rest.appConfigDefaultValueKey," is defa value and ",rest,appConfig.activePeriod,appConfig);
                     }
                 }
                 customResponsiveProps = defaultObj(customResponsiveProps);

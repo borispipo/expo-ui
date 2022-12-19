@@ -1722,11 +1722,11 @@ export default class CommonDatagridComponent extends AppComponent {
             const xLabels = chartOptions.xaxis.labels = defaultObj(chartOptions.xaxis.labels);
             xLabels.style = defaultObj(xLabels.style)
             xLabels.style.colors = (Array.isArray(xLabels.style.colors) && xLabels.style.colors.length || theme.Colors.isValid(xLabels.style.colors)) ? xLabels.style.colors : labelColor;
-            chartOptions.yaxis = extendObj(true,{},{type: 'category'},chartProps.yaxis);
         } else {
             delete chartOptions.xaxis;
             //delete chartOptions.yaxis;
         }
+        chartOptions.yaxis = extendObj(true,{},{type: 'category'},chartProps.yaxis);
         const yLabels = chartOptions.yaxis.labels = defaultObj(chartOptions.yaxis.labels);
         yLabels.style = defaultObj(yLabels.style)
         yLabels.style.colors = (Array.isArray(yLabels.style.colors) && yLabels.style.colors.length || theme.Colors.isValid(yLabels.style.colors)) ? yLabels.style.colors : labelColor;

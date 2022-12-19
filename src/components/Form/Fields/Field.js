@@ -1079,6 +1079,8 @@ Field.propTypes = {
      * lorsque allowWhiteSpace === false alors on vérifiera si le champ n'admet pas des caractères accentuées
     */
     allowWhiteSpaces : PropTypes.bool,
+    autoSetDefaultValue : PropTypes.bool,//si la valeur par défaut sera définie automatiquement
+    appConfigDefaultValueKey : PropTypes.string,//le nom de la clé des paramètres de configuration vers laquelle chercher la valeur par défaut
 }
 
 const styles = StyleSheet.create({

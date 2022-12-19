@@ -20,6 +20,7 @@ export const getCountryFieldProps = (props)=>{
         items : countries,
         upper : true,
         dialogProps : {title:'Sélectionner un pays'},
+        appConfigDefaultValueKey : "countryCode",
         getItemValue : ({item})=>item.code.toUpperCase(),
         renderText : ({item})=>"[{0}] {1}".sprintf(item?.code?.toUpperCase(),item?.label),
         compare : (a,b)=>{

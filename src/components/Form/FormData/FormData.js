@@ -13,6 +13,7 @@ import {handleBeforeSaveCallback} from "./utils";
 import componentsTypes from "./componentsTypes";
 import { keyboardShortcuts } from "../utils";
 import {getScreenProps} from "$cnavigation";
+import appConfig from "$capp/config";
 
 export default class FormDataComponent extends AppComponent{
     constructor(props){
@@ -192,6 +193,7 @@ export default class FormDataComponent extends AppComponent{
             } else if(isObj(field) && field.form !== false) {
                 const name = defaultStr(field.name,field.field,index);
                 const type = defaultStr(field.jsType,field.type,"text").trim().toLowerCase().replaceAll("_","");
+                const isDate = (type.contains('date') || type.contains('time'));
                 const Component = componentsTypes[type] || componentsTypes.default;
                 let {defaultValue,useDefaultValueFromData,hidden,renderFormDataField,getMediaQueryStyle,printLabels,queryLimit,selected,value,visible,dataFilesInterest,perm,ignore,form,responsiveProps:customResponsiveProps,...rest} = field;
                 rest = Object.assign({},rest);
@@ -217,6 +219,14 @@ export default class FormDataComponent extends AppComponent{
                 }
                 if(rest.defaultValue === null){
                     rest.defaultValue = undefined;
+                }
+                // les champs de type date par défaut qui sont requis, auront comme valeur par défaut la date actuelle s'il ne sont pas définies
+                if(rest.autoSetDefaultValue !== false && (!rest.defaultValue && typeof rest.defaultValue !=='boolean' && typeof rest.defaultValue !=='number')){
+                    if(isDate && rest.required === true ){
+                        rest.defaultValue = new Date();
+                    } else if(!isDate && isNonNullString(rest.appConfigDefaultValueKey)){
+                        rest.defaultValue = appConfigDefaultValueKey.get(rest.appConfigDefaultValueKey);
+                    }
                 }
                 customResponsiveProps = defaultObj(customResponsiveProps);
                 content.push(<Component 

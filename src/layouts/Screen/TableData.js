@@ -237,7 +237,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
             containerProps : customContainerProps,
             formProps : customFormProps,
             newElementLabel,
-            prepareFields,
+            prepareField,
             ...rest
         } = getScreenProps(props);
         const table = this.table;
@@ -287,12 +287,12 @@ export default class TableDataScreenComponent extends FormDataScreen{
             extendObj(true,fields,customFields);
         }
         ///on effectue une mutator sur le champ en cours de modification
-        if(typeof prepareFields =='function'){
+        if(typeof prepareField =='function'){
             Object.map(fields,(field,i,counterIndex)=>{
                 if(!isObj(field)) return;
                 const name = defaultStr(field.field,i) || "";
                 const isPrimary = this.primaryKeyFields[name] && true || false;
-                const f = prepareFields({field,isUpdate:isUpdated,name,index:i,counterIndex,isPrimary,fields,contex:this,data,datas,currentIndex,isUpdated,tableName,table});  
+                const f = prepareField({field,isUpdate:isUpdated,name,index:i,counterIndex,isPrimary,fields,contex:this,data,datas,currentIndex,isUpdated,tableName,table});  
                 if(f === false) {
                     delete fields[i];
                 }
@@ -338,10 +338,6 @@ export default class TableDataScreenComponent extends FormDataScreen{
             onPressToNext:this.goToNextData.bind(this),
             archivedPermsFilter : this.archivedPermsFilter.bind(this),
             onPressCopyToClipboard : this.copyToClipboard.bind(this)
-        }
-        ///modifie le container par défaut de fasson à définir la bonne date pour les champs de type date
-        if(isObj(fields.date)){
-            fields.date.defaultValue  = new Date();
         }
         if(isUpdated){
             fields.approved = this.isApprovable()? {
@@ -836,7 +832,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
 
 TableDataScreenComponent.propTypes = {
     ...defaultObj(FormData.propTypes),
-    prepareFields : PropTypes.func,//La fonction permettant de faire des mutations sur le champ field à passer au formulaire form. si elle retourne false alors la field ne sera pas pris een compte
+    prepareField : PropTypes.func,//La fonction permettant de faire des mutations sur le champ field à passer au formulaire form. si elle retourne false alors la field ne sera pas pris een compte
     table : PropTypes.shape({
         tableName : PropTypes.string,
         table : PropTypes.string,

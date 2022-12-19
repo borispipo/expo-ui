@@ -264,8 +264,8 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     return (
         <Datagrid 
             testID = {testID}
-            {...rest}
             {...defaultObj(table.datagrid)} 
+            {...rest}
             onSort = {({sort})=>{
                 if(!canSortRemotely()) return;
                 fetchOptionsRef.current.sort = sort;

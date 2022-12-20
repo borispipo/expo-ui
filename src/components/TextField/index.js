@@ -356,7 +356,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
             inputStyle2,
             isNormalMode && styles.inputNormalMode,
             isShadowMode && styles.inputShadowMode,
-            multiline && {paddingTop : 7},
+            multiline && {paddingTop : isFlatMode? 12 : 7},
         ],
         pointerEvents,
         secureTextEntry,

@@ -22,7 +22,7 @@ import theme from "$theme";
 import useSWR,{useInfinite} from "$swr";
 import appConfig from "$capp/config";
 import APP from "$capp/instance";
-import cAction from "$cactions";
+
 import PropTypes from "prop-types";
 import {isDesktopMedia} from "$dimensions";
 import ActivityIndicator from "$ecomponents/ActivityIndicator";
@@ -246,19 +246,6 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         ///si le nombre total d'élements est inférieur au nombre limite alors le trie peut être fait localement
         return totalRef.current > limitRef.current && true || false;
     }
-    React.useEffect(()=>{
-        const upsert = cAction.upsert(tableName);
-        const remove = cAction.remove(tableName);
-        const onUpsert = ()=>{
-            doRefresh(false);
-        }
-        APP.on(remove,onUpsert);
-        APP.on(upsert,onUpsert);
-        return ()=>{
-            APP.off(upsert,onUpsert);
-            APP.off(remove,onUpsert);
-        }
-    },[]);
     const loading = (isLoading|| isValidating);
     const pointerEvents = loading ?"node" : "auto";
     return (

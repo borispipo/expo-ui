@@ -2,6 +2,7 @@ import CommonDatagrid from "./Common";
 import {defaultObj,extendObj,defaultStr,isNonNullString,isFunction,isPromise} from "$utils";
 import PropTypes from "prop-types";
 import {convertToSQL} from "$ecomponents/Filter";
+import actions from "$actions";
 /**** 
  *      la fonction fetchOptionsMutator permet éventuellemnt de faire une mutations sur les options fetchOptions avant qu'elle ne soit appliquée pour la recherche. elle
  *      est appelée avant que la fonction convertToSQL ne soit appelée, bien évidemement si la props convertToSQL est active pour le datagrid
@@ -41,11 +42,20 @@ export default class CommonTableDatagrid extends CommonDatagrid{
         extendObj(this._events,{
             onUpsertData : this.onUpsertData.bind(this),
         });
+        if(isNonNullString(this.tableName)){
+            APP.on(actions.upsert(this.tableName),this._events.onUpsertData)
+            APP.on(actions.remove(this.tableName),this._events.onUpsertData)
+        }
         this.fetchData({force:true});
     }
 
     componentWillUnmount(){
         super.componentWillUnmount();
+        if(isNonNullString(this.tableName)){
+            unmountDatabaseTable(this.tableName);
+            APP.off(actions.upsert(this.tableName),this._events.onUpsertData);
+            APP.off(actions.remove(this.tableName),this._events.onUpsertData);
+        }
         this.clearEvents();
         this.setSelectedRows();
     }

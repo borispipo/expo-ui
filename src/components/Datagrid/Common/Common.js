@@ -7,7 +7,7 @@ import $session from "$session";
 import Auth from "$cauth";
 import Tooltip from "$ecomponents/Tooltip";
 import setQueryLimit from "./setQueryLimit";
-import {notify,showConfirm} from "$ecomponents/Dialog";
+import {showConfirm} from "$ecomponents/Dialog";
 import Label from "$ecomponents/Label";
 import Image from "$ecomponents/Image";
 import Icon,{COPY_ICON} from "$ecomponents/Icon";
@@ -39,6 +39,7 @@ import {Menu} from "$ecomponents/BottomSheet";
 import {styles as tableStyles} from "$ecomponents/Table";
 import {DialogProvider} from "$ecomponents/Form/FormData";
 import Chart,{getMaxSupportedSeriesSize} from "$ecomponents/Chart";
+import notify from "$cnotify";
 
 export const donutChart = {
     isChart : true,
@@ -710,6 +711,9 @@ export default class CommonDatagridComponent extends AppComponent {
         const r = isObj(selected)? selected : {};
         const ret = {
             ...dataSourceArgs,
+            showConfirm,
+            Preloader,
+            notify,
             selected : defaultBool(selected,false),
             ...r,
             isMobile : isMobileOrTabletMedia(),

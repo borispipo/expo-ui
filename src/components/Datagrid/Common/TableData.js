@@ -52,7 +52,6 @@ export default class CommonTableDatagrid extends CommonDatagrid{
     componentWillUnmount(){
         super.componentWillUnmount();
         if(isNonNullString(this.tableName)){
-            unmountDatabaseTable(this.tableName);
             APP.off(actions.upsert(this.tableName),this._events.onUpsertData);
             APP.off(actions.remove(this.tableName),this._events.onUpsertData);
         }

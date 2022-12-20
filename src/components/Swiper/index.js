@@ -115,6 +115,12 @@ class SwiperComponent extends React.Component {
     return {
       onPanResponderTerminationRequest: () => false,
       onMoveShouldSetResponderCapture: () => true,
+      /***
+       * Disable panResponder on chidld of vie
+       * @see : https://stackoverflow.com/questions/45810262/how-to-disable-panresponder-on-child-component-react-native 
+       * 
+      */
+      onStartShouldSetPanResponderCapture: (evt, gestureState) => this.props.stopChildrenEventPropagation !== false ? true : false,
       onMoveShouldSetPanResponderCapture: (e, gestureState) => {
         const { gesturesEnabled, vertical, minDistanceToCapture } = this.props;
 
@@ -382,7 +388,12 @@ SwiperComponent.propTypes = {
   springConfig: PropTypes.object,
   minDistanceToCapture: PropTypes.number, // inside ScrollView
   minDistanceForAction: PropTypes.number,
-
+  /***
+   * 
+    if a parent View wants to prevent the child from becoming responder on a touch start, it should have a onStartShouldSetResponderCapture handler which returns true.
+   * @see : https://stackoverflow.com/questions/45810262/how-to-disable-panresponder-on-child-component-react-native
+   */
+  stopChildrenEventPropagation : PropTypes.bool,
   onAnimationStart: PropTypes.func,
   onAnimationEnd: PropTypes.func,
   onIndexChanged: PropTypes.func,

@@ -382,6 +382,8 @@ export default class TableDataScreenComponent extends FormDataScreen{
         let {tabProps,firstTabProps,tabsProps,withScrollView} = restProps;
         let testID = this.testIDProp;
         tabsProps = defaultObj(tabsProps);
+        tabsProps.tabContentProps = defaultObj(tabsProps.tabContentProps);
+        tabsProps.tabContentProps.stopChildrenEventPropagation = typeof tabsProps.tabContentProps.stopChildrenEventPropagation =="function" ? tabsProps.tabContentProps.stopChildrenEventPropagation : false;
         tabsProps.tabItemsProps = defaultObj(tabsProps.tabItemsProps);
         if(typeof withScrollView =='boolean' && typeof tabsProps.withScrollView !=='boolean'){
             tabsProps.withScrollView = withScrollView;

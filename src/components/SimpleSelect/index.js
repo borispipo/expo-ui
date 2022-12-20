@@ -397,7 +397,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
                         const _isSelected = isSelected(value,index);
                         const style = _isSelected ? {color:selectedColor,fontWeight:'bold'} : null;
                         if(typeof (content) ==="string"){
-                            content = <Label testID={tID} {...itemProps} style={[itemProps.style,style]}>{content}</Label>
+                            content = <Label splitText testID={tID} {...itemProps} style={[itemProps.style,style]}>{content}</Label>
                         }
                         return (
                             <React.Fragment key={index}>

@@ -1102,7 +1102,7 @@ class DropdownComponent extends AppComponent {
                             let {content} = node;
                             const style = _isSelected ? {color:selectedColor,fontWeight:'bold'} : null;
                             if(typeof (content) ==="string"){
-                                content = <Label {...itemProps} style={[itemProps.style,styles.item,style]}>{content}</Label>
+                                content = <Label splitText {...itemProps} style={[itemProps.style,styles.item,style]}>{content}</Label>
                             }
                             const testID = "RN_DropdownItem_"+key;
                             const select = !_isSelected;

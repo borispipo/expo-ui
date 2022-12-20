@@ -44,7 +44,7 @@ export const renderTabsContent = ({tabs,context,data,sessionName,isMobile,props,
             }
             if(React.isValidElement(children)){
                 tabsArr.push(
-                    <Tab.Item testID={testID+"_Item_"+key} label={label} {...tabP} key={key}>
+                    <Tab.Item testID={testID+"_Item_"+key} label={label} {...tabP} style={[{paddingBottom:50},tabP.style]} key={key}>
                         {children}
                     </Tab.Item> 
                 )

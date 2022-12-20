@@ -205,7 +205,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     },[isValidating,isLoading])
     const doRefresh = (showProgress)=>{
         showProgressRef.current = showProgress ? typeof showProgress ==='boolean' : false;
-        if(isFetchingRef.current) return;
+        //if(isFetchingRef.current) return;
         refreshCBRef.current = ()=>{
             //showProgressRef.current = false;
         };

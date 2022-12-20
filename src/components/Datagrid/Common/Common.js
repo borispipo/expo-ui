@@ -2712,7 +2712,7 @@ export default class CommonDatagridComponent extends AppComponent {
         return false;
     }
     UNSAFE_componentWillReceiveProps(nextProps){
-        if(!isObjOrArray(nextProps.data) || nextProps.data == this.props.data || stableHash(nextProps.data) == stableHash(this.props.data)) {
+        if(Object.size(nextProps.data) === Object.size(this.props.data) && (nextProps.data == this.props.data || stableHash(nextProps.data) === stableHash(this.props.data))) {
             if( typeof this.props.isLoading=='boolean' && nextProps.isLoading !== this.props.isLoading && typeof nextProps.isLoading =='boolean'){
                 this.setIsLoading(nextProps.isLoading)
             }

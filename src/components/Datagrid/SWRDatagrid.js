@@ -129,7 +129,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     fetchPath = defaultStr(fetchPath,table.queryPath,tableName.toLowerCase()).trim();
     const innerRef = React.useRef(null);
     const showProgressRef = React.useRef(true);
-    const dataRef = React.useRef(null);
+    const dataRef = React.useRef([]);
     const hasResultRef = React.useRef(false);
     const totalRef = React.useRef(0);
     const isFetchingRef = React.useRef(false);
@@ -160,13 +160,6 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             }
             const fetchCB = ({data,total})=>{
                 totalRef.current = total;
-                /***
-                 * if(pageRef.current ===firstPage){
-                        dataRef.current = data;
-                    } else {
-                        dataRef.current = prevPage != pageRef.current ? (isObj(data)?{...dataRef.current,...data}:[...dataRef.current,...data]) : data;
-                    }
-                 */
                 dataRef.current = data;
                 hasResultRef.current = true;
                 if(onFetchData && typeof onFetchData =='function'){
@@ -205,7 +198,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     },[isValidating,isLoading])
     const doRefresh = (showProgress)=>{
         showProgressRef.current = showProgress ? typeof showProgress ==='boolean' : false;
-        //if(isFetchingRef.current) return;
+        if(isFetchingRef.current) return;
         refreshCBRef.current = ()=>{
             //showProgressRef.current = false;
         };

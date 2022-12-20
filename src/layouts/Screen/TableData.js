@@ -892,7 +892,7 @@ const styles = StyleSheet.create({
     },
     screenContent : {
         padding : 0,
-        paddingBottom : 50,
+        paddingBottom : 10,
     },
     screenContentWithHeader : {
         marginTop : 0,

@@ -10,6 +10,7 @@ import {currencies} from "$ccurrency";
 import { Pressable } from "react-native";
 import {styles} from "$theme";
 import appConfig from "$app/config";
+import PropTypes from "prop-types";
 
 const CurrencySelector = React.forwardRef((props,ref)=>{
     return <SimpleSelect ref={ref} {...selectCurrencyFieldProps(props)}/>
@@ -22,10 +23,10 @@ export default CurrencySelector;
 export const currencyFormatRef = React.createRef(null);
 
 /*** onAdd est appelé lorsqu'on ajoute un format personalisé */
-export const selectCurrencyFieldProps = ({right,disabled,readOnly,isFilter,onChange,onBlur,editable,...props})=>{
+export const selectCurrencyFieldProps = ({right,disabled,readOnly,onFormatChange,isFilter,onChange,onBlur,editable,...props})=>{
     const isEditable = disabled !== true && readOnly !== true && editable !== false;
     const currency = appConfig.currency;
-    currencyFormatRef.current = defaultStr(currencyFormatRef.current,appConfig.currencyFormat,"%v%s");
+    currencyFormatRef.current = defaultStr(currencyFormatRef.current,appConfig.currencyFormat,"%v %s");
     const iconSize = 25;
     return {
         items : currencies,
@@ -83,8 +84,11 @@ export const selectCurrencyFieldProps = ({right,disabled,readOnly,isFilter,onCha
                         containerProps = {{
                             width:70,
                         }}
-                        onChange = {({value})=>{
-                            currencyFormatRef.current = value;
+                        onChange = {(args)=>{
+                            currencyFormatRef.current = args.value;
+                            if(typeof onFormatChange =="function"){
+                                onFormatChange(args)
+                            }
                         }}
                     />  
                 </Pressable>
@@ -97,4 +101,5 @@ export const selectCurrencyFieldProps = ({right,disabled,readOnly,isFilter,onCha
 
 CurrencySelector.propTypes = {
     ...SimpleSelect.propTypes,
+    onFormatChange : PropTypes.func,//lorsque le format de la currency change
 }

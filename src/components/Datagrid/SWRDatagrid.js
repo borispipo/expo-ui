@@ -14,6 +14,7 @@ import Auth from "$cauth";
 import DateLib from "$lib/date";
 import {getFetchOptions} from "$cutils/filters";
 import {setQueryParams} from "$cutils/uri";
+import {uniqid} from "$utils";
 import { getFetcherOptions } from "$capi/fetch";
 import Icon from "$ecomponents/Icon";
 import Label from "$ecomponents/Label";
@@ -79,6 +80,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         makePhoneCallProps,
         fetchData,
         fetchPath,
+        fetchPathKey,
         fetcher,
         ListFooterComponent,
         testID,
@@ -126,7 +128,11 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     },rest.exportTableProps.pdf);
     const fetchOptionsRef = React.useRef(defaultObj(customFetchOptions));
     const refreshCBRef = React.useRef(null);
+    const fPathRef = React.useRef(defaultStr(fetchPathKey,uniqid("fetchPath")));
     fetchPath = defaultStr(fetchPath,table.queryPath,tableName.toLowerCase()).trim();
+    if(fetchPath){
+        fetchPath = setQueryParams(fetchPath,fPathRef.current,fPathRef.current)
+    }
     const innerRef = React.useRef(null);
     const showProgressRef = React.useRef(true);
     const dataRef = React.useRef([]);
@@ -241,6 +247,26 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     }
     const loading = (isLoading|| isValidating);
     const pointerEvents = loading ?"node" : "auto";
+    const itLimits = [{
+        text : "Limite nbre elts par page",
+        divider : true,
+    }]
+    getDefaultPaginationRowsPerPageItems().map((item)=>{
+        itLimits.push({
+            text : item.formatNumber(),
+            icon : limitRef.current == item ? 'check' : null,
+            primary : limitRef.current === item ? true : false,
+            onPress : ()=>{
+                if(item == limitRef.current) return;
+                limitRef.current = item;
+                setSessionData("limit",limitRef.current);
+                pageRef.current = firstPage;
+                setTimeout(() => {
+                    doRefresh(true);
+                }, (500));
+            }
+        });
+    });
     return (
         <Datagrid 
             testID = {testID}
@@ -274,22 +300,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                                 </Pressable>
                             }}
                             title = {'Limite du nombre d\'éléments par page'}
-                            items = {getDefaultPaginationRowsPerPageItems().map((item)=>{
-                                return {
-                                    text : item.formatNumber(),
-                                    icon : limitRef.current == item ? 'check' : null,
-                                    primary : limitRef.current === item ? true : false,
-                                    onPress : ()=>{
-                                        if(item == limitRef.current) return;
-                                        limitRef.current = item;
-                                        setSessionData("limit",limitRef.current);
-                                        pageRef.current = firstPage;
-                                        setTimeout(() => {
-                                            doRefresh(true);
-                                        }, (500));
-                                    }
-                                }
-                            })}
+                            items = {itLimits}
                         />
                         <Icon
                             ///firstPage
@@ -320,7 +331,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                         />
                         <View testID={testID+"_PaginationLabel"}>
                             <Label style={{fontSize:15}}>
-                                {page.formatNumber()}-{totalPages.formatNumber()}{" / "}{totalRef.current.formatNumber()}
+                                {(totalRef.current?page:0).formatNumber()}-{totalPages.formatNumber()}{" / "}{totalRef.current.formatNumber()}
                             </Label>
                         </View>
                         <Icon
@@ -413,6 +424,7 @@ SWRDatagridComponent.displayName = "SWRDatagridComponent";
 SWRDatagridComponent.propTypes = {
     ...Datagrid.propTypes,
     fetchPath : PropTypes.string,
+    fetchPathKey : PropTypes.string,//la clé permettant de suffixer l'url fecherPath afin que ce ne soit pas unique pour certaines tables
     fetchData : PropTypes.func,
     table : PropTypes.shape({
         tableName : PropTypes.string,

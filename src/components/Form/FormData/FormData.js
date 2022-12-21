@@ -207,7 +207,7 @@ export default class FormDataComponent extends AppComponent{
                     delete rest.filter;
                 }
                 if(name){
-                    rest.defaultValue = useDefaultValueFromData === false ? defaultValue : (name in data && data[name] !== undefined? data[name]: defaultValue);
+                    rest.defaultValue = useDefaultValueFromData === false ? defaultValue : (name in data && data[name] !== undefined && data[name] !== null? data[name]: defaultValue);
                     if((type == 'selecttabledata' || type == 'datafile')){
                         rest._defaultValue = data[rest.name];
                     }

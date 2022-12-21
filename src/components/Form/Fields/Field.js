@@ -19,6 +19,7 @@ import defaultKeyboardEvents from "../utils/keyboardEvents";
 import sprintf from "./sprintf";
 import ErrorMessage from "$ecomponents/ErrorBoundary/ErrorMessage";
 import { UPPER_CASE, LOWER_CASE} from "$common/lib/validator";
+import Label from "$components/Label";
 
 
 export default class Field extends AppComponent {
@@ -904,6 +905,9 @@ export default class Field extends AppComponent {
             const renderRigth = (props)=>{
                 let right = null;
                 let cRight = typeof customRight ==='function'? customRight(props) : customRight;
+                if(typeof cRight ==='number' || typeof cRight =="string"){
+                    cRight = <Label {...props}>{cRight}</Label>
+                }
                 if(!React.isValidElement(cRight)){
                     cRight = null;
                 }

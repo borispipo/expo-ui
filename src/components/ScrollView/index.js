@@ -3,15 +3,28 @@ import { FlatList } from 'react-native';
 import { ScrollView,Dimensions,useWindowDimensions } from 'react-native';
 import PropTypes from "prop-types";
 import View from "$ecomponents/View";
-import {isMobileNative} from "$cplatform";
+import {isMobileNative,isTouchDevice} from "$cplatform";
 import {defaultStr,defaultObj} from "$utils";
 const isNative = isMobileNative();
-
+import APP from "$capp/instance";
 const ScrollViewComponent = React.forwardRef((props,ref) => {
   const {virtualized,contentProps,mediaQueryUpdateNativeProps,testID:customTestID,children,screenIndent:sIndent,...rest} = props;
   const testID = defaultStr(customTestID,'RN_ScrollViewComponent');
   const cProps = defaultObj(contentProps);
-  const {height} = useWindowDimensions()//:Dimensions.get("window");
+  const [layout,setLayout] = React.useState(Dimensions.get("window"));
+  const {height} = layout;
+  React.useEffect(()=>{
+    const onResizePage = ()=>{
+      if(isTouchDevice()) return;
+      setTimeout(()=>{
+         setLayout(Dimensions.get("window"))
+      },200);
+    }
+    APP.on(APP.EVENTS.RESIZE_PAGE,onResizePage);
+    return ()=>{
+      APP.off(APP.EVENTS.RESIZE_PAGE,onResizePage);
+    }
+  },[])
   return  virtualized ? <FlatList
     {...rest}
     ref = {ref}

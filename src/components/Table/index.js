@@ -224,7 +224,7 @@ const TableComponent = React.forwardRef(({containerProps,renderListContent,child
             }
         }
     }
-    return <View testID= {testID+"_Container"} {...containerProps} style={[styles.container,{alignItems:'stretch'},containerProps.style]}>
+    return <View testID= {testID+"_Container"} pointerEvents='box-none' {...containerProps} style={[styles.container,{alignItems:'stretch'},containerProps.style]}>
             <RNView style={[cStyle]} testID={testID+"_Headers_ScrollViewContainer"}>
                 <ScrollView
                     testID={testID+"_HeaderScrollView"}

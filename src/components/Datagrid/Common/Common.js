@@ -2696,7 +2696,7 @@ export default class CommonDatagridComponent extends AppComponent {
             return "none";
         }
         if(this.enablePointerEventsRef.current) return true;
-        return this.isLoading()? "none":"auto";
+        return this.isLoading()? "none":"box-none";
     }
     updateLayout(p){
         this.measureLayout(state=>{

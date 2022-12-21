@@ -1,8 +1,8 @@
-import {isIos} from "$cplatform";
+import {isIos,isAndroid,isNativeMobile,isTouchDevice} from "$cplatform";
 import {KeyboardAvoidingView,StyleSheet} from 'react-native';
 
 export default function KeyboardAvoidingViewComponent({ children,...rest }){
-    return isIos() ? (
+    return isNativeMobile() || isTouchDevice() ? (
       <KeyboardAvoidingView
         style={styles.wrapper}
         behavior="padding"

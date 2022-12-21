@@ -1,8 +1,8 @@
-import {isIos,isAndroid,isNativeMobile,isTouchDevice} from "$cplatform";
+import {isIos} from "$cplatform";
 import {KeyboardAvoidingView,StyleSheet} from 'react-native';
 
 export default function KeyboardAvoidingViewComponent({ children,...rest }){
-    return isNativeMobile() || isTouchDevice() ? (
+    return isIos() ? (
       <KeyboardAvoidingView
         style={styles.wrapper}
         behavior="padding"
@@ -11,9 +11,7 @@ export default function KeyboardAvoidingViewComponent({ children,...rest }){
       >
         {children}
       </KeyboardAvoidingView>
-    ) : (
-      <>{children}</>
-    );
+    ) : children;
 };
 
 const styles = StyleSheet.create({

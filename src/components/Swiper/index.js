@@ -120,7 +120,6 @@ class SwiperComponent extends React.Component {
        * @see : https://stackoverflow.com/questions/45810262/how-to-disable-panresponder-on-child-component-react-native 
        * 
       */
-      onStartShouldSetPanResponderCapture: (evt, gestureState) => this.props.stopChildrenEventPropagation !== false ? true : false,
       onMoveShouldSetPanResponderCapture: (e, gestureState) => {
         const { gesturesEnabled, vertical, minDistanceToCapture } = this.props;
 

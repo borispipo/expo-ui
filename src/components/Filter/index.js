@@ -1,8 +1,8 @@
 
 
 import DateLib from "$lib/date";
-import {isNonNullString,defaultStr,isNullOrEmpty,debounce,uniqid} from "$utils";
-import {regexParser,regexActions,operators as _operators,actions as _actions,periodActions, inActions as _inActions,getFilterStateValues,getSessionData,setSessionData} from "$cfilters";
+import {isNonNullString,defaultStr,isNullOrEmpty,debounce,isFunction,uniqid} from "$utils";
+import {regexParser,regexActions,operators as _operators,actions as _actions,periodActions,betweenActions, inActions as _inActions,getFilterStateValues,getSessionData,setSessionData} from "$cfilters";
 import {parseDecimal} from "$ecomponents/TextField";
 import notify from "$notify";
 import PropTypes from "prop-types";
@@ -16,6 +16,7 @@ import theme from "$theme";
 import {isMobileMedia} from "$cplatform/dimensions";
 import { ActivityIndicator } from "react-native-paper";
 import DialogProvider from "$components/Form/FormData/DialogProvider";
+import FilterBetweenComponent from "./BetweenComponent";
 
 const manualRunKey = "manual-run";
 
@@ -129,10 +130,19 @@ export default class Filter extends AppComponent {
        this.fireFilterSearch(false);
      });
   }
+  getDefaultAction(type){
+      type = defaultStr(type,this.type,this.props.type).toLowerCase();
+      if(type.contains('select')){
+          return "$in";
+      } if(type !== 'date2time' && type !== 'time' && type !== 'number' && type !== 'decimal'){
+          return '$regexcontains';
+      }
+      return '$eq';
+  }
   initFiltersOp(type){
     type = defaultStr(type,this.type).toLowerCase();
     let operators = {..._operators};
-    let actions = {..._actions};
+    let actions = {...betweenActions,..._actions};
     if(this.props.orOperator === false){
        delete operators.$or;
     }
@@ -144,21 +154,18 @@ export default class Filter extends AppComponent {
     let ignoreCase = this.props.ignoreCase;
     ignoreCase = defaultVal(ignoreCase,true);
     let isTextFilter = false;
-    let defaultAct = '$eq';
     if(type =="checkbox" || type == 'switch'){
         action = '$eq';
-    } else if(type == 'select'){
+    } else if(type.contains('select')){
         actions = _inActions;
-        defaultAct = "$in";
     } else if(type == 'date' || type =='datetime') {
       actions = {...periodActions, ...actions}  
     } else if(type !== 'date2time' && type !== 'time' && type !== 'number' && type !== 'decimal'){
-        actions = regexActions;
-        defaultAct = '$regexcontains';
+        actions = {...betweenActions,...regexActions};
         isTextFilter = true;
     }
     if(!action){
-        action = defaultAct;
+        action = this.getDefaultAction(type);
     } 
     operator = defaultVal(operator,"$and");
     return {actions,action,ignoreCase,operator,operators,manualRun:defaultBool(this.props.manualRun,false),defaultValue:defaultVal(this.props.defaultValue),isTextFilter};
@@ -248,26 +255,44 @@ export default class Filter extends AppComponent {
     const t =  defaultStr(this.type,this.props.type);
     return t.contains("date") && t.contains("time");
   }
-  showPeriodSelector (success){
+  showBetweenSelector(args){
+      return this.showBetweenActionSelector(args);
+  }
+  showPeriodSelector(args){
+     return this.showBetweenActionSelector(args);
+  }
+  showBetweenActionSelector(args){
+    if(typeof args =='function'){
+      args = {success:args};
+    }
+    let {success,callback} = defaultObj(args);
+    const _type = defaultStr(this.type,this.props.type).toLowerCase().trim();
+    success = typeof success =='function'? success : typeof callback =='function'? callback : undefined;
     const defaultValue = defaultStr(this.state.defaultValue).trim();
     let split = defaultValue.split("=>");
-    let isDateTime = this.isDateTime();
-    let start = isDateTime ? new Date().toSQLDateTimeFormat() : new Date().toSQLDateFormat(), end = start;
-    
-     if(DateLib.isValidSQLDateTime(split[0]) || DateLib.isValidSQLDate(split[0])){
-        start = split[0];
-     }
-     if(DateLib.isValidSQLDateTime(split[1]) || DateLib.isValidSQLDate(split[1])){
-        end = split[1];
-     }
-    const type = isDateTime? "datetime" : "date";
-    DialogProvider.open({
+    const isDateTime = this.isDateTime();
+    let start = split[0] && split[0] || undefined, end = split[1] && split[1] || undefined;
+    const willHandleDate = _type.contains('date');
+     if(willHandleDate){
+        start = isDateTime ? new Date().toSQLDateTimeFormat() : new Date().toSQLDateFormat();
+        end = start;    
+        if(DateLib.isValidSQLDateTime(split[0]) || DateLib.isValidSQLDate(split[0])){
+            start = split[0];
+        }
+        if(DateLib.isValidSQLDateTime(split[1]) || DateLib.isValidSQLDate(split[1])){
+            end = split[1];
+        }
+    }
+    const type = willHandleDate ? (isDateTime? "datetime" : "date"):_type;
+    const format = this.props.format;
+    return new Promise((resolve,reject)=>{
+      DialogProvider.open({
         subtitle : false,
         fields : {
-           start : {type,text:'Du',defaultValue:start},
-           end : {type,text:'Au',defaultValue:end}
+           start : {format,type,text:(willHandleDate?'Du':"Valeur inférieure"),defaultValue:start},
+           end : {format,type,text:willHandleDate?'Au':"Valeur supérieure",defaultValue:end}
         },
-        title :"Définir une période ["+defaultStr(this.props.label,this.props.text)+"]",
+        title :"Définir {0} [{1}]".sprintf(willHandleDate?"une période":"Un intervalle",defaultStr(this.props.label,this.props.text)),
         cancelButton  : true,
         actions : {
          yes : {
@@ -276,25 +301,32 @@ export default class Filter extends AppComponent {
           },
         },
         onSuccess : ({data})=>{
-            if(data.start && data.end && data.start> data.end){
-                return notify.error("La date de fin doit être supérieure à la date de début");
+            if(data.start !== undefined && data.start !== null && data.end !== undefined && data.end !== null && data.start> data.end){
+                return notify.error("La {0} doit être supérieure à la {1}".sprintf(willHandleDate?"date de fin":"valeur supérieure",willHandleDate?"date de début":"valeur inférieure"));
             }
-            if(isFunction(success)){
+            if(typeof(success) =="function"){
               success(data.start+"=>"+data.end);
            }
+           resolve(data.start+"=>"+data.end);
            DialogProvider.close();
            return true;
-        }})
+        }
+      })
+    })
   }
   setAction(action,text){
     if(!(this.searchFilter.current)) return;
-    if(action === this.state.action && action !="$period" && action !== "$today" && action !='$yesterday') return;
+    if(action === this.state.action && !periodActions[action] && !betweenActions[action]) return;
     let value = this.state.defaultValue;
     let act = defaultStr(action).toLowerCase();
     const isDateTime = this.type?.contains("time");
     const dateFormat = isDateTime?DateLib.SQLDateTimeFormat:DateLib.SQLDateFormat;
     if(action == '$period'){
       this.showPeriodSelector((d)=>{
+          this.runAction({value:d,action});
+      })
+    } else if(action == '$between'){
+      this.showBetweenSelector((d)=>{
           this.runAction({value:d,action});
       })
     } else if(action =="$today"){
@@ -346,7 +378,7 @@ export default class Filter extends AppComponent {
       })
   }
   clearFilter(event){
-    this.setState({defaultValue:undefined},()=>{
+    this.setState({defaultValue:undefined,action:this.getDefaultAction()},()=>{
       this.callOnValidate();
       this.fireValueChanged(true);
       let {onClearFilter,onResetFilter} = this.props;
@@ -356,6 +388,33 @@ export default class Filter extends AppComponent {
       }
     })
   } 
+  isBetweenAction(action){
+    action = defaultStr(action,this.state.action).toLowerCase();
+    return !!(this.state.actions && betweenActions[action]);
+  }
+  isPeriodAction(action){
+    action = defaultStr(action,this.state.action).toLowerCase();
+    return !!(this.state.actions && periodActions[action]);
+  }
+  formatValue(value){
+      const type = defaultStr(this.type,this.props.type).toLowerCase();
+      if(this.isBetweenAction() && isNonNullString(value) && (type ==="number" || type =="decimal")){
+        const sp = value.split("=>");
+        if(sp.length ==2 && type){
+          const format = defaultStr(this.props.format).toLowerCase();
+          const v1 = defaultDecimal(parseDecimal(sp[0],type));
+          const v2 = defaultDecimal(parseDecimal(sp[1],type));
+          return format =="money"? (v1.formatMoney()+"=>"+v2.formatMoney()) : (v1.formatNumber()+"=>"+v2.formatNumber());
+        }
+      }
+      if(typeof value =='number'){
+          if(this.props.format =='money'){
+             return value.formatMoney();
+          }
+          return value.formatNumber();
+      }
+      return value;
+  }
   render (){
     let {
       filter,
@@ -442,8 +501,9 @@ export default class Filter extends AppComponent {
      if(isFunction(filter)){
          rest.filter = filter;
      }
-     const isPeriodAction = this.state.actions && periodActions[this.state.action]
-     const ignoreDefaultValue = isPeriodAction && isNonNullString(defaultValue) && defaultValue.contains("=>");
+     const isPeriodAction = this.isPeriodAction();
+     const isBetweenAction = this.isBetweenAction();
+     const ignoreDefaultValue = (isPeriodAction||isBetweenAction) && isNonNullString(defaultValue) && defaultValue.contains("=>");
      rest.defaultValue = defaultValue;
      rest.disabled = rest.readOnly = rest.affix = false;
      rest.editable = true;
@@ -500,7 +560,7 @@ export default class Filter extends AppComponent {
                       style : [styles.bold,styles.noVerticalPadding],
                     }:null],
                      ...Object.mapToArray(actions,(x,j)=>{
-                      if(ignoreDefaultValue && !periodActions[j]){
+                      if(ignoreDefaultValue && !periodActions[j] && !betweenActions[j]){
                         return null;
                       } 
                       let checked = j === action?true : false;
@@ -523,7 +583,7 @@ export default class Filter extends AppComponent {
                           }
 
                           if(!hasS){
-                             x = x+" <"+defaultValue+">"
+                             x = x+" <"+this.formatValue(defaultValue)+">"
                           }
                        }                       
                        return {
@@ -539,10 +599,10 @@ export default class Filter extends AppComponent {
      const containerProps = defaultObj(this.props.containerProps,rest.containerProps);
      delete rest.containerProps;
      rest.onValidate = this.onFilterValidate.bind(this);
-     const Component = this.Component;
+     const Component = isBetweenAction ? FilterBetweenComponent : this.Component;
      const responsiveProps = Object.assign({},responsiveProps);
      responsiveProps.style = [theme.styles.w100,responsiveProps.style]
-     if(ignoreDefaultValue) {
+     if(ignoreDefaultValue && isPeriodAction) {
         rest.isPeriodAction = true;
      }
      return <View testID={testID+"_FilterContainer"} {...containerProps} style={StyleSheet.flatten([theme.styles.w100,containerProps.style])}>

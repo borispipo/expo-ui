@@ -56,6 +56,7 @@ const DatePickerInput = React.forwardRef(({
     if(isPeriodAction){
       return <PeriodActionComponent
           {...rest}
+          style = {style}
           left = {left}
           defaultValue = {defaultValue}
           right = {right}

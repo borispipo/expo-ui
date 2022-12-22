@@ -8,7 +8,4 @@ export {default as Form} from "./Form";
 
 export {default as Action} from "./Action";
 
-export {default as KeyboardAvoidingView} from "./KeyboardAvoidingView";
-
-
 export * from "./utils";

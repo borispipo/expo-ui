@@ -28,7 +28,7 @@ import { evalSingleValue,Footer,getFooterColumnValue,isValidAggregator,extendAgg
 import i18n from "$i18n";
 import { makePhoneCall,canMakePhoneCall as canMakeCall} from "$makePhoneCall";
 import copyToClipboard from "$capp/clipboard";
-import { Pressable,PanResponder } from "react-native";
+import { Pressable } from "react-native";
 import TableLink from "$TableLink";
 import appConfig from "$capp/config";
 import stableHash from "stable-hash";

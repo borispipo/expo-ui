@@ -10,7 +10,7 @@ import {isWeb,isNativeMobile} from "$cplatform";
 import Divider from "$ecomponents/Divider";
 import {isMobileOrTabletMedia} from "$cplatform/dimensions";
 import APP from "$capp/instance";
-import KeyboardAvoidingView from "$ecomponents/Form/KeyboardAvoidingView";
+import KeyboardAvoidingView from "$ecomponents/KeyboardAvoidingView";
 import {Elevations} from "$ecomponents/Surface";
 import {defaultStr} from "$utils";
 import View from "$ecomponents/View";
@@ -258,11 +258,6 @@ const BottomSheetComponent = React.forwardRef((props,ref)=> {
                     activeOpacity={1}
                     onPress={() => (closeOnPressMask && dismissable !== false ? closeModal() : null)}
                 />
-                <KeyboardAvoidingView
-                    behavior="padding"
-                    style={[styles.wrapper]}
-                    testID = {testID+"_KeyboardAvoidingView"}
-                >
                     <Animated.View
                         {...(!dragFromTopOnly && panResponder.panHandlers)}
                         testID = {testID+"_Container"} {...containerProps} 
@@ -289,19 +284,17 @@ const BottomSheetComponent = React.forwardRef((props,ref)=> {
                                 </View>
                                 <Divider testID = {testID+"_Divider"} style={styles.divider}/>
                             </>  : null}
-                            {withScrollView !== false ? <>
+                            {withScrollView !== false ?
                                 <ScrollView testID = {testID+"_ScrollViewContent"}  contentProps = {{style:styles.scrollViewContent}} {...scrollViewProps} style={[styles.scrollView,scrollViewProps.style]} alwaysBounceVertical={false}
-                                contentContainerStyle={[{ flexGrow: 1,margin:0,paddingBottom:30},scrollViewProps.contentContainerStyle]}
+                                    contentContainerStyle={[{ flexGrow: 1,margin:0,paddingBottom:30},scrollViewProps.contentContainerStyle]}
                                 >
-                                    {children}
-                                    </ScrollView>
-                                </> 
+                                    <KeyboardAvoidingView testID={testID+"_KeyboardAvoidingView"}>{children}</KeyboardAvoidingView>
+                                </ScrollView>
                             : <View testID = {testID+"_Children"} {...childrenContainerProps} style={[styles.childrenNotScroll,childrenContainerProps.style]}>
-                                {children}  
+                                <KeyboardAvoidingView testID={testID+"_KeyboardAvoidingView"}>{children}</KeyboardAvoidingView>  
                             </View>}
                         </View>
                     </Animated.View>
-                </KeyboardAvoidingView>
             </View>
         </Portal>
     );

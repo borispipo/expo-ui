@@ -291,7 +291,7 @@ const DatagridFactory = (Factory)=>{
                         {this.renderSectionListMenu()}
                         {this.renderDisplayTypes()}
                         {this.renderAggregatorFunctionsMenu()}
-                        <View testID={testID+"_HeaderPagination"} style = {styles.paginationItem}>
+                        <View pointerEvents={pointerEvents} testID={testID+"_HeaderPagination"} style = {styles.paginationItem}>
                             <BottomSheetMenu
                                 testID={testID+"_HeaderMenus"}
                                 anchor={(props)=>(<Icon {...props} icon={'axis-z-arrow'}/>)} 

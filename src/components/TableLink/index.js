@@ -68,8 +68,8 @@ export default TableLinKComponent;
 
 
 TableLinKComponent.propTypes = {
-    foreignKeyColumn : PropTypes.string.isRequired,//le nom de la colonne de la clé étrangère
-    foreignKeyTable : PropTypes.string.isRequired, //le nom de la table référencée
+    foreignKeyColumn : PropTypes.string,//le nom de la colonne de la clé étrangère
+    foreignKeyTable : PropTypes.string, //le nom de la table référencée
     fetchForeignData : PropTypes.func, // la fonction permettant de chercher la données à distance
     server : PropTypes.string,//le serveur sur lequel rechercher les données
     primary : PropTypes.bool,//si le composant sera stylé en theme primary de react

@@ -258,19 +258,6 @@ const DatagridFactory = (Factory)=>{
         getMaxSelectedRows(){
             return isMobileMedia()? 30 : 50;
         }
-        showFilters(){
-            if(!this._isMounted()) {
-                 this.isUpdating = false;
-                 return;
-            }
-            this.setSessionData({showFilters:true});
-        }
-        hideFilters (){
-            if(!this._isMounted()) {
-               return;
-            }
-            this.setSessionData({showFilters:false});
-        } 
         toggleFilterColumnVisibility(field,visible){
             if(!isNonNullString(field)) return;
             let filteredColumns = {...this.state.filteredColumns};
@@ -485,7 +472,7 @@ const DatagridFactory = (Factory)=>{
                                 }}
                             />
                         </View> : null}
-                        {this.isFilterable() && showFilters ? <View>
+                        {this.isFilterable() ? <View>
                             <FiltersAccordionComponent
                                 testID={testID+"_HeaderFilters"}
                                 isLoading = {isLoading}
@@ -498,7 +485,7 @@ const DatagridFactory = (Factory)=>{
                             />
                         </View> : null}
                         {this.renderSectionListMenu()}
-                        <View testID={testID+"_HeaderPagination"} style = {styles.paginationItem}>
+                        <View pointerEvents={pointerEvents} testID={testID+"_HeaderPagination"} style = {styles.paginationItem}>
                             <Menu 
                                 testID={testID+"_HeaderMenus"}
                                 anchor={(props)=>(<Icon {...props} icon={MENU_ICON}/>)} 

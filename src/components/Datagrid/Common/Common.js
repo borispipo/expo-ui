@@ -2127,7 +2127,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 if(hasSectionColumns){
                     let sHeader = this.getSectionListHeader({data:d,columnsLength : sectionListColumnsSize,fieldsSize:sectionListColumnsSize,sectionListColumnsLength:sectionListColumnsSize,sectionListColumnsSize,allData:data,rowData:d,index:i,rowIndex,context:this,columns,fields:columns});
                     if(sHeader === false) return;//on omet la donnée si la fonction de récupération de son header retourne false
-                    if(!isNonNullString(sHeader)){
+                    if(!isNonNullString(sHeader) || sHeader.toLowerCase().trim() =="undefined"){
                         if(this.props.ignoreEmptySectionListHeader !== false){
                             sHeader = this.emptySectionListHeaderValue;
                         } else return;
@@ -2692,10 +2692,10 @@ export default class CommonDatagridComponent extends AppComponent {
         }
     }
     getPointerEvents(){
+        if(this.enablePointerEventsRef.current) return true;
         if(this.props.isLoading){
             return "none";
         }
-        if(this.enablePointerEventsRef.current) return true;
         return this.isLoading()? "none":"auto";
     }
     updateLayout(p){

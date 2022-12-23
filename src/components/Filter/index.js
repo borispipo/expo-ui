@@ -160,6 +160,7 @@ export default class Filter extends AppComponent {
         actions = _inActions;
     } else if(type == 'date' || type =='datetime') {
       actions = {...periodActions, ...actions}  
+      delete actions.$between;
     } else if(type !== 'date2time' && type !== 'time' && type !== 'number' && type !== 'decimal'){
         actions = {...betweenActions,...regexActions};
         isTextFilter = true;

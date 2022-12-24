@@ -22,7 +22,8 @@ DateFormatSelector.displayName = "DateFormatSelector";
 export default DateFormatSelector;
 
 /*** onAdd est appelé lorsqu'on ajoute un format personalisé */
-export const selectDateFormatFieldProps = ({onAdd:customOnAdd,onAddCustomFormat,...props})=>{
+export const selectDateFormatFieldProps = ({onAdd:customOnAdd,onAddCustomFormat,inputProps,...props})=>{
+    const cRight = (p)=><Icon size={20} {...p} name ="material-help" title="Utilisez les champ d : pour date, m pour mois, y pour année, H pour heure, M pour minute, s pour seconde. les jour sur 3 lettres (Lun) sont : ddd, les jours écris complètement sont dddd (Lundi); les mois en court sont définis par mmm (Juil), les mois en complet : mmmm (Juillet)."/>;
     const onAdd = ()=>{
         const labelRef = React.createRef(null);
         const valueRef = React.createRef(null);
@@ -32,7 +33,8 @@ export const selectDateFormatFieldProps = ({onAdd:customOnAdd,onAddCustomFormat,
                 <TextField
                     type = "text"
                     label = "Format personalisé"
-                    right ={(p)=><Icon {...p} name ="material-help" title="Utilisez les champ d : pour date, m pour mois, y pour année, H pour heure, M pour minute, s pour seconde. les jour sur 3 lettres (Lun) sont : ddd, les jours écris complètement sont ddddd (Lundi); les mois en court sont définis par mmm (Juil), les mois en complet : mmmm (Juillet)."/>} 
+                    enableCopy = {false}
+                    right ={cRight} 
                     onChange = {(args)=>{
                         const {value} = args;
                         if(!labelRef.current || !labelRef.current.update) return;
@@ -73,12 +75,21 @@ export const selectDateFormatFieldProps = ({onAdd:customOnAdd,onAddCustomFormat,
             }],
         }))
     };
+    inputProps = defaultObj(props.inputProps);
     return {
         items : getDateFormatSelectorItems(),
         getItemValue : ({item})=>item.code,
         renderItem : dateFormatSelectorRenderItem,
         showAdd : true,
         ...props,
+        inputProps : {
+            enableCopy:false,...inputProps,
+            right : (p)=>{
+                const cc = cRight(p);
+                const r = typeof inputProps.right =='function'? inputProps.right(p) : inputProps.right;
+                return React.isValidElement(r) ? <>{r}{cc}</> : cc;
+            }
+        },
         defaultValue : defaultStr(props.defaultValue,props.format),
         onAdd,
         onAdd : undefined,

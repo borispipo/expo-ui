@@ -3,7 +3,7 @@ import React from "$react";
 import { prepareItems as customPrepareItems,getBToTopRef } from "./utils";
 import theme,{grid,StylePropTypes} from "$theme";
 import PropTypes from "prop-types";
-import {defaultObj,defaultDecimal,defaultArray,defaultFunc} from "$utils";
+import {defaultObj,isObj,defaultDecimal,defaultArray,defaultFunc} from "$utils";
 import {isMobileMedia} from "$cplatform/dimensions";
 import BackToTop from "$ecomponents/BackToTop";
 import {FlatList,StyleSheet,View} from "react-native";
@@ -42,6 +42,9 @@ const CommonListComponent = React.forwardRef((props,ref)=>{
         },
         renderItem : function({item,index,section,...rest}){
             rest = rest ? rest : {};
+            if(isObj(item) && item.isSectionListHeader){
+                rest.isSectionListHeader = true;
+            }
             let ret = renderItem({item,numColumns,index,section,numColumns,itemContainerWidth:itemWindowWidth,itemWindowWidth,...rest,isScrolling:listRef.current?.isScrolling?true:false,items:defaultArray(context.items)});
             if(typeof ret =='string' || typeof ret =='number'){
                 return <Label children = {ret}/>

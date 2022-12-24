@@ -178,10 +178,11 @@ const DatagridFactory = (Factory)=>{
                 const rowStyle = style ? [style] : [];
                 const rowProps = {};
                 const it = this.renderFlashListItem({...args,rowProps,rowStyle});
-                if(React.isValidElement(it)){
-                    return 
+                if(!React.isValidElement(it)){
+                    return null;
                 }
-                return <View testID={"RNDatagridAccordionSectionHeader"} {...rowProps} style={[rowProps.style,rowStyle]}>
+                const rowKey = defaultVal(args.rowIndex,args.index,args.rowCounterIndex);
+                return <View {...rowProps} testID={defaultStr(rowProps.testID,"RNDatagridAccordionSectionHeader")+rowKey}  style={[theme.styles.w100,theme.styles.justifyContentCenter,theme.styles.alignItemsCenter,rowProps.style,rowStyle]}>
                     {it}
                 </View>;
             }
@@ -485,6 +486,8 @@ const DatagridFactory = (Factory)=>{
                             />
                         </View> : null}
                         {this.renderSectionListMenu()}
+                        {this.renderDisplayTypes()}
+                        {this.renderAggregatorFunctionsMenu()}
                         <View pointerEvents={pointerEvents} testID={testID+"_HeaderPagination"} style = {styles.paginationItem}>
                             <Menu 
                                 testID={testID+"_HeaderMenus"}
@@ -506,7 +509,6 @@ const DatagridFactory = (Factory)=>{
                                         ,icon :  showFooters?'view-column':'view-module'
                                         ,text : (showFooters?'Masquer les totaux':'Afficher les totaux')
                                     }:null,
-                                    ...this.getAggregatorFunctionsMenuItems(),
                                     ...this.renderCustomMenu(),
                                     ...restItems,
                                     !canRenderChart && this.canScrollTo() &&  {
@@ -563,7 +565,7 @@ const DatagridFactory = (Factory)=>{
                         {datagridHeader}
                         {_progressBar}
                         {!canRenderChart && showFooters ? (
-                            <View  testID={testID+"_FooterContainer"} pointerEvents={pointerEvents} style={[{justifyContent:'center'}]}>
+                            <View  testID={testID+"_FooterContainer"} pointerEvents={pointerEvents} style={[theme.styles.justifyContentCenter,theme.styles.pv1]}>
                                 <View  testID={testID+"_FooterContentContainer"} style={[styles.footersContainer]}>
                                     <ScrollView testID={testID+"_FooterScrollView"} horizontal contentContainerStyle={[styles.contentContainerStyle]}>
                                         <View testID={testID+"_FooterContent"} style={[styles.table]}>

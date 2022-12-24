@@ -1698,6 +1698,7 @@ export default class CommonDatagridComponent extends AppComponent {
             chartProps[settingKey] = defaultObj(chartProps[settingKey]);
             chartProps[settingKey][key] = config[key];
         });
+        
         const chartOptions = {
             ...chartProps,
             title :extendObj(true,{}, {
@@ -1738,7 +1739,10 @@ export default class CommonDatagridComponent extends AppComponent {
             if(typeof value =="number") return value.formatNumber();
             return value;
         }
-        chartOptions.chart.id = this.chartIdPrefix+defaultStr(chartType.key,"no-key")
+        chartOptions.chart.id = this.chartIdPrefix+"-"+defaultStr(chartType.key,"no-key");
+        if(!chartType.isDonut){
+            delete chartOptions.labels;
+        }
         return <Chart
             options = {chartOptions}
             key = {chartOptions.chart.id}
@@ -2233,13 +2237,15 @@ export default class CommonDatagridComponent extends AppComponent {
         const lStyle = typeof this.props.getSectionListHeaderLabelStyle =='function' ? this.props.getSectionListHeaderLabelStyle(args) : null;
         
         rowProps = defaultObj(rowProps);
-        const testID  = rowProps.testID = defaultStr(args.testID,"RN_DatagridSectionListHeader")+"_"+defaultVal(args.rowIndex,args.index)
+        const rowKey = defaultVal(args.rowIndex,args.index,args.rowCounterIndex);
+        const testID  = rowProps.testID = defaultStr(args.testID,"RN_DatagridSectionListHeader")+"_"+rowKey;
         if(Array.isArray(rowStyle)){
             if(style){
                 rowStyle.push(style);
             }
         }
         let cells = null;
+        const isA = this.isAccordion();
         if(this.canShowFooters() && isObj(this.sectionListHeaderFooters[key])){
             const {visibleColumnsNames,widths} = defaultObj(this.preparedColumns);
             if(isObj(visibleColumnsNames) &&isObj(widths)){
@@ -2249,18 +2255,16 @@ export default class CommonDatagridComponent extends AppComponent {
                     if(typeof widths[column] !== 'number') return null;
                     const width = widths[column];
                     if(!column) return null;
-                    const key = key+column;
+                    const key2 = key+column;
                     if(!column || !this.state.columns[column] || !footers[column]) {
                         if(this.isAccordion()) return null;
-                        cells.push(<View key={key} testID={testID+"_FooterCellContainer"+key} style={[tableStyles.headerItemOrCell,{width}]}>
-                            
-                        </View>)
+                        cells.push(<View key={key2} testID={testID+"_FooterCellContainer_"+key2} style={[tableStyles.headerItemOrCell,{width}]}></View>)
                     } else {
                         const footer = footers[column];
-                        cells.push(<View key={key} testID={testID+"_FooterCellContainer"+key} style={[tableStyles.headerItemOrCell,{width,alignItems:'flex-start',justifyContent:'flex-start'}]}>
+                        cells.push(<View key={key2} testID={testID+"_FooterCellContainer_"+key2} style={[tableStyles.headerItemOrCell,!isA?{width,alignItems:'flex-start',justifyContent:'flex-start'}:{marginLeft:0,paddingLeft:0,marginRight:5}]}>
                             <Footer
-                                key = {key}
-                                testID={testID+"_FooterItem_"+key}
+                                key = {key2}
+                                testID={testID+"_FooterItem_"+key2}
                                 {...footer}
                                 aggregatorFunction = {this.getActiveAggregatorFunction().code}
                                 aggregatorFunctions = {this.aggregatorFunctions}
@@ -2269,13 +2273,12 @@ export default class CommonDatagridComponent extends AppComponent {
                             />  
                         </View>)
                     }
-                    
                 });
             }
         }
-        return <View testID={testID+"_ContentContainer"}  style={[theme.styles.w100,theme.styles,theme.styles.justifyContentCenter,theme.styles.pt1,theme.styles.pb1,theme.styles.alignItemsCenter,!cells && theme.styles.ml1,theme.styles.mr1,cStyle]}>
-            <Label testID={testID+"_Label"} splitText numberOfLines={3} textBold style={[theme.styles.w100,{color:theme.colors.primaryOnSurface,fontSize:16},lStyle]}>{label}</Label>
-            {cells ? <View style = {[theme.styles.w100,theme.styles.row,theme.styles.alignItemsFlexStart]}
+        return <View testID={testID+"_ContentContainer"}  style={[theme.styles.w100,isA && theme.styles.ph2,theme.styles.justifyContentCenter,theme.styles.alignItemsCenter,theme.styles.pb1,!cells && theme.styles.ml1,theme.styles.mr1,cStyle]}>
+            <Label testID={testID+"_Label"} splitText numberOfLines={3} textBold style={[theme.styles.w100,{color:theme.colors.primaryOnSurface,fontSize:isA?15 :16},lStyle]}>{label}</Label>
+            {cells ? <View testID={testID+"_TableRow"} style = {[theme.styles.w100,theme.styles.row,theme.styles.alignItemsFlexStart,isA && theme.styles.mt05]}
             >{cells}</View> : null}
         </View>
     }

@@ -2276,7 +2276,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 });
             }
         }
-        return <View testID={testID+"_ContentContainer"}  style={[theme.styles.w100,isA && theme.styles.ph2,theme.styles.justifyContentCenter,theme.styles.alignItemsCenter,theme.styles.pb1,!cells && theme.styles.ml1,theme.styles.mr1,cStyle]}>
+        return <View testID={testID+"_ContentContainer"}  style={[theme.styles.w100,isA ? theme.styles.ph2 : theme.styles.pt1,theme.styles.justifyContentCenter,theme.styles.alignItemsCenter,theme.styles.pb1,!cells && theme.styles.ml1,theme.styles.mr1,cStyle]}>
             <Label testID={testID+"_Label"} splitText numberOfLines={3} textBold style={[theme.styles.w100,{color:theme.colors.primaryOnSurface,fontSize:isA?15 :16},lStyle]}>{label}</Label>
             {cells ? <View testID={testID+"_TableRow"} style = {[theme.styles.w100,theme.styles.row,theme.styles.alignItemsFlexStart,isA && theme.styles.mt05]}
             >{cells}</View> : null}

@@ -532,6 +532,7 @@ export default class Filter extends AppComponent {
                       text : !isMob ? 'Options' : ("Options de filtre ["+label+"]"),
                       icon : 'cog',
                       items : options,
+                      style : styles.bold,
                     },
                     {divider:true},
                      ...[hasFilterVal /*&& type !== 'select'*/? 

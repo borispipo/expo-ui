@@ -25,6 +25,8 @@ const MenuItemComponent = React.forwardRef(({
   disabled,
   onPress,
   style,
+  textBold,
+  bold,
   contentStyle,
   testID,
   labelStyle,
@@ -34,9 +36,11 @@ const MenuItemComponent = React.forwardRef(({
   isBottomSheetItem,
   accessibilityLabel,
   right,
+  labelProps,
   contentContainerProps,
   ...rest
 },ref) => {
+  labelProps = defaultObj(labelProps);
   contentContainerProps = defaultObj(contentContainerProps);
   title = defaultVal(label,text,title);
   const disabledColor = color(theme.dark ? white : black)
@@ -52,7 +56,10 @@ const MenuItemComponent = React.forwardRef(({
     ? disabledColor
     : color(theme.colors.text).alpha(theme.ALPHA).rgb().string();
   iconProps = defaultObj(iconProps);
-  labelStyle = Object.assign({},StyleSheet.flatten(labelStyle));
+  labelStyle = Object.assign({},StyleSheet.flatten([labelProps.style,labelStyle]));
+  if(textBold || bold){
+    labelStyle.fontWeight = "bold";
+  }
   style = Object.assign({},StyleSheet.flatten(style));
 
   if(Colors.isValid(labelStyle.color)){
@@ -107,6 +114,7 @@ const MenuItemComponent = React.forwardRef(({
             selectable={false}
             numberOfLines={1}
             ellipsizeMode = {"tail"}
+            {...labelProps}
             style={[styles.title, { color: titleColor }, labelStyle,styles.noMargin,!right ? maxWidthTextStyle : null]}
           >
             {title}

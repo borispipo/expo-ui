@@ -61,7 +61,7 @@ export const renderItems = (props)=>{
                 index,
                 _index,
             };
-           itProps.titleStyle = [StyleSheet.flatten(itemProps.style),StyleSheet.flatten(rest.style),cursorPointer];
+           itProps.labelStyle = StyleSheet.flatten([itemProps.style,rest.style,cursorPointer]);
             
            if(typeof renderItem ==='function'){
                _render = renderItem(itProps);

@@ -315,7 +315,7 @@ const DatagridFactory = (Factory)=>{
                             />
                         </View>
                         {/*filters !== false && <td  className="datagrid-local-filter-wrapper" ><LocalFilter title = {this.props.title} fields ={this.state.columns} onChange={this.onLocalFiltersChange.bind(this)}/></td>*/}
-                        <RenderType/>
+                        {!canRenderChart && <RenderType/> || null}
                     </View>
                 </ScrollView>
             </View> : null;

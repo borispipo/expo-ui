@@ -228,7 +228,6 @@ export default class CommonDatagridComponent extends AppComponent {
             sectionListHeaderFooters : {value : {}},
             sectionListDataSize : {value : {current : 0}},
             enablePointerEventsRef : {value : {current:false}},
-            configureSectionListSelectedValues : {value : {}},
             chartIdPrefix : {value : uniqid("datagrid-chart-id-prefix")},
             ///la liste des fonctions d'aggregations supportées
             aggregatorFunctions : {value : extendAggreagatorFunctions(this.props.aggregatorFunctions)},
@@ -238,7 +237,15 @@ export default class CommonDatagridComponent extends AppComponent {
         }) 
         const sessionAggregator = defaultStr(this.getSessionData("aggregatorFunction")).trim();
         const aggregatorProps = defaultStr(this.props.aggregatorFunction).trim();
-        this.state.aggregatorFunction= aggregatorProps && isValidAggregator(this.aggregatorFunctions[aggregatorProps]) ? aggregatorProps ? isNonNullString(sessionAggregator) && isValidAggregator(this.aggregatorFunctions[sessionAggregator]) : sessionAggregator : Object.keys(this.aggregatorFunctions)[0];
+        let aggregatorFunction = null;
+        if(aggregatorProps && isValidAggregator(this.aggregatorFunctions[aggregatorProps])){
+            aggregatorFunction = aggregatorProps;
+        } else if(isNonNullString(sessionAggregator) && isValidAggregator(this.aggregatorFunctions[sessionAggregator])){
+            aggregatorFunction = sessionAggregator;
+        } else {
+            aggregatorFunction = Object.keys(this.aggregatorFunctions)[0];
+        }
+        this.state.aggregatorFunction= aggregatorFunction;
         this.isLoading = this.isLoading.bind(this);
         this.getProgressBar = this.getProgressBar.bind(this);
         this.sortRef.current.dir = defaultStr(this.sortRef.current.dir,this.sortRef.current.column == "date"?"desc":'asc')
@@ -1134,10 +1141,25 @@ export default class CommonDatagridComponent extends AppComponent {
         const type = defaultStr(column.jsType,column.type).toLowerCase();
         return type.contains("date") || type =='time' ? true : false;
    }
+   setConfiguratedValue(key,value){
+        const val = this.getConfiguratedValues();
+        if(isObj(key)){
+            extendObj(val,key);
+        } else if(isNonNullString(key)){
+            val[key] = value;
+        }
+        return this.setSessionData("configuratedSectionListColumns",val);
+   }
+   getConfiguratedValues(key){
+     this.configureSectionListSelectedValues = defaultObj(this.getSessionData("configuratedSectionListColumns"),this.configureSectionListSelectedValues);
+     if(isNonNullString(key)) return this.configureSectionListSelectedValues[key];
+     return this.configureSectionListSelectedValues;
+   }
    /*** configure la  */
    configureSectionListColumn(column,toggleSectionList){
         if(!this.isSectionListColumnConfigurable(column)) return Promise.reject({message : 'type de colonne invalide, impossible de configurer la colonne, pour permettre qu\elle soit ajoutée dans les colonnes de groupe du tableau'});
-        const format = defaultStr(defaultObj(this.configureSectionListSelectedValues[column.field]).format,column.format,"dd/mm/yyyy")
+        const confV = defaultObj(this.getConfiguratedValues(column.field));
+        const format = defaultStr(confV.format,column.format,"dd/mm/yyyy")
         return new Promise((resolve,reject)=>{
             DialogProvider.open({
                 title : 'Format de date',
@@ -1159,7 +1181,7 @@ export default class CommonDatagridComponent extends AppComponent {
                     icon : "check",
                     onPress : ({data})=>{
                         column.format = data.dateFormat;
-                        this.configureSectionListSelectedValues[column.field] = {format:column.format}
+                        this.setConfiguratedValue(column.field,{format:column.format}); 
                         DialogProvider.close();
                         setTimeout(()=>{
                             resolve(column);
@@ -1473,7 +1495,7 @@ export default class CommonDatagridComponent extends AppComponent {
         });
         if(m.length <= 1 || !activeType) return null;
         if(!isMobileOrTabletMedia()){
-            m.unshift({text:"Type d'affichage des données",divider:true});
+            m.unshift({text:"Type d'affichage des données",divider:true,textBold:true});
         }
         return <Menu
             title = "Type d'affichage"
@@ -1805,6 +1827,7 @@ export default class CommonDatagridComponent extends AppComponent {
                     icon : "group",
                     closeOnPress : false,
                     divider : true,
+                    style : theme.styles.bold,
                 },
                 this.canDisplayOnlySectionListHeaders() && {
                     text : "Afficher uniquement totaux",
@@ -1996,7 +2019,7 @@ export default class CommonDatagridComponent extends AppComponent {
                          width,
                          type,
                          ...sListColumns[field],
-                         ...defaultObj(this.configureSectionListSelectedValues[field]),
+                         ...defaultObj(this.getConfiguratedValues(field)),
                     };///les colonnes de sections
                     this.sectionListColumnsSize.current++;
                 }
@@ -2089,19 +2112,19 @@ export default class CommonDatagridComponent extends AppComponent {
         this.hasFoundSectionData.current = false;
         this.sectionListDataSize.current = 0;
         const isSList = this.isSectionList(sectionListColumns);
-        if(this.canAutoSort() && isNonNullString(this.sortRef.current.column)){
-            if(isObj(this.state.columns) && this.state.columns[this.sortRef.current.column]){
-                let field = this.state.columns[this.sortRef.current.column];
-                const sortConfig = Object.assign({},this.sortRef.current);
-                sortConfig.getItem = (item,columnName,{getItem})=>{
-                    if(isObj(item) && (field.type =='decimal' || field.type =="number")){
-                        const v = item[columnName];
-                        return isDecimal(v)? v : isNonNullString(v)? parseDecimal(v) : 0;
-                    }
-                    return getItem(item,columnName);
+        const sortingField = isNonNullString(this.sortRef.current.column) && isObj(this.state.columns) && this.state.columns[this.sortRef.current.column] || {};
+        const hasSortField = Object.size(sortingField,true);
+        if(this.canAutoSort() && isNonNullString(this.sortRef.current.column) && hasSortField){
+            let field = sortingField;
+            const sortConfig = Object.assign({},this.sortRef.current);
+            sortConfig.getItem = (item,columnName,{getItem})=>{
+                if(isObj(item) && (field.type =='decimal' || field.type =="number")){
+                    const v = item[columnName];
+                    return isDecimal(v)? v : isNonNullString(v)? parseDecimal(v) : 0;
                 }
-                data = sortBy(data,sortConfig);//on trie tout d'abord les données
+                return getItem(item,columnName);
             }
+            data = sortBy(data,sortConfig);//on trie tout d'abord les données
         }
         if(hasLocalFilter || !isArr || canUpdateFooters || isSList) {
             if(canUpdateFooters){
@@ -2123,7 +2146,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 }
             }
             let currentSectionListFooter = null;
-            const sectionListData = this.sectionListData;//l'ensemble des données de sectionList
+            let sectionListData = {};//l'ensemble des données de sectionList
             Object.map(data,(d,i,rowIndex)=>{
                 if(!isObj(d) || (hasLocalFilter && this.doLocalFilter({rowData:d,rowIndex:i}) === false)){
                     return;
@@ -2149,6 +2172,7 @@ export default class CommonDatagridComponent extends AppComponent {
                     }
                     this.hasFoundSectionData.current = true;
                 }
+
                 if(canUpdateFooters){
                     const result = [this.___evaluatedFootersValues]
                     if(currentSectionListFooter){
@@ -2161,6 +2185,12 @@ export default class CommonDatagridComponent extends AppComponent {
                 newData.push(d);
                 //push(d,i);
             });
+            if(this.hasFoundSectionData.current && hasSortField && defaultStr(sortingField.type).toLowerCase().contains("date")){
+                DateLib.sort(Object.keys(sectionListData)).map((k)=>{
+                    this.sectionListData[k] = sectionListData[k];
+                    return k;
+                });
+            }
             data = newData;
         } 
         this.INITIAL_STATE.data = data;

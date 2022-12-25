@@ -7,7 +7,7 @@ import theme from "$theme";
 import PropTypes from "prop-types";
 
 export const title = 'Statistiques en BD';
-export default function DatabaseStatisticScreen ({withScreen,title:customTitle,contentProps,containerProps,tables,Component,...props}){
+export default function DatabaseStatisticScreen ({withScreen,tableFilter,fetchCount,title:customTitle,contentProps,containerProps,tables,Component,...props}){
         Component = React.isComponent(Component)? Component : Grid;
         containerProps = defaultObj(containerProps);
         const title = containerProps.title = defaultStr(containerProps.title,DatabaseStatisticScreen.title);
@@ -18,8 +18,9 @@ export default function DatabaseStatisticScreen ({withScreen,title:customTitle,c
             containerProps.phoneSize = defaultNumber(containerProps.phoneSize,4);
         }
         let content = [];
+        tableFilter = typeof tableFilter ==="function"? tableFilter : x=>true;
         Object.map(tables,(table,index,suffix)=>{
-            if(isObj(table) && table.databaseStatistic !== false && table.databaseStatistics !== false){
+            if(isObj(table) && table.databaseStatistic !== false && table.databaseStatistics !== false && tableFilter(table) !== false){
                 content.push(
                     <Cell elevation = {5} withSurface mobileSize={12} desktopSize={3} tabletSize={4} {...contentProps} key = {index} >
                         <DatabaseStatistic
@@ -27,7 +28,10 @@ export default function DatabaseStatisticScreen ({withScreen,title:customTitle,c
                             key = {index}
                             table = {table}
                             index = {suffix}
-                            title = {table.text|| table.title}
+                            title = {defaultStr(table.text,table.label,table.title)}
+                            fetchCount = {table.fetchCount|| typeof fetchCount =='function'? (a,b)=>{
+                                return fetchCount({table,tableName:defaultStr(table.tableName,table.table)})
+                            }:undefined}
                         ></DatabaseStatistic>
                     </Cell>
                 )
@@ -50,5 +54,7 @@ DatabaseStatisticScreen.propTypes = {
     tables : PropTypes.oneOfType([
         PropTypes.arrayOf(PropTypes.object),
         PropTypes.objectOf(PropTypes.object)
-    ]).isRequired
+    ]).isRequired,
+    /*** la fonction de filtre utilisée pour filtrer les table devant figurer sur le databaseStatistics */
+    tableFilter : PropTypes.func,
 }

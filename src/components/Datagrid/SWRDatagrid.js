@@ -89,12 +89,22 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         handleQueryLimit,
         onFetchData,
         beforeFetchData,
+        sort,
+        defaultSortColumn,
         ...rest
     } = props;
     rest = defaultObj(rest);
     rest.exportTableProps = defaultObj(rest.exportTableProps)
     const firstPage = 1;
     const tableName = defaultStr(table.tableName,table.table).trim().toUpperCase();
+    defaultSortColumn = defaultStr(defaultSortColumn,table.defaultSortColumn);
+    sort = isNonNullString(sort)? {column:sort} : isObj(sort)?sort : {};
+    const sColumn = defaultStr(sort.column,defaultSortColumn);
+    if(sColumn){
+        sort.column = sColumn;
+    } else {
+        delete sort.column;
+    }
     canMakePhoneCall = defaultBool(canMakePhoneCall,table.canMakePhoneCall);
     makePhoneCallProps = defaultObj(makePhoneCallProps,rest.makePhoneCallProps,table.makePhoneCallProps);
     const isExportable = !!Auth.isTableDataAllowed({table:tableName,action:'export'});
@@ -272,6 +282,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             testID = {testID}
             {...defaultObj(table.datagrid)} 
             {...rest}
+            sort = {sort}
             onSort = {({sort})=>{
                 if(!canSortRemotely()) return;
                 fetchOptionsRef.current.sort = sort;
@@ -423,6 +434,8 @@ SWRDatagridComponent.displayName = "SWRDatagridComponent";
 
 SWRDatagridComponent.propTypes = {
     ...Datagrid.propTypes,
+    /*** le nom de la colonne de trie par défaut */
+    defaultSortColumn : PropTypes.string,
     fetchPath : PropTypes.string,
     fetchPathKey : PropTypes.string,//la clé permettant de suffixer l'url fecherPath afin que ce ne soit pas unique pour certaines tables
     fetchData : PropTypes.func,

@@ -356,8 +356,8 @@ const DatagridFactory = (Factory)=>{
             }
 
             const titleProps = isObj(accordionProps.titleProps)? Object.assign({},accordionProps.titleProps) : {};
-            const titleStyle = Object.assign({},StyleSheet.flatten(titleProps.style));
-            const titleColor = Colors.isValid(titleStyle.color)? titleStyle.color : Colors.isValid(titleProps.color)? titleProps.color : Colors.setAlpha(theme.colors.text,0.87);
+            const labelStyle = Object.assign({},StyleSheet.flatten(titleProps.style));
+            const titleColor = Colors.isValid(labelStyle.color)? labelStyle.color : Colors.isValid(titleProps.color)? titleProps.color : Colors.setAlpha(theme.colors.text,0.87);
             this.accordionTitleProps = {
                 selectable: true,
                 ellipsizeMode: EllipsizeMode.tail,
@@ -388,8 +388,6 @@ const DatagridFactory = (Factory)=>{
     
             filter = defaultFunc(filter,x=>true);
             const showFooters = this.canShowFooters();
-            const showFilters = this.canShowFilters();
-            let max = this.getMaxSelectableRows();
             let restItems = [];
             
             /*if(max && this.isSelectableMultiple()){
@@ -473,6 +471,7 @@ const DatagridFactory = (Factory)=>{
                                 }}
                             />
                         </View> : null}
+                        
                         {this.isFilterable() ? <View>
                             <FiltersAccordionComponent
                                 testID={testID+"_HeaderFilters"}
@@ -485,9 +484,6 @@ const DatagridFactory = (Factory)=>{
                                 context = {this}
                             />
                         </View> : null}
-                        {this.renderSectionListMenu()}
-                        {this.renderDisplayTypes()}
-                        {this.renderAggregatorFunctionsMenu()}
                         <View pointerEvents={pointerEvents} testID={testID+"_HeaderPagination"} style = {styles.paginationItem}>
                             <Menu 
                                 testID={testID+"_HeaderMenus"}
@@ -524,9 +520,10 @@ const DatagridFactory = (Factory)=>{
                                 ]}
                             />
                         </View>
-                        <View>
-                            <RenderType />
-                        </View>
+                        {this.renderSectionListMenu()}
+                        {this.renderDisplayTypes()}
+                        {this.renderAggregatorFunctionsMenu()}
+                        {!canRenderChart ? <RenderType /> : null}
                     
                             {/*exportable && exportTableProps.pdf && (exportTableProps.pdf.footer) ? (
                                 <td  width="40px">

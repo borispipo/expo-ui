@@ -83,13 +83,13 @@ const formatValue = ({value,format,aggregatorFunction})=>{
     return (format === 'money' && aggregatorFunction != 'count')? value.formatMoney():value.formatNumber();
 }
 export default function DGGridFooterValue (props){
-    let {label,text,displayLabel,style,aggregatorFunctions,aggregatorFunction,format,testID,anchorProps} = props;
+    let {label,text,displayLabel,withLabel,style,aggregatorFunctions,aggregatorFunction,format,testID,anchorProps} = props;
     aggregatorFunctions = defaultObj(aggregatorFunctions);
     anchorProps = defaultObj(anchorProps);
     testID = defaultStr(testID,"RN_DatagridFooterComponent");
     label = defaultVal(label,text);
     const defLabel = label;
-    if(displayLabel !== false){
+    if(displayLabel !== false && withLabel !== false){
         if(!label || !React.isValidElement(label,true)) return null;
     } else label = undefined;
     const [active,setActive] = React.useState(isNonNullString(aggregatorFunction) && aggregatorFunction in aggregatorFunctions ? aggregatorFunction : aggregatorFunctions[Object.keys(aggregatorFunctions)[0]]?.code)

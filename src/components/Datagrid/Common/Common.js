@@ -271,16 +271,16 @@ export default class CommonDatagridComponent extends AppComponent {
         this.filters =  {}
         Object.map(this.getFiltersProps(),(f,v)=>{
             if(isPlainObject(f)){
-                this.filters[v] = f;
+                this.filters[v] = {...f};
                 this.filters[v].field = defaultStr(f.field,v);
-                this.filters[v].originValue = defaultVal(this.filters[v].originValue,f.defaultValue,f.value)
+                this.filters[v].originValue = defaultVal(f.originValue,f.defaultValue,f.value)
             } else {
                 this.filters[v] = {
                     originValue : f,
                     field : v
                 }
             }
-        })
+        });
         this.state.filteredColumns = defaultObj(this.getSessionData("filteredColumns"+this.getSessionNameKey()),this.props.filters);
         this.filtersSelectors = {selector:this.getFilters()};
         const {sectionListColumns} = this.prepareColumns();
@@ -737,6 +737,9 @@ export default class CommonDatagridComponent extends AppComponent {
     }
     hasFootersFields(){
         return Object.size(this.getFootersFields(),true) ? true : false;
+    }
+    getFooters(){
+        return this.getFootersFields();
     }
     getActionsArgs(selected){
         const r = isObj(selected)? selected : {};
@@ -1778,7 +1781,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 },
             },chartProps.title),
             series,
-            chart : extendObj(true,{},{height :this.isDashboard()?160:350},chartProps.chart,{
+            chart : extendObj(true,{},{height :this.isDashboard()?80:350},chartProps.chart,{
                 type : chartType.type,
             })
         }
@@ -1808,9 +1811,23 @@ export default class CommonDatagridComponent extends AppComponent {
         if(this.isDashboard() && typeof chartOptions.chart.sparkline !=='boolean'){
             chartOptions.chart.sparkline = true;
         }
+        if(chartOptions.chart.sparkline){
+            chartOptions.chart.sparkline = {enabled: true}
+        } else delete chartOptions.chart.sparkline;
+        if(chartOptions.chart.sparkline && chartOptions.chart.sparkline.enabled){
+            chartOptions.xaxis = defaultObj(chartOptions.xaxis);
+            chartOptions.xaxis.labels = defaultObj(chartOptions.xaxis.labels);
+            chartOptions.xaxis.labels.show = false;
+
+            chartOptions.yaxis = defaultObj(chartOptions.yaxis);
+            chartOptions.yaxis.labels = defaultObj(chartOptions.yaxis.labels);
+            chartOptions.yaxis.labels.show = false;
+            chartOptions.legend = defaultObj(chartOptions.legend);
+            chartOptions.legend.show = false;
+        }
         return <Chart
             options = {chartOptions}
-            key = {chartOptions.chart.id}
+            key = {chartOptions.chart.id+"-"+this.state.displayType}
         />
    }
    canShowFooters(){
@@ -1875,7 +1892,7 @@ export default class CommonDatagridComponent extends AppComponent {
                     divider : true,
                     style : theme.styles.bold,
                 },
-                this.canDisplayOnlySectionListHeaders() && {
+                this.canDisplayOnlySectionListHeaders() && this.state.displayType =='table' && {
                     text : "Afficher uniquement totaux",
                     icon : this.state.displayOnlySectionListHeaders?"check":null,
                     onPress : this.toggleDisplayOnlySectionListHeaders.bind(this)
@@ -2236,6 +2253,10 @@ export default class CommonDatagridComponent extends AppComponent {
                     this.sectionListData[k] = sectionListData[k];
                     return k;
                 });
+            } else {
+                Object.map(sectionListData,(v,k)=>{
+                    this.sectionListData[k] = v;
+                })
             }
             data = newData;
         } 

@@ -70,7 +70,7 @@ const MenuItemComponent = React.forwardRef(({
   const pointerEvents = disabled ? 'none' : 'auto';
   const disabledStyle = disabled ? {opacity:DISABLED_OPACITY} : null;
   const winW = Dimensions.get("window").width-30;
-  const maxWidthStyle = isBottomSheetItem ? {width:winW,maxWidth:null} : undefined;
+  const maxWidthStyle = isBottomSheetItem ? {maxWidth:winW,paddingRight:10} : undefined;
   const maxWidthTextStyle = isBottomSheetItem ? {width:winW-50} : null;
   right = typeof right =='function'? right ({color:titleColor}) : right;
   if(!React.isValidElement(right)) right = null;

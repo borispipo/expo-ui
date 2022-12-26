@@ -1,8 +1,9 @@
-import {defaultStr,isNonNullString,defaultObj} from "$utils";
+import {defaultStr,defaultVal,isNonNullString,defaultNumber,defaultObj} from "$utils";
 import React from "$react";
 import CountUp from "$ecomponents/CountUp";
 import Avatar from "$ecomponents/Avatar";
-import { ActivityIndicator } from "react-native-paper";
+import { Pressable } from "react-native";
+import {ActivityIndicator} from "react-native-paper";
 import Item from "$ecomponents/Expandable/Item";
 import {navigateToTableDataList} from "$enavigation/utils";
 import theme from "$theme";
@@ -15,8 +16,9 @@ import {Menu} from "$ecomponents/BottomSheet";
 import Dashboard from "$ecomponents/Datagrid/Dashboard";
 import fetch from "$capi/fetch";
 import Auth from "$auth";
+import Footer from "$ecomponents/Datagrid/Footer/Footer";
 
-export default function DatabaseStatisticContainer ({dashboardProps,fetchDataProps,table,fetchCount,index,testID,title,icon,onPress,columns,fetchData,withDashboard,...props}){
+export default function DatabaseStatisticContainer ({dashboardProps,fetchDataProps,table,fetchCount,index,testID,title,icon,onPress:customOnPress,columns,fetchData,withDashboard,...props}){
     dashboardProps = defaultObj(dashboardProps);
     const [count,setCount] = React.useState(0);
     const datagridRef = React.useRef(null);
@@ -74,50 +76,96 @@ export default function DatabaseStatisticContainer ({dashboardProps,fetchDataPro
             }
         }
     },[]);
+    const progressBar = <View style={[theme.styles.justifyContentFlexStart,theme.styles.alignItemsFlexStart]}>
+        <ActivityIndicator color={theme.colors.primary}/>
+    </View>;
     const isDatagridLoading = datagridRef.current && datagridRef.current.isLoading && datagridRef.current.isLoading();
-    const itemProps = {
-        testID : defaultStr(testID,"RN_DatabaseStatistic_"+table),
-        onPress : (args)=>{
-            if(onPress && onPress(args) === false) return;
-            navigateToTableDataList(tableName,{
-                tableName
-            })
-        },
-        title : <Label splitText numberOfLines={1} color={theme.colors.primaryOnSurface} style={[{fontSize:15}]}>{title}</Label>,
-        titleProps : {primary : true},
-            description : isLoading || isDatagridLoading?<View style={[theme.styles.justifyContentFlexStart,theme.styles.alignItemsFlexStart]}>
-            <ActivityIndicator color={theme.colors.primary}/>
-        </View>:<CountUp 
-            from={0} 
-            to={count}
-            style = {{fontSize:20,color:theme.colors.secondaryOnSurface}}
-        />
-    }
+    testID = defaultStr(testID,"RN_DatabaseStatistic_"+table);
+    const onPress = (args)=>{
+        if(customOnPress && customOnPress(args) === false) return;
+        navigateToTableDataList(tableName,{
+            tableName
+        })
+    };
+    const fetchFields = React.useCallback(()=>{
+        const fetchFields = [];
+        Object.map(columns,(field,f)=>{
+            const ff = defaultStr(isObj(field)? field.field: undefined,f);
+            if(ff){
+                fetchFields.push(ff);
+            }
+        });
+        return fetchFields;
+    },[columns])();
+    const counUpStyle = {fontSize:20,fontWeight:'bold',color:theme.colors.secondaryOnSurface};
+    title =  React.isValidElement(title,true)?<Label splitText numberOfLines={1} color={theme.colors.primaryOnSurface} style={[{fontSize:15}]}>{title}</Label>: null;
     return withDashboard ? <Dashboard
+        chartProps = {{
+            stroke: {
+                curve: 'straight'
+            },
+            fill: {
+                type: 'solid',
+                opacity: 1,
+            },
+        }}
+        sessionName = {tableName+"-database-statistics"}
         {...props}
         {...dbStatistics}
+        style = {[theme.styles.ph1,props.style]}
         columns = {columns}
         ref = {datagridRef}
-        progressBar = {<View/>}
+        progressBar = {isLoading?<View/>:<View style={[theme.styles.w100,theme.styles.alignItemsCenter,theme.styles.justifyContentCenter]}>{progressBar}</View>}
         tableName = {tableName}
         table = {table}
         fetchData = {(options)=>{
-            return fetchData({...defaultObj(fetchDataProps),table,tableName,fetch,Auth,...options});
+            return fetchData({...defaultObj(fetchDataProps),fields:fetchFields,table,tableName,fetch,Auth,...options});
         }}
         title = {({context})=>{
-            return <Item
-                {...itemProps}
-                left = {(aProps)=>{
-                    return <Menu
+            if(!context || !context.state) return null;
+            const {state} = context;
+            const footers = context.getFooters && context.getFooters() || {};
+            const dataSize = context.getStateDataSize && context.getStateDataSize() || 0;
+            const footersValues = context.getFooterValues && context.getFooterValues() || {};
+            const y = defaultStr(state.chartConfig?.y);
+            const footerValue = y && isObj(footersValues) && footersValues[y] || null;
+            const format = defaultStr(isObj(footerValue) && isNonNullString(footerValue.format) && footerValue.format || undefined).toLowerCase();
+            const aggregatorFunction = isNonNullString(state.aggregatorFunction)? state.aggregatorFunction : undefined;
+            let value = isObj(footerValue) && aggregatorFunction && aggregatorFunction in footerValue ? footerValue[aggregatorFunction] : undefined;
+            if(typeof value !=='number'){
+                value = isObj(footerValue) && typeof footerValue.sum =='number'? footerValue.sum : 0;
+            }
+            return <Pressable onPress={onPress} testID={testID+"_TitleContainer"} style={[theme.styles.w100]}>
+                <View testID={testID+"_TitleCountUp"} style={[theme.styles.w100]}>
+                    <View style={[theme.styles.w100,theme.styles.row,theme.styles.alignItemsCenter]}>
+                        {title}
+                        {typeof dataSize =='number' && dataSize && <Label>
+                            {dataSize.formatNumber()}
+                        </Label> || null}
+                    </View>
+                    <Menu
                         testID={testID+"_Menu"}
                         items = {context.renderMenu()}
-                        anchor = {(p)=><Avatar suffix={index} {...aProps} {...p} icon= {icon} size={40} label={title}/>}
+                        anchor = {(p)=><Pressable {...p} testID={testID+"_MenuAnchor"}>
+                            <Label
+                                textCenter
+                                style = {counUpStyle}
+                            >{format =='money'?value.formatMoney():value.formatNumber()}</Label>
+                        </Pressable>}
                     />
-                }}
-            />;
+                </View>
+            </Pressable>
         }}
     /> : <Item
-        {...itemProps}
+        onPress = {onPress}
+        title = {title}
+        //style = {[theme.styles.pv1]}
+        description = {isLoading || isDatagridLoading?progressBar:<CountUp 
+            from={0} 
+            to={count}
+            style = {counUpStyle}
+        />}
+        titleProps ={{primary : true}}
         left = {(aProps)=>{
             return <Menu
                 testID={testID+"_Menu"}

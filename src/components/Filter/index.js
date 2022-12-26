@@ -600,7 +600,6 @@ export default class Filter extends AppComponent {
      </>
      const containerProps = defaultObj(this.props.containerProps,rest.containerProps);
      delete rest.containerProps;
-     rest.onValidate = this.onFilterValidate.bind(this);
      const Component = isBetweenAction ? FilterBetweenComponent : this.Component;
      const responsiveProps = Object.assign({},responsiveProps);
      responsiveProps.style = [theme.styles.w100,responsiveProps.style]
@@ -615,6 +614,8 @@ export default class Filter extends AppComponent {
           isFilter
           name = {this.name}
           testID = {testID}
+          onValidate = {this.onFilterValidate.bind(this)}
+          onChange = {x=>null}
           ref = {React.mergeRefs(this.searchFilter,ref)}
       /> 
      </View>

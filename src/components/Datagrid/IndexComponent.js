@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 
 import Accordion,{ TableData as TableDataAccordion} from "./Accordion";
+import Dashboard  from "./Dashboard";
 import Table,{TableData as DatagridTableData} from "./Table";
 import {isDesktopMedia,isMobileMedia} from "$cplatform/dimensions";
 import {isFunction,defaultVal} from "$utils";
@@ -19,7 +20,10 @@ const DatagridMainComponent = React.forwardRef((props,ref)=>{
     let Component = TableComponent;
     const canRenderAccordion = (isFunction(props.accordion) || (isObj(props.accordionProps) && isFunction(props.accordionProps.accordion)) || props.accordion === true);
     let renderType = defaultStr(getRenderType(),isDesk? "table":'accordion').trim().toLowerCase()
-    if(renderType == 'accordion' && canRenderAccordion){
+    if(false && (renderType ==="dashboard" || props.dashobard === true)){
+        Component = Dashboard;
+        delete props.dashobard;
+    } else if(renderType == 'accordion' && canRenderAccordion){
         Component = AccordionComponent;
     } else if(renderType =='table'){
         Component = TableComponent;

@@ -16,7 +16,11 @@ export const renderItems = (props)=>{
     testID = defaultStr(testID,"RN_MenuComponents.Items")
     filter = defaultFunc(filter,x=> true);
     Object.map(items,(item,index,_index)=>{
-        if(!isObj(item) || React.isValidElement(item) || !filter({items,item,_index,index})) return null;
+        if(!isObj(item)|| !filter({items,item,_index,index})) return null;
+        if(React.isValidElement(item)) {
+            _items.push(<React.Fragment key={index+"_"+_index}>{item}</React.Fragment>);
+            return
+        }
         if(item.divider === true && !item.title && !item.text && !item.label && !item.icon){
             _items.push(<Divider testID={testID+"_Divider"+index} {...item} key={index}/>);
             return

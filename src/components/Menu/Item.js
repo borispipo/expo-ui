@@ -113,7 +113,7 @@ const MenuItemComponent = React.forwardRef(({
             testID={testID+"_Label"}
             selectable={false}
             numberOfLines={1}
-            ellipsizeMode = {"tail"}
+            splitText
             {...labelProps}
             style={[styles.title, { color: titleColor }, labelStyle,styles.noMargin,!right ? maxWidthTextStyle : null]}
           >

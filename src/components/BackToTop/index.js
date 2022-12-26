@@ -2,6 +2,7 @@ import Fab from "$ecomponents/Fab";
 import {isObj,defaultStr,defaultVal,defaultObj} from "$utils";
 import React from "$react";
 import PropTypes from "prop-types";
+import theme from "$theme";
 
 const SCREEN_INDENT = 20;
 export const isNativeScrollEvent = (nativeEvent)=>!isObj(nativeEvent) || !isObj(nativeEvent.layoutMeasurement) || !isObj(nativeEvent.contentOffset) ? false : true;
@@ -49,7 +50,7 @@ const BackToTopComponent = React.forwardRef((props,ref)=>{
         }
     },[visible])
     const style = defaultStr(position).toLowerCase() =='right' ? {
-        right: 0
+        right: 0,
     }  : {left : 0};
     React.setRef(ref,context);
     React.useEffect(()=>{
@@ -67,7 +68,7 @@ const BackToTopComponent = React.forwardRef((props,ref)=>{
             }
         }}
         icon = {defaultVal(icon,'arrow-up')}
-        style = {[rest.style,style]}
+        style = {[theme.styles.ph1,rest.style,style]}
     />
 });
 

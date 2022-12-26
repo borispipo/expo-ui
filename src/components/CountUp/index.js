@@ -18,7 +18,14 @@ const CountUpComponent = ({from,to,format,type,duration,step,formatter,interval,
     const isNegative = end < 0 ? true : false;
     const intervalRef = React.useRef(null);
     const increment = (isNegative ? (-1):(1))* Math.abs(defaultNumber(step,getDefaultStep(to)));
-    const [current, setCurrent] = React.useState(from);
+    const [current, _setCurrent] = React.useState(from);
+    const setCurrent = (current)=>{
+        if(typeof current !=='number') return;
+        if(current > end){
+            current = end;
+        } 
+        _setCurrent(current);
+    }
     const isMounted = React.useIsMounted();
     const formatValue = typeof formatter =="function"? formatter : (number)=>{
         return isCurrency ? number.formatMoney() : number.formatNumber();

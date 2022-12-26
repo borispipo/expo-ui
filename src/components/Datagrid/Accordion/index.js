@@ -303,6 +303,9 @@ const DatagridFactory = (Factory)=>{
             }
             return super.renderEmpty();
         }
+        getTestID(){
+            return defaultStr(this.props.testID,"RN_DatagridAccordion");
+        }
         render (){
             let {
                 filters:customFilters,
@@ -333,7 +336,7 @@ const DatagridFactory = (Factory)=>{
             chartContainerProps = defaultObj(chartContainerProps);
             const canRenderChart = this.canRenderChart();
             const hasData = this.getStateDataSize(false) ? true : false;
-            testID = defaultStr(testID,"RN_DatagridAccordion");
+            testID = this.getTestID();
             backToTopProps = defaultObj(backToTopProps);
             accordionProps = defaultObj(accordionProps);
             this.renderingItemsProps = {};

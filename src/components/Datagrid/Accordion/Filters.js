@@ -2,7 +2,7 @@ import {Content} from "$ecomponents/BottomSheet";
 import Icon from "$ecomponents/Icon";
 import React from "$react";
 import {defaultStr,defaultBool,defaultObj} from "$utils";
-import Filter,{canHandleFilter,getFilterStateValues} from "$ecomponents/Filter";
+import Filter, {canHandleFilter,getFilterStateValues} from "$ecomponents/Filter";
 import PropTypes from "prop-types";
 import { StyleSheet,View } from "react-native";
 import Menu from "$ecomponents/Menu";
@@ -11,17 +11,20 @@ import theme from "$theme"
 import Expandable from "$ecomponents/Expandable";
 import { Dimensions } from "react-native";
 import Grid from "$components/Grid";
+import { Pressable } from "react-native";
+import Tooltip from "$ecomponents/Tooltip";
 
 const MIN_WIDTH = 250;
 let windowWidth = Dimensions.get("window").width;
 
 const FiltersAccordionComponent = React.forwardRef((props,ref)=>{
-    const {filters,isLoading,filteredColumns,children,filterTitle:customFilterTitle,visible:customVisible,orOperator,andOperator,onToggleFilters,context:customContext,...restProps} = props;
+    const {filters,isLoading,filteredColumns,children,label,filterTitle:customFilterTitle,visible:customVisible,orOperator,andOperator,onToggleFilters,context:customContext,...restProps} = props;
     const context = defaultObj(customContext);
     const [state,setState] = React.useState({
         visible : defaultBool(customVisible,false),
         visibleColumns : defaultObj(filteredColumns),
     });
+    const valuesRefs = React.useRef({});
     windowWidth = Dimensions.get("window").width;
     const innerRef = React.useRef(null);
     const {visible,visibleColumns} = state;
@@ -35,10 +38,11 @@ const FiltersAccordionComponent = React.forwardRef((props,ref)=>{
         phoneSize : 12, 
         style : [theme.styles.ph1],
     }
-    const prepareContent = (filters)=>{
+    const prepareContent = (filters,renderMenusOnly)=>{
         const content = []
         const colMenus = [];
         let mainFilterTitle = defaultStr(filterTitle);
+        let counter = 0;
         const containerProps = {
             style : [styles.filter,{minWidth : Math.min(windowWidth,MIN_WIDTH)}]
         };
@@ -60,28 +64,26 @@ const FiltersAccordionComponent = React.forwardRef((props,ref)=>{
                         setState({...state,visibleColumns:{...visibleColumns,[key]:!visible}})
                     }}
                 />)
-                if(!visible) return;
-                let defVal = filter.defaultValue;
-                if(typeof defVal !== 'string' && typeof defVal !=='boolean'){
-                    if(Array.isArray(defVal)){
-                        defVal = "["+defVal.join(",")+"]";
-                    } else {
-                        if(defVal && defVal.toString){
-                            defVal = defVal.toString();
-                        } else defVal = "";
-                    }
+                if(!visible) {
+                    return null;
                 }
-                mainFilterTitle +=(content.length?",":"")+"\n"+defaultStr(filter.label,filter.text,filter.field)+" : "+defVal+""
+                mainFilterTitle +=(counter?",":" :\n")+defaultStr(filter.label,filter.text,filter.field)//+" : "+defVal+""
+                counter++;
+                if(renderMenusOnly) return null;
                 content.push(
                     <Grid.Cell {...cellProps} key={key}>
                     <Filter
                         {...filter}
+                        {...(isObj(valuesRefs.current[key]) ? valuesRefs.current[key] : {})}
                         dynamicRendered
                         isLoading = {isLoading && filteredRef.current[key] ? true : false}
                         orOperator = {defaultBool(orOperator,filter.orOperator,true)}
                         andOperator = {defaultBool(andOperator,filter.andOperator,true)}
                         onChange = {(arg)=>{
+                            if(!arg.action && !arg.operator || !arg.field) return;
+                            //console.log("calling on change dddd",arg);
                             const canHandle = canHandleFilter(arg);
+                            valuesRefs.current[key] = arg;
                             if(filteredRef.current[key] !== canHandle){
                                 if(canHandle){
                                     canHandlerFilterRef.current++;
@@ -101,12 +103,12 @@ const FiltersAccordionComponent = React.forwardRef((props,ref)=>{
             }
         })
         return {content,mainFilterTitle,colMenus}
-    }/*,[filters])*/
+    }
     if(typeof children ==='function'){
-        const ct = children({content,menus:colMenus});
+        const ct = children({});
         return React.isValidElement(ct)? ct : null;
     }
-    const {content,mainFilterTitle,colMenus} = prepareContent(filters);
+    const {mainFilterTitle} = prepareContent(filters,true);
     const hasFilters = canHandlerFilterRef.current > 0 ? true : false;
     return <Content
         animateOnClose
@@ -116,35 +118,40 @@ const FiltersAccordionComponent = React.forwardRef((props,ref)=>{
         onDissmiss = {()=>{
             setState({...state,visible:false})
         }}
-        anchor = {(props)=><Icon 
-            name={hasFilters?"filter-menu":"filter-plus"} 
-            color = {hasFilters?theme.colors.primaryOnSurface:undefined}
-            {...props}
-            title = {mainFilterTitle}
-        />}
+        anchor = {(props)=><Tooltip title = {mainFilterTitle}Component={Pressable} {...props} style={[theme.styles.row]}>
+             <Icon 
+                name={hasFilters?"filter-menu":"filter-plus"} 
+                {...props}
+                color = {hasFilters?theme.colors.primaryOnSurface:undefined}
+            />
+            {React.isValidElement(label,true)?<Label  style={[hasFilters && {color:theme.colors.primaryOnSurface}]} fontSize={16} textBold>{label}</Label>:null}
+        </Tooltip>}
         ref = {(el)=>{
             innerRef.current = el;
             React.setRef(ref,el);
         }}
     >
-        <View style={[styles.wrapper]}>
-            <View style = {[styles.menuWrapper]}>
-                <Expandable
-                    left = {(props)=><Icon {...props} icon={content.length?'filter-plus':'filter-menu'}/>}
-                    style = {styles.expandable}
-                    title = {<Label>{filterTitle}</Label>}
-                >
-                    <View style={[styles.menuContent]}>
-                        {colMenus}
-                    </View>
-                </Expandable>
+         {({open,close})=>{
+            const {content,colMenus} = prepareContent(filters);
+            return <View style={[styles.wrapper]}>
+                <View style = {[styles.menuWrapper]}>
+                    <Expandable
+                        left = {(props)=><Icon {...props} icon={content.length?'filter-plus':'filter-menu'}/>}
+                        style = {styles.expandable}
+                        title = {<Label>{filterTitle}</Label>}
+                    >
+                        <View style={[styles.menuContent]}>
+                            {colMenus}
+                        </View>
+                    </Expandable>
+                </View>
+                {content.length ? <View style={[theme.styles.w100]}>
+                    <Grid style={theme.styles.w100}>
+                        {content}
+                    </Grid>
+                </View> : null}
             </View>
-            {content.length ? <View style={[theme.styles.w100]}>
-                <Grid style={theme.styles.w100}>
-                    {content}
-                </Grid>
-            </View> : null}
-        </View>
+         }}
     </Content>
 })
 

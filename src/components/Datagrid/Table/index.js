@@ -108,6 +108,9 @@ const DatagridFactory = (Factory)=>{
                 this.listRef.current.scrollToIndex({index});
             }
         }
+        getTestID(){
+            return defaultStr(this.props.testID,"RN_DatagridTable");
+        }
         render(){
             let {title,testID,actions,
                 selectableMultiple,
@@ -123,7 +126,7 @@ const DatagridFactory = (Factory)=>{
             } = this.props;
             const canRenderChart = this.canRenderChart();
             chartContainerProps = defaultObj(chartContainerProps);
-            testID = defaultStr(testID,'RN_DatagridTableComponent');
+            testID = this.getTestID();
             rest = defaultObj(rest);
             let showDataSourceSelector = false;
             if(dataSourceSelector === true){

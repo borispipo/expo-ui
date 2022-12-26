@@ -138,6 +138,14 @@ export const displayTypes = {
     },*/
 }
 
+export const chartTypes = {};
+
+Object.map(displayTypes,(c,k)=>{
+    if(c && c.isChart){
+        chartTypes[k] = c;
+    }
+})
+
 export const arrayValueSeparator = ", ";
 
 const dataSourceArgs = {};
@@ -233,6 +241,7 @@ export default class CommonDatagridComponent extends AppComponent {
             aggregatorFunctions : {value : extendAggreagatorFunctions(this.props.aggregatorFunctions)},
             ///les types d'affichage
             displayTypes : {value : hasFoundDisplayTypes ? disTypes : Object.clone(displayTypes)},
+            dateFields : {value : {}},
             sectionListColumnsSize : {value : {current:0}}, //la taille du nombre d'éléments de section dans les colonnes
         }) 
         const sessionAggregator = defaultStr(this.getSessionData("aggregatorFunction")).trim();
@@ -280,6 +289,9 @@ export default class CommonDatagridComponent extends AppComponent {
             this.state.columnsWidths = this.preparedColumns.widths;
         }
         this.state.chartConfig = extendObj({},this.getSessionData("chartConfig"),this.props.chartConfig);
+        if(!("sparkline" in this.state.chartConfig) && this.isDashboard()){
+            this.state.chartConfig.sparkline = true;
+        }
         const dType = defaultStr(this.props.displayType,this.getSessionData("displayType"),"table");
         this.state.displayType = this.displayTypes[dType] ? this.displayTypes[dType].code : "table" in this.displayTypes ? "table" : Object.keys(this.displayTypes)[0]?.code;
         this.state.displayOnlySectionListHeaders = defaultBool(this.getSessionData("displayOnlySectionListHeaders"),this.props.displayOnlySectionListHeaders,false)
@@ -330,6 +342,7 @@ export default class CommonDatagridComponent extends AppComponent {
         } else {
             this.currentDataSources = Object.toArray(this.currentDataSources);
         }
+        this.persistDisplayType(this.state.displayType);
     }
 
     /*** si une ligne peut être selectionable */
@@ -648,6 +661,14 @@ export default class CommonDatagridComponent extends AppComponent {
     isIndexColumn(columnDef,columnField){
         return isObj(columnDef) && defaultStr(columnDef.field,columnField) === this.getIndexColumnName();
     }
+    isDateField(column){
+        const field = isObj(column)? defaultStr(column.field,column.name) : defaultStr(column);
+        return field && field in this.dateFields ? true : false;
+    }
+    isFooterField(column){
+        const field = isObj(column)? defaultStr(column.field,column.name) : defaultStr(column);
+        return field && isObj(this.state.footers) &&  field in this.state.footers ? true : false;
+    }
     initColumnsCallback(){}
     initColumns (columns){
         this.state.columns = {};
@@ -689,6 +710,9 @@ export default class CommonDatagridComponent extends AppComponent {
             let header = {...headerCol};
             header.field = defaultStr(header.field, headerIndex)
             header.type = defaultStr(header.jsType,header.type,"text").toLowerCase();
+            if(header.type.contains("date")){
+                this.dateFields[header.field] = header;
+            }
             /**** pour ignorer une colonne du datagrid, il suffit de passer le paramètre datagrid à false */
             if(!isNonNullString(header.field) || header.datagrid === false) {
                 return;
@@ -1333,9 +1357,12 @@ export default class CommonDatagridComponent extends AppComponent {
         if(!m.length) return null;
         return <Menu
             items = {m}
-            anchor = {(p)=><Icon name="material-functions" {...p}
-                title = "Fonctions d'aggrégations. Veuillez sélectionner la fonction à utiliser par défaut pour la totalisation des données des colonnes de type nombre"
-            />}
+            anchor = {(props)=>{
+                return <Pressable {...props} style={[theme.styles.row]}>
+                    <Icon {...props} name="material-functions" title = "Fonctions d'aggrégations. Veuillez sélectionner la fonction à utiliser par défaut pour la totalisation des données des colonnes de type nombre"></Icon>
+                    {this.isDashboard() && <Label splitText numberOfLines={1} textBold>Fonction d'aggrégation</Label>||null}
+                 </Pressable>
+            }}
         />
    }
    configureChart(refreshChart){
@@ -1404,6 +1431,14 @@ export default class CommonDatagridComponent extends AppComponent {
                         multiple : true,
                     },
                     stacked : stackSettings,
+                    sparkline : {
+                        type : 'switch',
+                        text : "Sparkline",
+                        checkedTooltip : "Le graphe a été définit pour être affiché dans un environnement petite surface",
+                        checkedValue : true,
+                        uncheckedValue : false,
+                        settingKey : "chart",
+                    },
                     title : {
                         text : "Titre du graphe",
                         format :'hashtag',
@@ -1442,6 +1477,9 @@ export default class CommonDatagridComponent extends AppComponent {
             data : this.state.data,
             displayOnlySectionListHeaders : this.canDisplayOnlySectionListHeaders(),
         };
+   }
+   isDashboard(){
+     return false;
    }
    renderDisplayTypes(){
         const m = [];
@@ -1501,11 +1539,14 @@ export default class CommonDatagridComponent extends AppComponent {
             title = "Type d'affichage"
             items = {m}
             anchor = {(p)=>{
-                return <Icon
-                    {...p}
-                    name = {activeType.icon}
-                    title = {"Les données s'affichent actuellement en {0}. Cliquez pour modifier le type d'affichage".sprintf(activeType.label)}
-                />
+                return <Pressable {...p} style={[theme.styles.row]}>
+                    <Icon
+                        {...p}
+                        name = {activeType.icon}
+                        title = {"Les données s'affichent actuellement en {0}. Cliquez pour modifier le type d'affichage".sprintf(activeType.label)}
+                    />
+                    {this.isDashboard() && <Label textBold>Type d'affichage</Label>||null}
+                </Pressable>
             }}
         />
    }
@@ -1720,7 +1761,6 @@ export default class CommonDatagridComponent extends AppComponent {
             chartProps[settingKey] = defaultObj(chartProps[settingKey]);
             chartProps[settingKey][key] = config[key];
         });
-        
         const chartOptions = {
             ...chartProps,
             title :extendObj(true,{}, {
@@ -1738,7 +1778,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 },
             },chartProps.title),
             series,
-            chart : extendObj(true,{},{height :350},chartProps.chart,{
+            chart : extendObj(true,{},{height :this.isDashboard()?160:350},chartProps.chart,{
                 type : chartType.type,
             })
         }
@@ -1764,6 +1804,9 @@ export default class CommonDatagridComponent extends AppComponent {
         chartOptions.chart.id = this.chartIdPrefix+"-"+defaultStr(chartType.key,"no-key");
         if(!chartType.isDonut){
             delete chartOptions.labels;
+        }
+        if(this.isDashboard() && typeof chartOptions.chart.sparkline !=='boolean'){
+            chartOptions.chart.sparkline = true;
         }
         return <Chart
             options = {chartOptions}
@@ -1819,7 +1862,10 @@ export default class CommonDatagridComponent extends AppComponent {
             title = {"Grouper les données du tableau"}
             testID = {"RN_DatagridSectionListMenu"}
             anchor = {(props)=>{
-                return <Icon {...props} name='format-list-group' title={"Grouper les éléments du tableau"}></Icon>
+                return <Pressable {...props} style={[theme.styles.row]}>
+                    <Icon {...props} color={hasList?theme.colors.primaryOnSurface:undefined} name='format-list-group' title={"Grouper les éléments du tableau"}></Icon>
+                    {this.isDashboard() && <Label style={[hasList && {color:theme.colors.primaryOnSurface}]} textBold>Grouper par</Label>||null}
+                 </Pressable>
             }}
             items = {[
                 {
@@ -2830,6 +2876,23 @@ export default class CommonDatagridComponent extends AppComponent {
     getSortableMenuMenuItem(){
 
     }
+    getTestID(){
+        return defaultStr(this.props.testID,'RN_DatagridComponent');
+    }
+    renderTitle (){
+        const testID = this.getTestID();
+        const title = typeof this.props.title =="function"? this.props.title({context:this}) : this.props.title;
+        const titleProps = defaultObj(this.props.titleProps);
+        return React.isValidElement(title) ? <Label testID={testID+"_Title"} {...titleProps} style={[theme.styles.w100,titleProps.style]}>
+            {title}
+        </Label> : null
+    }
+    getInitialData (){
+        return this.INITIAL_STATE.data;
+    }
+    getData(){
+        return this.state.data;
+    }
     renderSelectableCheckboxCell(props){
         const {containerProps} = props;
         if(isObj(containerProps)){
@@ -3071,6 +3134,12 @@ const chartDisplayType = PropTypes.oneOf(Object.keys(displayTypes).filter(type=>
     return typeof x =='object' && x && typeof x.disabled !== true && x.isChart === true && true || false;
 }));
 CommonDatagridComponent.propTypes = {
+    title : PropTypes.oneOfType([
+        PropTypes.func,
+        PropTypes.string,
+        PropTypes.node,
+        PropTypes.element,
+    ]),
     canMakePhoneCall : PropTypes.bool,//si l'on peut faire un appel sur la données sélectionnées
     makePhoneCallProps : PropTypes.oneOfType([
         PropTypes.object,

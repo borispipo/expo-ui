@@ -72,12 +72,7 @@ const BottomSheetMenuComponent = React.forwardRef((props,ref)=>{
             open();
             return false;
         }
-        if(typeof children ==='function'){
-            if(!visible) children = null;
-            else {
-                children = children({open,close});
-            }
-        }
+        
     }
     React.useEffect(()=>{
         const closeModal = ()=>{
@@ -92,7 +87,12 @@ const BottomSheetMenuComponent = React.forwardRef((props,ref)=>{
             APP.off(APP.EVENTS.RESIZE_PAGE,closeModal);
         }
     },[]);
-    
+    if(typeof children ==='function'){
+        if(!visible) children = null;
+        else {
+            children = children({open,close});
+        }
+    }
     return <>
         {isMob && React.isValidElement(anchor)? anchor : null}
         <Component

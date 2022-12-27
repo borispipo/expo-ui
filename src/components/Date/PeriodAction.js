@@ -8,7 +8,7 @@ import DateLib from "$date";
 
 const PeriodActionComponent = React.forwardRef(({defaultValue,label,isDateTime,...props},ref)=>{
     if(isNonNullString(label)){
-        label+=" [Période1]";
+        label+=" [Période]";
     }
     const datePeriod= DateLib.formatPeriod(defaultValue,isDateTime);
     if(datePeriod){

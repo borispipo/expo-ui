@@ -10,7 +10,6 @@ import {defaultObj,isNumber,defaultNumber,defaultStr,defaultBool,isNonNullString
 import theme,{flattenStyle} from "$theme";
 import DateLib from "$date";
 import { toDateObj } from "./utils";
-import TextField from "$components/TextField";
 import PeriodActionComponent from "./PeriodAction";
 
 export default function DateTimePickerComponent({left,isPeriodAction,contentProps,withSeconds,right,format,dateFormat,timeFormat,defaultValue,onChange,testID,dateProps,disabled,readOnly,timeProps,...rest}){

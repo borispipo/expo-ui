@@ -355,6 +355,8 @@ export default class CommonDatagridComponent extends AppComponent {
         (Array.isArray(props.sectionListColumns) ? props.sectionListColumns : defaultArray(this.getSessionData("sectionListColumns"))).map((col)=>{
             if(isNonNullString(col)){
                 l[col.trim()] = {};
+            } else if(isObj(col) && isNonNullString(col.field)){
+                l[col.field] = col;
             }
         })
         return l;
@@ -3316,6 +3318,11 @@ CommonDatagridComponent.propTypes = {
     customMenu : PropTypes.oneOfType([
         PropTypes.arrayOf(PropTypes.object),
         PropTypes.objectOf(PropTypes.object),
+    ]),
+    /****les colonnes via lesquelles le tableau est groupé par defaut */
+    sectionListColumns : PropTypes.oneOfType([
+        PropTypes.arrayOf(PropTypes.object),
+        PropTypes.arrayOf(PropTypes.string),
     ]),
     sectionListHeaderEmptyValue : PropTypes.string, //la valeur vide par défaut à afficher dans les entêtes du table
     ignoreCaseOnSectionListHeader : PropTypes.bool,//si l'on ignorera la casse dans le sectionlISThEADER

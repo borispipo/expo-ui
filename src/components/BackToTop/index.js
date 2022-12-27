@@ -68,7 +68,7 @@ const BackToTopComponent = React.forwardRef((props,ref)=>{
             }
         }}
         icon = {defaultVal(icon,'arrow-up')}
-        style = {[theme.styles.ph1,rest.style,style]}
+        style = {[rest.style,style]}
     />
 });
 

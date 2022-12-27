@@ -2929,43 +2929,43 @@ export default class CommonDatagridComponent extends AppComponent {
         />
     }
     renderSelectFieldCell({rowData,columnDef,columnField}){
-            let v1 = rowData[columnField],_render = v1;
-            if(isObjOrArray(columnDef.items)){
+        let v1 = rowData[columnField],_render = v1;
+        if(isObjOrArray(columnDef.items)){
                 if(columnDef.multiple){
-                v1 = Object.toArray(v1);
-                _render = "";
-                v1.map((v)=>{
+                    v1 = Object.toArray(v1);
+                    _render = "";
+                    v1.map((v)=>{
+                        for(let i in columnDef.items){
+                            let it = columnDef.items[i];
+                            if(isObj(it) && defaultVal(it.code,i) == v){
+                                _render+=(_render?arrayValueSeparator:"")+defaultStr(it.label,it.text,v);
+                            } else if(isNonNullString(it) && i == v){
+                                _render+=(_render?arrayValueSeparator:"")+it;
+                            }
+                        }
+                    })
+                    if(!_render){
+                        return v1.join(arrayValueSeparator);
+                    }
+                    return _render;
+                } else {
                     for(let i in columnDef.items){
                         let it = columnDef.items[i];
-                        if(isObj(it) && defaultVal(it.code,i) == v){
-                            _render+=(_render?arrayValueSeparator:"")+defaultStr(it.label,it.text,v);
-                        } else if(isNonNullString(it) && i == v){
-                            _render+=(_render?arrayValueSeparator:"")+it;
+                        if(isObj(it) && defaultVal(it.code,i) == v1){
+                            return defaultStr(it.label,it.text,v1);
+                        } else if(isNonNullString(it) && i == v1){
+                            return it;
                         }
                     }
-                })
-                if(!_render){
-                    return v1.join(arrayValueSeparator);
-                }
-                return _render;
-            } else {
-                for(let i in columnDef.items){
-                    let it = columnDef.items[i];
-                    if(isObj(it) && defaultVal(it.code,i) == v1){
-                        return defaultStr(it.label,it.text,v1);
-                    } else if(isNonNullString(it) && i == v1){
-                        return it;
+                    if(_render === undefined || _render === null) return v1;
+                    if(isArray(_render)){
+                        return _render.join(arrayValueSeparator)
+                    } else if(isObj(_render)){
+                        return "";
                     }
-                }
-                if(_render === undefined || _render === null) return v1;
-                if(isArray(_render)){
-                   return _render.join(arrayValueSeparator)
-                } else if(isObj(_render)){
-                   return "";
-                }
             }
-            return _render 
         }
+        return _render 
     }
     /*** retourne le rendu d'une cellule de la ligne du tableau 
     @parm, rowData, object, la ligne à afficher le rendu du contenu

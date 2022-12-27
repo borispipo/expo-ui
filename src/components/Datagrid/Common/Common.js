@@ -1136,14 +1136,12 @@ export default class CommonDatagridComponent extends AppComponent {
         if(!isNonNullString(field)) return;
         let columns = {...this.state.columns};
         columns[field].visible = !columns[field].visible;
-        let footers = this.getFootersFields();
+        const footers = this.getFootersFields();
         if(isObj(footers[field])){
             footers[field].visible = columns[field].visible;
         }
         this.prepareColumns({columns});
-        this.setState({columns},()=>{
-            if(removeFocus) document.body.click();
-        });
+        this.setState({columns});
    }
    /****le nombre maximum de courbes supportées */
    getMaxSeriesSize(){
@@ -1788,7 +1786,6 @@ export default class CommonDatagridComponent extends AppComponent {
                 type : chartType.type,
             })
         }
-        //console.log(chartOptions," is chart options");
         const labelColor = theme.Colors.isValid(config.labelColor)? config.labelColor : theme.colors.text; 
         if(!isDonut){
             chartOptions.xaxis = extendObj(true,{},{type: 'category'},chartProps.xaxis,{xaxis});
@@ -2352,11 +2349,13 @@ export default class CommonDatagridComponent extends AppComponent {
                 cells = [];
                 const footers = this.sectionListHeaderFooters[key];
                 Object.map(visibleColumnsNames,(v,column)=>{
-                    if(typeof widths[column] !== 'number') return null;
-                    const width = widths[column];
+                    if(!v || typeof widths[column] !== 'number') {
+                        return null;
+                    }
                     if(!column) return null;
+                    const width = widths[column];
                     const key2 = key+column;
-                    if(!column || !this.state.columns[column] || !footers[column]) {
+                    if(!this.state.columns[column] || !footers[column]) {
                         if(this.isAccordion()) return null;
                         cells.push(<View key={key2} testID={testID+"_FooterCellContainer_"+key2} style={[tableStyles.headerItemOrCell,{width}]}></View>)
                     } else {

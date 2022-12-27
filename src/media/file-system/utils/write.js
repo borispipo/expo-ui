@@ -1,7 +1,7 @@
 // Copyright 2022 @fto-consult/Boris Fouomene. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
-import {defaultStr,base64toBlob,isNonNullString,getFileName,getFileExtension,defaultNumber,defaultBool,dataURLToBase64,isBlob,isBase64,isDataURL} from "$utils";
+import {defaultStr,base64toBlob,dataURLToBlob,getTypeFromDataURL,isNonNullString,getFileName,getFileExtension,defaultNumber,defaultBool,dataURLToBase64,isBlob,isBase64,isDataURL} from "$utils";
 const FileSaver = require('file-saver');
 const mime = require('mime-types')
 const XLSX = require("xlsx");
@@ -29,6 +29,13 @@ import Preloader from "$preloader";
             reject({status:false,msg:'Nom de fichier invalide'});
             return;
         }
+        if(isDataURL(content)){
+            const type = getTypeFromDataURL(content);
+            content = dataURLToBlob(content);
+            if(isNonNullString(type)){
+                contentType = type;
+            }
+        }
         content = isBlob(content)? content : new Blob([content], { type: content?.type||contentType})
         try {
             FileSaver.saveAs(content, fileName);
@@ -55,10 +62,6 @@ function s2ab(s) {
  * .xls	 : application/vnd.ms-excel
  */
 export const writeExcel = ({workbook,content,contentType,fileName,...rest})=>{
-    if(!isNonNullString(contentType) || !contentType.contains("application/vnd.")){
-        //contentType = "application/vnd.ms-excel";
-        contentType : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    }
     let ext = defaultStr(getFileExtension(fileName,true),"xlsx");
     fileName = sanitizeFileName(getFileName(fileName,true))+"."+ext;
     if(!isNonNullString(fileName)){
@@ -70,11 +73,31 @@ export const writeExcel = ({workbook,content,contentType,fileName,...rest})=>{
     if(isBlob(content)){
         return write({...rest,content,fileName,contentType})
     }
-    Preloader.open("génération du fichier excel "+fileName);
-    XLSX.writeFile(workbook, fileName);
-    setTimeout(()=>{
-        Preloader.close();
-    },1000);
+    return new Promise((resolve,reject)=>{
+        Preloader.open("génération du fichier excel "+fileName);
+        try {
+            XLSX.writeFile(workbook, fileName);
+            setTimeout(()=>{
+                Preloader.close();
+                resolve({fileName});
+            },1000);
+        } catch(e){
+            reject(e);
+        }
+    })
+}
+
+/***
+ * @see https://ourtechroom.com/tech/mime-type-for-excel/ for excel mimesTypes
+ * .xls	 : application/vnd.ms-excel
+ */
+export const writeImage = ({content,fileName,...rest})=>{
+    let ext = defaultStr(getFileExtension(fileName,true),"png");
+    fileName = sanitizeFileName(getFileName(fileName,true))+"."+ext;
+    if(!isNonNullString(fileName)){
+        return Promise.reject({status:false,message:'Nom de fichier invalide pour le contenu excel à créer'});
+    }
+    
 }
 
 

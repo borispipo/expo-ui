@@ -40,7 +40,7 @@ import {styles as tableStyles} from "$ecomponents/Table";
 import {DialogProvider} from "$ecomponents/Form/FormData";
 import Chart,{getMaxSupportedSeriesSize} from "$ecomponents/Chart";
 import notify from "$cnotify";
-import Divider from "$ecomponents/Divider";
+import FileSystem from "$file-system";
 
 export const donutChart = {
     isChart : true,
@@ -244,6 +244,7 @@ export default class CommonDatagridComponent extends AppComponent {
             displayTypes : {value : hasFoundDisplayTypes ? disTypes : Object.clone(displayTypes)},
             dateFields : {value : {}},
             sectionListColumnsSize : {value : {current:0}}, //la taille du nombre d'éléments de section dans les colonnes
+            chartRef : {value : {current:null}},
         }) 
         const sessionAggregator = defaultStr(this.getSessionData("aggregatorFunction")).trim();
         const aggregatorProps = defaultStr(this.props.aggregatorFunction).trim();
@@ -1485,6 +1486,28 @@ export default class CommonDatagridComponent extends AppComponent {
    isDashboard(){
      return false;
    }
+   /*** télécharge le chart actif */
+   downloadChart(){
+        if(!this.chartRef.current || !this.chartRef.current.dataURI) return Promise.reject({message:'Référence du graphique non valide'});
+        return this.chartRef.current.dataURI().then(({ imgURI, blob })=>{
+            FileSystem.write({content:imgURI,fileName:"graphe.png",contentType:"image/png"})
+        });
+    }
+   ///reoturne les options de menus à appliquer sur le char
+   getChartMenus(){
+        return  [
+            {
+                text : "Options du graphe",
+                textBold : true,
+                divider:true,
+            },
+            {
+                text :"Télécharger",
+                icon : "download",
+                onPress : this.downloadChart.bind(this),
+            }
+        ]
+   }
    renderDisplayTypes(){
         const m = [];
         let activeType = null,hasFoundChart = false,hasFoundTable = false;
@@ -1538,6 +1561,11 @@ export default class CommonDatagridComponent extends AppComponent {
         if(m.length <= 1 || !activeType) return null;
         if(!isMobileOrTabletMedia()){
             m.unshift({text:"Type d'affichage des données",divider:true,textBold:true});
+        }
+        if(hasFoundChart){
+            Object.map(this.getChartMenus(),(c,i)=>{
+                m.push(c);
+            })
         }
         return <Menu
             title = "Type d'affichage"
@@ -1782,9 +1810,11 @@ export default class CommonDatagridComponent extends AppComponent {
                 },
             },chartProps.title),
             series,
-            chart : extendObj(true,{},{height :this.isDashboard()?80:350},chartProps.chart,{
-                type : chartType.type,
-            })
+            chart : extendObj(true,{},
+                {toolbar : {show : false}},
+                {height :this.isDashboard()?80:350},chartProps.chart,
+                {type : chartType.type}
+            )
         }
         const labelColor = theme.Colors.isValid(config.labelColor)? config.labelColor : theme.colors.text; 
         if(!isDonut){
@@ -1827,6 +1857,7 @@ export default class CommonDatagridComponent extends AppComponent {
         }
         return <Chart
             options = {chartOptions}
+            ref = {this.chartRef}
             key = {chartOptions.chart.id+"-"+this.state.displayType}
         />
    }
@@ -2101,7 +2132,7 @@ export default class CommonDatagridComponent extends AppComponent {
                     mItem.right = (p)=>{
                         return <Icon name="material-settings" {...p} onPress={(e)=>{
                             //React.stopEventPropagation(e);
-                            this.configureSectionListColumn(mItem);
+                            this.configureSectionListColumn({...mItem,...defaultObj(sectionListColumns[field])});
                             //return false;
                         }}/>
                     }

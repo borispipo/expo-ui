@@ -178,7 +178,6 @@ export default class Filter extends AppComponent {
       if(!isObjOrArray(value) && (isNullOrEmpty(value,true) || value ==='undefined') ){
           value = undefined;
       }
-      let originValue = value;
       if(action =="$today" || action =='$yesterday'){
          force = true;
       }
@@ -230,7 +229,7 @@ export default class Filter extends AppComponent {
                 }
              }
           }
-          this.props.onChange({...this.getStateValues(),value,originValue:originValue,originValue,field:this.props.field,action,operator,selector,originAction,context:this});
+          this.props.onChange({...this.getStateValues(),value,field:this.props.field,action,operator,selector,originAction,context:this});
       }
   }
   componentDidUpdate (){

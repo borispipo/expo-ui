@@ -96,7 +96,6 @@ export default class CommonTableDatagrid extends CommonDatagrid{
                 fetchOptions.selector = defaultObj(fetchOptions.selector);
                 fetchOptions.dataSources = this.currentDataSources;
                 fetchOptions = extendObj(true,true,{},fetchOptions,{selector : fetchFilters});
-                console.log(fetchOptions," is fetchOptions ",this.getFiltersProps(),fetchFilters)
                 fetchOptions.dataSources = this.currentDataSources;
                 fetchOptions.sort = this.getSort();
                 let limit = this.getQueryLimit();

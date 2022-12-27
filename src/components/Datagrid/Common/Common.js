@@ -273,10 +273,10 @@ export default class CommonDatagridComponent extends AppComponent {
             if(isPlainObject(f)){
                 this.filters[v] = {...f};
                 this.filters[v].field = defaultStr(f.field,v);
-                this.filters[v].originValue = defaultVal(f.originValue,f.defaultValue,f.value)
+                this.filters[v].defaultValue = defaultVal(f.defaultValue,f.value)
             } else {
                 this.filters[v] = {
-                    originValue : f,
+                    defaultValue : f,
                     field : v
                 }
             }
@@ -2044,7 +2044,7 @@ export default class CommonDatagridComponent extends AppComponent {
                     andOperator : filterAndOperator,
                     searchIconTooltip : 'Filtre',
                     searchIcon : 'filter_list',  
-                    defaultValue : fCol.originValue,
+                    defaultValue : defaultVal(fCol.defaultValue,restCol.defaultValue),
                     name : header.field,
                     onClearFilter : this.onClearFilter.bind(this),
                     onChange : this.onFilterChange.bind(this),
@@ -2457,7 +2457,7 @@ export default class CommonDatagridComponent extends AppComponent {
             if(!isObj(f)) return;
             defValue = undefined;
             if(f.type =="select") defValue = [];
-            filters[i] = {...f,value:defValue,defaultValue:defValue,originValue:defValue}
+            filters[i] = {...f,value:defValue,defaultValue:defValue}
         })
         this.filters = filters;
         this.refresh(true);
@@ -2483,7 +2483,7 @@ export default class CommonDatagridComponent extends AppComponent {
         field = defaultStr(field,name);
         if(field){
             let v = defaultStr(type).toLowerCase() == "select"? []:undefined
-            this.filters[field] = {value:v,defaultValue:v,originValue:v,originValue:v}
+            this.filters[field] = {value:v,defaultValue:v}
             this.doFilter({value:v,field,force:true})
         }
     }
@@ -2500,7 +2500,7 @@ export default class CommonDatagridComponent extends AppComponent {
             this.filteredValues[field] = {
                 operator,action,value,field
             }
-            filter.originValue = filter.defaultValue = arg.defaultValue;
+            filter.defaultValue = arg.defaultValue;
             filter.operator = operator;
             filter.action = defaultStr(originAction,action);            
         }

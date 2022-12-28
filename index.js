@@ -17,6 +17,9 @@ const isWeb = Platform.OS === "web";
 export default function ExpoUIApp (options){
     options = options && typeof options =='object' && !Array.isArray(options)? options : {};
     appConfig.current = options.config;
+    if(typeof options.initConfig ==='function'){
+        options.initConfig({appConfig});
+    }
     const App = require('./src/App').default(options);
     if (false) {
         const root = createRoot(document.getElementById("root") || document.getElementById("main"));

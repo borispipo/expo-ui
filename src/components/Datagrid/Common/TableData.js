@@ -98,6 +98,7 @@ export default class CommonTableDatagrid extends CommonDatagrid{
                 fetchOptions = extendObj(true,true,{},fetchOptions,{selector : fetchFilters});
                 fetchOptions.dataSources = this.currentDataSources;
                 fetchOptions.sort = this.getSort();
+                fetchOptions.fields = this.getFilterableColumnsNames();
                 let limit = this.getQueryLimit();
                 if(limit > 0 && !this.isPivotDatagrid()){
                     fetchOptions.limit = limit;

@@ -1,7 +1,7 @@
 import selectors from "./sprintfSelectors";
-import {isNonNullString,defaultFunc} from "$utils";
+import {isNonNullString,defaultFunc,isObj,isPromise} from "$utils";
 
-export default  ({value,val,cb,success})=>{
+export default  ({value,val,formatter,cb,success})=>{
     val = defaultStr(value,val)
     if(!isNonNullString(val)){
         return null;
@@ -16,27 +16,59 @@ export default  ({value,val,cb,success})=>{
             keys.push(i.toUpperCase())
         }
     }
-    let results = {};
+    const results = {};
     let length = keys.length;
     let index = length;
     let key = undefined
-    const next = ()=>{
-        index -=1;
-        if(index < 0){
-            for(let i in results){
-                let t = selectors[i.toLowerCase()];
-                let replace = results[i];
-                let dbName = defaultStr(t.dbName).toLowerCase(), type = defaultStr(t.type).toLowerCase();
-                if( dbName !== 'struct_data' && type !== 'field' && type !== 'form'){
-                    replace = " #"+defaultStr(t.dbName)+"["+i.ltrim("&").rtrim("&")+"-"+replace+"]".toUpperCase();
+    const sKeys = {};
+    return new Promise((resolve)=>{
+        const next = ()=>{
+            index -=1;
+            if(index < 0){
+                for(let i in results){
+                    let indexName = i.toLowerCase();
+                    let selector = selectors[indexName];
+                    if(!selector){
+                        indexName = i.toUpperCase();
+                        selector = selectors[indexName];
+                    }
+                    const replace = results[i];
+                    if(typeof formatter =='function'){
+                        val = formatter({selectors,selector,value:val,replace,result:results[i],results,indexName,selectorIndex:indexName,selectorName:indexName})
+                    }
+                    if(typeof val =='string' && typeof replace =='string'){
+                        val = val.replaceAll(i,replace);
+                    }
                 }
-                val = val.replaceAll(i,replace.toUpperCase());
+                val = defaultStr(val);
+                cb(val);
+                resolve(val);
+            } else {
+                key = keys[index];
+                if(!isNonNullString(key)) {return next();}
+                let indexName = i.toLowerCase();
+                let selector = selectors[indexName];
+                if(!selector){
+                    indexName = i.toUpperCase();
+                    selector = selectors[indexName];
+                }
+                sKeys[i] = indexName;
+                const select = isObj(selector)? selector.select : selector;
+                if(typeof cb =='function'){
+                    const v = select({...rest,selector,selectors,indexName,selectorIndex:indexName,selectorName:indexName,results,index:key,keys,key,value:val});
+                    if(isPromise(v)){
+                        return v.then((r)=>{
+                            if(typeof r ==='string'){
+                                results[key] = r;
+                            }
+                        }).finally(next);
+                    } else if(typeof v =='string' || typeof v =='number'){
+                        results[key] = v.toString();
+                    }
+                }
+                next();
             }
-            cb(val);
-        } else {
-            key = keys[index];
-            if(!isNonNullString(key)) {return next();}
         }
-    }
-    next();
+        next();
+    })
 }

@@ -41,6 +41,7 @@ import {DialogProvider} from "$ecomponents/Form/FormData";
 import Chart,{getMaxSupportedSeriesSize} from "$ecomponents/Chart";
 import notify from "$cnotify";
 import FileSystem from "$file-system";
+import sprintf from "$cutils/sprintf";
 
 export const donutChart = {
     isChart : true,
@@ -245,6 +246,7 @@ export default class CommonDatagridComponent extends AppComponent {
             dateFields : {value : {}},
             sectionListColumnsSize : {value : {current:0}}, //la taille du nombre d'éléments de section dans les colonnes
             chartRef : {value : {current:null}},
+            chartSeriesNamesColumnsMapping : {value : {}},//le mappage entre les index des series et les colonnes coorespondantes
         }) 
         const sessionAggregator = defaultStr(this.getSessionData("aggregatorFunction")).trim();
         const aggregatorProps = defaultStr(this.props.aggregatorFunction).trim();
@@ -290,7 +292,7 @@ export default class CommonDatagridComponent extends AppComponent {
         if(this.canHandleColumnResize()){
             this.state.columnsWidths = this.preparedColumns.widths;
         }
-        this.state.chartConfig = extendObj({},this.getSessionData("chartConfig"),this.props.chartConfig);
+        this.state.chartConfig = extendObj(true,{},this.getSessionData("chartConfig"),this.props.chartConfig);
         if(!("sparkline" in this.state.chartConfig) && this.isDashboard()){
             this.state.chartConfig.sparkline = true;
         }
@@ -1265,8 +1267,8 @@ export default class CommonDatagridComponent extends AppComponent {
    isChartRendable(){
      return !this.isPivotDatagrid() && this.hasFootersFields();
    }
-   isValidChartConfig(config){
-        config = defaultObj(config,this.state.chartConfig);
+   isValidChartConfig(){
+        const config = this.state.chartConfig;
         return isNonNullString(config.x) && isNonNullString(config.y);
    }
    canRenderChart(){
@@ -1402,10 +1404,11 @@ export default class CommonDatagridComponent extends AppComponent {
             }
         }
         return new Promise((resolve,reject)=>{
+            const data = this.getChartConfig();
             DialogProvider.open({
                 title : 'Configuration des graphes',
                 subtitle : false,
-                data : this.getCharConfig(),
+                data,
                 fields : {
                     x : {
                         text : 'Axe des x[horizontal]',
@@ -1435,6 +1438,50 @@ export default class CommonDatagridComponent extends AppComponent {
                         items : yItems,
                         multiple : true,
                     },
+                    dataLabels : {
+                        type : 'switch',
+                        label : "Affich les valeurs",
+                        checkedTooltip : "Les étiquettes de valeurs seront affichées sur le graphe",
+                        checkedValue : true,
+                        uncheckedValue : false,
+                        defaultValue : this.isDashboard()? true : false,
+                    },
+                    showXaxis : {
+                        type : "switch",
+                        text : "Afficher l'axe des X",
+                        type : "switch",
+                        checkedValue : true,
+                        uncheckedValue : false,
+                        defaultValue : !this.isDashboard(),
+                    },
+                    showYaxis : {
+                        type : "switch",
+                        text : "Afficher l'axe des Y",
+                        type : "switch",
+                        checkedValue : true,
+                        uncheckedValue : false,
+                        defaultValue : !this.isDashboard(),
+                    },
+                    showLegend : {
+                        type : "switch",
+                        text : "Afficher la legende",
+                        type : "switch",
+                        checkedValue : true,
+                        uncheckedValue : false,
+                        defaultValue : !this.isDashboard(),
+                    },
+                    width : {
+                        type : "number",
+                        text : "Largeur du graphe",
+                        tooltip : "Définissez la valeur 0 si vous voulez que le graphe occupe toute la largeur de con contenueur",
+                        defaultValue : this.getDefaultChartWidth(),
+                    },
+                    height : {
+                        type : "number",
+                        text : "Hauteur du graphe",
+                        validType : "numberGreaterThan[0]",
+                        defaultValue : this.getDefaultChartHeight(),
+                    },
                     stacked : stackSettings,
                     sparkline : {
                         type : 'switch',
@@ -1451,6 +1498,12 @@ export default class CommonDatagridComponent extends AppComponent {
                     titleColor: {
                         text : "Couleur de titre",
                         type :"color",
+                        format : "hashtag"
+                    },
+                    fileName : {
+                        text : "Nom fichier en téléchargement",
+                        format : "hashtag",
+                        tooltip : "Veuillez spécifier le nom du fichier du graphe qui sera utilisée lors du téléchargement"
                     },
                 },
                 actions : [
@@ -1473,7 +1526,7 @@ export default class CommonDatagridComponent extends AppComponent {
             })
         })
    }
-   getCharConfig(){
+   getChartConfig(){
       return defaultObj(this.state.chartConfig);
    }
    getChartIsRendableArgs(){
@@ -1490,7 +1543,9 @@ export default class CommonDatagridComponent extends AppComponent {
    downloadChart(){
         if(!this.chartRef.current || !this.chartRef.current.dataURI) return Promise.reject({message:'Référence du graphique non valide'});
         return this.chartRef.current.dataURI().then(({ imgURI, blob })=>{
-            FileSystem.write({content:imgURI,fileName:"graphe.png",contentType:"image/png"})
+            const config = this.getChartConfig();
+            const fileName = sprintf(defaultStr(config.fileName,config.title,"graphe"));
+            FileSystem.write({content:imgURI,fileName})
         });
     }
    ///reoturne les options de menus à appliquer sur le char
@@ -1582,8 +1637,8 @@ export default class CommonDatagridComponent extends AppComponent {
             }}
         />
    }
-   getEmptyDataValue(){
-        return "N/A";
+   getEmptySectionListHeaderValue(){
+        return defaultStr(this.props.sectionListHeaderEmptyValue,"N/A");
    }
    /*** retourne les sectionHeaderSeries par défautt */
    getDefaultSectionHeadersSeries(){
@@ -1596,6 +1651,7 @@ export default class CommonDatagridComponent extends AppComponent {
             if(!isObj(footer)) continue;
             if(counter >= max) break;
             r.push(i);
+            counter ++;
       }
       return r;
    }
@@ -1622,13 +1678,12 @@ export default class CommonDatagridComponent extends AppComponent {
                 
         const code = aggregatorFunction.code;
         const isDonut = chartType.isDonut || chartType.isRadial;
-        const config = this.getCharConfig();
+        const config = this.getChartConfig();
         //@see : https://apexcharts.com/docs/series/
         ///lorsqu'on affiche uniquement les totaux des sections, alors la visualition se fait sur uniquement sur la base des valeurs
         ///on parcoure uniquement les entêtes des sectionLis
         const dataIndexes={},dataInexesNames = {};
         //la variable sectionListHeaderSeries, permet de récupérer les colonnes de type montant à utiliser pour le rendu du chart
-        let serieName = "";
         const tableFooters = this.getFootersFields();
         const defaultSectionListHeadersSeries = this.getDefaultSectionHeadersSeries();
         let seriesConfig = isDonut ? [] : Array.isArray(config.sectionListHeadersSeries) && config.sectionListHeadersSeries.length ? config.sectionListHeadersSeries : [];
@@ -1645,6 +1700,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 seriesConfig = defaultSectionListHeadersSeries;
             }
         }
+        const seriesNamesMapping = {};
         /**** boucle sur chaque éléments trouvée dans le tableau des données sectionListData */
         const loopForFooter = ({column,serieName,footers,header})=>{
             if(!isObj(column) || !isObj(footers)) return null;
@@ -1652,6 +1708,9 @@ export default class CommonDatagridComponent extends AppComponent {
             const footer = footers[column.field];
             if(typeof footer[code] !== 'number') return null;
             if(typeof footer[code] !== 'number') return null;
+            if(header === this.emptySectionListHeaderValue){
+                header = this.getEmptySectionListHeaderValue();
+            }
             if(isDonut){
                 dataIndexes[header] = footer[code];
             } else {
@@ -1663,12 +1722,13 @@ export default class CommonDatagridComponent extends AppComponent {
             if(!isObj(this.sectionListHeaderFooters[header])) return null;
             const footers = this.sectionListHeaderFooters[header];
             if(isDonut){
-                loopForFooter({footers,header,column:yAxisColumn})
+                loopForFooter({footers,header,column:yAxisColumn,columnField:yAxisColumn.field})
             } else {
                 seriesConfig.map((s)=>{
                     const serie = this.state.columns[s];
                     const serieName = defaultStr(serie.label,serie.text,s);
-                    loopForFooter({footers,serie,serieName,header,column:tableFooters[s]})
+                    this.chartSeriesNamesColumnsMapping[serieName] =  serie;
+                    loopForFooter({footers,serie,columnField:s,serieName,header,column:tableFooters[s]})
                 })
             }
         });
@@ -1693,6 +1753,12 @@ export default class CommonDatagridComponent extends AppComponent {
             }
         }
    }
+   getDefaultChartHeight(){
+        return defaultNumber(this.props.chartProps?.height,this.isDashboard()?80:350);
+   }
+   getDefaultChartWidth(){
+        return defaultNumber(this.props.chartProps?.width);
+   }
    /*** permet de formatter les valeurs de la courbe en fonction du type passé en paramètre */
    chartValueFormattter(value,columnType){
         
@@ -1707,7 +1773,7 @@ export default class CommonDatagridComponent extends AppComponent {
             return null;
         }
         const isDonut = chartType.isDonut || chartType.isRadial;
-        const config = this.getCharConfig();
+        const config = this.getChartConfig();
         if(!this.state.columns[config.y]) return null;
         const yAxisColumn = this.state.columns[config.y];
         const type = defaultStr(yAxisColumn.jsType,yAxisColumn.type).toLowerCase();
@@ -1728,10 +1794,14 @@ export default class CommonDatagridComponent extends AppComponent {
             xAxisColumn = this.state.columns[config.x];
         }
         const aggregatorFunction = this.getActiveAggregatorFunction().eval;
-        const emptyValue = this.getEmptyDataValue();
+        const emptyValue = this.getEmptySectionListHeaderValue();
         const indexes = {};
         let series = [],xaxis = {},customConfig = {},seriesNamesToColumns={};
         let count = 0;
+        //on réinitialise le mappage entre les index
+        Object.map(this.chartSeriesNamesColumnsMapping,(_,k)=>{
+            delete this.chartSeriesNamesColumnsMapping[k];
+        });
         if(!this.isSectionList()){
             this.state.data.map((data,index)=>{
                 if(!isObj(data))return null;
@@ -1771,6 +1841,7 @@ export default class CommonDatagridComponent extends AppComponent {
                     type : chartType.type,
                     data,
                 })
+                this.chartSeriesNamesColumnsMapping[name] = col;
             })
         } else {
             const configs = this.getSectionListHeadersChartOptions({chartType,aggregatorFunction,xAxisColumn,yAxisColumn});
@@ -1793,8 +1864,25 @@ export default class CommonDatagridComponent extends AppComponent {
             chartProps[settingKey] = defaultObj(chartProps[settingKey]);
             chartProps[settingKey][key] = config[key];
         });
+        const dataLabelFormatter = typeof chartProps.dataLabels?.formatter =="function"? chartProps.dataLabels.formatter : undefined;
         const chartOptions = {
             ...chartProps,
+            dataLabels : extendObj(true,{enabled:!this.isDashboard()},chartProps.dataLabels,{
+                formatter : (value, { seriesIndex, dataPointIndex, w })=> {
+                    const serie = w.config.series[seriesIndex];
+                    const serieName = serie.name;
+                    const column = isDonut ? defaultObj((this.state.columns[yAxisColumn.field],yAxisColumn)): defaultObj(this.chartSeriesNamesColumnsMapping[serieName]);
+                    const columnField = defaultStr(column.field, isDonut? config.y : undefined);
+                    if(dataLabelFormatter){
+                        return dataLabelFormatter({value,column,columnDef:column,columnField,serie,serieName,seriesIndex})
+                    }
+                    if(typeof value !=='number') return value;
+                    if(defaultStr(column.format).toLowerCase() ==='money'){
+                        return value.formatMoney();
+                    }
+                    return value.formatNumber();
+                }
+            }),
             title :extendObj(true,{}, {
                 text: defaultStr(config.title,chartProps.title),
                 align: 'left',
@@ -1812,8 +1900,12 @@ export default class CommonDatagridComponent extends AppComponent {
             series,
             chart : extendObj(true,{},
                 {toolbar : {show : false}},
-                {height :this.isDashboard()?80:350},chartProps.chart,
-                {type : chartType.type}
+                chartProps.chart,
+                {
+                    height : defaultNumber(config.height,this.getDefaultChartHeight()),
+                    width : defaultNumber(config.width) || this.getDefaultChartWidth() || undefined,
+                    type : chartType.type
+                },
             )
         }
         const labelColor = theme.Colors.isValid(config.labelColor)? config.labelColor : theme.colors.text; 
@@ -1826,13 +1918,35 @@ export default class CommonDatagridComponent extends AppComponent {
             delete chartOptions.xaxis;
             //delete chartOptions.yaxis;
         }
-        chartOptions.yaxis = extendObj(true,{},{type: 'category'},chartProps.yaxis);
+        chartOptions.yaxis = extendObj(true,{},{type: 'category'},defaultObj(chartProps.yaxis));
         const yLabels = chartOptions.yaxis.labels = defaultObj(chartOptions.yaxis.labels);
         yLabels.style = defaultObj(yLabels.style)
         yLabels.style.colors = (Array.isArray(yLabels.style.colors) && yLabels.style.colors.length || theme.Colors.isValid(yLabels.style.colors)) ? yLabels.style.colors : labelColor;
+        const yLabelsSerieName = series?.length == 1 && series[0] && series[0].name ? series[0].name : undefined;
+        const yLabelsColumn = yLabelsSerieName ? this.chartSeriesNamesColumnsMapping[yLabelsSerieName] : undefined;
+        let yLabelFormat = null;
+        if(!isDonut && !yLabelFormat){
+            for(let i in series){
+                const v = series[i];
+                if(!isObj(v) || !isNonNullString(v.name) || !this.chartSeriesNamesColumnsMapping[v.name]) break;
+                if(yLabelFormat && this.chartSeriesNamesColumnsMapping[v.name]?.format !=yLabelFormat) {
+                    yLabelFormat = null;
+                    break;
+                }
+                if(!yLabelFormat){
+                    yLabelFormat = this.chartSeriesNamesColumnsMapping[v.name]?.format;
+                }
+            }
+        }
         yLabels.formatter = (value)=>{
-            if(typeof value =="number") return value.formatNumber();
-            return value;
+            if(typeof value !='number') return value;
+            if(yLabelFormat =='money' || (isDonut && yAxisColumn.format =="money")){
+                return value.formatMoney();
+            }
+            if(yLabelsColumn && yLabelsColumn.format =='money'){
+                return value.formatMoney();
+            }
+            return value.formatNumber();
         }
         chartOptions.chart.id = this.chartIdPrefix+"-"+defaultStr(chartType.key,"no-key");
         if(!chartType.isDonut){
@@ -1844,16 +1958,19 @@ export default class CommonDatagridComponent extends AppComponent {
         if(chartOptions.chart.sparkline){
             chartOptions.chart.sparkline = {enabled: true}
         } else delete chartOptions.chart.sparkline;
-        if(chartOptions.chart.sparkline && chartOptions.chart.sparkline.enabled){
-            chartOptions.xaxis = defaultObj(chartOptions.xaxis);
-            chartOptions.xaxis.labels = defaultObj(chartOptions.xaxis.labels);
-            chartOptions.xaxis.labels.show = false;
+        //const spackLine = chartOptions.chart.sparkline;
+        chartOptions.xaxis = defaultObj(chartOptions.xaxis);
+        chartOptions.xaxis.labels = defaultObj(chartOptions.xaxis.labels);
+        chartOptions.xaxis.labels.show  = ("showXaxis" in config) ? !!config.showXaxis : !this.isDashboard();
+        
+        chartOptions.yaxis.labels = defaultObj(chartOptions.yaxis.labels);
+        chartOptions.yaxis.labels.show = ("showYaxis" in config) ? !!config.showYaxis : !this.isDashboard();
+        
+        chartOptions.legend = defaultObj(chartOptions.legend);
+        chartOptions.legend.show = ("showLegend" in config) ? !!config.showLegend : !this.isDashboard();
 
-            chartOptions.yaxis = defaultObj(chartOptions.yaxis);
-            chartOptions.yaxis.labels = defaultObj(chartOptions.yaxis.labels);
-            chartOptions.yaxis.labels.show = false;
-            chartOptions.legend = defaultObj(chartOptions.legend);
-            chartOptions.legend.show = false;
+        if("dataLabels" in config){
+            chartOptions.dataLabels.enabled = !!config.dataLabels;
         }
         return <Chart
             options = {chartOptions}
@@ -1951,7 +2068,7 @@ export default class CommonDatagridComponent extends AppComponent {
        const columns = args.columns || this.state.columns;
        const currentSortedColumn = isObj(args.sortedColumn) && args.sortedColumn.column? args.sortedColumn : defaultObj(this.sortRef.current);
        const visibleColumns = [],headerFilters = [],visibleColumnsNames={};
-       const sectionListColumnsMenuItems = [];
+       const sectionListColumnsMenuItems = [],filterableColumnsNames = [];
        const sortable = defaultBool(this.props.sortable,true);
        const sortedColumns = {};
        let sortedColumnsLength = 0;
@@ -2054,6 +2171,7 @@ export default class CommonDatagridComponent extends AppComponent {
             if(colFilter){
                 const fCol = defaultObj(this.filters[header.field]);
                 this.filters[header.field] = fCol;
+                filterableColumnsNames.push(header.field);
                 delete restCol.sortable;
                 filterProps = {
                     ...restCol,
@@ -2154,6 +2272,7 @@ export default class CommonDatagridComponent extends AppComponent {
         this.preparedColumns.totalWidths = totalWidths;
         this.preparedColumns.sectionListColumns = sectionListColumns;
         this.preparedColumns.sectionListColumnsMenuItems = sectionListColumnsMenuItems;
+        this.preparedColumns.filterableColumnsNames = filterableColumnsNames;
         return this.preparedColumns;
    }
    getPaginatedSelectedRows(data){
@@ -2359,7 +2478,7 @@ export default class CommonDatagridComponent extends AppComponent {
         args.columns = this.preparedColumns.visibleColumns;
         args.columnsNames = this.preparedColumns.visibleColumnsNames;
         const key = item.sectionListHeaderKey;
-        const label = key === this.emptySectionListHeaderValue ? defaultStr(this.props.sectionListHeaderEmptyValue,"N/A") : key;
+        const label = key === this.emptySectionListHeaderValue ? this.getEmptySectionListHeaderValue() : key;
         const style = typeof this.props.getSectionListHeaderStyle =='function' ? this.props.getSectionListHeaderStyle(args) : null;
         const cStyle = typeof this.props.getSectionListHeaderContentContainerStyle =="function" ?this.props.getSectionListHeaderContentContainerStyle(args) : undefined;
         const lStyle = typeof this.props.getSectionListHeaderLabelStyle =='function' ? this.props.getSectionListHeaderLabelStyle(args) : null;
@@ -2542,6 +2661,11 @@ export default class CommonDatagridComponent extends AppComponent {
     ///si les filtres devront être convertis au format SQL
     willConvertFiltersToSQL(){
         return !!defaultVal(this.props.convertFiltersToSQL,willConvertFiltersToSQL());;
+    }
+    /*** retourne la liste des colonnes sur lesquelles on peut effectuer un filtre*/
+    getFilterableColumnsNames(){ 
+        const {filterableColumnsNames} = defaultObj(this.preparedColumns);
+        return Array.isArray(filterableColumnsNames)? filterableColumnsNames : [];
     }
     /*** récupère les filtres en cours du datagrid
      * @param {boolean} prepare si les filtres seront apprêtés grace à la méthode prepareFilters de $cFilters 
@@ -3380,9 +3504,9 @@ CommonDatagridComponent.propTypes = {
         //type : PropTypes.oneOfType(chartDisplayType).isRequired,//le type de graphe : l'une des valeurs parmis les éléments cités plus haut
         x : PropTypes.string.isRequired, //l'axe horizontal
         y : PropTypes.string.isRequired, //l'axe des y, les colonnes de type nombre
-        series : PropTypes.arrayOf([PropTypes.string]), //les séries, le nombre de courbe a afficher sur le graphe, en fonction du type
+        series : PropTypes.arrayOf(PropTypes.string), //les séries, le nombre de courbe a afficher sur le graphe, en fonction du type
         /**** les series à utiliser pour l'affichage des données lorsque les colonnes sont groupées, ie les montant de totalisation sont utilisés */
-        sectionListHeadersSeries : PropTypes.arrayOf([PropTypes.string]),
+        sectionListHeadersSeries : PropTypes.arrayOf(PropTypes.string),
     }),
     displayType : chartDisplayType,
     /*** les types d'afichates supportés par l'application */

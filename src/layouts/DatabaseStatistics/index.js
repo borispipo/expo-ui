@@ -20,31 +20,31 @@ export default function DatabaseStatisticScreen ({withScreen,fetchDataProps,tabl
         let content = [];
         tableFilter = typeof tableFilter ==="function"? tableFilter : x=>true;
         Object.map(tables,(table,index,suffix)=>{
-            const t = typeof getTable =='function'?getTable(defaultStr(table?.tableName,table?.table,index)) : null;
+            if(!isObj(table)) return null;
+            let tableName = defaultStr(table.tableName,table.table);
+            if(!tableName || tableFilter({table,tableName}) === false) return null;
+            const t = typeof getTable =='function'?getTable(defaultStr(table?.tableName,table?.table,index),table) :null;
             if(isObj(t) && defaultStr(t.table,t.tableName)){
-                table = t;
+               table = t;
             }
-            if(isObj(table) && table.databaseStatistic !== false && table.databaseStatistics !== false && tableFilter(table) !== false){
-                content.push(
-                    <Cell elevation = {5} withSurface mobileSize={12} desktopSize={3} tabletSize={4} {...contentProps} key = {index} >
-                        <DatabaseStatistic
-                            icon = {table.icon}
-                            key = {index}
-                            table = {table}
-                            fetchData = {fetchData}
-                            fetchDataProps = {fetchDataProps}
-                            index = {suffix}
-                            title = {defaultStr(table.text,table.label,table.title)}
-                            fetchCount = {table.fetchCount|| typeof fetchCount =='function'? (a,b)=>{
-                                return fetchCount({table,tableName:defaultStr(table.tableName,table.table)})
-                            }:undefined}
-                        ></DatabaseStatistic>
-                    </Cell>
-                )
-            }
+            if(table.databaseStatistic === false || table.databaseStatistics === false) return null;
+            content.push(<Cell elevation = {5} withSurface mobileSize={12} desktopSize={3} tabletSize={4} {...contentProps} key = {index} >
+                <DatabaseStatistic
+                    icon = {table.icon}
+                    key = {index}
+                    table = {table}
+                    fetchData = {fetchData}
+                    fetchDataProps = {fetchDataProps}
+                    index = {suffix}
+                    title = {defaultStr(table.text,table.label,table.title)}
+                    fetchCount = {table.fetchCount|| typeof fetchCount =='function'? (a,b)=>{
+                        return fetchCount({table,tableName})
+                    }:undefined}
+                ></DatabaseStatistic>
+            </Cell>
+            )
         });
         if(!content.length) {
-            Auth.showError();
             return null;
         }
         content = <Component  {...containerProps} style={[containerProps.style,theme.styles.mr1,theme.styles.ml1]}>

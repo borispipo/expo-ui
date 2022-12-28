@@ -16,7 +16,7 @@ import {Menu} from "$ecomponents/BottomSheet";
 import Dashboard from "$ecomponents/Datagrid/Dashboard";
 import fetch from "$capi/fetch";
 import Auth from "$auth";
-import Footer from "$ecomponents/Datagrid/Footer/Footer";
+import Icon from "$ecomponents/Icon";
 
 export default function DatabaseStatisticContainer ({dashboardProps,fetchDataProps,table,fetchCount,index,testID,title,icon,onPress:customOnPress,columns,fetchData,withDashboard,...props}){
     dashboardProps = defaultObj(dashboardProps);
@@ -27,7 +27,7 @@ export default function DatabaseStatisticContainer ({dashboardProps,fetchDataPro
     table = defaultObj(table);
     const dbStatistics = defaultObj(table.databaseStatistics,table.databaseStatisticsProps);
     const databaseStatisticsFields = defaultObj(table.databaseStatisticsFields);
-    const hasDFields = Object.size(databaseStatisticsFields,true);
+    const hasDFields = table.databaseStatistics !== false && Object.size(databaseStatisticsFields,true);
     if(!withDashboard && hasDFields){
         withDashboard = true;
     }
@@ -39,7 +39,9 @@ export default function DatabaseStatisticContainer ({dashboardProps,fetchDataPro
     columns = Object.size(columns,true)? columns : Object.size(dFields,true)? dFields : table.fields;
     const tableName = defaultStr(table.tableName,table.table).toUpperCase();
     fetchCount = typeof table.fetchCount =='function'? table.fetchCount : typeof fetchCount =='function'? fetchCount : undefined;
-    if((!fetchCount && !withDashboard) || !tableName) return null;
+    if((!fetchCount && !withDashboard) || !tableName) {
+        return null
+    }
     const refreshingRef = React.useRef(null);
     const isMounted = React.useIsMounted();
     
@@ -76,7 +78,7 @@ export default function DatabaseStatisticContainer ({dashboardProps,fetchDataPro
             }
         }
     },[]);
-    const progressBar = <View style={[theme.styles.justifyContentFlexStart,theme.styles.alignItemsFlexStart]}>
+    const progressBar = <View style={[theme.styles.justifyContentFlexStart,theme.styles.p1,theme.styles.alignItemsFlexStart]}>
         <ActivityIndicator color={theme.colors.primary}/>
     </View>;
     const isDatagridLoading = datagridRef.current && datagridRef.current.isLoading && datagridRef.current.isLoading();
@@ -90,7 +92,7 @@ export default function DatabaseStatisticContainer ({dashboardProps,fetchDataPro
     const fetchFields = React.useCallback(()=>{
         const fetchFields = [];
         Object.map(columns,(field,f)=>{
-            const ff = defaultStr(isObj(field)? field.field: undefined,f);
+            const ff = defaultStr(isObj(field) && field.filter !== false? field.field: undefined,f);
             if(ff){
                 fetchFields.push(ff);
             }
@@ -112,7 +114,7 @@ export default function DatabaseStatisticContainer ({dashboardProps,fetchDataPro
         sessionName = {tableName+"-database-statistics"}
         {...props}
         {...dbStatistics}
-        style = {[theme.styles.ph1,props.style]}
+        style = {[theme.styles.pr1,props.style]}
         columns = {columns}
         ref = {datagridRef}
         progressBar = {isLoading?<View/>:<View style={[theme.styles.w100,theme.styles.alignItemsCenter,theme.styles.justifyContentCenter]}>{progressBar}</View>}
@@ -138,6 +140,7 @@ export default function DatabaseStatisticContainer ({dashboardProps,fetchDataPro
             return <Pressable onPress={onPress} testID={testID+"_TitleContainer"} style={[theme.styles.w100]}>
                 <View testID={testID+"_TitleCountUp"} style={[theme.styles.w100]}>
                     <View style={[theme.styles.w100,theme.styles.row,theme.styles.alignItemsCenter]}>
+                        <Icon style={[theme.styles.noPadding,theme.styles.noMargin]} suffix={index} icon= {icon} size={20} label={title}/>
                         {title}
                         {typeof dataSize =='number' && dataSize && <Label>
                             {dataSize.formatNumber()}
@@ -146,7 +149,7 @@ export default function DatabaseStatisticContainer ({dashboardProps,fetchDataPro
                     <Menu
                         testID={testID+"_Menu"}
                         items = {context.renderMenu()}
-                        anchor = {(p)=><Pressable {...p} testID={testID+"_MenuAnchor"}>
+                        anchor = {(p)=><Pressable {...p} style={[theme.styles.pl1]} testID={testID+"_MenuAnchor"}>
                             <Label
                                 textCenter
                                 style = {counUpStyle}

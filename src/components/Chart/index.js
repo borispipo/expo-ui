@@ -41,7 +41,11 @@ const ChartComponent = React.forwardRef(({options,style,height,width,chartId:cus
         destroyChart(chartContext.current);
       }
   },[])
-  return <Chart {...props} ref={ref} chartId={chartId} style={[theme.styles.pb1,style]} options={options} chartContext={chartContext} testID={testID}/>
+  if(theme.isDark()){
+     options.tooltip = defaultObj(options.tooltip);
+     options.tooltip.theme = 'dark';
+  }
+  return <Chart {...props} ref={ref} chartId={chartId} style={[options.chart.height && {minHeight:options.chart.height},options.chart.width && {minWidth:options.chart.width},theme.styles.p1,style]} options={options} chartContext={chartContext} testID={testID}/>
 });
 
 

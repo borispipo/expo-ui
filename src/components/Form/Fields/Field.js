@@ -505,9 +505,9 @@ export default class Field extends AppComponent {
     }
     sprintf(){
         if(this.isDisabled() || this.isReadOnly()) return this;
-        sprintf({value:this.getValue(),cb:(val)=>{
+        sprintf({context:this,value:this.getValue(),formatter:this.props.sprintfResultFormatter}).then((val)=>{
             this.setValue(APP.sprintf(val),true);
-        }});
+        });
     }
     /**** met le focus sur le prochain cham */
     focusNextField (){
@@ -915,7 +915,7 @@ export default class Field extends AppComponent {
                     right = <Icon color={theme.colors.primary} {...props} tooltip = {tooltip} style={[styles.icon,props.style]} icon="information"/>;
                 }
                 if(canRenderHashtag && !rest.disabled && !rest.readOnly){
-                    const nRight = <Icon {...props} icon={"format-header-pound"} style={[right||cRight?{marginLeft:-5}:null,props.style]} title={"Cliquer insérer un hashtag, ie faire référence à une données de ventes, d'achas, de stocks, de règlement..."} onPress={this.sprintf.bind(this)}/>;
+                    const nRight = <Icon {...props} icon={"format-header-pound"} style={[right||cRight?{marginLeft:-5}:null,props.style]} title={"Cliquer insérer un hashtag, ie faire référence à une données externe"} onPress={this.sprintf.bind(this)}/>;
                     right = right ? <>{right}{nRight}</> : nRight;
                 }
                 return (cRight)? <>{cRight}{right}</> : right;
@@ -988,6 +988,8 @@ Field.propTypes = {
         PropTypes.node,
         PropTypes.func,
     ]),
+    /**** la fonction utilisée pour le formattage des valeurs de type sprintf */
+    sprintfResultFormatter : PropTypes.func,
     jsType : PropTypes.string,
     usePlaceholderWhenEmpty : PropTypes.bool,//si la valeur du placeholder sera utilée, lorsque la valeur du champ de type formatable est nulle ou égale à la valeur vide
     responsive : PropTypes.bool,

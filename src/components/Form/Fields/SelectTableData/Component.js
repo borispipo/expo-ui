@@ -11,6 +11,7 @@ import {getFetchOptions,prepareFilters} from "$cutils/filters";
 import fetch from "$capi"
 import {willConvertFiltersToSQL} from "$ecomponents/Datagrid/utils";
 import React from "$react";
+import appConfig from "$appConfig";
 
 /*** la tabledataSelectField permet de faire des requêtes distantes pour rechercher les données
  *  Elle doit prendre en paramètre et de manière requis : les props suivante : 
@@ -24,7 +25,8 @@ const TableDataSelectField = React.forwardRef((_props,ref)=>{
     props.data = defaultObj(props.data);
     foreignKeyColumn = foreignKeyColumn.trim();
     convertFiltersToSQL = defaultVal(convertFiltersToSQL,willConvertFiltersToSQL());
-    const fKeyTable = getForeignKeyTable(foreignKeyTable,props)
+    getForeignKeyTable = getForeignKeyTable || appConfig.get("getTableData");
+    const fKeyTable = typeof getForeignKeyTable =='function' ? getForeignKeyTable(foreignKeyTable,props) : undefined
     if(!isObj(fKeyTable) || !(defaultStr(fKeyTable.tableName,fKeyTable.table))){
         console.error("type de données invalide pour la fKeyTable ",fKeyTable," composant SelectTableData",_props);
         return null;
@@ -224,7 +226,7 @@ TableDataSelectField.propTypes = {
         PropTypes.string,
         PropTypes.func, //s'il s'agit d'une fonciton qui sera appelée
     ]),
-    getForeignKeyTable : PropTypes.func.isRequired, //la fonction permettant de récupérer la fKeyTable data dont fait référence le champ
+    getForeignKeyTable : PropTypes.func, //la fonction permettant de récupérer la fKeyTable data dont fait référence le champ
     foreignKeyTable : PropTypes.string, //le nom de la fKeyTable data à laquelle se reporte le champ
     onFetchItems : PropTypes.func,
     fetchDataOpts : PropTypes.shape({

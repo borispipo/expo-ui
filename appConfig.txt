@@ -11,4 +11,9 @@
 
     /***les fonctions d'aggregations du datagrid**/
     datagridAggregatorFunctions : {objectOf({code:{string},label:{string},eval:{function}})|| arrayOf({code:{string},label:{string},eval:{function}})}
+    /**l'ensemble des selectors à appliquer au champs de type hashtag, permettant de faire des liens vers d'autres tables**/
+    sprintfSelectors : {
+         "&libele&" : selectLabel,
+    }
+    getTableData : {function(tableName)=>table} retourne l'ojet table data
  }

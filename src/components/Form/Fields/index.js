@@ -20,7 +20,7 @@ import * as eFormFields from "$extendFormFields";
 import "$utils";
 import React from "$react";
 import SelectDateFormat from "./SelectDateFormat";
-
+import CurrencyFormat from "./CurrencyFormat";
 export * from "$extendFormFields";
 
 const defFormFields = {
@@ -30,6 +30,7 @@ const defFormFields = {
     SelectTableData,
     SelectCountry,
     SelectCurrency
+    ,CurrencyFormat
     ,Switch
     ,Checkbox
     //,IdField
@@ -61,6 +62,7 @@ export {
     SelectTableData,
     SelectCountry
     ,SelectCurrency
+    ,CurrencyFormat
     ,Switch
     ,Checkbox
     //,IdField

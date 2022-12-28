@@ -16,6 +16,8 @@ const componentTypes =  {
     selectcountry : Fields.SelectCountry,
     selectdateformat : Fields.SelectDateFormat,
     selectcurrency : Fields.SelectCurrency,
+    currencyformat : Fields.CurrencyFormat,
+    currencyFormat : Fields.CurrencyFormat,
     dateformat : Fields.SelectDateFormat,
     date : Fields.Date,
     time : Fields.Time,

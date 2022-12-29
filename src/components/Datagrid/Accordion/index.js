@@ -125,6 +125,7 @@ const DatagridFactory = (Factory)=>{
                 } else if(isObj(renderedContent.contentProps)){
                     descriptionProps = {...descriptionProps,...renderedContent.contentProps,style:[descriptionProps.style,renderedContent.contentProps.style]}
                 }
+                //
                 rowProps = defaultObj(renderedContent.rowProps);
                 avatarProps.color = color;
                 if(typeof avatarContent =='function'){
@@ -568,7 +569,7 @@ const DatagridFactory = (Factory)=>{
                             <View  testID={testID+"_FooterContainer"} pointerEvents={pointerEvents} style={[theme.styles.justifyContentCenter,theme.styles.pv1]}>
                                 <View  testID={testID+"_FooterContentContainer"} style={[styles.footersContainer]}>
                                     <ScrollView testID={testID+"_FooterScrollView"} horizontal contentContainerStyle={[styles.contentContainerStyle]}>
-                                        <View testID={testID+"_FooterContent"} style={[styles.table]}>
+                                        <View testID={testID+"_FooterContent"} style={[styles.table,theme.styles.p1]}>
                                             {Object.mapToArray(this.getFooterValues(),(footer,field)=>{
                                                 return <Footer
                                                     key = {field}
@@ -675,7 +676,6 @@ const styles = StyleSheet.create({
         alignItems : 'center',
         flex:1,
         paddingHorizontal : 10,
-        paddingVertical : 0,
     },
     pullRight : {
         flexDirection : 'row',

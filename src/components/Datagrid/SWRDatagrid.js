@@ -91,6 +91,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         beforeFetchData,
         sort,
         defaultSortColumn,
+        defaultSortOrder,
         ...rest
     } = props;
     rest = defaultObj(rest);
@@ -98,10 +99,14 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     const firstPage = 1;
     const tableName = defaultStr(table.tableName,table.table).trim().toUpperCase();
     defaultSortColumn = defaultStr(defaultSortColumn,table.defaultSortColumn);
+    defaultSortOrder = defaultStr(defaultSortOrder,table.defaultSortOrder).toLowerCase().trim();
     sort = isNonNullString(sort)? {column:sort} : isObj(sort)?sort : {};
     const sColumn = defaultStr(sort.column,defaultSortColumn);
     if(sColumn){
         sort.column = sColumn;
+        if(defaultSortOrder =='asc' || defaultSortOrder =='desc'){
+            sort.dir = defaultSortOrder;
+        }
     } else {
         delete sort.column;
     }

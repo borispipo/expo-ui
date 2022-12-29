@@ -7,7 +7,7 @@ import theme from "$theme";
 import PropTypes from "prop-types";
 
 export const title = 'Statistiques en BD';
-export default function DatabaseStatisticScreen ({withScreen,fetchDataProps,tableFilter,getTable,fetchCount,fetchData,title:customTitle,contentProps,containerProps,tables,Component,...props}){
+export default function DatabaseStatisticScreen ({withScreen,fetchDataProps,tableFilter,fetchCount,fetchData,title:customTitle,contentProps,containerProps,tables,Component,...props}){
         Component = React.isComponent(Component)? Component : Grid;
         containerProps = defaultObj(containerProps);
         const title = containerProps.title = defaultStr(containerProps.title,DatabaseStatisticScreen.title);

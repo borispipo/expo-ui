@@ -1,4 +1,4 @@
-import {defaultStr,defaultObj,defaultVal,isObj} from "$utils";
+import {defaultStr,isNonNullString,defaultObj,defaultVal,isObj} from "$utils";
 import Fields from "../Fields";
 //import dataFileManager from "$dataFileManager";
 import i18n from "$i18n";
@@ -106,7 +106,9 @@ export const getFilterComponentProps = (_props)=>{
         component = componentTypes[type];
     } else if(React.isComponent(componentTypes[type.replaceAll("_","")])){
         component = componentTypes[type.replaceAll("_","")];
-    } else {
+    } else if(isNonNullString(props.foreignKeyColumn) && isNonNullString(props.foreignKeyTable)) {
+        component = Fields.SelectTableData;
+    }else {
         const tt = type.replaceAll("_","").toLowerCase();
         if(React.isComponent(componentTypes[tt])){
             component = componentTypes[tt];

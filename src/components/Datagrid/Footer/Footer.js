@@ -127,7 +127,7 @@ export default function DGGridFooterValue (props){
             return <Pressable {...anchorProps} {...p} testID={testID} style={[styles.anchor,anchorProps.style,label?styles.row:null]} title={title}>
                 {label ?
                     <>
-                        <View testID={testID+"_Label"}><Label style={[styles.label]}>{label}</Label></View>
+                        <View testID={testID+"_Label"}><Label fontSize={15} textBold style={[styles.label]}>{label}</Label></View>
                         <View testID={testID+"_LabelPoint"}><Label style = {styles.label}> : </Label></View>
                     </>
                 : null}

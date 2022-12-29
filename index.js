@@ -16,11 +16,12 @@ const isWeb = Platform.OS === "web";
  */
 export default function ExpoUIApp (options){
     options = options && typeof options =='object' && !Array.isArray(options)? options : {};
+    const {initConfig,...opts} = options;
     appConfig.current = options.config;
-    if(typeof options.initConfig ==='function'){
-        options.initConfig({appConfig});
+    if(typeof initConfig ==='function'){
+        initConfig({appConfig});
     }
-    const App = require('./src/App').default(options);
+    const App = require('./src/App').default(opts);
     if (false) {
         const root = createRoot(document.getElementById("root") || document.getElementById("main"));
     } else {

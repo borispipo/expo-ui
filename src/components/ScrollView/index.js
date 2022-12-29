@@ -27,6 +27,7 @@ const ScrollViewComponent = React.forwardRef((props,ref) => {
   },[])
   return  virtualized ? <FlatList
     {...rest}
+    showsHorizontalScrollIndicator = {!isTouchDevice()}  showsVerticalScrollIndicator={!isTouchDevice()} 
     ref = {ref}
     testID = {testID}
     data={[]}
@@ -36,7 +37,7 @@ const ScrollViewComponent = React.forwardRef((props,ref) => {
     contentContainerStyle = {[!isNative && {flex:1,flexGrow: 1,maxHeight:Math.max(height-100,250)},rest.contentContainerStyle]}
     ListHeaderComponent={() => <View testID={testID+'_FlatListContent'} {...cProps} mediaQueryUpdateNativeProps = {mediaQueryUpdateNativeProps}
     >{children}</View>}
-    /> : <ScrollView ref={ref} {...rest} testID={testID} children={children}/>
+    /> : <ScrollView showsHorizontalScrollIndicator = {!isTouchDevice()}  showsVerticalScrollIndicator={!isTouchDevice()} ref={ref} {...rest} testID={testID} children={children}/>
 });
 
 ScrollViewComponent.displayName = "ScrollViewComponent";

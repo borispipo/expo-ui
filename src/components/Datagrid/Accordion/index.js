@@ -12,7 +12,6 @@ import BottomSheet from "$ecomponents/BottomSheet/Provider";
 import {isMobileMedia} from "$cplatform/dimensions";
 import {isNativeMobile} from "$cplatform";
 import Icon,{MENU_ICON} from "$ecomponents/Icon";
-import SimpleSelect from "$ecomponents/SimpleSelect";
 import Dropdown from "$ecomponents/Dropdown";
 import React from "$react";
 import Footer from "../Footer/Footer";
@@ -21,13 +20,14 @@ import CommonTableDatagrid from "../Common/TableData";
 import BackToTop from "$ecomponents/BackToTop";
 import FiltersAccordionComponent from "./Filters";
 import RenderType from "../RenderType";
-import { flatMode,HEIGHT} from "$ecomponents/TextField";
-import List,{FlatList,FlashList} from "$ecomponents/List";
+import { flatMode} from "$ecomponents/TextField";
+import {FlashList} from "$ecomponents/List";
 import theme,{Colors} from "$theme";
 import {getRowStyle,styles as rStyles} from "../utils";
 import Avatar from "$ecomponents/Avatar";
 import {defaultObj,isOb,isNonNullString} from "$utils";
 import PropTypes from "prop-types";
+import {isTouchDevice} from "$platform";
 
 const DatagridFactory = (Factory)=>{
     Factory = Factory || CommonDatagrid;
@@ -431,7 +431,7 @@ const DatagridFactory = (Factory)=>{
             } = this.preparedColumns;
             const hasFootersFields = this.hasFootersFields();
             const datagridHeader = <View testID={testID+"_HeaderContainer"} pointerEvents={pointerEvents} style={[styles.datagridHeader]}>
-                <ScrollView testID={testID+"_HeaderScrollView"} horizontal contentContainerStyle={StyleSheet.flatten([styles.contentContainerStyle,styles.minW100])}>
+                <ScrollView testID={testID+"_HeaderScrollView"} horizontal showsHorizontalScrollIndicator = {!isTouchDevice()} contentContainerStyle={StyleSheet.flatten([styles.contentContainerStyle,styles.minW100])}>
                     <View testID={testID+"_HeaderContentCntainer"} style={[styles.table,styles.pullRight]}>
                         {dbSelector}
                         <View testID={testID+"_HeaderQueryLimit"} style={[styles.paginationItem]}>
@@ -568,7 +568,7 @@ const DatagridFactory = (Factory)=>{
                         {!canRenderChart && showFooters ? (
                             <View  testID={testID+"_FooterContainer"} pointerEvents={pointerEvents} style={[theme.styles.justifyContentCenter,theme.styles.pv1]}>
                                 <View  testID={testID+"_FooterContentContainer"} style={[styles.footersContainer]}>
-                                    <ScrollView testID={testID+"_FooterScrollView"} horizontal contentContainerStyle={[styles.contentContainerStyle]}>
+                                    <ScrollView testID={testID+"_FooterScrollView"} horizontal showsHorizontalScrollIndicator = {!isTouchDevice()}  contentContainerStyle={[styles.contentContainerStyle]}>
                                         <View testID={testID+"_FooterContent"} style={[styles.table,theme.styles.p1]}>
                                             {Object.mapToArray(this.getFooterValues(),(footer,field)=>{
                                                 return <Footer

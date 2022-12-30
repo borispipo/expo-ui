@@ -1651,16 +1651,17 @@ export default class CommonDatagridComponent extends AppComponent {
             })
         }
         return <Menu
-            title = "Type d'affichage"
+            title = {"Type d'affichage ["+activeType.label+"]"}
             items = {m}
             anchor = {(p)=>{
                 return <Pressable {...p} style={[theme.styles.row]}>
                     <Icon
                         {...p}
                         name = {activeType.icon}
+                        color = {theme.colors.primaryOnSurface}
                         title = {"Les données s'affichent actuellement en {0}. Cliquez pour modifier le type d'affichage".sprintf(activeType.label)}
                     />
-                    {this.isDashboard() && <Label textBold>Type d'affichage</Label>||null}
+                    {this.isDashboard() && <Label textBold primaryOnSurface>{activeType.label||"Type d'affichage"}</Label>||null}
                 </Pressable>
             }}
         />

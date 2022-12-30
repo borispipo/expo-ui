@@ -155,7 +155,7 @@ export const footerFieldName = "dgrid-fters-fields";
 
 
 /*****
- * Pour spécifier qu'un champ du datagrid n'existe pas en bd il s'uffit de suffixer le nom du champ par le suffix : "FoundInDB" et de renseigner false comme valeur 
+ * Pour spécifier qu'un champ du datagrid n'existe pas en bd il s'ufit de suffixer le nom du champ par le suffix : "FoundInDB" et de renseigner false comme valeur 
 de l'objet rowData de cette propriété
  */
 export default class CommonDatagridComponent extends AppComponent {
@@ -719,7 +719,7 @@ export default class CommonDatagridComponent extends AppComponent {
             if(header.type.contains("date")){
                 this.dateFields[header.field] = header;
             }
-            /**** pour ignorer une colonne du datagrid, il suffit de passer le paramètre datagrid à false */
+            /**** pour ignorer une colonne du datagrid, il sufit de passer le paramètre datagrid à false */
             if(!isNonNullString(header.field) || header.datagrid === false) {
                 return;
             }
@@ -2094,6 +2094,10 @@ export default class CommonDatagridComponent extends AppComponent {
        let totalWidths = 0;
        let columnIndex = 0,visibleColumnIndex=0;
        this.sectionListColumnsSize.current = 0;
+       /*** la props widht de la colonne peut être en pourcentage
+        * l'on peut également définir la valeur minWidth en entier qui représentera la longuer minimale du champ
+        * la props fitWidth permet de dire que le champ devra occuper l'espace restant sur la page
+        */
        Object.map(columns,(header,headerIndex) => {
             let {
                 field,
@@ -2115,6 +2119,9 @@ export default class CommonDatagridComponent extends AppComponent {
             
             const type = defaultStr(header.jsType,header.type,"text").toLowerCase();
             sortType = defaultStr(sortType,type).toLowerCase();
+            if(typeof width =='string' && width.contains("%")){
+                width = ((parseFloat(width.replaceAll(" ","").split('%')[0].trim())|0)*windowWidth)/100;
+            }
             width = defaultDecimal(width);
             if(width <COLUMN_WIDTH/2){
                 width = COLUMN_WIDTH;
@@ -2129,6 +2136,9 @@ export default class CommonDatagridComponent extends AppComponent {
             } else if(type =="select_country" || type =='selectcountry'){
                 width = Math.max(width,90);
             }
+            if(typeof restCol.minWidth =='number'){
+                width = Math.max(width,minWidth);
+            }
             totalWidths +=width;
             widths[header.field] = width;
             const colProps = {id,key}
@@ -2139,6 +2149,7 @@ export default class CommonDatagridComponent extends AppComponent {
             }
             const title = header.text = header.text || header.label || header.title||header.field
             visibleColumnsNames[header.field] = visible ? true : false;
+           
             visibleColumns.push({
                 onPress : ()=>{
                     setTimeout(() => {

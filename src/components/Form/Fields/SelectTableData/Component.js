@@ -34,6 +34,15 @@ const TableDataSelectField = React.forwardRef((_props,ref)=>{
     }
     fKeyTable = defaultObj(fKeyTable);
     foreignKeyTable = defaultStr(fKeyTable.tableName,fKeyTable.table,foreignKeyTable).trim().toUpperCase();
+    const sortColumn = defaultStr(fKeyTable.defaultSortColumn);
+    const sortDir = defaultStr(fKeyTable.defaultSortOrder).toLowerCase().trim();
+    const sort = {};
+    if(sortColumn){
+        sort.column = sortColumn;
+        if(sortDir =='asc' || sortDir =='desc'){
+            sort.dir = sortDir;
+        }
+    }
     const isMounted = React.useIsMounted();
     const showAdd = isFilter || !foreignKeyTable ? false : React.useRef(Auth.isTableDataAllowed({foreignKeyTable,action:'create'}) ? defaultVal(props.showAdd,props.showAddBtn,true) : false).current;
     const [state,setState] = React.useState({
@@ -44,6 +53,9 @@ const TableDataSelectField = React.forwardRef((_props,ref)=>{
     const cFetch = typeof customFetchItem =='function' && customFetchItem;
     const fetchItems = (opts)=>{
         opts.showError = false;
+        if(sortColumn){
+            opts.sort = sort;
+        }
         if(cFetch) return cFetch(queryPath,opts);
         if(queryPath){
             return fetch(queryPath,opts);

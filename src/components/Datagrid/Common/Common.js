@@ -3242,8 +3242,8 @@ export default class CommonDatagridComponent extends AppComponent {
                  if(!_render) _render = rowData[columnField]
              } else if(arrayValueExists(_type,['switch','checkbox'])){
                  let {checkedLabel,checkedTooltip,uncheckedTooltip,checkedValue,uncheckedLabel,uncheckedValue} = columnDef;
-                 checkedLabel = defaultStr(checkedLabel,checkedTooltip,'Oui')
-                 uncheckedLabel = defaultStr(uncheckedLabel,uncheckedTooltip,'Non')
+                 checkedLabel = defaultStr(checkedLabel,'Oui')
+                 uncheckedLabel = defaultStr(uncheckedLabel,'Non')
                  checkedValue = defaultVal(checkedValue,1); uncheckedValue = defaultVal(uncheckedValue,0)
                  let val = defaultVal(rowData[columnField],columnDef.defaultValue,columnDef.value)
                  if(val === checkedValue){

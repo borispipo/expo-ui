@@ -18,7 +18,7 @@ import fetch from "$capi/fetch";
 import Auth from "$auth";
 import Icon from "$ecomponents/Icon";
 
-export default function DatabaseStatisticContainer ({dashboardProps,fetchDataProps,table,fetchCount,index,testID,title,icon,onPress:customOnPress,columns,fetchData,withDashboard,...props}){
+export default function DatabaseStatisticContainer ({dashboardProps,onRefreshAll,fetchDataProps,table,fetchCount,index,testID,title,icon,onPress:customOnPress,columns,fetchData,withDashboard,...props}){
     dashboardProps = defaultObj(dashboardProps);
     const [count,setCount] = React.useState(0);
     const datagridRef = React.useRef(null);
@@ -44,6 +44,11 @@ export default function DatabaseStatisticContainer ({dashboardProps,fetchDataPro
     }
     const refreshingRef = React.useRef(null);
     const isMounted = React.useIsMounted();
+    const onRefreshAllItem = typeof onRefreshAll =='function'? {
+        text : "Tout actualiser",
+        onPress : onRefreshAll,
+        icon : "refresh-circle"
+    } : {}
     
     const [isLoading,setIsLoading] = React.useState(withDashboard?false:true);
     const refresh = ()=>{
@@ -148,7 +153,7 @@ export default function DatabaseStatisticContainer ({dashboardProps,fetchDataPro
                     </View>
                     <Menu
                         testID={testID+"_Menu"}
-                        items = {context.renderMenu()}
+                        items = {[...context.renderMenu(),onRefreshAllItem]}
                         anchor = {(p)=><Pressable {...p} style={[theme.styles.pl1]} testID={testID+"_MenuAnchor"}>
                             <Label
                                 textCenter
@@ -177,7 +182,8 @@ export default function DatabaseStatisticContainer ({dashboardProps,fetchDataPro
                         icon : "refresh",
                         onPress : refresh,
                         text : "Actualiser"
-                    }
+                    },
+                    onRefreshAllItem,
                 ]}
                 anchor = {(p)=><Avatar suffix={index} {...aProps} {...p} icon= {icon} size={40} label={title}/>}
             />

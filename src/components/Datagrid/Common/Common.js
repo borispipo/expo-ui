@@ -166,6 +166,9 @@ export default class CommonDatagridComponent extends AppComponent {
         let {
             data,
             selectedRows,
+            chartAllowedPerm,
+            exportToPDFAllowedPerm,
+            exportToExcelAllowedPerm,
             ...rest
         } = props;
         if(this.bindResizeEvents()){
@@ -196,15 +199,27 @@ export default class CommonDatagridComponent extends AppComponent {
         });
         const disTypes = {};
         let hasFoundDisplayTypes = false;
+        const perm = isNonNullString(chartAllowedPerm)? Auth.isAllowedFromStr(chartAllowedPerm) : true;
+        const ePDFIsAllowed = isNonNullString(exportToPDFAllowedPerm)? Auth.isAllowedFromStr(exportToPDFAllowedPerm) : true;
+        const eExcelISAllowed = isNonNullString(exportToExcelAllowedPerm)? Auth.isAllowedFromStr(exportToExcelAllowedPerm) : true;
         Object.map(this.props.displayTypes,(dType,v)=>{
             if(isNonNullString(dType)){
                 dType = dType.toLowerCase().trim();
                 if(displayTypes[dType]){
+                    const dp = displayTypes[dType];
+                    if(dp.isChart && !perm){
+                        return;
+                    }
+                    hasFoundDisplayTypes = true;
                     disTypes[dType] = Object.clone(displayTypes[dType]);
                 }
-                hasFoundDisplayTypes = true;
             }
         });
+        const allowedDisplayTypes = {};
+        Object.map(displayTypes,(t,i)=>{
+            if(t.isChart && !perm) return;
+            allowedDisplayTypes[i] = Object.clone(t);
+        })
         Object.defineProperties(this,{
             layoutRef : {
                 value : React.createRef(null),
@@ -230,6 +245,9 @@ export default class CommonDatagridComponent extends AppComponent {
             isLoadingRef : {
                 value : {current:false}
             },
+            isChartAllowed : {value : perm},
+            isExcellExportAllowed : {value:eExcelISAllowed},
+            isPDFExportAllowed : {value: ePDFIsAllowed},
             currentFilteringColumns : {value:{}},
             emptySectionListHeaderValue : {value : uniqid("empty-section-list-header-val").toUpperCase()},
             getSectionListHeaderProp : {value : typeof this.props.getSectionListHeader =='function'? this.props.getSectionListHeader : undefined},
@@ -242,7 +260,7 @@ export default class CommonDatagridComponent extends AppComponent {
             ///la liste des fonctions d'aggregations supportées
             aggregatorFunctions : {value : extendAggreagatorFunctions(this.props.aggregatorFunctions)},
             ///les types d'affichage
-            displayTypes : {value : hasFoundDisplayTypes ? disTypes : Object.clone(displayTypes)},
+            displayTypes : {value : hasFoundDisplayTypes ? disTypes : allowedDisplayTypes},
             dateFields : {value : {}},
             sectionListColumnsSize : {value : {current:0}}, //la taille du nombre d'éléments de section dans les colonnes
             chartRef : {value : {current:null}},
@@ -371,6 +389,12 @@ export default class CommonDatagridComponent extends AppComponent {
             return this.prepareSectionListColumns();
         }
         return this.state.sectionListColumns;
+    }
+    canExportToPDF(){
+        return this.isPDFExportAllowed;
+    }
+    canExportToExcel (){
+        return this.isExcellExportAllowed;
     }
     bindResizeEvents(){
         return false;
@@ -3533,6 +3557,12 @@ CommonDatagridComponent.propTypes = {
         /**** les series à utiliser pour l'affichage des données lorsque les colonnes sont groupées, ie les montant de totalisation sont utilisés */
         sectionListHeadersSeries : PropTypes.arrayOf(PropTypes.string),
     }),
+    /*** la permission autorisée pour l'export en pdf */
+    exportToPDFAllowedPerm : PropTypes.string,
+    /*** la permission autorisée pour l'export en excel*/
+    exportToExcelAllowedPerm : PropTypes.string,
+    /*** la permission que doit avoir l'utilisateur pour pouvoir visualiser les graphes à partir du diagrame */
+    chartAllowedPerm : PropTypes.string,
     displayType : chartDisplayType,
     /*** les types d'afichates supportés par l'application */
     displayTypes : PropTypes.arrayOf(chartDisplayType),

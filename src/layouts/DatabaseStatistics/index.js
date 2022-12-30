@@ -5,6 +5,7 @@ import React from "$react";
 import DatabaseStatistic from "./DatabaseStatistic";
 import theme from "$theme";
 import PropTypes from "prop-types";
+import Auth from "$cauth";
 
 export const title = 'Statistiques en BD';
 export default function DatabaseStatisticScreen ({withScreen,fetchDataProps,tableFilter,fetchCount,fetchData,title:customTitle,contentProps,containerProps,tables,Component,...props}){
@@ -12,6 +13,7 @@ export default function DatabaseStatisticScreen ({withScreen,fetchDataProps,tabl
         containerProps = defaultObj(containerProps);
         const title = containerProps.title = defaultStr(containerProps.title,DatabaseStatisticScreen.title);
         contentProps = defaultObj(contentProps);
+        const forceRender = React.useForceRender();
         if(Component == Cell){
             containerProps.desktopSize = defaultNumber(containerProps.desktopSize,12);
             containerProps.tabletSize = defaultNumber(containerProps.tabletSize,8);
@@ -28,6 +30,8 @@ export default function DatabaseStatisticScreen ({withScreen,fetchDataProps,tabl
                table = t;
             }
             if(table.databaseStatistic === false || table.databaseStatistics === false) return null;
+            const chartAllowedPerm =  defaultStr(table.chartAllowedPerm);
+            if(chartAllowedPerm && !Auth.isAllowedFromStr(chartAllowedPerm || !Auth.isTableDataAllowed({table:tableName}))) return null;
             content.push(<Cell elevation = {5} withSurface mobileSize={12} desktopSize={3} tabletSize={4} {...contentProps} key = {index} >
                 <DatabaseStatistic
                     icon = {table.icon}

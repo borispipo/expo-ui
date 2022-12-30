@@ -49,7 +49,7 @@ export const setSessionData = (key,value)=>{
 
 
 
-export const timeout = 5000*60//*60;
+export const timeout = 5000*60;//5 minutes
 /***@see : https://swr.vercel.app/docs/api */
 
 export const getSWROptions = ()=>{
@@ -170,11 +170,13 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     const canHandleLimit = handleQueryLimit !== false ? true : false;
     const limitRef = React.useRef(!canHandleLimit ?0 : defaultNumber(getSessionData("limit"),500));
     const isInitializedRef = React.useRef(false);
-    testID = defaultStr(testID,"RNSWRDatagridComponent")
-    const {error, isValidating,isLoading,refresh} = useSWR(fetchPath,{
+    testID = defaultStr(testID,"RNSWRDatagridComponent");
+    const isLoadingRef = React.useRef(true);
+    const {error, isValidating,isLoading:customIsLoading,refresh} = useSWR(fetchPath,{
         fetcher : (url,opts)=>{
             if(!isInitializedRef.current) {
                 isFetchingRef.current = false;
+                isLoadingRef.current = false;
                 return;
             }
             opts = extendObj({},opts,fetchOptionsRef.current);
@@ -206,6 +208,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                 url = setQueryParams(url,opts.queryParams);
                 return fetcher(url,opts).then(fetchCB).finally(()=>{
                     isFetchingRef.current = false;
+                    isLoadingRef.current = false;
                 });
             }
             const {url:fUrl,fetcher:cFetcher,...rest} = getFetcherOptions(url,opts);
@@ -219,22 +222,21 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             ...defaultObj(appConfig.swr),
         },
     });
+    const isLoading = isLoadingRef.current  && customIsLoading || false;
     React.useEffect(()=>{
         innerRef.current && innerRef.current.setIsLoading && innerRef.current.setIsLoading(isLoading);
     },[isLoading])
     React.useEffect(()=>{
         const cb = refreshCBRef.current;
         refreshCBRef.current = null;
-        if(!isValidating && !isLoading && typeof cb =='function'){
+        if(!isValidating && !customIsLoading && typeof cb =='function'){
             cb();
         }
-    },[isValidating,isLoading])
+    },[isValidating,customIsLoading])
     const doRefresh = (showProgress)=>{
         showProgressRef.current = showProgress ? typeof showProgress ==='boolean' : false;
         if(isFetchingRef.current) return;
-        refreshCBRef.current = ()=>{
-            //showProgressRef.current = false;
-        };
+        isLoadingRef.current = true;
         refresh();
     }
     const canPaginate = ()=>{
@@ -272,7 +274,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         ///si le nombre total d'élements est inférieur au nombre limite alors le trie peut être fait localement
         return totalRef.current > limitRef.current && true || false;
     }
-    const loading = (isLoading|| isValidating);
+    const loading = (isLoadingRef.current && (isLoading|| isValidating));
     const pointerEvents = loading ?"node" : "auto";
     const itLimits = [{
         text : "Limite nbre elts par page",

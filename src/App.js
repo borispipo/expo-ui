@@ -107,7 +107,7 @@ export default function getIndex(options){
             const date = screensRef.current[screen];
             const diff = new Date().getTime() - date.getTime();
             const timeout = defaultNumber(appConfig.get("swrRefreshTimeout"),SWR_REFRESH_TIMEOUT)
-            //console.log(diff,"is diff and ",date.toFormat("HH:MM:ss"),screensRef,screen);
+            screensRef.current[screen] = new Date();
             return diff >= timeout ? true : false;
           },
           initFocus(callback) {

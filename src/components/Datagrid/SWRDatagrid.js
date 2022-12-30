@@ -49,14 +49,26 @@ export const setSessionData = (key,value)=>{
 
 
 
-const timeout = 5000*60*60;
-export const swrOptions = {
-    refreshInterval : timeout, //5 minutes
-    shouldRetryOnError : false, //retry when fetcher has an error
-    dedupingInterval : timeout,
-    errorRetryInterval : timeout*2,
-    errorRetryCount : 5,
+export const timeout = 5000*60//*60;
+/***@see : https://swr.vercel.app/docs/api */
+
+export const getSWROptions = ()=>{
+    const delay = defaultNumber(appConfig.get("swrRefreshTimeout"),timeout);
+    return {
+        dedupingInterval : delay,
+        errorRetryInterval : delay*2,
+        errorRetryCount : 5,
+        revalidateOnMount : false,//enable or disable automatic revalidation when component is mounted
+        revalidateOnFocus : true, //automatically revalidate when window gets focused (details)
+        revalidateOnReconnect : true, //automatically revalidate when the browser regains a network
+        refreshInterval : delay, //5 minutes : Disabled by default: refreshInterval = 0, If set to a number, polling interval in milliseconds, If set to a function, the function will receive the latest data and should return the interval in milliseconds
+        refreshWhenHidden : false, //polling when the window is invisible (if refreshInterval is enabled)
+        refreshWhenOffline : false, //polling when the browser is offline (determined by navigator.onLine)
+        shouldRetryOnError : false, //retry when fetcher has an error
+        dedupingInterval : delay,//dedupe requests with the same key in this time span in milliseconds
+    }
 }
+
 const getDefaultPaginationRowsPerPageItems = ()=>{
     return [5,10,15,20,25,30,40,50,60,80,100,500,1000,...(isDesktopMedia() ? [1500,2000,2500,3000,3500,4000,4500,5000,10000]:[])];
 }
@@ -203,7 +215,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         },
         showError  : false,
         swrOptions : {
-            ...swrOptions,
+            ...getSWROptions(),
             ...defaultObj(appConfig.swr),
         },
     });

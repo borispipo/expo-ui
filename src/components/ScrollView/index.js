@@ -4,6 +4,7 @@ import { ScrollView,Dimensions,useWindowDimensions } from 'react-native';
 import PropTypes from "prop-types";
 import View from "$ecomponents/View";
 import {isMobileNative,isTouchDevice} from "$cplatform";
+import {isDesktopMedia} from "$cdimensions";
 import {defaultStr,defaultObj} from "$utils";
 const isNative = isMobileNative();
 import APP from "$capp/instance";
@@ -25,9 +26,11 @@ const ScrollViewComponent = React.forwardRef((props,ref) => {
       APP.off(APP.EVENTS.RESIZE_PAGE,onResizePage);
     }
   },[])
+  const showIndicator = !isTouchDevice() || isDesktopMedia();
   return  virtualized ? <FlatList
+    showsHorizontalScrollIndicator = {showIndicator}  
+    showsVerticalScrollIndicator={showIndicator} 
     {...rest}
-    showsHorizontalScrollIndicator = {!isTouchDevice()}  showsVerticalScrollIndicator={!isTouchDevice()} 
     ref = {ref}
     testID = {testID}
     data={[]}
@@ -37,7 +40,8 @@ const ScrollViewComponent = React.forwardRef((props,ref) => {
     contentContainerStyle = {[!isNative && {flex:1,flexGrow: 1,maxHeight:Math.max(height-100,250)},rest.contentContainerStyle]}
     ListHeaderComponent={() => <View testID={testID+'_FlatListContent'} {...cProps} mediaQueryUpdateNativeProps = {mediaQueryUpdateNativeProps}
     >{children}</View>}
-    /> : <ScrollView showsHorizontalScrollIndicator = {!isTouchDevice()}  showsVerticalScrollIndicator={!isTouchDevice()} ref={ref} {...rest} testID={testID} children={children}/>
+    /> : <ScrollView showsHorizontalScrollIndicator = {showIndicator}  
+      showsVerticalScrollIndicator={showIndicator} ref={ref} {...rest} testID={testID} children={children}/>
 });
 
 ScrollViewComponent.displayName = "ScrollViewComponent";

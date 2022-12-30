@@ -108,6 +108,7 @@ export const getFilterComponentProps = (_props)=>{
         component = componentTypes[type.replaceAll("_","")];
     } else if(isNonNullString(props.foreignKeyColumn) && isNonNullString(props.foreignKeyTable)) {
         component = Fields.SelectTableData;
+        props.multiple = true;
     }else {
         const tt = type.replaceAll("_","").toLowerCase();
         if(React.isComponent(componentTypes[tt])){

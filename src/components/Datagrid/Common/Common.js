@@ -13,7 +13,7 @@ import Image from "$ecomponents/Image";
 import Icon,{COPY_ICON} from "$ecomponents/Icon";
 import filterUtils from "$cfilters";
 import Hashtag from "$ecomponents/Hashtag";
-import {sortBy,isDecimal,extendObj,isObjOrArray,isObj,defaultNumber,defaultStr,isFunction,defaultBool,defaultArray,defaultObj,isNonNullString,defaultDecimal} from "$utils";
+import {sortBy,isDecimal,defaultVal,extendObj,isObjOrArray,isObj,defaultNumber,defaultStr,isFunction,defaultBool,defaultArray,defaultObj,isNonNullString,defaultDecimal} from "$utils";
 import {Datagrid as DatagridContentLoader} from "$ecomponents/ContentLoader";
 import React from "$react";
 import DateLib from "$lib/date";
@@ -1063,7 +1063,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 this.isUpdating = false;
                 this.setSessionData({showFilters});
             })
-       },100);
+        },100);
    }
    showFilters(){
        return this.toggleFilters(true);
@@ -1096,7 +1096,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 this.isUpdating = false;
                 this.setSessionData({showFooters:showOrHide})
             })
-        },200)
+        },0)
     }
     showFooters(){
         return this.toggleFooters(true);
@@ -1143,8 +1143,11 @@ export default class CommonDatagridComponent extends AppComponent {
         if(isObj(footers[field])){
             footers[field].visible = columns[field].visible;
         }
-        this.prepareColumns({columns});
-        this.setState({columns});
+        this.setIsLoading(true,()=>{
+            this.prepareColumns({columns});
+            this.setState({columns});
+            this.setIsLoading(false,false);
+        })
    }
    /****le nombre maximum de courbes supportées */
    getMaxSeriesSize(){
@@ -1236,26 +1239,24 @@ export default class CommonDatagridComponent extends AppComponent {
         } else {
             sectionListColumns[columnName] = {field:columnName};
         }
-        setTimeout(() => {
-            const {sectionListColumns:pSListColumns} = this.prepareColumns({sectionListColumns});
-            this.setIsLoading(true,()=>{
-                this.prepareData({data:this.INITIAL_STATE.data,sectionListColumns:pSListColumns},(state)=>{
-                    this.setState({...state,sectionListColumns:pSListColumns},()=>{
-                        this.setIsLoading(false,false);
-                        this.setSessionData("sectionListColumns",Object.keys(pSListColumns));
-                    });
+        const {sectionListColumns:pSListColumns} = this.prepareColumns({sectionListColumns});
+        this.setIsLoading(true,()=>{
+            this.prepareData({data:this.INITIAL_STATE.data,sectionListColumns:pSListColumns},(state)=>{
+                this.setState({...state,sectionListColumns:pSListColumns},()=>{
+                    this.setIsLoading(false,false);
+                    this.setSessionData("sectionListColumns",Object.keys(pSListColumns));
                 });
-            },true);
-        }, 100);
+            });
+        },true);
    }
    removeAllColumnsInSectionList(){
         const {sectionListColumns} = this.prepareColumns({sectionListColumns:{}});
         this.setIsLoading(true,()=>{
             this.prepareData({data:this.INITIAL_STATE.data,sectionListColumns},(state)=>{
                 this.setState({...state,sectionListColumns,displayOnlySectionListHeaders:false},()=>{
-                    this.setIsLoading(false,false);
                     this.setSessionData("sectionListColumns",null);
                     this.setSessionData("displayOnlySectionListHeaders",false);
+                    this.setIsLoading(false,false);
                 });
             });
         },true);
@@ -1348,16 +1349,14 @@ export default class CommonDatagridComponent extends AppComponent {
    }
    toggleActiveAggregatorFunction(ag){
         if(!isValidAggregator(ag) || ag.code == this.state.aggregatorFunction) return null;
-        setTimeout(()=>{
-            this.setIsLoading(true,()=>{
-                this.prepareData({data:this.INITIAL_STATE.data,aggregatorFunction:ag.code},(state)=>{
-                    this.setState(state,()=>{
-                        this.setSessionData("aggregatorFunction",ag.code);
-                        this.setIsLoading(false,false);
-                    })
+        this.setIsLoading(true,()=>{
+            this.prepareData({data:this.INITIAL_STATE.data,aggregatorFunction:ag.code},(state)=>{
+                this.setState(state,()=>{
+                    this.setSessionData("aggregatorFunction",ag.code);
+                    this.setIsLoading(false,false);
                 })
-            },true);
-        },200);
+            })
+        },true);
    }
    renderAggregatorFunctionsMenu(){
         const m = this.getAggregatorFunctionsMenuItems(false,false);
@@ -1440,11 +1439,16 @@ export default class CommonDatagridComponent extends AppComponent {
                     },
                     dataLabels : {
                         type : 'switch',
-                        label : "Affich les valeurs",
+                        label : "Affich les etiquettes de valeurs",
                         checkedTooltip : "Les étiquettes de valeurs seront affichées sur le graphe",
                         checkedValue : true,
                         uncheckedValue : false,
                         defaultValue : this.isDashboard()? true : false,
+                    },
+                    abreviateValues : {
+                        type : "switch",
+                        label : "Abréger les valeurs numériques",
+                        defaultValue : true,
                     },
                     showXaxis : {
                         type : "switch",
@@ -1864,6 +1868,8 @@ export default class CommonDatagridComponent extends AppComponent {
             chartProps[settingKey] = defaultObj(chartProps[settingKey]);
             chartProps[settingKey][key] = config[key];
         });
+        const mappedColumns = {};
+        const abreviateValues = defaultVal(config.abreviateValues,true);
         const dataLabelFormatter = typeof chartProps.dataLabels?.formatter =="function"? chartProps.dataLabels.formatter : undefined;
         const chartOptions = {
             ...chartProps,
@@ -1871,16 +1877,22 @@ export default class CommonDatagridComponent extends AppComponent {
                 formatter : (value, { seriesIndex, dataPointIndex, w })=> {
                     const serie = w.config.series[seriesIndex];
                     const serieName = serie.name;
-                    const column = isDonut ? defaultObj((this.state.columns[yAxisColumn.field],yAxisColumn)): defaultObj(this.chartSeriesNamesColumnsMapping[serieName]);
+                    const column = mappedColumns[seriesIndex] || isDonut ? defaultObj((this.state.columns[yAxisColumn.field],yAxisColumn)): defaultObj(this.chartSeriesNamesColumnsMapping[serieName]);
+                    if((column) && column.field){
+                        mappedColumns[seriesIndex] = column;
+                    }
+                    /*if(value>=660 && value < 661){
+                        console.log(value," will format ",column,seriesIndex,serieName)
+                    }*/
                     const columnField = defaultStr(column.field, isDonut? config.y : undefined);
                     if(dataLabelFormatter){
                         return dataLabelFormatter({value,column,columnDef:column,columnField,serie,serieName,seriesIndex})
                     }
                     if(typeof value !=='number') return value;
                     if(defaultStr(column.format).toLowerCase() ==='money'){
-                        return value.formatMoney();
+                        return abreviateValues ? value.abreviate2FormatMoney() : value.formatMoney();
                     }
-                    return value.formatNumber();
+                    return abreviateValues ? value.abreviate() : value.formatNumber();
                 }
             }),
             title :extendObj(true,{}, {
@@ -1940,13 +1952,10 @@ export default class CommonDatagridComponent extends AppComponent {
         }
         yLabels.formatter = (value)=>{
             if(typeof value !='number') return value;
-            if(yLabelFormat =='money' || (isDonut && yAxisColumn.format =="money")){
-                return value.formatMoney();
+            if((yLabelFormat =='money' || (isDonut && yAxisColumn.format =="money")) || (yLabelsColumn && yLabelsColumn.format =='money')){
+                return abreviateValues ? value.abreviate2FormatMoney() : value.formatMoney();
             }
-            if(yLabelsColumn && yLabelsColumn.format =='money'){
-                return value.formatMoney();
-            }
-            return value.formatNumber();
+            return abreviateValues? value.abreviate() : value.formatNumber();
         }
         chartOptions.chart.id = this.chartIdPrefix+"-"+defaultStr(chartType.key,"no-key");
         if(!chartType.isDonut){
@@ -1991,8 +2000,11 @@ export default class CommonDatagridComponent extends AppComponent {
             const displayOnlySectionListHeaders = !!!this.state.displayOnlySectionListHeaders;
             this.setSessionData("displayOnlySectionListHeaders",displayOnlySectionListHeaders);
             if(!displayOnlySectionListHeaders){
-                return this.prepareData({data:this.INITIAL_STATE.data,displayOnlySectionListHeaders},(state)=>{
-                    this.setState({...state,showFooters})
+                return this.setIsLoading(true,()=>{
+                    this.prepareData({data:this.INITIAL_STATE.data,displayOnlySectionListHeaders},(state)=>{
+                        this.setState({...state,showFooters});
+                        this.setIsLoading(false,false);
+                    })
                 })
             } else {
                 this.setIsLoading(true,()=>{
@@ -2003,11 +2015,11 @@ export default class CommonDatagridComponent extends AppComponent {
                         }
                     });
                     this.setState({data,displayOnlySectionListHeaders,showFooters},()=>{
-                        this.setIsLoading(false),false;
+                        this.setIsLoading(false,false);
                     });
                 },true)
             }
-        },100);
+        },0);
    }
    /*** permet d'effectuer le rendu des colonnes groupable dans le menu item */
    renderSectionListMenu(){
@@ -2892,15 +2904,17 @@ export default class CommonDatagridComponent extends AppComponent {
         if(typeof enablePointerEvents =='boolean'){
             this.enablePointerEventsRef.current = enablePointerEvents;
         }
-        if(this.canSetIsLoading() && typeof loading =='boolean'){
-            return this.progressBarRef.current.setIsLoading(loading,()=>{
-                if(typeof cb =='function'){
-                    cb();
-                }
-            });
-        } else if(typeof cb =='function'){
-            cb();
-        }
+        setTimeout(()=>{
+            if(this.canSetIsLoading() && typeof loading =='boolean'){
+                return this.progressBarRef.current.setIsLoading(loading,()=>{
+                    if(typeof cb =='function'){
+                        cb();
+                    }
+                });
+            } else if(typeof cb =='function'){
+                cb();
+            }
+        },loading === false && enablePointerEvents === false ? 0 : 0);
         return false;
     }
      /**** met à jour l'état de progression de la mise à jour du tableau */

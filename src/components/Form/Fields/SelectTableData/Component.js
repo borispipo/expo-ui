@@ -20,28 +20,36 @@ import appConfig from "$appConfig";
  *  foreignKeyLabel : Le libélé dans la table étrangère
  */
 const TableDataSelectField = React.forwardRef((_props,ref)=>{
-    let {foreignKeyColumn,foreignKeyTable,foreignKeyLabel,dropdownActions,fields,fetchItems:customFetchItem,convertFiltersToSQL,mutateFetchedItems,getForeignKeyTable,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchDataOpts,...props} = _props;
+    let {foreignKeyColumn,foreignKeyTable,fetchItemsPath,foreignKeyLabel,dropdownActions,fields,fetchItems:customFetchItem,convertFiltersToSQL,mutateFetchedItems,getForeignKeyTable,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchDataOpts,...props} = _props;
     props = defaultObj(props);
     props.data = defaultObj(props.data);
     foreignKeyColumn = foreignKeyColumn.trim();
     convertFiltersToSQL = defaultVal(convertFiltersToSQL,willConvertFiltersToSQL());
     getForeignKeyTable = getForeignKeyTable || appConfig.getDatabaseTableData;
-    const fKeyTable = typeof getForeignKeyTable =='function' ? getForeignKeyTable(foreignKeyTable,props) : undefined
-    if(!isObj(fKeyTable) || !(defaultStr(fKeyTable.tableName,fKeyTable.table))){
+    let fKeyTable = typeof getForeignKeyTable =='function' ? getForeignKeyTable(foreignKeyTable,props) : undefined;
+    fetchItemsPath = defaultStr(fetchItemsPath).trim();
+    if(!fetchItemsPath && (!isObj(fKeyTable) || !(defaultStr(fKeyTable.tableName,fKeyTable.table)))){
         console.error("type de données invalide pour la fKeyTable ",fKeyTable," composant SelectTableData",_props);
         return null;
     }
+    fKeyTable = defaultObj(fKeyTable);
     foreignKeyTable = defaultStr(fKeyTable.tableName,fKeyTable.table,foreignKeyTable).trim().toUpperCase();
     const isMounted = React.useIsMounted();
-    const showAdd = isFilter ? false : React.useRef(Auth.isTableDataAllowed({foreignKeyTable,action:'create'}) ? defaultVal(props.showAdd,props.showAddBtn,true) : false).current;
+    const showAdd = isFilter || !foreignKeyTable ? false : React.useRef(Auth.isTableDataAllowed({foreignKeyTable,action:'create'}) ? defaultVal(props.showAdd,props.showAddBtn,true) : false).current;
     const [state,setState] = React.useState({
         items : [],isLoading : true,
     });
     fetchDataOpts = Object.clone(defaultObj(fetchDataOpts));
-    const fetchItems = typeof customFetchItem =='function' ? customFetchItem : typeof fKeyTable.queryPath =='string' ?  (opts)=>{
-        return fetch(fKeyTable.queryPath,opts);
-    } : undefined;
-    isUpdate = defaultBool(isUpdate,typeof isDocEditing ==='function' && isDocEditing({data:props.data,fKeyTable,foreignKeyTable}));
+    const queryPath = fetchItemsPath || typeof fKeyTable.queryPath =='string' && fKeyTable.queryPath || typeof fKeyTable.fetchPath =='string' && fKeyTable.fetchPath || '';
+    const cFetch = typeof customFetchItem =='function' && customFetchItem;
+    const fetchItems = (opts)=>{
+        opts.showError = false;
+        if(cFetch) return cFetch(queryPath,opts);
+        if(queryPath){
+            return fetch(queryPath,opts);
+        }
+    };
+    isUpdate = defaultBool(isUpdate,typeof isDocEditing ==='function' && isDocEditing({data:props.data,foreignKeyTable,foreignKeyColumn}));
     if(isFilter){
         isUpdate = false;
     }
@@ -98,12 +106,15 @@ const TableDataSelectField = React.forwardRef((_props,ref)=>{
             let opts = Object.clone(fetchDataOpts);
             opts.selector = prepareFilters(fetchDataOpts.selector,{convertToSQL:convertFiltersToSQL});
             opts = getFetchOptions(opts);
-            const r = fetchItems && fetchItems(opts);
+            const r = fetchItems(opts);
             if(r === false) return;
             if(isPromise(r)){
                 r.then((args)=>{
                     if(Array.isArray(args)){
                         args = {data : args};
+                    }
+                    if(!isObj(args)) {
+                        args = {items:[]}
                     }
                     let items = args.items = args.data = Array.isArray(args.items) ? args.items : Array.isArray(args.data) ? args.data : [];
                     if(dat && isUpdate){
@@ -177,7 +188,6 @@ const TableDataSelectField = React.forwardRef((_props,ref)=>{
         {...props}
         isFilter = {isFilter}
         showAdd = {!isFilter && showAdd}
-        {...React.setProps(Dropdown,fKeyTable,{})}
         {...state}
         dialogProps = {dialogProps}
         ref = {ref}
@@ -220,14 +230,15 @@ TableDataSelectField.propTypes = {
     ...Dropdown.propTypes,
     mutateFetchedItems : PropTypes.func, //la fonction permettant d'effectuer une mutation sur l'ensemble des donnéees récupérées à distance
     fetchItems : PropTypes.func,//la fonction de rappel à utiliser pour faire une requête fetch permettant de selectionner les données à distance
+    getForeignKeyTable : PropTypes.func, //la fonction permettant de récupérer la fKeyTable data dont fait référence le champ
+    foreignKeyTable : PropTypes.string, //le nom de la fKeyTable data à laquelle se reporte le champ
+    fetchItemsPath : PropTypes.string, //le chemin d'api pour récupérer les items des données étrangères en utilisant la fonction fetch
     beforeFetchItems : PropTypes.func, //appelée immédiatement avant l'exécution de la requête fetch
     foreignKeyColumn : PropTypes.string.isRequired,//le nom de la clé étrangère à laquelle fait référence la colone dans la fKeyTable
     foreignKeyLabel : PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.func, //s'il s'agit d'une fonciton qui sera appelée
     ]),
-    getForeignKeyTable : PropTypes.func, //la fonction permettant de récupérer la fKeyTable data dont fait référence le champ
-    foreignKeyTable : PropTypes.string, //le nom de la fKeyTable data à laquelle se reporte le champ
     onFetchItems : PropTypes.func,
     fetchDataOpts : PropTypes.shape({
         fields : PropTypes.oneOfType([

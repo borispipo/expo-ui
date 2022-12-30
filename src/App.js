@@ -30,25 +30,37 @@ import appConfig from "$capp/config";
 import {showPrompt} from "$components/Dialog/confirm";
 import { AppState } from 'react-native'
 import {canFetchOffline} from "$capi/utils";
+import {defaultNumber} from "$utils";
+import { timeout as SWR_REFRESH_TIMEOUT} from '$ecomponents/Datagrid/SWRDatagrid';
 
 import * as Utils from "$utils";
 Object.map(Utils,(v,i)=>{
   if(typeof v =='function' && typeof window !='undefined' && window && !window[i]){
      window[i] = v;
   }
-})
-
+});
 export default function getIndex(options){
   const {App,onMount,onUnmount,preferences:appPreferences} = defaultObj(options);
   return function MainIndexComponent() {
     const isScreenFocusedRef = React.useRef(true);
+    ///garde pour chaque écran sa date de dernière activité
+    const screensRef = React.useRef({});//la liste des écrans actifs
+    const activeScreenRef = React.useRef('');
+    const prevActiveScreenRef = React.useRef('');
+    const appStateRef = React.useRef({});
     React.useEffect(()=>{
         ///la fonction de rappel lorsque le composant est monté
         let cb = typeof onMount =='function'? onMount() : null;
-        const onScreenFocus = ()=>{
+        const onScreenFocus = ({sanitizedName})=>{
+            prevActiveScreenRef.current = activeScreenRef.current;
+            if(activeScreenRef.current){
+               screensRef.current[activeScreenRef.current] = null;
+            }
+            screensRef.current[sanitizedName] = new Date();
+            activeScreenRef.current = sanitizedName;
             isScreenFocusedRef.current = true;
         }, onScreenBlur = ()=>{
-           isScreenFocusedRef.current = false;
+          isScreenFocusedRef.current = false;
         }
         APP.on(APP.EVENTS.SCREEN_FOCUS,onScreenFocus);
         APP.on(APP.EVENTS.SCREEN_BLUR,onScreenBlur);
@@ -86,18 +98,28 @@ export default function getIndex(options){
             return APP.isOnline();
           },
           isVisible() {
-            /* Customize the visibility state detector */
-            return false;
-            return isScreenFocusedRef.current;
+            const screen = activeScreenRef.current;
+            if(!screen) return false;
+            if(!screensRef.current[screen]){
+               screensRef.current[screen] = new Date();
+               return false;
+            }
+            const date = screensRef.current[screen];
+            const diff = new Date().getTime() - date.getTime();
+            const timeout = defaultNumber(appConfig.get("swrRefreshTimeout"),SWR_REFRESH_TIMEOUT)
+            //console.log(diff,"is diff and ",date.toFormat("HH:MM:ss"),screensRef,screen);
+            return diff >= timeout ? true : false;
           },
           initFocus(callback) {
             let appState = AppState.currentState
             const onAppStateChange = (nextAppState) => {
               /* If it's resuming from background or inactive mode to active one */
-              if (appState.match(/inactive|background/) && nextAppState === 'active') {
+              const active = appState.match(/inactive|background/) && nextAppState === 'active';
+              if (active) {
                 callback()
               }
-              appState = nextAppState
+              appState = nextAppState;
+              appStateRef.current = !!active;
             }
             // Subscribe to the app state change events
             const subscription = AppState.addEventListener('change', onAppStateChange);

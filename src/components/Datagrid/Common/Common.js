@@ -1357,15 +1357,16 @@ export default class CommonDatagridComponent extends AppComponent {
         }
         return this.aggregatorFunctions[Object.keys(this.aggregatorFunctions)[0]];
    }
-   toggleAbreviateValues(resetData){
+   toggleAbreviateValues(){
         setTimeout(()=>{
             this.setIsLoading(true,()=>{
-                const abreviateValues = !this.state.abreviateValues;
-                const state = resetData ===true ? {data : [...this.state.data]} : {};
-                this.setState({abreviateValues,...state},()=>{
-                    this.setIsLoading(false,false);
-                    this.setSessionData("abreviateValues",abreviateValues);
-                })
+                this.prepareData({data:this.INITIAL_STATE.data},(state)=>{
+                    const abreviateValues = !this.state.abreviateValues;
+                    this.setState({abreviateValues,...state},()=>{
+                        this.setIsLoading(false,false);
+                        this.setSessionData("abreviateValues",abreviateValues);
+                    })
+                });
             },true);
         },TIMEOUT);
    }

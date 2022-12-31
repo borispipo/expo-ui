@@ -89,10 +89,6 @@ const DatagridFactory = (Factory)=>{
             const formatValue = this.formatValue.bind(this);
             return {...this.getActionsArgs(),valueFormatter:formatValue,formatValue,abreviateValues:this.state.abreviateValues,row:item,items:this.state.data,item,rowData:item,index,rowIndex:index,rowCounterIndex:rowIndexCount,rowIndexCount};
         }
-        toggleAbreviateValues(){
-            this.renderingItemsProps = {};
-            return super.toggleAbreviateValues(true);
-        }
         getRenderingItemProps ({item,rowKey,numColumns,index}){
             const rKey = rowKey;
             this.renderingItemsProps = isObj(this.renderingItemsProps)? this.renderingItemsProps : {};

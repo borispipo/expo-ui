@@ -17,7 +17,6 @@ const componentTypes =  {
     selectdateformat : Fields.SelectDateFormat,
     selectcurrency : Fields.SelectCurrency,
     currencyformat : Fields.CurrencyFormat,
-    currencyFormat : Fields.CurrencyFormat,
     dateformat : Fields.SelectDateFormat,
     date : Fields.Date,
     time : Fields.Time,
@@ -70,12 +69,8 @@ export const getFilterComponentProps = (_props)=>{
     props = defaultObj(props);
     let component = Fields.TextField;
     type = defaultStr(jsType,type,'text').toLowerCase().replaceAll("_","").replaceAll("-","").trim();
+    const sanitizedType = type.replaceAll("_","").toLowerCase().trim();
     props = defaultObj(props);
-    /*if(type =='datafile'){
-        type = 'select';
-        props = {...selectFieldProps,items : dataFileManager.getAll(),...props};
-        label = defaultStr(label,dataFileManager.dataFileText);
-    }*/
     if(type.startsWith("select")){
         props.inputProps = Object.assign({},props.inputProps);
         props.inputProps.placeholder = defaultStr(props.inputProps.placeholder,i18n.lang("search.."))
@@ -104,16 +99,13 @@ export const getFilterComponentProps = (_props)=>{
         component = Fields.SelectDateFormat;
     } else if(React.isComponent(componentTypes[type])) {
         component = componentTypes[type];
-    } else if(React.isComponent(componentTypes[type.replaceAll("_","")])){
-        component = componentTypes[type.replaceAll("_","")];
     } else if(isNonNullString(props.foreignKeyColumn) && isNonNullString(props.foreignKeyTable)) {
         component = Fields.SelectTableData;
         props.multiple = true;
         type = "select";
     }else {
-        const tt = type.replaceAll("_","").toLowerCase();
-        if(React.isComponent(componentTypes[tt])){
-            component = componentTypes[tt];
+        if(React.isComponent(componentTypes[sanitizedType])){
+            component = componentTypes[sanitizedType];
         } 
         delete props.dbName;
         delete props.tableName;

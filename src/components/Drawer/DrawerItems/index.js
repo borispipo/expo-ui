@@ -1,5 +1,5 @@
 import React from '$react';
-import {isObj} from "$utils";
+import {isObj,isNonNullString} from "$utils";
 import ExpandableItem from './ExpandableItem';
 import DrawerItem from './DrawerItem';
 import DrawerSection from "./DrawerSection"
@@ -11,6 +11,7 @@ export * from "./utils";
 
 const DrawerItemsComponent = React.forwardRef((props,ref)=> {
   let {items:_items,minimized} = props;
+  const hasAuth = typeof window.Auth !=='undefined' && Auth && Auth.isAllowedFromStr ? true : false;
   _items = typeof _items ==='function'? _items(props) : _items;
   if(React.isValidElement(_items)){
      return _items;
@@ -18,6 +19,7 @@ const DrawerItemsComponent = React.forwardRef((props,ref)=> {
   const r = React.useMemo(()=>{
     let items = []
     const renderExpandableOrSection = ({item,key,items})=>{
+          if(hasAuth && isNonNullString(item.perm) && !Auth.isAllowedFromStr(item.perm)) return null;
           const {section,items:itx2,...rest} = item;
           if(section){
             return <DrawerSection 
@@ -50,16 +52,19 @@ const DrawerItemsComponent = React.forwardRef((props,ref)=> {
           Object.map(item.items,(it,j)=>{
               if(!isObj(it)) return ;
               getDefaultProps(it);
-              const r = renderItem({minimized,renderExpandableOrSection,items:item.items,item:it,key:i+j,props});
+              const r = renderItem({minimized,hasAuth,renderExpandableOrSection,items:item.items,item:it,key:i+j,props});
               if(r){
                 itx.push(r);
               }
           });
           if(itx.length){
-              items.push(renderExpandableOrSection({items:itx,key:i,item}))
+              const rr = renderExpandableOrSection({items:itx,key:i,item});
+              if(rr){
+                items.push(rr);
+              }
           }
       } else {
-          const r = renderItem({minimized,renderExpandableOrSection,items:_items,item,key:i+"",props});
+          const r = renderItem({minimized,hasAuth,renderExpandableOrSection,items:_items,item,key:i+"",props});
           if(r){
             items.push(r);
           }
@@ -114,13 +119,14 @@ const getDefaultProps = function(item){
   return item;
 }
 
-const renderItem = ({item,minimized,renderExpandableOrSection,index,key})=>{
+const renderItem = ({item,minimized,hasAuth,renderExpandableOrSection,index,key})=>{
   key = key||index;
   if(React.isValidElement(item)){
     return <React.Fragment key={key}>
         {item}
     </React.Fragment>
   } else {
+    if(hasAuth && isNonNullString(item.perm) && !Auth.isAllowedFromStr(item.perm)) return null;
     if(!item.label && !item.text && !item.icon) {
         if(item.divider === true){
           const {divider,...rest} = item;

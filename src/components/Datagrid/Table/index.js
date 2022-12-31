@@ -57,6 +57,7 @@ const DatagridFactory = (Factory)=>{
             if(isObj(footerFields[columnField])){
                 return <Footer
                     {...defaultObj(footersValues[columnField])}
+                    abreviate = {this.state.abreviateValues}
                     displayLabel = {false}
                     style = {[style]}
                     aggregatorFunction = {this.getActiveAggregatorFunction().code}   

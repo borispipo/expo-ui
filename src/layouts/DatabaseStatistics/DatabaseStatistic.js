@@ -142,6 +142,7 @@ export default function DatabaseStatisticContainer ({dashboardProps,onRefreshAll
             if(typeof value !=='number'){
                 value = isObj(footerValue) && typeof footerValue.sum =='number'? footerValue.sum : 0;
             }
+            const formattedValue = typeof context.formatValue =="function"? context.formatValue(value,format) : (format =='money'?value.formatMoney():value.formatNumber());
             return <Pressable onPress={onPress} testID={testID+"_TitleContainer"} style={[theme.styles.w100]}>
                 <View testID={testID+"_TitleCountUp"} style={[theme.styles.w100]}>
                     <View style={[theme.styles.w100,theme.styles.row,theme.styles.alignItemsCenter]}>
@@ -158,7 +159,7 @@ export default function DatabaseStatisticContainer ({dashboardProps,onRefreshAll
                             <Label
                                 textCenter
                                 style = {counUpStyle}
-                            >{format =='money'?value.formatMoney():value.formatNumber()}</Label>
+                            >{formattedValue}</Label>
                         </Pressable>}
                     />
                 </View>

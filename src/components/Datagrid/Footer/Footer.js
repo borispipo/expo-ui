@@ -79,11 +79,17 @@ const loopForAggregator = (aggregatorFunctions,result)=>{
         result[aggregatorObj.code] = aggregatorObj;
     });
 }
-const formatValue = ({value,format,aggregatorFunction})=>{
-    return (format === 'money' && aggregatorFunction != 'count')? value.formatMoney():value.formatNumber();
+const formatValue = ({value,format,abreviate,aggregatorFunction})=>{
+    if((format === 'money' && aggregatorFunction != 'count')){
+        if(abreviate){
+            return value.abreviate2FormatMoney();
+        }
+        return value.formatMoney();
+    }
+    return abreviate? value.abreviate():value.formatNumber();
 }
 export default function DGGridFooterValue (props){
-    let {label,text,displayLabel,withLabel,style,aggregatorFunctions,aggregatorFunction,format,testID,anchorProps} = props;
+    let {label,text,displayLabel,withLabel,abreviate,style,aggregatorFunctions,aggregatorFunction,format,testID,anchorProps} = props;
     aggregatorFunctions = defaultObj(aggregatorFunctions);
     anchorProps = defaultObj(anchorProps);
     testID = defaultStr(testID,"RN_DatagridFooterComponent");
@@ -104,7 +110,7 @@ export default function DGGridFooterValue (props){
     for(let aggregatorFunction in aggregatorFunctions){
         let val = defaultDecimal(props[aggregatorFunction]);
         if(isDecimal(val)){
-            let fText = formatValue({value:val,format,aggregatorFunction});
+            let fText = formatValue({value:val,format,abreviate,aggregatorFunction});
             const mText = defaultStr(aggregatorFunctions[aggregatorFunction].label,aggregatorFunctions[aggregatorFunction].code,aggregatorFunction);
             title +=(title? ", ":"")+mText +" : "+fText
             menuItems.push({
@@ -132,7 +138,7 @@ export default function DGGridFooterValue (props){
                     </>
                 : null}
                 <Label testID={testID+"_LabelContent"} primary style={[styles.value]}>
-                    {formatValue({value:defaultDecimal(props[active]),aggregatorFunction:active,format})}
+                    {formatValue({value:defaultDecimal(props[active]),abreviate,aggregatorFunction:active,format})}
                 </Label>
             </Pressable>
         }}

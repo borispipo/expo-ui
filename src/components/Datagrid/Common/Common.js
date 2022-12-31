@@ -43,6 +43,8 @@ import notify from "$cnotify";
 import FileSystem from "$file-system";
 import sprintf from "$cutils/sprintf";
 
+export const TIMEOUT = 200;
+
 export const donutChart = {
     isChart : true,
     code : 'donutChart',
@@ -266,6 +268,7 @@ export default class CommonDatagridComponent extends AppComponent {
             chartRef : {value : {current:null}},
             chartSeriesNamesColumnsMapping : {value : {}},//le mappage entre les index des series et les colonnes coorespondantes
         }) 
+        this.state.abreviateValues = "abreviateValues" in this.props? !!this.props.abreviateValues : !!this.getSessionData("abreviateValues");
         const sessionAggregator = defaultStr(this.getSessionData("aggregatorFunction")).trim();
         const aggregatorProps = defaultStr(this.props.aggregatorFunction).trim();
         let aggregatorFunction = null;
@@ -1087,7 +1090,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 this.isUpdating = false;
                 this.setSessionData({showFilters});
             })
-        },100);
+        },TIMEOUT);
    }
    showFilters(){
        return this.toggleFilters(true);
@@ -1120,7 +1123,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 this.isUpdating = false;
                 this.setSessionData({showFooters:showOrHide})
             })
-        },0)
+        },TIMEOUT)
     }
     showFooters(){
         return this.toggleFooters(true);
@@ -1134,11 +1137,16 @@ export default class CommonDatagridComponent extends AppComponent {
     
    
    toggleFixedTableState(){
-       const fixedTable = !this.state.fixedTable;
-       this.setState({fixedTable},()=>{
-         this.updateLayout();
-         this.setSessionData("fixedTable",fixedTable);
-       })
+       setTimeout(()=>{
+            this.setIsLoading(true,()=>{
+                const fixedTable = !this.state.fixedTable;
+                this.setState({fixedTable},()=>{
+                    this.updateLayout();
+                    this.setSessionData("fixedTable",fixedTable);
+                    this.setIsLoading(false,false);
+                })
+            },true)
+       },TIMEOUT)
    }
    getSessionNameKey (){
         return defaultStr(this.props.table,this.props.tableName,this.props.sessionName);
@@ -1146,32 +1154,39 @@ export default class CommonDatagridComponent extends AppComponent {
    /*** affiche ou masque une colonne filtrée */
    toggleFilterColumnVisibility(field){
         if(!isNonNullString(field)) return;
-        let filteredColumns = {...this.state.filteredColumns};
-        filteredColumns[field] = defaultBool(filteredColumns[field],false) == false ? true : false;
-        this.prepareColumns({filteredColumns});
-        this.setState({filteredColumns},()=>{
-            this.setSessionData("filteredColumns"+this.getSessionNameKey(),filteredColumns);
-            if(!filteredColumns[field]){
-                this.filters[field] = defaultObj(this.filters[field]);
-                this.filters[field].value = this.filters[field].defaultValue = undefined;
-                this.doFilter({value:undefined,field})
-            }
-        });
+        setTimeout(()=>{
+            this.setIsLoading(true,()=>{
+                let filteredColumns = {...this.state.filteredColumns};
+                filteredColumns[field] = defaultBool(filteredColumns[field],false) == false ? true : false;
+                this.prepareColumns({filteredColumns});
+                this.setState({filteredColumns},()=>{
+                    this.setSessionData("filteredColumns"+this.getSessionNameKey(),filteredColumns);
+                    if(!filteredColumns[field]){
+                        this.filters[field] = defaultObj(this.filters[field]);
+                        this.filters[field].value = this.filters[field].defaultValue = undefined;
+                        this.doFilter({value:undefined,field})
+                    }
+                    this.setIsLoading(false,false);
+                });
+            },true)
+        },TIMEOUT)
     }
    /*** affiche ou masque une colonne */
    toggleColumnVisibility(field,removeFocus){
         if(!isNonNullString(field)) return;
-        let columns = {...this.state.columns};
-        columns[field].visible = !columns[field].visible;
-        const footers = this.getFootersFields();
-        if(isObj(footers[field])){
-            footers[field].visible = columns[field].visible;
-        }
-        this.setIsLoading(true,()=>{
-            this.prepareColumns({columns});
-            this.setState({columns});
-            this.setIsLoading(false,false);
-        })
+        setTimeout(()=>{
+            let columns = {...this.state.columns};
+            columns[field].visible = !columns[field].visible;
+            const footers = this.getFootersFields();
+            if(isObj(footers[field])){
+                footers[field].visible = columns[field].visible;
+            }
+            this.setIsLoading(true,()=>{
+                this.prepareColumns({columns});
+                this.setState({columns});
+                this.setIsLoading(false,false);
+            })
+        },TIMEOUT)
    }
    /****le nombre maximum de courbes supportées */
    getMaxSeriesSize(){
@@ -1263,15 +1278,17 @@ export default class CommonDatagridComponent extends AppComponent {
         } else {
             sectionListColumns[columnName] = {field:columnName};
         }
-        const {sectionListColumns:pSListColumns} = this.prepareColumns({sectionListColumns});
-        this.setIsLoading(true,()=>{
-            this.prepareData({data:this.INITIAL_STATE.data,sectionListColumns:pSListColumns},(state)=>{
-                this.setState({...state,sectionListColumns:pSListColumns},()=>{
-                    this.setIsLoading(false,false);
-                    this.setSessionData("sectionListColumns",Object.keys(pSListColumns));
+        setTimeout(()=>{
+            const {sectionListColumns:pSListColumns} = this.prepareColumns({sectionListColumns});
+            this.setIsLoading(true,()=>{
+                this.prepareData({data:this.INITIAL_STATE.data,sectionListColumns:pSListColumns},(state)=>{
+                    this.setState({...state,sectionListColumns:pSListColumns},()=>{
+                        this.setIsLoading(false,false);
+                        this.setSessionData("sectionListColumns",Object.keys(pSListColumns));
+                    });
                 });
-            });
-        },true);
+            },true);
+        },TIMEOUT);
    }
    removeAllColumnsInSectionList(){
         const {sectionListColumns} = this.prepareColumns({sectionListColumns:{}});
@@ -1340,6 +1357,18 @@ export default class CommonDatagridComponent extends AppComponent {
         }
         return this.aggregatorFunctions[Object.keys(this.aggregatorFunctions)[0]];
    }
+   toggleAbreviateValues(resetData){
+        setTimeout(()=>{
+            this.setIsLoading(true,()=>{
+                const abreviateValues = !this.state.abreviateValues;
+                const state = resetData ===true ? {data : [...this.state.data]} : {};
+                this.setState({abreviateValues,...state},()=>{
+                    this.setIsLoading(false,false);
+                    this.setSessionData("abreviateValues",abreviateValues);
+                })
+            },true);
+        },TIMEOUT);
+   }
    /**** récupère l'item de menu permettant lié à la sélection de la fonction d'aggggrégation */
    getAggregatorFunctionsMenuItems(withDivider){
         if(!this.hasFootersFields()) return [];
@@ -1355,6 +1384,8 @@ export default class CommonDatagridComponent extends AppComponent {
                 }
             })
         });
+        m.push({divider:true});
+        m.push({text:"Abréger les valeurs numériques",textBold:!!this.state.abreviateValues,icon:this.state.abreviateValues?'check':null,onPress:this.toggleAbreviateValues.bind(this)})
         if(m.length){
             m.unshift({
                 text : "Fonctions d'aggrégation",
@@ -1373,15 +1404,24 @@ export default class CommonDatagridComponent extends AppComponent {
    }
    toggleActiveAggregatorFunction(ag){
         if(!isValidAggregator(ag) || ag.code == this.state.aggregatorFunction) return null;
-        this.setIsLoading(true,()=>{
-            this.prepareData({data:this.INITIAL_STATE.data,aggregatorFunction:ag.code},(state)=>{
-                this.setState(state,()=>{
-                    this.setSessionData("aggregatorFunction",ag.code);
-                    this.setIsLoading(false,false);
+        setTimeout(()=>{
+            this.setIsLoading(true,()=>{
+                this.prepareData({data:this.INITIAL_STATE.data,aggregatorFunction:ag.code},(state)=>{
+                    this.setState(state,()=>{
+                        this.setSessionData("aggregatorFunction",ag.code);
+                        this.setIsLoading(false,false);
+                    })
                 })
-            })
-        },true);
+            },true);
+        },TIMEOUT);
    }
+   formatValue(value,format){
+        if(typeof value !='number') return value;
+        if(format && typeof format =='string' && format.toLowerCase() =='money'){
+            return this.state.abreviateValues? value.abreviate2FormatMoney() : value.formatMoney();
+        }
+        return this.state.abreviateValues ? value.abreviate() : value.formatNumber();
+    }
    renderAggregatorFunctionsMenu(){
         const m = this.getAggregatorFunctionsMenuItems(false,false);
         if(!m.length) return null;
@@ -1894,7 +1934,7 @@ export default class CommonDatagridComponent extends AppComponent {
             chartProps[settingKey][key] = config[key];
         });
         const mappedColumns = {};
-        const abreviateValues = defaultVal(config.abreviateValues,true);
+        const abreviateValues = defaultVal(config.abreviateValues,true) || this.state.abreviateValues;
         const dataLabelFormatter = typeof chartProps.dataLabels?.formatter =="function"? chartProps.dataLabels.formatter : undefined;
         const chartOptions = {
             ...chartProps,
@@ -1906,18 +1946,11 @@ export default class CommonDatagridComponent extends AppComponent {
                     if((column) && column.field){
                         mappedColumns[seriesIndex] = column;
                     }
-                    /*if(value>=660 && value < 661){
-                        console.log(value," will format ",column,seriesIndex,serieName)
-                    }*/
                     const columnField = defaultStr(column.field, isDonut? config.y : undefined);
                     if(dataLabelFormatter){
                         return dataLabelFormatter({value,column,columnDef:column,columnField,serie,serieName,seriesIndex})
                     }
-                    if(typeof value !=='number') return value;
-                    if(defaultStr(column.format).toLowerCase() ==='money'){
-                        return abreviateValues ? value.abreviate2FormatMoney() : value.formatMoney();
-                    }
-                    return abreviateValues ? value.abreviate() : value.formatNumber();
+                    return this.formatValue(value,column.format);
                 }
             }),
             title :extendObj(true,{}, {
@@ -1976,11 +2009,8 @@ export default class CommonDatagridComponent extends AppComponent {
             }
         }
         yLabels.formatter = (value)=>{
-            if(typeof value !='number') return value;
-            if((yLabelFormat =='money' || (isDonut && yAxisColumn.format =="money")) || (yLabelsColumn && yLabelsColumn.format =='money')){
-                return abreviateValues ? value.abreviate2FormatMoney() : value.formatMoney();
-            }
-            return abreviateValues? value.abreviate() : value.formatNumber();
+            const format = (yLabelFormat =='money' || (isDonut && yAxisColumn.format =="money")) || (yLabelsColumn && yLabelsColumn.format =='money') ? 'money' : '';
+            return this.formatValue(value,format);
         }
         chartOptions.chart.id = this.chartIdPrefix+"-"+defaultStr(chartType.key,"no-key");
         if(!chartType.isDonut){
@@ -2563,6 +2593,7 @@ export default class CommonDatagridComponent extends AppComponent {
                                 key = {key2}
                                 testID={testID+"_FooterItem_"+key2}
                                 {...footer}
+                                abreviate = {this.state.abreviateValues}
                                 aggregatorFunction = {this.getActiveAggregatorFunction().code}
                                 aggregatorFunctions = {this.aggregatorFunctions}
                                 displayLabel = {false}
@@ -2573,7 +2604,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 });
             }
         }
-        return <View testID={testID+"_ContentContainer"}  style={[theme.styles.w100,isA && this.state.displayOnlySectionListHeaders && {borderTopColor:theme.colors.divider,borderTopWidth:1},isA ? [theme.styles.ph2,theme.styles.pt1] : theme.styles.pt1,theme.styles.justifyContentCenter,theme.styles.alignItemsCenter,theme.styles.pb1,!cells && theme.styles.ml1,theme.styles.mr1,cStyle]}>
+        return <View testID={testID+"_ContentContainer"}  style={[theme.styles.w100,isA && this.state.displayOnlySectionListHeaders && {borderTopColor:theme.colors.divider,borderTopWidth:1},isA ? [theme.styles.ph2,theme.styles.pt1] : [theme.styles.pt1,theme.styles.ph1],theme.styles.justifyContentCenter,theme.styles.alignItemsCenter,theme.styles.pb1,!cells && theme.styles.ml1,theme.styles.mr1,cStyle]}>
             <Label testID={testID+"_Label"} splitText numberOfLines={3} textBold style={[theme.styles.w100,{color:theme.colors.primaryOnSurface,fontSize:isA?15 :16},lStyle]}>{label}</Label>
             {cells ? <View testID={testID+"_TableRow"} style = {[theme.styles.w100,theme.styles.row,isA && theme.styles.pt1,theme.styles.alignItemsFlexStart]}
             >{cells}</View> : null}
@@ -3189,6 +3220,7 @@ export default class CommonDatagridComponent extends AppComponent {
         const renderText = isSectionListHeader === true || customRenderRowCell === false ? true : false;
         rowIndex = isDecimal(rowIndex)? rowIndex : isDecimal(index)? index : undefined;
         rowCounterIndex = isDecimal(rowCounterIndex) ? rowCounterIndex : isDecimal(rowIndex)? rowIndex+1 : defaultDecimal(rowCounterIndex);
+        const abreviate = this.state.abreviateValues;
         if(!isObj(rowData)) return renderText ? null : {render:null,extra:{}};
          let _render = null;
          columnDef = defaultObj(columnDef);
@@ -3317,14 +3349,7 @@ export default class CommonDatagridComponent extends AppComponent {
          if(isFunction(renderProps)){
              renderProps = renderProps.call(this,renderArgs);
          }
-         if(isDecimal(_render)){
-             let fmat = defaultStr(columnDef.format).toLowerCase();
-            if(fmat == "money"){
-                _render = _render.formatMoney();
-            } else //if(fmat =="number") {
-                _render = _render.formatNumber();
-            //}
-         }
+         _render = this.formatValue(_render,columnDef.format);
          if(!renderText && _render && isObj(renderProps)){
              let Component = defaultVal(renderProps.Component,Label);
              delete renderProps.Component;
@@ -3572,6 +3597,7 @@ CommonDatagridComponent.propTypes = {
     /*** permet de faire une mutation sur les options de la recherche, immédiatement avant le lancement de la recherche */
     fetchOptionsMutator : PropTypes.func,
     useLinesProgressBar  : PropTypes.bool,//si le progress bar lignes horizontale seront utilisés
+    abreviateValues : PropTypes.bool, //si les valeurs numériques seront abregées
 }
 
 const styles = StyleSheet.create({

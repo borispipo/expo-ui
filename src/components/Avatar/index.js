@@ -19,9 +19,13 @@ const defaultSize = 40;
  */
 const AvatarComponent = React.forwardRef((props,ref)=>{
     let Component = undefined;
-    let {image,icon,testID,color,title,toolip,src,onPress,containerProps,useSuffix,suffix,size,children,label,source,text,...rest} = props;
-    label = defaultVal(label,text,children);
-	if(typeof label =='number') label = label+"";
+    let {image,icon,testID,color,title,toolip,src,onPress,containerProps,withLabel,useSuffix,suffix,size,children,label,source,text,...rest} = props;
+    if(withLabel === false){
+        label = null;
+    } else {
+        label = defaultVal(label,text,children);
+	    if(typeof label =='number') label = label+"";
+    }
     rest = defaultObj(rest);
     containerProps = defaultObj(containerProps);
     size = defaultDecimal(size,defaultSize);

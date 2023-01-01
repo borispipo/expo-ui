@@ -67,7 +67,7 @@ export default function ImageComponent(props){
     disabled = defaultVal(disabled,false);
     readOnly = defaultBool(readOnly,false);
     menuProps = defaultObj(menuProps);
-    round = defaultBool(round,rounded,true);
+    rounded = defaultBool(rounded,round,true);
     containerProps = defaultObj(containerProps);
     drawProps = defaultObj(drawProps);
     const flattenStyle = StyleSheet.flatten(props.style) || {};
@@ -271,7 +271,7 @@ export default function ImageComponent(props){
                             imageProps = {imageProps}
                             {...props}
                             style = {[rest.style]}
-                            rounded = {round}
+                            rounded = {rounded}
                             image = {true}
                             source = {source}
                         />}

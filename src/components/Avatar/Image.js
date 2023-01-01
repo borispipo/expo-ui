@@ -55,6 +55,7 @@ const AvatarImage = React.forwardRef(({
           borderRadius,
         },
         flattenedStyle,
+        !isRounded && {borderRadius:0},
       ]}
       {...rest}
     >

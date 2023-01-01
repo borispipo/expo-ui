@@ -43,7 +43,7 @@ import notify from "$cnotify";
 import FileSystem from "$file-system";
 import sprintf from "$cutils/sprintf";
 
-export const TIMEOUT = 200;
+export const TIMEOUT = 100;
 
 export const donutChart = {
     isChart : true,
@@ -1272,15 +1272,15 @@ export default class CommonDatagridComponent extends AppComponent {
         if(!isObj(this.state.sectionListColumns) || !Array.isArray(this.preparedColumns?.sectionListColumnsMenuItems))return;
         const menuItems = this.preparedColumns?.sectionListColumnsMenuItems;
         if(!menuItems.length) return;
-        const sectionListColumns = {...this.state.sectionListColumns};
-        if(enable !== true && isObj(sectionListColumns[columnName])){
-            delete sectionListColumns[columnName];
-        } else {
-            sectionListColumns[columnName] = {field:columnName};
-        }
         setTimeout(()=>{
-            const {sectionListColumns:pSListColumns} = this.prepareColumns({sectionListColumns});
             this.setIsLoading(true,()=>{
+                const sectionListColumns = {...this.state.sectionListColumns};
+                if(enable !== true && isObj(sectionListColumns[columnName])){
+                    delete sectionListColumns[columnName];
+                } else {
+                    sectionListColumns[columnName] = {field:columnName};
+                }
+                const {sectionListColumns:pSListColumns} = this.prepareColumns({sectionListColumns});
                 this.prepareData({data:this.INITIAL_STATE.data,sectionListColumns:pSListColumns},(state)=>{
                     this.setState({...state,sectionListColumns:pSListColumns},()=>{
                         this.setIsLoading(false,false);

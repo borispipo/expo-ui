@@ -394,8 +394,8 @@ const DatagridFactory = (Factory)=>{
             filter = defaultFunc(filter,x=>true);
             const showFooters = this.canShowFooters();
             let restItems = [];
-            
-            /*if(max && this.isSelectableMultiple()){
+            const max = this.getMaxSelectableRows();
+            if(max && this.isSelectableMultiple()){
                 max = max.formatNumber();
                 restItems = [
                     {
@@ -413,7 +413,7 @@ const DatagridFactory = (Factory)=>{
                         icon :"select"
                     }
                 ]
-            }*/
+            }
             const {y} = this.state.layout;
             const {height:winheight,width:winWidth} = Dimensions.get("window");
             const containerHeight = winheight - y;

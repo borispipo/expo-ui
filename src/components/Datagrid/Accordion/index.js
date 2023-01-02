@@ -394,7 +394,7 @@ const DatagridFactory = (Factory)=>{
             filter = defaultFunc(filter,x=>true);
             const showFooters = this.canShowFooters();
             let restItems = [];
-            const max = this.getMaxSelectableRows();
+            let max = this.getMaxSelectableRows();
             if(max && this.isSelectableMultiple()){
                 max = max.formatNumber();
                 restItems = [

@@ -2787,7 +2787,7 @@ export default class CommonDatagridComponent extends AppComponent {
                                 abreviate = {this.state.abreviateValues}
                                 aggregatorFunction = {this.getActiveAggregatorFunction().code}
                                 aggregatorFunctions = {this.aggregatorFunctions}
-                                displayLabel = {false}
+                                displayLabel = {this.isAccordion()}
                                 //anchorProps = {{style:[theme.styles.ph1,theme.styles.mh05]}}
                             />  
                         </View>)

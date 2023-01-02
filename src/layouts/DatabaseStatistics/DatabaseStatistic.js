@@ -23,7 +23,6 @@ export default function DatabaseStatisticContainer ({dashboardProps,onRefreshAll
     const [count,setCount] = React.useState(0);
     const datagridRef = React.useRef(null);
     let {} = props;
-    title = defaultStr(title)
     table = defaultObj(table);
     const dbStatistics = defaultObj(table.databaseStatistics,table.databaseStatisticsProps);
     const databaseStatisticsFields = defaultObj(table.databaseStatisticsFields);
@@ -106,6 +105,8 @@ export default function DatabaseStatisticContainer ({dashboardProps,onRefreshAll
     },[columns])();
     const counUpStyle = {fontSize:20,fontWeight:'bold',color:theme.colors.secondaryOnSurface};
     title =  React.isValidElement(title,true)?<Label splitText numberOfLines={1} color={theme.colors.primaryOnSurface} style={[{fontSize:15}]}>{title}</Label>: null;
+    const titleText = title && React.getTextContent(title) || null;
+    const titleItem = titleText && {text:titleText,icon,divider:true} || null;
     return withDashboard ? <Dashboard
         chartProps = {{
             stroke: {
@@ -154,7 +155,7 @@ export default function DatabaseStatisticContainer ({dashboardProps,onRefreshAll
                     </View>
                     <Menu
                         testID={testID+"_Menu"}
-                        items = {[...context.renderMenu(),onRefreshAllItem]}
+                        items = {[titleItem,...context.renderMenu(),onRefreshAllItem]}
                         anchor = {(p)=><Pressable {...p} style={[theme.styles.pl1]} testID={testID+"_MenuAnchor"}>
                             <Label
                                 textCenter
@@ -179,6 +180,7 @@ export default function DatabaseStatisticContainer ({dashboardProps,onRefreshAll
             return <Menu
                 testID={testID+"_Menu"}
                 items = {[
+                    titleItem,
                     {
                         icon : "refresh",
                         onPress : refresh,

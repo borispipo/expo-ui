@@ -158,7 +158,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     const fPathRef = React.useRef(defaultStr(fetchPathKey,uniqid("fetchPath")));
     fetchPath = defaultStr(fetchPath,table.queryPath,tableName.toLowerCase()).trim();
     if(fetchPath){
-        fetchPath = setQueryParams(fetchPath,fPathRef.current,fPathRef.current)
+        fetchPath = setQueryParams(fetchPath,"SWRFetchPathKey",fPathRef.current)
     }
     const innerRef = React.useRef(null);
     const showProgressRef = React.useRef(true);

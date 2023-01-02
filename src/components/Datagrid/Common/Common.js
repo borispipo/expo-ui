@@ -1736,28 +1736,30 @@ export default class CommonDatagridComponent extends AppComponent {
                                     d.push(null);
                                 }
                                 data.push(d);
-                            }
-                            const hF = hFooters[key];
-                            if(isObj(hF) && isNonNullString(agFunc)){
-                                const dd = [];
-                                Object.map(cols,(col,i)=>{
-                                       if(i in hF){
-                                            const ff = hF[i];
-                                            dd.push(defaultNumber(ff[agFunc]));
-                                        } else {
-                                            dd.push(null);
-                                        }
-                                });
-                                if(canExportOnlyTotal){
-                                    dd.unshift(val);
-                                    data.push(dd);
+                            } else {
+                                const hF = hFooters[key];
+                                if(isObj(hF) && isNonNullString(agFunc)){
+                                    const dd = [];
+                                    Object.map(cols,(col,i)=>{
+                                        if(i in hF){
+                                                const ff = hF[i];
+                                                dd.push(defaultNumber(ff[agFunc]));
+                                            } else {
+                                                dd.push(null);
+                                            }
+                                    });
+                                    if(canExportOnlyTotal){
+                                        dd.unshift(val);
+                                        data.push(dd);
+                                    } else {
+                                        data.push(d);
+                                        data.push(dd);
+                                    }
                                 } else {
                                     data.push(d);
-                                    data.push(dd);
                                 }
-                            } else {
-                                data.push(d);
                             }
+                            
                             
                         } else if(!canExportOnlyTotal) {
                             Object.map(cols,(col,i)=>{

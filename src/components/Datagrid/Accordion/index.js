@@ -528,8 +528,8 @@ const DatagridFactory = (Factory)=>{
                         {this.renderSectionListMenu()}
                         {this.renderDisplayTypes()}
                         {this.renderAggregatorFunctionsMenu()}
-                        {!canRenderChart ? <RenderType /> : null}
                         {this.renderExportableMenu()}
+                        {!canRenderChart ? <RenderType /> : null}
                             {/*filters !== false && <td ><LocalFilter title = {this.props.title} fields ={this.state.columns} onChange={this.onLocalFiltersChange.bind(this)}/></td>*/}
                     </View>
             </ScrollView>

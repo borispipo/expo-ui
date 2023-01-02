@@ -12,8 +12,9 @@ import {Flag} from "$ecomponents/Countries";
 import { StyleSheet } from "react-native";
 
 export const renderRowCell = (arg)=>{
-    let {rowData,getRowKey,context,renderRowCell:customRenderRowCell,abreviateValues,isSectionListHeader,rowIndex,index,rowCounterIndex,columnDef,columnField} = arg;
+    let {rowData,getRowKey,context,formatValue:customFormatValue,renderRowCell:customRenderRowCell,abreviateValues,isSectionListHeader,rowIndex,index,rowCounterIndex,columnDef,columnField} = arg;
     context = context || this;
+    const canFormatValue = customFormatValue !== false ? true : false;
     const renderText = isSectionListHeader === true || customRenderRowCell === false ? true : false;
     rowIndex = isDecimal(rowIndex)? rowIndex : isDecimal(index)? index : undefined;
     rowCounterIndex = isDecimal(rowCounterIndex) ? rowCounterIndex : isDecimal(rowIndex)? rowIndex+1 : defaultDecimal(rowCounterIndex);
@@ -120,16 +121,18 @@ export const renderRowCell = (arg)=>{
     if(isFunction(renderProps)){
         renderProps = renderProps.call(context,renderArgs);
     }
-    _render = formatValue(_render,columnDef.format,abreviateValues);
+    if(canFormatValue){
+        _render = formatValue(_render,columnDef.format,abreviateValues);
+    }
     if(!renderText && _render && isObj(renderProps)){
         let Component = defaultVal(renderProps.Component,Label);
         delete renderProps.Component;
         _render = <Component {...renderProps}>{_render}</Component>
     }
-    if(typeof _render =='boolean'){
-    _render = _render ? "Oui" : "Non";
-    }
     if(renderText){
+        if(typeof _render =='number' || typeof _render =='boolean' || typeof _render =="string"){
+            return _render;
+        }
         return React.getTextContent(_render);
     }
     if((typeof _render ==='string' || typeof _render =='number')){
@@ -181,6 +184,9 @@ export const  renderSelectFieldCell= ({rowData,columnDef,columnField})=>{
 
 export const formatValue = (value,format,abreviateValues)=>{
     if(typeof value !='number') return value;
+    if(typeof value =='boolean'){
+        return value ? "Oui" : "Non";
+    }
     if(format && typeof format =='string' && format.toLowerCase() =='money'){
         return abreviateValues? value.abreviate2FormatMoney() : value.formatMoney();
     }

@@ -295,6 +295,7 @@ const DatagridFactory = (Factory)=>{
                         {this.renderSectionListMenu()}
                         {this.renderDisplayTypes()}
                         {this.renderAggregatorFunctionsMenu()}
+                        {this.renderExportableMenu()}
                         <View pointerEvents={pointerEvents} testID={testID+"_HeaderPagination"} style = {styles.paginationItem}>
                             <BottomSheetMenu
                                 testID={testID+"_HeaderMenus"}

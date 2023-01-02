@@ -55,7 +55,7 @@ const Provider = React.forwardRef((props,innerRef)=>{
         },
         close : (props)=>{
             if(!state.visible) return;
-           return setState({...state,...props,visible:false});
+           return setState({...state,...defaultObj(props),visible:false});
         },
     };
     React.setRef(ref,context);        

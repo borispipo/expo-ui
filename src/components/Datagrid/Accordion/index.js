@@ -529,25 +529,7 @@ const DatagridFactory = (Factory)=>{
                         {this.renderDisplayTypes()}
                         {this.renderAggregatorFunctionsMenu()}
                         {!canRenderChart ? <RenderType /> : null}
-                    
-                            {/*exportable && exportTableProps.pdf && (exportTableProps.pdf.footer) ? (
-                                <td  width="40px">
-                                    <ExportTable 
-                                        {...exportTableProps}
-                                        excel = {false}
-                                        ref = {(el)=>{
-                                            if(el){
-                                                this.exportDataInstance = el;
-                                            }
-                                        }}
-                                        selector = {this.exportableDomId}
-                                        getAllData = {()=>{
-                                            return this.INITIAL_STATE.data;
-                                        }}
-                                    />
-                                </td>
-                                ) : null
-                            */}
+                        {this.renderExportableMenu()}
                             {/*filters !== false && <td ><LocalFilter title = {this.props.title} fields ={this.state.columns} onChange={this.onLocalFiltersChange.bind(this)}/></td>*/}
                     </View>
             </ScrollView>

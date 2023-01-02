@@ -11,7 +11,7 @@ import {showConfirm} from "$ecomponents/Dialog";
 import Label from "$ecomponents/Label";
 import Icon,{COPY_ICON} from "$ecomponents/Icon";
 import filterUtils from "$cfilters";
-import {sortBy,isDecimal,defaultVal,extendObj,isObjOrArray,isObj,defaultNumber,defaultStr,isFunction,defaultBool,defaultArray,defaultObj,isNonNullString,defaultDecimal} from "$utils";
+import {sortBy,isDecimal,defaultVal,sanitizeSheetName,extendObj,isObjOrArray,isObj,defaultNumber,defaultStr,isFunction,defaultBool,defaultArray,defaultObj,isNonNullString,defaultDecimal} from "$utils";
 import {Datagrid as DatagridContentLoader} from "$ecomponents/ContentLoader";
 import React from "$react";
 import DateLib from "$lib/date";
@@ -37,6 +37,7 @@ import notify from "$cnotify";
 import FileSystem from "$file-system";
 import sprintf from "$cutils/sprintf";
 import { renderRowCell,formatValue } from "./utils";
+import * as XLSX from "xlsx";
 
 export const TIMEOUT = 100;
 
@@ -1623,6 +1624,204 @@ export default class CommonDatagridComponent extends AppComponent {
             }
         ]
    }
+   getExportableFields(){
+        return {
+            fileName : {
+                text : "Nom du fichier",
+                format : "hashtag",
+                required : true,
+            },
+            displayTotals : {
+                type : "switch",
+                label : "Exporter les entêtes des groupes",
+                defaultValue :1,
+            },
+            /*abreviateValues : {
+                text : "Abréger les valeurs numériques",
+                type : "switch",
+            },*/
+            dateFormat : {
+                text : "Format des dates",
+                type : "dateFormat",
+                required : true,
+            },
+        }
+   }
+   /***@see : https://docs.sheetjs.com/docs/api/utilities */
+   exportToExcel(){
+        const skey = "export-to-excel";
+        const isOnlytotal = this.state.displayOnlySectionListHeaders;
+        let displayOnlyHeader = this.canDisplayOnlySectionListHeaders() && isOnlytotal;
+        const sData = defaultObj(this.getSessionData(skey));
+        return DialogProvider.open({
+            title : "Paramètre d'export excel",
+            data : sData,
+            fields : {
+                ...this.getExportableFields(),
+                sheetName : {
+                    label : 'Nom de la feuille excel',
+                    format : "hashtag",
+                    required : true,
+                },
+                exportOnlyTotal : displayOnlyHeader && {
+                    label : "Exporter uniquemnt les totaux",
+                    defaultValue : 0,
+                    type : "switch",
+                },
+                aggregatedValues : displayOnlyHeader ? {
+                    label : "Exporter uniquement les totaux aggrégées",
+                    defaultValue : 0,
+                    type : "switch",
+                }  : null,
+                addEmptyRowAfterTotal : {
+                    
+                },
+            },
+            actions : [{text:'Exporter',icon : "check"}],
+            onSuccess:({data:config})=>{
+                this.setSessionData(skey,config);
+                config.fileName = sprintf(config.fileName);
+                config.sheetName = sanitizeSheetName(config.sheetName);
+                const data = [];
+                let totalColumns = 0;
+                const cols = {};
+                DialogProvider.close();
+                Preloader.open("préparation des données...");
+                const footers = this.getFooters();
+                if(displayOnlyHeader && config.aggregatedValues){
+                    const fValues = this.getFooterValues();
+                    const headers = ["Fonction d'agrégation"];
+                    const aggregatorFunctions = this.aggregatorFunctions;
+                    Object.map(footers,(f,i)=>{
+                        const col = this.state.columns[i];
+                        if(!col || col.visible === false) return;
+                        headers.push(defaultStr(col.label,col.text));
+                        cols[i] = col;
+                    });
+                    data.push(headers);
+                    Object.map(aggregatorFunctions,(ag,i)=>{
+                        const d = [defaultStr(ag.label,ag.text,i)];
+                        Object.map(fValues,(footer,field)=>{
+                            if(!cols[field]) return;
+                            d.push(defaultNumber(footer[i]))
+                        });
+                        data.push(d);
+                    })
+                } else {
+                    const headers = [];
+                    const hFooters = defaultObj(this.sectionListHeaderFooters);
+                    const agFunc = this.state.aggregatorFunction;
+                    const canExportOnlyTotal = isOnlytotal || (config.exportOnlyTotal && displayOnlyHeader);
+                    if(canExportOnlyTotal){
+                        headers.push("");
+                    }
+                    Object.map(this.state.columns,(col,i)=>{
+                        if(!isObj(col) || col.visible === false || this.isSelectableColumn(col,i) || i === this.getIndexColumnName()) return;
+                        if(canExportOnlyTotal && !(i in footers)) return;
+                        cols[i] = col;
+                        headers.push(defaultStr(col.label,col.text));
+                        totalColumns++;
+                    })
+                    data.push(headers);
+                    Object.map(this.state.data,(dat,index)=>{
+                        ///si l'on a a faire à une colonne de type entete
+                        const d = [];
+                        if(dat.isSectionListHeader){
+                            if(!config.displayTotals && !canExportOnlyTotal) return;
+                            const {sectionListHeaderKey:key} = dat;
+                            const val = key === this.emptySectionListHeaderValue ? this.getEmptySectionListHeaderValue() : key;
+                            d.push(val);
+                            if(!canExportOnlyTotal){
+                                for(let i = 1;i<totalColumns;i++){
+                                    d.push(null);
+                                }
+                                data.push(d);
+                            }
+                            const hF = hFooters[key];
+                            if(isObj(hF) && isNonNullString(agFunc)){
+                                const dd = [];
+                                Object.map(cols,(col,i)=>{
+                                       if(i in hF){
+                                            const ff = hF[i];
+                                            dd.push(defaultNumber(ff[agFunc]));
+                                        } else {
+                                            dd.push(null);
+                                        }
+                                });
+                                if(canExportOnlyTotal){
+                                    dd.unshift(val);
+                                    data.push(dd);
+                                } else {
+                                    data.push(d);
+                                    data.push(dd);
+                                }
+                            } else {
+                                data.push(d);
+                            }
+                            
+                        } else if(!canExportOnlyTotal) {
+                            Object.map(cols,(col,i)=>{
+                                const isDateField = defaultStr(col.type).toLowerCase().contains("date");
+                                d.push(this.renderRowCell({
+                                    data : dat,
+                                    rowData : dat,
+                                    rowCounterIndex : index,
+                                    rowIndex : index,
+                                    formatValue : false,
+                                    renderRowCell : false,
+                                    columnField : defaultStr(col.field,i),
+                                    columnDef :{
+                                        ...col,
+                                        ...(isDateField?{format:config.dateFormat}:{})
+                                    }
+                                }));
+                            })   
+                            data.push(d);
+                        }
+                    });
+                }
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.aoa_to_sheet(data);
+                XLSX.utils.book_append_sheet(wb, ws, config.sheetName);
+                FileSystem.writeExcel({...config,workbook:wb}).then(({path})=>{
+                    if(isNonNullString(path)){
+                        notify.success("Fichier enregistré dans le répertoire {0}".sprintf(path))
+                    }
+                 }).finally(()=>{
+                    Preloader.close();
+                })
+            }
+        })
+   }
+   exportToPdf(){
+
+   }
+   renderExportableMenu(){
+        if(this.isDashboard() || !defaultStr(this.state.displayType).toLowerCase().contains("table")) return null;
+        const items = [];
+        if(this.canExportToExcel()){
+            items.push({
+                text : "Exporter au format excel",
+                icon : "file-excel",
+                onPress: this.exportToExcel.bind(this),
+            })
+        }
+        if(false && this.canExportToPDF()){
+            items.push({
+                text : "Exporter au format pdf",
+                icon : "file-pdf-box",
+                onPress : this.exportToPdf.bind(this)
+            })
+        }
+        if(!items.length) return null;
+        return <Menu
+            items = {items}
+            title ="Export des données du tableau"
+            anchor = {(a)=>{
+                return <Icon title = {"Exporter les données du tableau"} {...a} name={"export"}/>
+            }}
+        />
+   }
    renderDisplayTypes(){
         const m = [];
         let activeType = null,hasFoundChart = false,hasFoundTable = false;
@@ -1830,7 +2029,7 @@ export default class CommonDatagridComponent extends AppComponent {
         const chartType = displayTypes[this.state.displayType];
         if(!isObj(chartType) || !isNonNullString(chartType.type)) return null;
         if(typeof chartType.isRendable =='function' && chartType.isRendable(this.getChartIsRendableArgs()) === false) {
-            console.warn("impossible d'afficher le graphe de type ",chartType.label," car le type de données requis pour le rendu de ce graphe est invalide")
+            //console.warn("impossible d'afficher le graphe de type ",chartType.label," car le type de données requis pour le rendu de ce graphe est invalide")
             return null;
         }
         const isDonut = chartType.isDonut || chartType.isRadial;
@@ -3172,7 +3371,7 @@ export default class CommonDatagridComponent extends AppComponent {
             différent du td d'un table et ne doit pas être un TableColumn de md
     */
     renderRowCell (arg){
-        let {rowData,rowKey,rowIndex,handleSelectableColumn,rowCounterIndex,renderRowCell:customRenderRowCell,isSectionListHeader,columnDef,columnField} = arg;
+        let {rowData,rowKey,rowIndex,handleSelectableColumn,formatValue,rowCounterIndex,renderRowCell:customRenderRowCell,isSectionListHeader,columnDef,columnField} = arg;
         const renderText = isSectionListHeader === true || customRenderRowCell === false ? true : false;
         if(!isObj(rowData)) return renderText ? null : {render:null,extra:{}};
         rowIndex = isDecimal(rowIndex)? rowIndex : isDecimal(index)? index : undefined;
@@ -3196,6 +3395,7 @@ export default class CommonDatagridComponent extends AppComponent {
         }
         return renderRowCell({
             ...arg,
+            formatValue,
             context : this,
             getRowKey : this.getRowKey.bind(this),
             abreviateValues : this.state.abreviateValues,

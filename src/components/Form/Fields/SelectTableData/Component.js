@@ -195,7 +195,13 @@ const TableDataSelectField = React.forwardRef((_props,ref)=>{
         return (itemLabel !== itemCode ? ((isNonNullString(itemCode)?("["+itemCode+"] "):"")+itemLabel):itemLabel);
     }
     const dialogProps = defaultObj(props.dialogProps);
-    dialogProps.title = defaultStr(dialogProps.title,fKeyTable.text,fKeyTable.label)
+    let ttitle = defaultStr(dialogProps.title);
+    if(!ttitle){
+        const txt = defaultStr(props.label,props.text);
+        const tt = defaultStr(fKeyTable.text,fKeyTable.label);
+        ttitle = txt && tt ? "{0} [1]".sprintf(txt,tt) : tt || txt;
+    }
+    dialogProps.title = ttitle;
     return <Dropdown
         {...props}
         isFilter = {isFilter}

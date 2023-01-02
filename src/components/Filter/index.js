@@ -513,6 +513,10 @@ export default class Filter extends AppComponent {
      isLoading = !!isLoading;
      rest.pointerEvents = !isLoading ? "auto" : "none";
      if(withLabel ===false){
+        if(type.contains("select")){
+          rest.dialogProps = defaultObj(rest.dialogProps);
+          rest.dialogProps.title = defaultStr(rest.dialogProps.title,label);
+        }
         delete rest.label;
         delete rest.text;
         delete rest.title;

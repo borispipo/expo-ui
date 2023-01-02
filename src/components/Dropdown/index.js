@@ -996,7 +996,7 @@ class DropdownComponent extends AppComponent {
                     contentStyle = {[{paddingVertical:0},restProps.contentStyle]}
                     anchor={anchor}
                     {...dialogProps}
-                    title = {defaultStr(dialogProps.title,label,text)+"[ "+self.state.data.length.formatNumber()+" ]"}
+                    title = {defaultStr(dialogProps.title,label,text)+" [ "+self.state.data.length.formatNumber()+" ]"}
                     subtitle = {selectedText}
                     style = {[restProps.style]}
                     contentProps = {{style:{flex:1}}}

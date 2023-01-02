@@ -71,20 +71,24 @@ export const getFilterComponentProps = (_props)=>{
     type = defaultStr(jsType,type,'text').toLowerCase().replaceAll("_","").replaceAll("-","").trim();
     const sanitizedType = type.replaceAll("_","").toLowerCase().trim();
     props = defaultObj(props);
+    props.label = defaultStr(label,text);
     if(type.startsWith("select")){
         props.inputProps = Object.assign({},props.inputProps);
         props.inputProps.placeholder = defaultStr(props.inputProps.placeholder,i18n.lang("search.."))
-        props.label = label;
         component = Fields.SelectField;
         if(type =='select_country' || type =='selectcountry'){
             component = Fields.SelectCountry;
         } else if(type =='select_tabledata' || type =='selecttabledata'){
             component = Fields.SelectTableData;
+        } else if(React.isComponent(componentTypes[type])){
+            component = componentTypes[type];
+        } else if(React.isComponent(componentTypes[sanitizedType])){
+            component = componentTypes[sanitizedType];
         }
         type = "select";
     } else if(type == 'switch' || type =='radio' || type ==='checkbox') {
         type = 'select';
-        let {checkedLabel,checkedTooltip,uncheckedTooltip,checkedValue,uncheckedLabel,uncheckedValue,label,text,...pR} = props;
+        let {checkedLabel,checkedTooltip,uncheckedTooltip,checkedValue,uncheckedLabel,uncheckedValue,...pR} = props;
         checkedLabel = defaultVal(checkedLabel,'Non')
         uncheckedLabel = defaultVal(uncheckedLabel,'Oui')
         checkedValue = defaultVal(checkedValue,1); uncheckedValue = defaultVal(uncheckedValue,0)
@@ -101,7 +105,6 @@ export const getFilterComponentProps = (_props)=>{
         component = componentTypes[type];
     } else if(isNonNullString(props.foreignKeyColumn) && isNonNullString(props.foreignKeyTable)) {
         component = Fields.SelectTableData;
-        props.multiple = true;
         type = "select";
     }else {
         if(React.isComponent(componentTypes[sanitizedType])){
@@ -109,8 +112,7 @@ export const getFilterComponentProps = (_props)=>{
         } 
         delete props.dbName;
         delete props.tableName;
-        props.label = label; 
-        delete props.fieldName;
+       delete props.fieldName;
     }
     type = type || "text"
     if(type =='select'){

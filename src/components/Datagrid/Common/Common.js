@@ -9,10 +9,8 @@ import Tooltip from "$ecomponents/Tooltip";
 import setQueryLimit from "./setQueryLimit";
 import {showConfirm} from "$ecomponents/Dialog";
 import Label from "$ecomponents/Label";
-import Image from "$ecomponents/Image";
 import Icon,{COPY_ICON} from "$ecomponents/Icon";
 import filterUtils from "$cfilters";
-import Hashtag from "$ecomponents/Hashtag";
 import {sortBy,isDecimal,defaultVal,extendObj,isObjOrArray,isObj,defaultNumber,defaultStr,isFunction,defaultBool,defaultArray,defaultObj,isNonNullString,defaultDecimal} from "$utils";
 import {Datagrid as DatagridContentLoader} from "$ecomponents/ContentLoader";
 import React from "$react";
@@ -25,15 +23,11 @@ import Preloader from "$ecomponents/Preloader";
 import Checkbox from "../Checkbox";
 import { TouchableRipple } from "react-native-paper";
 import { evalSingleValue,Footer,getFooterColumnValue,isValidAggregator,extendAggreagatorFunctions} from "../Footer";
-import i18n from "$i18n";
 import { makePhoneCall,canMakePhoneCall as canMakeCall} from "$makePhoneCall";
 import copyToClipboard from "$capp/clipboard";
 import { Pressable } from "react-native";
-import TableLink from "$TableLink";
-import appConfig from "$capp/config";
 import stableHash from "stable-hash";
 import DatagridProgressBar from "./ProgressBar";
-import {Flag} from "$ecomponents/Countries"
 import View from "$ecomponents/View";
 import {Menu} from "$ecomponents/BottomSheet";
 import {styles as tableStyles} from "$ecomponents/Table";
@@ -42,6 +36,7 @@ import Chart,{getMaxSupportedSeriesSize} from "$ecomponents/Chart";
 import notify from "$cnotify";
 import FileSystem from "$file-system";
 import sprintf from "$cutils/sprintf";
+import { renderRowCell,formatValue } from "./utils";
 
 export const TIMEOUT = 100;
 
@@ -1417,11 +1412,7 @@ export default class CommonDatagridComponent extends AppComponent {
         },TIMEOUT);
    }
    formatValue(value,format){
-        if(typeof value !='number') return value;
-        if(format && typeof format =='string' && format.toLowerCase() =='money'){
-            return this.state.abreviateValues? value.abreviate2FormatMoney() : value.formatMoney();
-        }
-        return this.state.abreviateValues ? value.abreviate() : value.formatNumber();
+        return formatValue(value,format,this.state.abreviateValues);
     }
    renderAggregatorFunctionsMenu(){
         const m = this.getAggregatorFunctionsMenuItems(false,false);
@@ -3165,44 +3156,8 @@ export default class CommonDatagridComponent extends AppComponent {
             key = {props.rowKey}
         />
     }
-    renderSelectFieldCell({rowData,columnDef,columnField}){
-        let v1 = rowData[columnField],_render = v1;
-        if(isObjOrArray(columnDef.items)){
-                if(columnDef.multiple){
-                    v1 = Object.toArray(v1);
-                    _render = "";
-                    v1.map((v)=>{
-                        for(let i in columnDef.items){
-                            let it = columnDef.items[i];
-                            if(isObj(it) && defaultVal(it.code,i) == v){
-                                _render+=(_render?arrayValueSeparator:"")+defaultStr(it.label,it.text,v);
-                            } else if(isNonNullString(it) && i == v){
-                                _render+=(_render?arrayValueSeparator:"")+it;
-                            }
-                        }
-                    })
-                    if(!_render){
-                        return v1.join(arrayValueSeparator);
-                    }
-                    return _render;
-                } else {
-                    for(let i in columnDef.items){
-                        let it = columnDef.items[i];
-                        if(isObj(it) && defaultVal(it.code,i) == v1){
-                            return defaultStr(it.label,it.text,v1);
-                        } else if(isNonNullString(it) && i == v1){
-                            return it;
-                        }
-                    }
-                    if(_render === undefined || _render === null) return v1;
-                    if(isArray(_render)){
-                        return _render.join(arrayValueSeparator)
-                    } else if(isObj(_render)){
-                        return "";
-                    }
-            }
-        }
-        return _render 
+    renderSelectFieldCell(args){
+        return this.renderSelectFieldCell(args);
     }
     /*** retourne le rendu d'une cellule de la ligne du tableau 
     @parm, rowData, object, la ligne à afficher le rendu du contenu
@@ -3217,157 +3172,34 @@ export default class CommonDatagridComponent extends AppComponent {
             différent du td d'un table et ne doit pas être un TableColumn de md
     */
     renderRowCell (arg){
-        let {rowData,renderRowCell:customRenderRowCell,isSectionListHeader,rowKey,handleSelectableColumn,rowIndex,index,rowCounterIndex,columnDef,columnField} = arg;
+        let {rowData,rowKey,rowIndex,handleSelectableColumn,rowCounterIndex,renderRowCell:customRenderRowCell,isSectionListHeader,columnDef,columnField} = arg;
         const renderText = isSectionListHeader === true || customRenderRowCell === false ? true : false;
-        rowIndex = isDecimal(rowIndex)? rowIndex : isDecimal(index)? index : undefined;
-        rowCounterIndex = isDecimal(rowCounterIndex) ? rowCounterIndex : isDecimal(rowIndex)? rowIndex+1 : defaultDecimal(rowCounterIndex);
-        const abreviate = this.state.abreviateValues;
         if(!isObj(rowData)) return renderText ? null : {render:null,extra:{}};
-         let _render = null;
-         columnDef = defaultObj(columnDef);
-         let _type = defaultStr(columnDef.jsType,columnDef.type).trim().toLowerCase();
-         if(this.isSelectableColumn(columnDef,columnField)){
+        rowIndex = isDecimal(rowIndex)? rowIndex : isDecimal(index)? index : undefined;
+    rowCounterIndex = isDecimal(rowCounterIndex) ? rowCounterIndex : isDecimal(rowIndex)? rowIndex+1 : defaultDecimal(rowCounterIndex);
+        if(this.isSelectableColumn(columnDef,columnField)){
             if(renderText) return null;
-             rowKey = rowKey ? rowKey : this.getRowKey(rowData,rowIndex);
-             return {render :handleSelectableColumn === false ? null : this.renderSelectableCheckboxCell({
-                ...arg,
-                rowKey,
-                rowData,
-                checked : this.isRowSelected(rowKey,rowIndex),
-                rowsRefs : this.selectedRowsRefs,
-                onChange : ({checked})=>{
-                    this.handleRowToggle({row:rowData,rowData,rowIndex,rowKey,selected:checked})
-                }
-             }),style:{},extra:{style:{}}};
-         } else if((columnField == this.getIndexColumnName())){
-            if(renderText) return null;
+            rowKey = rowKey ? rowKey : this.getRowKey(rowData,rowIndex);
+            return {render :handleSelectableColumn === false ? null : this.renderSelectableCheckboxCell({
+            ...arg,
+            rowKey,
+            rowData,
+            checked : this.isRowSelected(rowKey,rowIndex),
+            rowsRefs : this.selectedRowsRefs,
+            onChange : ({checked})=>{
+                this.handleRowToggle({row:rowData,rowData,rowIndex,rowKey,selected:checked})
+            }
+            }),style:{},extra:{style:{}}};
+        } else if((columnField == this.getIndexColumnName())){
+             if(renderText) return null;
             return {render : rowCounterIndex.formatNumber(),style:{},extra:{}};
-         }
-         let renderProps = undefined;
-         if(isObj(columnDef.datagrid)){
-             renderProps = columnDef.datagrid.renderProps;
-         }
-        const style = Object.assign({},StyleSheet.flatten(columnDef.style));
-        if(!renderText && columnDef.visible === false){
-            style.display = "none";
         }
-        let extra = {style},renderArgs = arg;
-        
-        renderArgs.extra = extra;
-        renderArgs.item = rowData;
-        const defaultValue = renderArgs.defaultValue = renderArgs.value = rowData[columnField];
-        let key = this.getRowKey(rowData,rowIndex)+"-"+columnField,isTagRender = defaultStr(columnDef.table).toLowerCase().contains("tags");
-        if(isObj(columnDef.datagrid) && isFunction(columnDef.datagrid.render)){
-            _render = columnDef.datagrid.render.call(this,renderArgs);
-        } else if(isFunction(columnDef.multiplicater)){
-            _render = defaultDecimal(columnDef.multiplicater({...renderArgs,value:rowData[columnField]}),rowData[columnField]);
-        } else {
-             _render = defaultValue;
-             if(!renderText && defaultStr(columnDef.format).toLowerCase() === 'hashtag'){
-                _render = <Hashtag>{_render}</Hashtag>
-             } else if(typeof columnDef.render === "function"){
-                 _render = columnDef.render.call(this,renderArgs);
-             } else if(arrayValueExists( _type,["date","datetime","time"])){
-                 let _dd =DateLib.parse(rowData[columnField],_type === 'time'?DateLib.isoTimeFormat:DateLib.SQLDateFormat);
-                 if(DateLib.isDateObj(_dd)){
-                     _render = DateLib.format(_dd,defaultStr(columnDef.format,(_type === 'time'?DateLib.defaultTimeFormat:DateLib.masks.defaultDate)));
-                 }
-                 if(!_render) _render = rowData[columnField]
-             } else if(arrayValueExists(_type,['switch','checkbox'])){
-                 let {checkedLabel,checkedTooltip,uncheckedTooltip,checkedValue,uncheckedLabel,uncheckedValue} = columnDef;
-                 checkedLabel = defaultStr(checkedLabel,'Oui')
-                 uncheckedLabel = defaultStr(uncheckedLabel,'Non')
-                 checkedValue = defaultVal(checkedValue,1); uncheckedValue = defaultVal(uncheckedValue,0)
-                 let val = defaultVal(rowData[columnField],columnDef.defaultValue,columnDef.value)
-                 if(val === checkedValue){
-                     _render = checkedLabel;
-                 } else _render = uncheckedLabel;
-             }
-             else if(!renderText && (_type =='select_country' || _type =='selectcountry')){
-                _render = <Flag withCode {...columnDef} length={undefined} width={undefined} height={undefined} code={defaultValue}/>
-             }
-             ///le lien vers le table data se fait via la colonne ayant la propriété foreignKeyTable de type chaine de caractère non nulle
-             else if(!renderText && (isNonNullString(columnDef.foreignKeyTable) || columnDef.primaryKey === true || arrayValueExists(['id','piece'],_type))){
-                const id = rowData[columnField]?.toString();
-                if(isNonNullString(id)){
-                    _render = <TableLink 
-                        id = {id}
-                        foreignKeyTable = {defaultStr(columnDef.foreignKeyTable,columnDef.table,columnDef.tableName)}
-                        foreignKeyColumn = {defaultStr(columnDef.foreignKeyColumn,columnDef.field)}
-                        {...columnDef}
-                        data = {rowData}
-                        columnField = {columnField}
-                    >
-                        {this.renderSelectFieldCell({columnDef,columnField,rowData})}
-                    </TableLink>             
-                }
-             } else if((_type.contains('select'))){
-                 _render= this.renderSelectFieldCell({columnDef,columnField,rowData,data:rowData})
-             } else if(_type == 'image'){
-                if(renderText) return null;
-                 columnDef = defaultObj(columnDef)
-                 columnDef = {...columnDef,...defaultObj(columnDef.datagrid)};
-                 columnDef.size = defaultDecimal(columnDef.size,50);
-                 columnDef.editable = defaultBool(columnDef.editable,false)
-                 columnDef.rounded = defaultBool(columnDef.rounded,columnDef.round,true);
-                 columnDef.src = rowData[columnField];
-                 _render = <Image {...columnDef}/>
-             } 
-             if(_render === undefined || _render ===null){
-                 _render = rowData[columnField];
-             }
-             if(columnDef.type =="password" && isNonNullString(_render)){
-                 let l = Math.max(_render.length,20);
-                 _render = "";
-                 for(let i=0;i<l;i++){
-                    _render+=".";
-                 }
-             }
-             if(isArray(_render)){
-                if(isTagRender){
-                    let nV = "";
-                    _render.map((v1)=>{
-                        nV +=(nV?arrayValueSeparator:"")+i18n.lang(v1,v1);
-                    })
-                    _render = nV;
-                } else {
-                    _render = _render.join(arrayValueSeparator);
-                }
-             }
-         } 
-         if(_render ===undefined){
-             _render = rowData[columnField];
-         }
-         if(isArray(_render)){
-             _render = _render.join(arrayValueSeparator);
-         } else if(!React.isValidElement(_render) && isPlainObj(_render)){
-             let __r = "";
-             for(let i in _render){
-                 __r+= (isObj(_render[i]) && _render[i]? (_render[i].code? _render[i].code:defaultStr(_render[i].label)):(_render[i]))
-             }
-             _render = __r;
-         }
-         if(isFunction(renderProps)){
-             renderProps = renderProps.call(this,renderArgs);
-         }
-         _render = this.formatValue(_render,columnDef.format);
-         if(!renderText && _render && isObj(renderProps)){
-             let Component = defaultVal(renderProps.Component,Label);
-             delete renderProps.Component;
-             _render = <Component {...renderProps}>{_render}</Component>
-         }
-         if(typeof _render =='boolean'){
-            _render = _render ? "Oui" : "Non";
-         }
-         if(renderText){
-            return React.getTextContent(_render);
-         }
-         if((typeof _render ==='string' || typeof _render =='number')){
-             _render = <Label selectable>{_render}</Label>
-         }
-
-         _render = React.isValidElement(_render)|| Array.isArray(_render)?_render:null;
-         return {render:_render,style,extra,key};
+        return renderRowCell({
+            ...arg,
+            context : this,
+            getRowKey : this.getRowKey.bind(this),
+            abreviateValues : this.state.abreviateValues,
+        })
     }
     static LinesProgressBar (props){
         return <DatagridContentLoader {...props}/>

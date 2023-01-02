@@ -432,7 +432,7 @@ const DatagridFactory = (Factory)=>{
             } = this.preparedColumns;
             const hasFootersFields = this.hasFootersFields();
             const datagridHeader = <View testID={testID+"_HeaderContainer"} pointerEvents={pointerEvents} style={[styles.datagridHeader]}>
-                <ScrollView testID={testID+"_HeaderScrollView"} horizontal showsHorizontalScrollIndicator = {!isTouchDevice()} contentContainerStyle={StyleSheet.flatten([styles.contentContainerStyle,styles.minW100])}>
+                <ScrollView testID={testID+"_HeaderScrollView"} horizontal  contentContainerStyle={StyleSheet.flatten([styles.contentContainerStyle,styles.minW100])}>
                     <View testID={testID+"_HeaderContentCntainer"} style={[styles.table,styles.pullRight]}>
                         {dbSelector}
                         <View testID={testID+"_HeaderQueryLimit"} style={[styles.paginationItem]}>
@@ -551,7 +551,7 @@ const DatagridFactory = (Factory)=>{
                         {!canRenderChart && showFooters ? (
                             <View  testID={testID+"_FooterContainer"} pointerEvents={pointerEvents} style={[theme.styles.justifyContentCenter,theme.styles.pv1]}>
                                 <View  testID={testID+"_FooterContentContainer"} style={[styles.footersContainer]}>
-                                    <ScrollView testID={testID+"_FooterScrollView"} horizontal showsHorizontalScrollIndicator = {!isTouchDevice()}  contentContainerStyle={[styles.contentContainerStyle]}>
+                                    <ScrollView testID={testID+"_FooterScrollView"} horizontal  contentContainerStyle={[styles.contentContainerStyle]}>
                                         <View testID={testID+"_FooterContent"} style={[styles.table,theme.styles.p1]}>
                                             {Object.mapToArray(this.getFooterValues(),(footer,field)=>{
                                                 return <Footer

@@ -3239,7 +3239,6 @@ export default class CommonDatagridComponent extends AppComponent {
         return this.isLoading()? "none":"auto";
     }
     updateLayout(p){
-        return;
         this.measureLayout(state=>{
             if(isObj(state)){
                 if(!this.state.isReady){

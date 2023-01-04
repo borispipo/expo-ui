@@ -11,6 +11,7 @@ import {isMobileNative} from "$cplatform";
 import theme from "$theme";
 import AbsoluteScrollView from "./AbsoluteScrollView";
 import DragResize,{CONNECTOR_MIDDLE_RIGHT} from "$ecomponents/DragResize";
+import AutoResizer from "$ecomponents/AutoResizer";
 
 const isSCrollingRef = React.createRef();
 const scrollLists = (opts,refs)=>{
@@ -267,84 +268,100 @@ const TableComponent = React.forwardRef(({containerProps,renderListContent,child
                     toggleAbsoluteScrollVisible();
                 }}
             >  
-                <FlashList
-                    containerProps = {{style:[cStyle]}}
-                    estimatedItemSize = {200}
-                    {...props}
-                    onContentSizeChange = {(width,height)=>{
-                        if(props.onContentSizeChange){
-                            props.onContentSizeChange(width,height);
-                        }
-                        if(!absoluteScrollViewRef.current) return;
-                        absoluteScrollViewRef.current.setStyles({
-                            content : {height,width}
-                        });
-                    }}
-                    onLayout = {(args)=>{
-                        if(props.onLayout){
-                            props.onLayout(args);
-                        }
-                        if(!absoluteScrollViewRef.current) return;
-                        const {nativeEvent:{layout}}=args;
-                        const top = defaultNumber(layout.top,layout.y);
-                        const height = layout.height;
-                        absoluteScrollViewRef.current.setStyles({
-                            container : {top,height},
-                            contentContainer : {height},
-                        });
-                    }}
-                    ref = {listRef}
-                    numberOfLines = {1}
-                    responsive = {false}
-                    testID = {testID}
-                    items = {data}
-                    contentContainerStyle = {[styles.contentContainer,{with:listWidth,minWidth:totalWidths,position:'absolute',right:'0'}]}
-                    style = {[styles.datagrid,{width:listWidth,minWidth:totalWidths}]}
-                    keyExtractor = {typeof getRowKey =='function'? getRowKey : React.getKey}
-                    //stickyHeaderIndices={[0]}
-                    onScroll = {getOnScrollCb([absoluteScrollViewRef],(args)=>{
-                        if(!absoluteScrollViewRef.current) return;
-                        const offset = args?.nativeEvent?.contentOffset.y;
-                        const scrollViewRef = absoluteScrollViewRef.current?.scrollViewRef;
-                        if(typeof offset =='number' && scrollViewRef.current && scrollViewRef.current.scrollTo){
-                            absoluteScrollViewRefCanScroll.current = false;
-                            scrollViewRef.current.scrollTo({animated:false,y:offset});
-                            setTimeout(()=>{
-                                absoluteScrollViewRefCanScroll.current = true;
-                            },500);
-                        }
-                    })}
-                    renderItem = {(arg)=>{
-                        const item = arg.item, data = arg.item,allData=Array.isArray(item.items)? item.items : data;
-                        arg.allData = arg.allData;arg.isTable  = true; arg.isAccordion = false;
-                        arg.columns = visibleColumns;
-                        const selected = typeof isRowSelected=='function'? isRowSelected(item,arg.index):undefined;
-                        const rowArgs = {...arg,selected,isTable:true,allData,row:data,rowData:data,rowIndex:arg.index};
-                        const rProps = getRowProps ? getRowProps(rowArgs) : {};
-                        const rowStyle = getRowStyle(rowArgs);
-                        const sItem = typeof renderItem == 'function'? renderItem({...arg,rowProps:rProps,rowStyle}) : undefined;
-                        const cells = sItem && React.isValidElement(sItem) ? sItem : !isObj(item) ? null : visibleColumns.map((i,index)=>{
-                            const cellValue = data[i];
-                            const col = defaultObj(cols[i]);
-                            const cellArgs = {...col,...arg,containerProps:{},columnIndex:col.index,style:{width:col.width},cellValue,data,rowData:data,row:data,rowIndex:arg.index};
-                            const cell = renderCell ? renderCell(cellArgs) : cellValue;
-                            let cContainerProps = {},content = React.isValidElement(cell,true)? <Label children={cell}/> : null;
-                            if(!content && isObj(cell)){
-                                content = React.isValidElement(cell.content)? cell.content : React.isValidElement(cell.content)? cell.content : null;
-                                cContainerProps = isObj(cell.containerProps)? cell.containerProps : {};
-                            } else if(isObj(cellArgs.containerProps)){
-                                cContainerProps = cellArgs.containerProps;
+                    <AutoResizer  style = {[{position:'relative'}]}>
+                        {({top})=>{
+                            const {height:winheight} = Dimensions.get("window");
+                            let maxHeight = winheight-100;
+                            const diff = winheight - Math.max(top,100)-30;
+                            if(diff<=100){
+                                maxHeight = 100;
+                            } else {
+                                maxHeight = diff;
                             }
-                            const key = "_Cell_"+i+"_"+arg.index;
-                            return (<View {...cellContainerProps} {...cContainerProps} key={key} style={[styles.headerItemOrCell,cellContainerProps.style,cContainerProps.style,{width:col.width}]} testID={testID+key}>
-                                {content}
-                            </View>);
-                        });
-                        return cells ? <View testID={testID+"_Row_"+arg.index} {...rowProps} {...rProps} style={[styles.row,rowProps.style,rowStyle,styles.rowNoPadding,rProps.style]}>
-                            {cells}
-                        </View> : null
-                    }}
-                />
+                            maxHeight = Math.max(diff,250);
+                            return  <FlashList
+                                    estimatedListSize = {{height:maxHeight,width:totalWidths}}
+                                    containerProps = {{
+                                        style:[cStyle,{height:maxHeight,position:'relative'}],
+                                        onLayout : (args)=>{
+                                            if(props.onLayout){
+                                                props.onLayout(args);
+                                            }
+                                            if(!absoluteScrollViewRef.current) return;
+                                            const {nativeEvent:{layout}}=args;
+                                            const top = defaultNumber(layout.top,layout.y);
+                                            const height = layout.height;
+                                            absoluteScrollViewRef.current.setStyles({
+                                                container : {top,height},
+                                                contentContainer : {height},
+                                            });
+                                        }
+                                    }}
+                                    estimatedItemSize = {200}
+                                    {...props}
+                                    onContentSizeChange = {(width,height)=>{
+                                        if(props.onContentSizeChange){
+                                            props.onContentSizeChange(width,height);
+                                        }
+                                        if(!absoluteScrollViewRef.current) return;
+                                        absoluteScrollViewRef.current.setStyles({
+                                            content : {height,width}
+                                        });
+                                    }}
+                                    ref = {listRef}
+                                    numberOfLines = {1}
+                                    responsive = {false}
+                                    testID = {testID}
+                                    items = {data}
+                                    contentContainerStyle = {[styles.contentContainer,{flex:0,height:maxHeight,width:listWidth,minWidth:totalWidths,right:0}]}
+                                    style = {[styles.datagrid,{width:listWidth,minWidth:totalWidths}]}
+                                    keyExtractor = {typeof getRowKey =='function'? getRowKey : React.getKey}
+                                    //stickyHeaderIndices={[0]}
+                                    onScroll = {getOnScrollCb([absoluteScrollViewRef],(args)=>{
+                                        if(!absoluteScrollViewRef.current) return;
+                                        const offset = args?.nativeEvent?.contentOffset.y;
+                                        const scrollViewRef = absoluteScrollViewRef.current?.scrollViewRef;
+                                        if(typeof offset =='number' && scrollViewRef.current && scrollViewRef.current.scrollTo){
+                                            absoluteScrollViewRefCanScroll.current = false;
+                                            scrollViewRef.current.scrollTo({animated:false,y:offset});
+                                            setTimeout(()=>{
+                                                absoluteScrollViewRefCanScroll.current = true;
+                                            },500);
+                                        }
+                                    })}
+                                    renderItem = {(arg)=>{
+                                        const item = arg.item, data = arg.item,allData=Array.isArray(item.items)? item.items : data;
+                                        arg.allData = arg.allData;arg.isTable  = true; arg.isAccordion = false;
+                                        arg.columns = visibleColumns;
+                                        const selected = typeof isRowSelected=='function'? isRowSelected(item,arg.index):undefined;
+                                        const rowArgs = {...arg,selected,isTable:true,allData,row:data,rowData:data,rowIndex:arg.index};
+                                        const rProps = getRowProps ? getRowProps(rowArgs) : {};
+                                        const rowStyle = getRowStyle(rowArgs);
+                                        const sItem = typeof renderItem == 'function'? renderItem({...arg,rowProps:rProps,rowStyle}) : undefined;
+                                        const cells = sItem && React.isValidElement(sItem) ? sItem : !isObj(item) ? null : visibleColumns.map((i,index)=>{
+                                            const cellValue = data[i];
+                                            const col = defaultObj(cols[i]);
+                                            const cellArgs = {...col,...arg,containerProps:{},columnIndex:col.index,style:{width:col.width},cellValue,data,rowData:data,row:data,rowIndex:arg.index};
+                                            const cell = renderCell ? renderCell(cellArgs) : cellValue;
+                                            let cContainerProps = {},content = React.isValidElement(cell,true)? <Label children={cell}/> : null;
+                                            if(!content && isObj(cell)){
+                                                content = React.isValidElement(cell.content)? cell.content : React.isValidElement(cell.content)? cell.content : null;
+                                                cContainerProps = isObj(cell.containerProps)? cell.containerProps : {};
+                                            } else if(isObj(cellArgs.containerProps)){
+                                                cContainerProps = cellArgs.containerProps;
+                                            }
+                                            const key = "_Cell_"+i+"_"+arg.index;
+                                            return (<View {...cellContainerProps} {...cContainerProps} key={key} style={[styles.headerItemOrCell,cellContainerProps.style,cContainerProps.style,{width:col.width}]} testID={testID+key}>
+                                                {content}
+                                            </View>);
+                                        });
+                                        return cells ? <View testID={testID+"_Row_"+arg.index} {...rowProps} {...rProps} style={[styles.row,rowProps.style,rowStyle,styles.rowNoPadding,rProps.style]}>
+                                            {cells}
+                                        </View> : null
+                                    }}
+                                />
+                        }}
+                    </AutoResizer>
                     <AbsoluteScrollView
                         ref={absoluteScrollViewRef}
                         listRef = {listRef}
@@ -454,7 +471,10 @@ export const styles = StyleSheet.create({
         width : '100%',
         justifyContent : 'center',
         alignItems : 'center'
-    }
+    },
+    list : {
+        ...StyleSheet.absoluteFill,
+    },
 })
 TableComponent.popTypes = {
     containerProps : PropTypes.object,

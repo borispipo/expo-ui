@@ -81,7 +81,6 @@ const FiltersAccordionComponent = React.forwardRef((props,ref)=>{
                         andOperator = {defaultBool(andOperator,filter.andOperator,true)}
                         onChange = {(arg)=>{
                             if(!arg.action && !arg.operator || !arg.field) return;
-                            //console.log("calling on change dddd",arg);
                             const canHandle = canHandleFilter(arg);
                             valuesRefs.current[key] = arg;
                             if(filteredRef.current[key] !== canHandle){

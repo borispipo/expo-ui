@@ -16,7 +16,6 @@ import Footer from "../Footer/Footer";
 import theme from "$theme";
 import Table from "$ecomponents/Table";
 
-
 const DatagridFactory = (Factory)=>{
     Factory = Factory || CommonDatagrid;
     const clx = class DGridAccordionRenderingCls extends Factory {
@@ -193,17 +192,6 @@ const DatagridFactory = (Factory)=>{
                     }] : [])
                 ]
             }   
-            const {width,height:winheight} = Dimensions.get("window");
-            const {layout} = this.state;
-            let maxHeight = winheight-100;
-            if(layout && typeof layout.windowHeight =='number' && layout.windowHeight){
-                const diff = winheight - Math.max(defaultNumber(layout.y,layout.top),100);
-                if(winheight<=350){
-                    maxHeight = 350;
-                } else {
-                    maxHeight = diff;
-                }
-            }
             const rPagination = showPagination ? <View style={[styles.paginationContainer]}>
                 <ScrollView horizontal showsHorizontalScrollIndicator={!isLoading} style={styles.paginationContainerStyle} contentContainerStyle={styles.minW100}>
                     <View style={[styles.paginationContent]}>
@@ -324,7 +312,7 @@ const DatagridFactory = (Factory)=>{
                     </View>
                 </ScrollView>
             </View> : null;
-            return <View style={[styles.container,{maxHeight}]} pointerEvents={pointerEvents}>
+            return <View style={[styles.container]} pointerEvents={pointerEvents}>
                 <View ref={this.layoutRef}>
                     {this.props.showActions !== false ? <DatagridActions 
                         pointerEvents = {pointerEvents}
@@ -341,12 +329,6 @@ const DatagridFactory = (Factory)=>{
                     renderListContent = {canRenderChart? false:true}
                     ref = {this.listRef}
                     {...rest}
-                    onLayout = {(args)=>{
-                        if(rest.onLayout){
-                            rest.onLayout(args);
-                        }
-                        this.updateLayout(args);
-                    }}
                     children = {canRenderChart ? <View testID={testID+"_ChartContainer"} {...chartContainerProps} style={[theme.styles.w100,chartContainerProps.style]}>
                         {this.renderChart()}
                     </View> : null}

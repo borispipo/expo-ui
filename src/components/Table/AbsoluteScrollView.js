@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-import { ScrollView,StyleSheet,View,useWindowDimensions} from "react-native";
+import { ScrollView,StyleSheet,View,useWindowDimensions,Dimensions} from "react-native";
 import React from "$react";
 import {defaultStr,defaultObj,isObj,isNumber} from "$utils";
 import Portal from "$ecomponents/Portal";
@@ -49,7 +49,8 @@ const AbsoluteScrollView = React.forwardRef(({testID,contentProps,listRef,contai
             args = defaultObj(args);
             if(isObj(args.contentOffset) && isObj(args.contentSize)){
                 const {x} = args.contentOffset;
-                const visible = x >=win.width ? false : true;
+                const {width} = Dimensions.get("window");
+                const visible = x >= width-10 ? false : true;
                 if(state.visible != visible){
                     return setState({...state,visible});
                 }

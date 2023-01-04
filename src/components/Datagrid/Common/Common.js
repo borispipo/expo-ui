@@ -3156,7 +3156,7 @@ export default class CommonDatagridComponent extends AppComponent {
      * @param {function | boolean} cb | enablePointerEvents
      * @param {boolean|function} enablePointerEvents
      */
-    setIsLoading(loading,cb,enablePointerEvents){
+    setIsLoading (loading,cb,enablePointerEvents){
         if(typeof cb =='boolean'){
             const t = enablePointerEvents;
             enablePointerEvents = cb;
@@ -3165,17 +3165,17 @@ export default class CommonDatagridComponent extends AppComponent {
         if(typeof enablePointerEvents =='boolean'){
             this.enablePointerEventsRef.current = enablePointerEvents;
         }
+        const timeout = 300;
         setTimeout(()=>{
+           cb = typeof cb =='function'? cb : x=>true;
             if(this.canSetIsLoading() && typeof loading =='boolean'){
                 return this.progressBarRef.current.setIsLoading(loading,()=>{
-                    if(typeof cb =='function'){
-                        cb();
-                    }
+                    setTimeout(cb,timeout);
                 });
-            } else if(typeof cb =='function'){
-                cb();
+            } else {
+                setTimeout(cb,timeout);
             }
-        },loading === false && enablePointerEvents === false ? 0 : 0);
+        },loading === false && enablePointerEvents === false ? timeout : 0);
         return false;
     }
      /**** met à jour l'état de progression de la mise à jour du tableau */
@@ -3231,6 +3231,7 @@ export default class CommonDatagridComponent extends AppComponent {
         return this.isLoading()? "none":"auto";
     }
     updateLayout(p){
+        return;
         this.measureLayout(state=>{
             if(isObj(state)){
                 if(!this.state.isReady){

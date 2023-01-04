@@ -145,7 +145,6 @@ const DatagridFactory = (Factory)=>{
                 title = _dataSourceSelector;
                 _dataSourceSelector = null;
             }
-            exportable = defaultBool(exportable,true);
             let isMobile = isMobileOrTabletMedia();
             selectable = defaultVal(selectable,true);
             selectableMultiple = this.isSelectableMultiple();
@@ -231,23 +230,6 @@ const DatagridFactory = (Factory)=>{
                                 />
                              })}
                         </>}
-                        {exportable && (
-                            <>{/**
-                             * <ExportTable 
-                                        {...exportTableProps}
-                                        selector = {this.datagridDomId}
-                                        ref = {(el)=>{
-                                            if(el){
-                                                this.exportDataInstance = el;
-                                            }
-                                        }}
-                                        getAllData = {()=>{
-                                            return this.INITIAL_STATE.data;
-                                        }}
-                                    />
-                            * 
-                            */}</>
-                        )}
                         <BottomSheetMenu
                             anchor = {(props)=>{
                                 return <Icon {...props} title={isMobile?"Actions":"Colonnes"} name={isMobile?MENU_ICON:'view-column'}></Icon>

@@ -1817,6 +1817,14 @@ export default class CommonDatagridComponent extends AppComponent {
             })
         }
         if(!items.length) return null;
+        if(!this.isAccordion()){
+            items.unshift({
+                text : "Exporter les données",
+                divider : true,
+                textBold : true,
+                icon : "export",
+            })
+        }
         return <Menu
             items = {items}
             title ="Export des données du tableau"

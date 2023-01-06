@@ -1,7 +1,7 @@
 import FormDataScreen from "$elayouts/Screen/FormData";
 import {defaultStr,defaultObj,isObjOrArray,isObj} from "$utils";
 import Auth from "$auth";
-import {getScreenProps,navigate} from "$cnavigation";
+import {navigate} from "$cnavigation";
 import SelectTheme from "$themeSelectorComponent";
 import Preloader from "$epreloader";
 import {SignIn2SignOut} from "$cauth";
@@ -10,8 +10,7 @@ import avatarProps from "$eauth/avatarProps";
 
 import {screenName} from "./utils";
 
-export default function UserProfileScreen(prs){
-    const props = getScreenProps(prs);
+export default function UserProfileScreen(props){
     const user = defaultObj(props.user,Auth.getLoggedUser());
     const testID = defaultStr(props.testID,"RN_UserProfile_FormData");
     const themeRef = React.useRef(defaultObj(user.theme));

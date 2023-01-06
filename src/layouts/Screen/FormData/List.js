@@ -5,7 +5,6 @@ import PropTypes from "prop-types";
 export default class FormDataListScreen extends FormData{
     constructor(props){
         super(props);
-        const {perm} = this.getMainProps();
         Object.defineProperties(this,{
             isAllowed : {
                 value : true
@@ -14,7 +13,7 @@ export default class FormDataListScreen extends FormData{
     }
     isDocEditing(data){
         if(super.isDocEditing(data)) return true;
-        const {indexField,isDocUpdate,isDocEditing} = this.getMainProps();
+        const {indexField,isDocUpdate,isDocEditing} = this.props;
         if(isObj(data) && typeof isDocUpdate !=='function' && typeof isDocEditing !='function'){
             if(isNonNullString(indexField) && data[indexField]) return true;
             if(data.code) return true;
@@ -30,9 +29,9 @@ export default class FormDataListScreen extends FormData{
         });
     }
     createNew (){
-        const {show} = this.getMainProps();
+        const {show} = this.props;
         if(typeof show =='function'){
-            show({...this.getMainProps(),index:undefined,data:{}});
+            show({...this.props,index:undefined,data:{}});
         }
     }
     doSave(args){
@@ -40,7 +39,7 @@ export default class FormDataListScreen extends FormData{
     }
     doSave2New(args){
         if(!this.__canSaveListData) return;
-        const {show} = this.getMainProps();
+        const {show} = this.props;
         if(typeof show =='function'){
             show({...args,index:undefined,data:{}});
         }
@@ -50,7 +49,7 @@ export default class FormDataListScreen extends FormData{
         return this.close();
     }
     onSave(args){
-        let {formDataProps} = this.getMainProps();
+        let {formDataProps} = this.props;
         this.__canSaveListData = true;
         formDataProps = defaultObj(formDataProps);
         if(typeof formDataProps.onSave =='function' && formDataProps.onSave(args) === false){
@@ -59,9 +58,9 @@ export default class FormDataListScreen extends FormData{
         }
     }
     _render(content){
-        let {isAllowed} = this.getMainProps();
+        let {isAllowed} = this.props;
         if(typeof isAllowed ==='function'){
-            isAllowed = isAllowed({data:defaultObj(this.getMainProps().data,this.props.data),context:this})
+            isAllowed = isAllowed({data:defaultObj(this.props.data,this.props.data),context:this})
         } else isAllowed = true;
         if(isAllowed === false || !this.isAllowed){
             Auth.showError();

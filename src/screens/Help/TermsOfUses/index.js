@@ -3,12 +3,10 @@ import title from "./title";
 import Screen from "$screen";
 import Link from "./Link";
 import Content from "$TermsOfUses";
-import {getScreenProps} from "$cnavigation";
 import {extendObj} from "$utils";
 import React from "$react";
 
-export default function TermsOfUses(p){
-    const props = getScreenProps(p);
+export default function TermsOfUses(props){
     return <Screen 
         {...props}
         withDrawer = {false}

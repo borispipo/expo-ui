@@ -11,3 +11,5 @@ export const GROUP_NAMES = {
     START : "INSTALL", //install est un alias à start
     DEFAULT : "PRIVATE",
 }
+
+export const SCREEN_OPTIONS = {};

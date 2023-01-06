@@ -19,6 +19,7 @@ const AutoResizerComponent = React.forwardRef((props,ref) =>{
       disableHeight,
       disableWidth,
       onResize: _onResize,
+      compare,
       ...viewProps
     } = props;
   
@@ -37,6 +38,7 @@ const AutoResizerComponent = React.forwardRef((props,ref) =>{
         layoutRef.current.x =  disableWidth? 0 : x;
         layoutRef.current.y = disableHeight ? 0 : y;
         if (Math.abs(result.width - layoutRef.current.width) <= 50  && Math.abs(result.height-layoutRef.current.height)<=50) return;
+        if(typeof compare ==='function' && compare({previous:result,current:layoutRef.current}) === false) return;
         setResult({...layoutRef.current});
       },[stableHash({disableWidth, disableHeight, _onResize, result})]);
   

@@ -15,13 +15,8 @@ export default class FormDataDialogComponent extends FormDataActions{
             dialogRef : {value:React.createRef(null)}
         });
     }
-
-    getMainProps(){
-        return defaultObj(this.props.dialogProps,this.props);
-    }
-    
     isControlled(){
-        const dialogProps = this.getMainProps();
+        const dialogProps = defaultObj(this.props.dialogProps,this.props);
         return dialogProps.controlled ? dialogProps.controlled : typeof this.props.controlled =='boolean'? this.props.controlled : true;
     }
     getDialogComponent(){

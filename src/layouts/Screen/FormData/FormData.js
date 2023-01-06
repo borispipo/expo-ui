@@ -6,31 +6,22 @@ import ScreenContainer from "../Screen";
 import {useRoute} from "$cnavigation";
 import {Form as FormLoader} from "$ecomponents/ContentLoader";
 import HeavyScreen from "$ecomponents/HeavyScreen";
-import {goBack,getScreenProps} from "$cnavigation";
+import {goBack} from "$cnavigation";
 
 
 export default class FormDataLayout extends FormDataActions {
     getComponentProps(props){
         this.__mainProps = null;
-        return super.getComponentProps(getScreenProps(props));
-    }
-    /***les props à passer au container de la liste à rendre */
-    getScreenProps(){
-        return {};
-    }
-    getMainProps (){
-        if(isObj(this.__mainProps) && Object.size(this.__mainProps,true)) return this.__mainProps;
-        this.__mainProps = getScreenProps(this.props);
-        return this.__mainProps;
+        return super.getComponentProps(props);
     }
     getDataProp(){
-        return Object.assign({},this.getMainProps().data);
+        return Object.assign({},this.props.data);
     }
     getAppBarProps(){
         const appBarProps = super.getAppBarProps();
         const {beforeGoBack} = appBarProps;
         const params = defaultObj(useRoute().params);
-        const mainProps = this.getMainProps();
+        const mainProps = this.props;
         const {onGoBack} = appBarProps;
         appBarProps.onGoBack = (args)=>{
             if(typeof params.onGoBack =='function' && params.onGoBack(args) == false){
@@ -81,10 +72,10 @@ export default class FormDataLayout extends FormDataActions {
         </Wrapper>
     }
     _render (content){
-        const {testID,...props} = getScreenProps(this.props);
+        const {testID,...props} = this.props;
         const appBarProps = this.getAppBarActionsProps(props);
         appBarProps.elevation = typeof appBarProps.elevation =='number'? appBarProps.elevation : 5;
-        return <ScreenContainer testID={defaultStr(testID,'RN_FormDataLayout')} {...props} {...defaultObj(this.getScreenProps())} appBarProps={appBarProps}>
+        return <ScreenContainer testID={defaultStr(testID,'RN_FormDataLayout')} {...props} appBarProps={appBarProps}>
                 {this.wrapRenderingContent(content)}
         </ScreenContainer>
     }

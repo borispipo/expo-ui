@@ -171,7 +171,6 @@ const CommonListComponent = React.forwardRef((props,ref)=>{
             ref = {listRef}
             onScroll={context.onScroll}
             data = {context.items}
-            //key = {isFlatList ? 'common-list-'+numColumns:"normal-list"}
             numColumns={numColumns}
             keyExtractor = {context.keyExtractor}
             renderItem = {context.renderItem}

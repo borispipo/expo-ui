@@ -20,7 +20,7 @@ export * from "./utils";
  *  options {number} - les options supplémentaires au chart
  * 
 */
-const ChartComponent = React.forwardRef(({options,style,height,width,chartId:customChartID,testID,webViewProps, ...props },ref)=>{
+const ChartComponent = React.forwardRef(({options,onRender,style,height,width,chartId:customChartID,testID,webViewProps, ...props },ref)=>{
   const chartContext = React.useRef(null);
   options.chart = defaultObj(options.chart);
   const chartIdRef = React.useRef(options.chart.id,customChartID,uniqid("chart-id"));
@@ -36,6 +36,7 @@ const ChartComponent = React.forwardRef(({options,style,height,width,chartId:cus
       }
     }
   },[stableHash(options)]);
+  React.useOnRender(onRender);
   React.useEffect(()=>{
       return ()=>{
         destroyChart(chartContext.current);

@@ -1,4 +1,4 @@
-import {FlashList} from "$ecomponents/List";
+import {FlashList,BigList,FlatList} from "$ecomponents/List";
 import View from "$ecomponents/View";
 import {defaultObj,defaultStr,debounce,defaultNumber,defaultVal} from "$utils";
 import PropTypes from "prop-types";
@@ -10,9 +10,10 @@ import { getRowStyle } from "$ecomponents/Datagrid/utils";
 import {isMobileNative} from "$cplatform";
 import theme from "$theme";
 import AbsoluteScrollView from "./AbsoluteScrollView";
-import DragResize,{CONNECTOR_MIDDLE_RIGHT} from "$ecomponents/DragResize";
-import AutoResizer from "$ecomponents/AutoResizer";
-
+import Cell from "./Cell";
+import Row from "./Row";
+import List from "./List";
+import ProgressBar from "./ProgressBar";
 const isSCrollingRef = React.createRef();
 const scrollLists = (opts,refs)=>{
     refs.map((ref)=>{
@@ -44,7 +45,7 @@ const getOnScrollCb = (refs,pos,cb2)=>{
     return isMobileNative()? cb : debounce(cb,200);
 }
 
-const TableComponent = React.forwardRef(({containerProps,renderListContent,children,renderEmpty,renderItem,isRowSelected,headerScrollViewProps,footerScrollViewProps,scrollViewProps,showFooters,renderFooterCell,footerCellContainerProps,filterCellContainerProps,headerContainerProps,headerCellContainerProps,headerProps,rowProps:customRowProps,renderCell,cellContainerProps,hasFooters,renderHeaderCell,renderFilterCell,columnProps,getRowKey,columnsWidths,colsWidths,footerContainerProps,showHeaders,showFilters,columns,data,testID,...props},tableRef)=>{
+const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRender,height,progressBar,filter:customFilter,renderListContent,children,renderEmpty,renderItem,isRowSelected,headerScrollViewProps,footerScrollViewProps,scrollViewProps,showFooters,renderFooterCell,footerCellContainerProps,filterCellContainerProps,headerContainerProps,headerCellContainerProps,headerProps,rowProps:customRowProps,renderCell,cellContainerProps,hasFooters,renderHeaderCell,renderFilterCell,columnProps,getRowKey,columnsWidths,colsWidths,footerContainerProps,showHeaders,showFilters,columns,data,testID,...props},tableRef)=>{
     containerProps = defaultObj(containerProps);
     testID = defaultStr(testID,"RN_TableComponent");
     cellContainerProps = defaultObj(cellContainerProps);
@@ -54,8 +55,13 @@ const TableComponent = React.forwardRef(({containerProps,renderListContent,child
     renderCell = typeof renderCell ==="function"? renderCell : undefined;
     const getRowProps = typeof rowProps ==='function'? rowProps : undefined;
     let rowProps = isObj(customRowProps)? customRowProps:{};
-    const prepareState = React.useCallback(()=>{
-        const cols = {},headers = {},footers = {},filters = {},visibleColumns = [];
+    const listRef = React.useRef(null),scrollViewRef = React.useRef(null),headerScrollViewRef = React.useRef(null);
+    const emptyData = renderListContent === false ?null : typeof renderEmpty =='function' && !Object.size(data,true)? renderEmpty() : null;
+    const hasEmptyData = emptyData && React.isValidElement(emptyData);
+    const layoutRef = React.useRef({});
+    React.useOnRender(onRender);
+    const prepareColumns = React.useCallback(()=>{
+        const cols = {},headers = {},footers = {},filters = {},vColumnsMapping = [],visibleColumns = [],columnsNames = [];
         let hasFooters = false;
         columnProps = defaultObj(columnProps);
         let columnIndex = 0;
@@ -64,104 +70,130 @@ const TableComponent = React.forwardRef(({containerProps,renderListContent,child
         footerCellContainerProps = defaultObj(footerCellContainerProps);
         filterCellContainerProps = defaultObj(filterCellContainerProps);
         Object.map(columns,(columnDef,field)=>{
-          if(!isObj(columnDef) /*|| columnDef.visible === false*/) return;
-          const columnField = defaultStr(columnDef.field,field);
-          let {visible,width,type,...colProps} = columnDef;
-          visible = typeof visible =='boolean'? visible : true;
-          type = defaultStr(type,"text").toLowerCase().trim();
-          colProps = defaultObj(colProps);
-          width = defaultDecimal(widths[columnField],width,DEFAULT_COLUMN_WIDTH);
-          const style = StyleSheet.flatten([colProps.style,{width}]);
-          const colArgs = {width,type,style,columnDef,containerProps:{},columnField,index:columnIndex,columnIndex};
-          let content = typeof renderHeaderCell =='function'? renderHeaderCell(colArgs) : defaultVal(columnDef.text,columnDef.label,columnField);
-          let hContainerProps = {};
-          if(!React.isValidElement(content,true) && isObj(content)){
-             hContainerProps = isObj(content.containerProps)? content.containerProps : {};
-             content = React.isValidElement(content.children,true)? content.children : React.isValidElement(content.content,true)? content.content : undefined;
-          } else if(isObj(colArgs.containerProps)){
-             hContainerProps = colArgs.containerProps;
-          }
-          if(!React.isValidElement(content,true)){
-            console.error(content," is not valid element of header ",columnDef," it could not be render on table");
-            return null;
-          }
-        
-        headers[columnField] = <View testID={testID+"_HeaderCell_"+columnField} {...headerCellContainerProps} {...hContainerProps} key={columnField} style={[styles.headerItem,styles.headerItemOrCell,headerCellContainerProps.style,hContainerProps.style,style]}>
-            <Label splitText numberOfLines={2} style={[theme.styles.w100,theme.styles.h100,{maxHeight:70}]} textBold primary>{content}</Label>
-        </View>;
-        if(typeof renderFilterCell =='function'){
-            const filterCell = renderFilterCell(colArgs);
-            filters[columnField] = <View testID={testID+"_Filter_Cell_"+columnField} {...filterCellContainerProps} key={columnField} style={[styles.headerItem,styles.headerItemOrCell,styles.filterCell,filterCellContainerProps.style,style]}>
-                {React.isValidElement(filterCell)? filterCell : null}
-            </View>
-        }
-        if(typeof renderFooterCell ==='function') {
-            const footerProps = {...colArgs,containerProps:{}};
-            let cellFooter = renderFooterCell(footerProps);
-            let fContainerProps = {};
-            if(!React.isValidElement(cellFooter,true) && isObj(cellFooter)){
-                fContainerProps = isObj(cellFooter.containerProps)? cellFooter.containerProps : {};
-                cellFooter = React.isValidElement(cellFooter.children)? cellFooter.children : React.isValidElement(cellFooter.content)? cellFooter.content : null;
-            } else if(isObj(footerProps.containerProps)){
-                fContainerProps = footerProps.containerProps;
+            if(!isObj(columnDef)) return;
+            const columnField = defaultStr(columnDef.field,field);
+            let {visible,width,type,...colProps} = columnDef;
+            visible = typeof visible =='boolean'? visible : true;
+            type = defaultStr(type,"text").toLowerCase().trim();
+            colProps = defaultObj(colProps);
+            width = defaultDecimal(widths[columnField],width,DEFAULT_COLUMN_WIDTH);
+            const style = StyleSheet.flatten([colProps.style,{width}]);
+            const colArgs = {width,type,style,columnDef,containerProps:{},columnField,index:columnIndex,columnIndex};
+            const content = typeof renderHeaderCell =='function'? renderHeaderCell(colArgs) : defaultVal(columnDef.text,columnDef.label,columnField);
+            const hContainerProps = defaultObj(colArgs.containerProps);
+            if(!React.isValidElement(content,true)){
+                console.error(content," is not valid element of header ",columnDef," it could not be render on table");
+                return null;
             }
-            cellFooter = React.isValidElement(cellFooter,true)? cellFooter : null;
-            if(!hasFooters && cellFooter){
-                hasFooters = true;
+            headers[columnField] = <View testID={testID+"_HeaderCell_"+columnField} {...headerCellContainerProps} {...hContainerProps} key={columnField} style={[styles.headerItem,styles.headerItemOrCell,headerCellContainerProps.style,hContainerProps.style,style]}>
+                <Label splitText numberOfLines={2} style={[theme.styles.w100,theme.styles.h100,{maxHeight:70}]} textBold primary>{content}</Label>
+            </View>;
+            if(typeof renderFilterCell =='function'){
+                const filterCell = renderFilterCell(colArgs);
+                filters[columnField] = <View testID={testID+"_Filter_Cell_"+columnField} {...filterCellContainerProps} key={columnField} style={[styles.headerItem,styles.headerItemOrCell,styles.filterCell,filterCellContainerProps.style,style]}>
+                    {React.isValidElement(filterCell)? filterCell : null}
+                </View>
             }
-            footers[columnField] = <View testID={testID+"_Footer_Cell_"+columnField}  key={columnField} style={[styles.headerItem,styles.headerItemOrCell,footerCellContainerProps.style,style]}>
-                <Label primary children={cellFooter}/>
-            </View>
-         }
+            if(typeof renderFooterCell ==='function') {
+                const footerProps = {...colArgs,containerProps:{}};
+                let cellFooter = renderFooterCell(footerProps);
+                let fContainerProps = {};
+                if(!React.isValidElement(cellFooter,true) && isObj(cellFooter)){
+                    fContainerProps = isObj(cellFooter.containerProps)? cellFooter.containerProps : {};
+                    cellFooter = React.isValidElement(cellFooter.children)? cellFooter.children : React.isValidElement(cellFooter.content)? cellFooter.content : null;
+                } else if(isObj(footerProps.containerProps)){
+                    fContainerProps = footerProps.containerProps;
+                }
+                cellFooter = React.isValidElement(cellFooter,true)? cellFooter : null;
+                if(!hasFooters && cellFooter){
+                    hasFooters = true;
+                }
+                footers[columnField] = <View testID={testID+"_Footer_Cell_"+columnField}  key={columnField} style={[styles.headerItem,styles.headerItemOrCell,footerCellContainerProps.style,style]}>
+                    <Label primary children={cellFooter}/>
+                </View>
+          }
+          vColumnsMapping.push(visible);
+          if(visible){
+            visibleColumns.push(columnField);
+          }
+          columnsNames.push(columnField);
           cols[columnField] = {
+            ...columnDef,
             width,
             index : columnIndex,
             field : columnField,
             visible,
             columnField,
-            columnDef,
           };
-          if(visible){
-            visibleColumns.push(columnField);
-          }
           columnIndex++;
         });
-        return {columns:cols,visibleColumns,headers,hasFooters,footers,filters};
-      },[columns,data]);
-    const [state,setState] = React.useState({
-        headers : {},
-        footers : {},
-        hasFooters : false,
-        tableRows : [],
-        visibleColumns : [],
-    });
-    const listRef = React.useRef(null),scrollViewRef = React.useRef(null),headerScrollViewRef = React.useRef(null);
-    React.useEffect(()=>{
-        setState({...state,...prepareState()});
-    },[data,columns]);
-    const emptyData = renderListContent === false ?null : typeof renderEmpty =='function' && !Object.size(data,true)? renderEmpty() : null;
-    const hasEmptyData = emptyData && React.isValidElement(emptyData);
-    const {visibleColumns,columns:cols,headers,footers,filters} = state;
+        return {columns:cols,columnsNames,headers,visibleColumns,vColumnsMapping,hasFooters,footers,filters};
+      },[columns]);
+    const {columns:cols,headers,footers,filters,hasFooters:stateHasFooters,columnsNames,vColumnsMapping,visibleColumns} =  prepareColumns();
     headerContainerProps = defaultObj(headerContainerProps);
     footerContainerProps = defaultObj(footerContainerProps);
-    let hProps = typeof headerProps =='function'? hProps({columns:col,visibleColumns}) : {};
-    const h = [],f = [],fFilters = [];
-    let totalWidths = 0;
-    visibleColumns.map((i)=>{
-        if(!isObj(cols[i])) return;
-        h.push(headers[i]);
-        totalWidths+=cols[i].width;
-        if(showFooters && state.hasFooters){
-            f.push(footers[i]);
+    const dimensions = Dimensions.get("window");
+    const maxHWidth = dimensions.width - defaultNumber(layoutRef.current.left,layoutRef.current.x);
+    const {fFilters,headersContent,footersContent,totalWidths} = React.useCallback(()=>{
+        const headersContent = [],footersContent = [],fFilters = [];
+        let totalWidths = 0;
+        visibleColumns.map((i,index)=>{
+            headersContent.push(headers[i]);
+            totalWidths+=cols[i].width;
+            if(showFooters && stateHasFooters){
+                footersContent.push(footers[i]);
+            }
+            if(showFilters && filters[i]){
+                fFilters.push(filters[i]);
+            }
+        });
+        
+        return {headersContent,totalWidths,footersContent,fFilters};
+    },[visibleColumns,showFilters,showFooters,layoutRef.current])();
+    const colString = columnsNames.join(",");
+    const prevData = React.usePrevious(data);
+    const prevColString = React.usePrevious(colString);
+    const itemsRef = React.useRef(null);
+    const prepareItems = React.useCallback(()=>{
+        if(data === prevData && prevColString == colString && Array.isArray(itemsRef.current)){
+            return itemsRef.current;
         }
-        if(showFilters && filters[i]){
-            fFilters.push(filters[i]);
-        }
-    });
+        const items = [];
+        const filter = typeof customFilter =='function'? customFilter : x=>true;
+        data.map((item,index)=>{
+            const rowIndex = index;
+            if(!isObj(item) || filter({item,index,_index:rowIndex}) ===false) return null;
+            const rowArgs = {data:item,isTable:true,isAccordion:false,item,row:item,rowData:item,rowIndex,index};
+            const rProps = defaultObj(getRowProps ? getRowProps(rowArgs) : {});
+            rowArgs.rowProps = rProps;
+            rowArgs.rowStyle = rProps.style = StyleSheet.flatten([rowProps.style,getRowStyle(rowArgs),styles.rowNoPadding,rProps.style]);
+            if(item.isSectionListHeader){
+                rowArgs.isSectionListHeader = true;
+            }
+            const sItem = typeof renderItem == 'function'? renderItem(rowArgs) : undefined;
+            const cells = React.isValidElement(sItem) ? sItem : columnsNames.map((columnField,columnIndex)=>{
+                const columnDef = cols[columnField];
+                return <Cell
+                    rowArgs = {rowArgs}
+                    style = {StyleSheet.flatten([styles.headerItemOrCell,{width:columnDef.width}])}
+                    //key = {"_Cell_"+columnField+"_"+index}
+                    cellArgs={{columnIndex,columnDef,columnField:columnField}}
+                    renderCell = {renderCell}
+                    rowIndex = {index}
+                    children = {item[columnField]}
+                    testID={testID+"_Cell_"+columnField+"_"+index}
+                />
+            });
+            if(!Array.isArray(cells) && !React.isValidElement(cells)) return null;
+            items.push(<Row cells={cells} columns={vColumnsMapping} testID={testID+"_Row_"+index} {...rowProps} {...rProps} style={[styles.row,rProps.style]}/>);
+        });
+        itemsRef.current = items;
+        return items;
+    },[data,colString]);
     const scrollContentContainerStyle = {flex:1,width:listWidth,minWidth:totalWidths,height:'100%'};
     const scrollEventThrottle = isMobileNative()?200:50;
     const scrollViewFlexGrow = {flexGrow:0};
-    const maxScrollheight = f.length && fFilters.length ? 170  : f.length ?120 :  fFilters.length ? 140 : 80;
+    const maxScrollheight = footersContent.length && fFilters.length ? 170  : footersContent.length ?120 :  fFilters.length ? 140 : 80;
     const allScrollViewProps = {
         scrollEventThrottle,
         horizontal : true,
@@ -201,20 +233,20 @@ const TableComponent = React.forwardRef(({containerProps,renderListContent,child
         get headerScrollViewContext(){return headerScrollViewRef.current},
     }
     const showTableHeaders = showHeaders !== false || showFilters ;
-    const hContent = showTableHeaders &&  h.length ? <View testID={testID+"_Header"}{...hProps} {...headerContainerProps} style={[styles.header,headerContainerProps.style,hProps.style,f.length]}>
-        {h}
+    const hContent = showTableHeaders &&  headersContent.length ? <View testID={testID+"_Header"} {...headerContainerProps} style={[styles.header,headerContainerProps.style,footersContent.length]}>
+        {headersContent}
     </View> : null,
-    fContent = showTableHeaders && f.length ? <View testID={testID+"_Footer"} {...footerContainerProps} style={[styles.header,styles.footers,footerContainerProps.style,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}>
-        {f}
+    fContent = showTableHeaders && footersContent.length ? <View testID={testID+"_Footer"} {...footerContainerProps} style={[styles.header,styles.footers,footerContainerProps.style,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}>
+        {footersContent}
     </View> : null,
     filtersContent = fFilters.length ? <View testID={testID+"_Filters"} style={[styles.header,styles.footers,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}>
         {fFilters}
     </View> : null
-    
     const absoluteScrollViewRefCanScroll = React.useRef(true);
     React.setRef(tableRef,context);
     const cStyle = {width:listWidth}
     const absoluteScrollViewRef = React.useRef(null);
+    const absoluteScrollingRef = React.useRef(false);
     const scrollViewLayoutRef = React.useRef({});
     const toggleAbsoluteScrollVisible = ()=>{
         const ref = scrollViewLayoutRef.current;
@@ -225,15 +257,25 @@ const TableComponent = React.forwardRef(({containerProps,renderListContent,child
             }
         }
     }
-    return <View testID= {testID+"_Container"} {...containerProps} style={[styles.container,{alignItems:'stretch'},containerProps.style]}>
+    const items = prepareItems();
+    return <View testID= {testID+"_Container"}  {...containerProps} onLayout={(e)=>{
+        layoutRef.current = e.nativeEvent.layout;
+        if(containerProps.onLayout){
+            containerProps.onLayout(e);
+        }
+    }} style={[styles.container,{alignItems:'stretch'},containerProps.style]}>
             <RNView style={[cStyle]} testID={testID+"_Headers_ScrollViewContainer"}>
                 <ScrollView
                     testID={testID+"_HeaderScrollView"}
                     {...headerScrollViewProps} 
-                    contentContainerStyle = {[allScrollViewProps.contentContainerStyle,headerScrollViewProps.contentContainerStyle,{height:'100%',flexWrap: 'wrap'}]}
+                    contentContainerStyle = {[allScrollViewProps.contentContainerStyle,headerScrollViewProps.contentContainerStyle,{flex:1,flexWrap: 'wrap'}]}
                     style = {[allScrollViewProps.style,headerScrollViewProps.style,{height:'100%',flex:1,flexWrap:'wrap'}]}
                     ref={headerScrollViewRef} horizontal {...allScrollViewProps}
-                    onScroll = {getOnScrollCb([scrollViewRef,footerScrollViewRef])}
+                    onScroll = {getOnScrollCb([scrollViewRef,footerScrollViewRef],null,(args)=>{
+                        return;
+                        const nativeEvent = args.nativeEvent;
+                        console.log(nativeEvent," is n event");
+                    })}
                     showsHorizontalScrollIndicator
             >
                     <View testID={testID+"Header2FootersWrapper"} style={[theme.styles.w100]}>
@@ -243,135 +285,95 @@ const TableComponent = React.forwardRef(({containerProps,renderListContent,child
                     </View>
                 </ScrollView>
             </RNView>
-            {renderListContent === false ? (React.isValidElement(children)? children : null) :
-                hasEmptyData ? <View testID={testID+"_Empty"} style={styles.hasNotData}>
+            {hasEmptyData ? <View testID={testID+"_Empty"} style={styles.hasNotData}>
                     {emptyData}
-            </View> : <ScrollView {...scrollViewProps} scrollEventThrottle = {scrollEventThrottle} horizontal contentContainerStyle={[scrollContentContainerStyle,scrollViewProps.contentContainerStyle]} showsVerticalScrollIndicator={false}  
-                onScroll = {getOnScrollCb([headerScrollViewRef,footerScrollViewRef],null,(args)=>{
-                    const nativeEvent = args.nativeEvent;
-                    if(absoluteScrollViewRef.current && absoluteScrollViewRef.current.checkVisibility){
-                        absoluteScrollViewRef.current.checkVisibility(nativeEvent);
-                    }
-                })} 
-                onLayout={(args) => {
-                    const {nativeEvent:{layout}} = args;
-                    scrollViewLayoutRef.current.layout = layout;
-                    toggleAbsoluteScrollVisible();
-                    if(typeof props.onContainerLayout =='function'){
-                        props.onContainerLayout(args);
-                    }
-                }}
-                ref={scrollViewRef} 
-                testID={testID+"_ScrollView"}
-                onContentSizeChange = {(width,height)=>{
-                    scrollViewLayoutRef.current.content = {width,height};
-                    toggleAbsoluteScrollVisible();
-                }}
-            >  
-                    <AutoResizer  style = {[{position:'relative'}]}>
-                        {({top})=>{
-                            const {height:winheight} = Dimensions.get("window");
-                            let maxHeight = winheight-100;
-                            const diff = winheight - Math.max(top,100)-30;
-                            if(diff<=100){
-                                maxHeight = 100;
-                            } else {
-                                maxHeight = diff;
+            </View> : <ScrollView {...scrollViewProps} scrollEventThrottle = {scrollEventThrottle} horizontal contentContainerStyle={[scrollContentContainerStyle,scrollViewProps.contentContainerStyle,{height:'100%'}]} showsVerticalScrollIndicator={false}  
+                    onScroll = {getOnScrollCb([headerScrollViewRef,footerScrollViewRef],null,(args)=>{
+                        const nativeEvent = args.nativeEvent;
+                        if(absoluteScrollViewRef.current && absoluteScrollViewRef.current.checkVisibility){
+                            absoluteScrollViewRef.current.checkVisibility(nativeEvent);
+                        }
+                    })} 
+                    onLayout={(args) => {
+                        const {nativeEvent:{layout}} = args;
+                        scrollViewLayoutRef.current.layout = layout;
+                        toggleAbsoluteScrollVisible();
+                        if(typeof props.onContainerLayout =='function'){
+                            props.onContainerLayout(args);
+                        }
+                    }}
+                    ref={scrollViewRef} 
+                    testID={testID+"_ScrollView"}
+                    onContentSizeChange = {(width,height)=>{
+                        scrollViewLayoutRef.current.content = {width,height};
+                        toggleAbsoluteScrollVisible();
+                    }}
+                >  
+                    {progressBar}
+                    <List
+                        containerProps = {{style:[cStyle,listContainerStyle]}}
+                        estimatedItemSize = {200}
+                        {...props}
+                        onContentSizeChange = {(width,height)=>{
+                            if(props.onContentSizeChange){
+                                props.onContentSizeChange(width,height);
                             }
-                            maxHeight = Math.max(diff,250);
-                            return  <FlashList
-                                    estimatedListSize = {{height:maxHeight,width:totalWidths}}
-                                    containerProps = {{
-                                        style:[cStyle,{height:maxHeight,position:'relative'}],
-                                        onLayout : (args)=>{
-                                            if(props.onLayout){
-                                                props.onLayout(args);
-                                            }
-                                            if(!absoluteScrollViewRef.current) return;
-                                            const {nativeEvent:{layout}}=args;
-                                            const top = defaultNumber(layout.top,layout.y);
-                                            const height = layout.height;
-                                            absoluteScrollViewRef.current.setStyles({
-                                                container : {top,height},
-                                                contentContainer : {height},
-                                            });
-                                        }
-                                    }}
-                                    estimatedItemSize = {200}
-                                    {...props}
-                                    onContentSizeChange = {(width,height)=>{
-                                        if(props.onContentSizeChange){
-                                            props.onContentSizeChange(width,height);
-                                        }
-                                        if(!absoluteScrollViewRef.current) return;
-                                        absoluteScrollViewRef.current.setStyles({
-                                            content : {height,width}
-                                        });
-                                    }}
-                                    ref = {listRef}
-                                    numberOfLines = {1}
-                                    responsive = {false}
-                                    testID = {testID}
-                                    items = {data}
-                                    contentContainerStyle = {[styles.contentContainer,{flex:0,height:maxHeight,width:listWidth,minWidth:totalWidths,right:0}]}
-                                    style = {[styles.datagrid,{width:listWidth,minWidth:totalWidths}]}
-                                    keyExtractor = {typeof getRowKey =='function'? getRowKey : React.getKey}
-                                    //stickyHeaderIndices={[0]}
-                                    onScroll = {getOnScrollCb([absoluteScrollViewRef],(args)=>{
-                                        if(!absoluteScrollViewRef.current) return;
-                                        const offset = args?.nativeEvent?.contentOffset.y;
-                                        const scrollViewRef = absoluteScrollViewRef.current?.scrollViewRef;
-                                        if(typeof offset =='number' && scrollViewRef.current && scrollViewRef.current.scrollTo){
-                                            absoluteScrollViewRefCanScroll.current = false;
-                                            scrollViewRef.current.scrollTo({animated:false,y:offset});
-                                            setTimeout(()=>{
-                                                absoluteScrollViewRefCanScroll.current = true;
-                                            },500);
-                                        }
-                                    })}
-                                    renderItem = {(arg)=>{
-                                        const item = arg.item, data = arg.item,allData=Array.isArray(item.items)? item.items : data;
-                                        arg.allData = arg.allData;arg.isTable  = true; arg.isAccordion = false;
-                                        arg.columns = visibleColumns;
-                                        const selected = typeof isRowSelected=='function'? isRowSelected(item,arg.index):undefined;
-                                        const rowArgs = {...arg,selected,isTable:true,allData,row:data,rowData:data,rowIndex:arg.index};
-                                        const rProps = getRowProps ? getRowProps(rowArgs) : {};
-                                        const rowStyle = getRowStyle(rowArgs);
-                                        const sItem = typeof renderItem == 'function'? renderItem({...arg,rowProps:rProps,rowStyle}) : undefined;
-                                        const cells = sItem && React.isValidElement(sItem) ? sItem : !isObj(item) ? null : visibleColumns.map((i,index)=>{
-                                            const cellValue = data[i];
-                                            const col = defaultObj(cols[i]);
-                                            const cellArgs = {...col,...arg,containerProps:{},columnIndex:col.index,style:{width:col.width},cellValue,data,rowData:data,row:data,rowIndex:arg.index};
-                                            const cell = renderCell ? renderCell(cellArgs) : cellValue;
-                                            let cContainerProps = {},content = React.isValidElement(cell,true)? <Label children={cell}/> : null;
-                                            if(!content && isObj(cell)){
-                                                content = React.isValidElement(cell.content)? cell.content : React.isValidElement(cell.content)? cell.content : null;
-                                                cContainerProps = isObj(cell.containerProps)? cell.containerProps : {};
-                                            } else if(isObj(cellArgs.containerProps)){
-                                                cContainerProps = cellArgs.containerProps;
-                                            }
-                                            const key = "_Cell_"+i+"_"+arg.index;
-                                            return (<View {...cellContainerProps} {...cContainerProps} key={key} style={[styles.headerItemOrCell,cellContainerProps.style,cContainerProps.style,{width:col.width}]} testID={testID+key}>
-                                                {content}
-                                            </View>);
-                                        });
-                                        return cells ? <View testID={testID+"_Row_"+arg.index} {...rowProps} {...rProps} style={[styles.row,rowProps.style,rowStyle,styles.rowNoPadding,rProps.style]}>
-                                            {cells}
-                                        </View> : null
-                                    }}
-                                />
+                            if(!absoluteScrollViewRef.current) return;
+                            absoluteScrollViewRef.current.setStyles({
+                                content : {height,width}
+                            });
                         }}
-                    </AutoResizer>
+                        onLayout = {(args)=>{
+                            if(props.onLayout){
+                                //props.onLayout(args);
+                            }
+                            if(!absoluteScrollViewRef.current) return;
+                            const {nativeEvent:{layout}}=args;
+                            const top = defaultNumber(layout.top,layout.y);
+                            const height = layout.height;
+                            absoluteScrollViewRef.current.setStyles({
+                                container : {top,height},
+                                contentContainer : {height},
+                            });
+                        }}
+                        ref = {listRef}
+                        numberOfLines = {1}
+                        responsive = {false}
+                        testID = {testID}
+                        prepareItems = {false}
+                        items = {items}
+                        contentContainerStyle = {[styles.contentContainer,{with:listWidth,minWidth:totalWidths,position:'absolute',right:'0'}]}
+                        style = {[styles.datagrid,{width:listWidth,minWidth:totalWidths}]}
+                        keyExtractor = {typeof getRowKey =='function'? getRowKey : React.getKey}
+                        onScroll = {getOnScrollCb([absoluteScrollViewRef],(args)=>{
+                            if(!absoluteScrollViewRef.current) return;
+                            const offset = args?.nativeEvent?.contentOffset.y;
+                            const scrollViewRef = absoluteScrollViewRef.current?.scrollViewRef;
+                            if(typeof offset =='number' && scrollViewRef.current && scrollViewRef.current.scrollTo){
+                                absoluteScrollViewRefCanScroll.current = false;
+                                scrollViewRef.current.scrollTo({animated:false,y:offset});
+                                setTimeout(()=>{
+                                    absoluteScrollViewRefCanScroll.current = true;
+                                },500);
+                            }
+                        })}
+                        renderItem = {({index})=>items[index]}
+                    />
                     <AbsoluteScrollView
                         ref={absoluteScrollViewRef}
                         listRef = {listRef}
                         scrollEventThrottle = {scrollEventThrottle} 
                         onScroll = {(args)=>{
-                            if(!absoluteScrollViewRefCanScroll.current) return;
-                            const offset = args?.nativeEvent?.contentOffset.y;
-                            if(typeof offset =='number' && listRef.current && listRef.current.scrollToOffset){
-                                listRef.current.scrollToOffset({animated:true,offset});
-                            }
+                            if(!absoluteScrollViewRefCanScroll.current || absoluteScrollingRef.current) return;
+                            //clearTimeout(absoluteScrollTimeout.current);
+                            //absoluteScrollTimeout.current = setTimeout(()=>{
+                                //absoluteScrollingRef.current = true;
+                                const offset = args?.nativeEvent?.contentOffset.y;
+                                if(typeof offset =='number' && listRef.current && listRef.current.scrollToOffset){
+                                    listRef.current.scrollToOffset({animated:true,offset});
+                                }
+                                //absoluteScrollingRef.current = false;
+                            //},100);
                         }}
                     />
             </ScrollView>}
@@ -471,10 +473,7 @@ export const styles = StyleSheet.create({
         width : '100%',
         justifyContent : 'center',
         alignItems : 'center'
-    },
-    list : {
-        ...StyleSheet.absoluteFill,
-    },
+    }
 })
 TableComponent.popTypes = {
     containerProps : PropTypes.object,
@@ -498,10 +497,7 @@ TableComponent.popTypes = {
         PropTypes.objectOf(ColumnType),
         PropTypes.arrayOf(ColumnType)
     ]).isRequired,
-    data : PropTypes.oneOfType([
-        PropTypes.objectOf(RowType),
-        PropTypes.arrayOf(RowType),
-    ]),
+    data : PropTypes.arrayOf(RowType),
     columnsWidths : PropTypes.object,
     colsWidths : PropTypes.object,//alias à columnsWidths
     columnWidth: PropTypes.number,

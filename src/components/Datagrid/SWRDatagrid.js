@@ -223,9 +223,9 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         },
     });
     const isLoading = isLoadingRef.current  && customIsLoading || false;
-    React.useEffect(()=>{
+    /*React.useEffect(()=>{
         innerRef.current && innerRef.current.setIsLoading && innerRef.current.setIsLoading(isLoading);
-    },[isLoading])
+    },[isLoading])*/
     React.useEffect(()=>{
         const cb = refreshCBRef.current;
         refreshCBRef.current = null;
@@ -395,20 +395,6 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                     </View>
                 </View>
             }}
-            /*ListFooterComponent = {(props)=>{
-                const r = typeof ListFooterComponent =='function'? ListFooterComponent(props) : null;
-                if(!loading) return r;
-                const aContent = <View testID={testID+"_ListHeaderActivityIndicator"} style={[theme.styles.w100,theme.styles.justifyContentCenter]}>
-                    <ActivityIndicator color={theme.colors.primary}/>
-                </View>;
-                if(r){
-                    return <View testID={testID+"_ListHeaderContainer"} style={[theme.styles.w100]}>
-                        {r}
-                        {aContent}
-                    </View>
-                }
-                return aContent;
-            }}*/
             handleQueryLimit = {false}
             handlePagination = {false}
             autoSort = {canSortRemotely()? false : true}

@@ -23,6 +23,7 @@ module.exports = (opts)=>{
       ...config.resolver.sourceExts,
       ...sourceExts,"txt",
       'jsx', 'js','tsx',
+      //"mjs","cjs",
   ]
   // Remove all console logs in production...
   config.transformer.minifierConfig.compress.drop_console = true;

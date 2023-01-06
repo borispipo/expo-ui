@@ -3,11 +3,9 @@ import title from "./title"
 import  Screen  from "$screen";
 import Link from "./Link";
 import Content from "$PrivacyPolicy";
-import {getScreenProps} from "$cnavigation";
 import React from "$react";
 
-export default function PrivacyPolicy(p){
-    const props = getScreenProps(p);
+export default function PrivacyPolicy(props){
     return <Screen 
         {...props}
         withDrawer = {false}

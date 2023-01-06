@@ -16,6 +16,7 @@ import Footer from "../Footer/Footer";
 import theme from "$theme";
 import Table from "$ecomponents/Table";
 
+
 const DatagridFactory = (Factory)=>{
     Factory = Factory || CommonDatagrid;
     const clx = class DGridAccordionRenderingCls extends Factory {
@@ -42,9 +43,6 @@ const DatagridFactory = (Factory)=>{
         }
         bindResizeEvents(){
             return true;
-        }
-        onResizePage(){
-            this.updateLayout();
         }
         renderFilter(props,headerFilters){
             headerFilters.push(props);
@@ -145,6 +143,7 @@ const DatagridFactory = (Factory)=>{
                 title = _dataSourceSelector;
                 _dataSourceSelector = null;
             }
+            exportable = defaultBool(exportable,true);
             let isMobile = isMobileOrTabletMedia();
             selectable = defaultVal(selectable,true);
             selectableMultiple = this.isSelectableMultiple();
@@ -167,7 +166,7 @@ const DatagridFactory = (Factory)=>{
             const {columnsWidths:widths} = this.state;
             const showFooters = this.canShowFooters(), showFilters = this.canShowFilters();
             const isLoading = this.isLoading();
-            let _progressBar = this.getProgressBar();
+            const progressBar = this.getProgressBar();
             const pointerEvents = this.getPointerEvents(); 
 
             let restItems = [...this.renderCustomMenu()];
@@ -191,6 +190,7 @@ const DatagridFactory = (Factory)=>{
                     }] : [])
                 ]
             }   
+            const maxHeight = this.getMaxListHeight();
             const rPagination = showPagination ? <View style={[styles.paginationContainer]}>
                 <ScrollView horizontal showsHorizontalScrollIndicator={!isLoading} style={styles.paginationContainerStyle} contentContainerStyle={styles.minW100}>
                     <View style={[styles.paginationContent]}>
@@ -294,7 +294,7 @@ const DatagridFactory = (Factory)=>{
                     </View>
                 </ScrollView>
             </View> : null;
-            return <View style={[styles.container]} pointerEvents={pointerEvents}>
+            return <View style={[styles.container,{flex:1,maxHeight}]} pointerEvents={pointerEvents}>
                 <View ref={this.layoutRef}>
                     {this.props.showActions !== false ? <DatagridActions 
                         pointerEvents = {pointerEvents}
@@ -305,15 +305,22 @@ const DatagridFactory = (Factory)=>{
                         actions = {actions}
                     /> : null}
                     {rPagination}
-                    {_progressBar}  
+                    {progressBar}  
                 </View>
-                {<Table
-                    renderListContent = {canRenderChart? false:true}
+                {canRenderChart ?
+                    <View testID={testID+"_ChartContainer"} {...chartContainerProps} style={[theme.styles.w100,chartContainerProps.style]}>
+                        {this.renderChart()}
+                    </View> : 
+                <Table
                     ref = {this.listRef}
                     {...rest}
-                    children = {canRenderChart ? <View testID={testID+"_ChartContainer"} {...chartContainerProps} style={[theme.styles.w100,chartContainerProps.style]}>
-                        {this.renderChart()}
-                    </View> : null}
+                    onLayout = {(args)=>{
+                        if(rest.onLayout){
+                            rest.onLayout(args);
+                        }
+                        this.updateLayout(args);
+                    }}
+                    onRender = {this.onRender.bind(this)}
                     getItemType = {this.getFlashListItemType.bind(this)}
                     renderItem = {this.renderFlashListItem.bind(this)}
                     hasFooters = {hasFootersFields && !canRenderChart ? true : false}

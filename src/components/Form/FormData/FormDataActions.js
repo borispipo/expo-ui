@@ -7,11 +7,8 @@ import {isWeb} from "$cplatform";
 
 export default class FormDataActionComponent extends FormData {
     isFullScreen(){
-        const mainProps = this.getMainProps();
+        const mainProps = this.props;
         return typeof mainProps.fullScreen =='boolean'? mainProps.fullScreen : typeof mainProps.fullPage =='boolean'? mainProps.fullPage : mainProps.responsive !== false ? Dimensions.isMobileOrTabletMedia() : false;
-    }
-    getMainProps (){
-        return this.props;
     }
     getConfirmTitle(){
         const {title,subtitle,isEditing} = this.getAppBarProps();
@@ -22,13 +19,13 @@ export default class FormDataActionComponent extends FormData {
     }
     close (){}
     getNewElementLabel(){
-        return defaultStr(this.getMainProps().newElementLabel,this.props.newElementLabel,'Nouveau');
+        return defaultStr(this.props.newElementLabel,this.props.newElementLabel,'Nouveau');
     }
     getIndexFieldProps(){
-        return defaultVal(this.getMainProps().indexField,this.props.indexField);
+        return defaultVal(this.props.indexField,this.props.indexField);
     }
     getAppBarProps(){
-        const mainProps = this.getMainProps();
+        const mainProps = this.props;
         const data = this.getDataProp();
         const appBarProps = Object.assign({},mainProps.appBarProps);
         const isEditing = this.isDocEditing(data);
@@ -57,7 +54,7 @@ export default class FormDataActionComponent extends FormData {
     }
     onBackActionPress(args,callback){
         args = defaultObj(args);
-        const mainProps = this.getMainProps();
+        const mainProps = this.props;
         const hasP = mainProps !== this.props;
         const cb = ()=>{
             if(typeof mainProps.onBackActionPress =='function' && mainProps.onBackActionPress(args) === false) return
@@ -89,7 +86,7 @@ export default class FormDataActionComponent extends FormData {
         return isNonNullString(indexField) && isNonNullString(data[indexField])? data[indexField] : isNonNullString(data.code)? data.code : undefined; 
     }
     getAppBarActionsProps(props){
-        props = defaultObj(props,this.getMainProps(),this.props);
+        props = defaultObj(props,this.props);
         let {actions,save2NewAction,save2printAction,save2closeAction,saveAction,newAction} = props;
         const sArg = {context:this};
         save2NewAction = typeof save2NewAction =='function' ? save2NewAction (sArg) : save2NewAction;

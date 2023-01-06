@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import {defaultObj,defaultStr,defaultNumber,defaultBool} from "$utils";
 import ScrollView from '$ecomponents/ScrollView';
 import View from "$ecomponents/View";
-import { useNavigation,getScreenProps } from '$cnavigation';
+import { useNavigation} from '$cnavigation';
 import Fab from "$elayouts/Fab";
 import APP from "$capp";
 import AppBar,{createAppBarRef} from "$elayouts/AppBar";
@@ -57,7 +57,7 @@ export default function MainScreenScreenWithOrWithoutAuthContainer(props) {
     renderChildren,
     renderProfilAvatar,
     ...rest
-  } = getScreenProps(props);
+  } = props;
   const insets = useSafeAreaInsets();
   testID = defaultStr(testID,"RN_MainScreenScreenWithOrWithoutAuthContainer")
   containerProps = defaultObj(containerProps);
@@ -75,8 +75,8 @@ export default function MainScreenScreenWithOrWithoutAuthContainer(props) {
   ];
   options = defaultObj(options);
   appBarProps = defaultObj(appBarProps)
-  title = defaultVal(title,appBarProps.title,options.title);
-  subtitle = defaultVal(appBarProps.subtitle,options.subtitle,subtitle);
+  title = defaultVal(title,appBarProps.title);
+  subtitle = defaultVal(subtitle,appBarProps.subtitle);
   const appBarRef = createAppBarRef();
   const navigation = useNavigation();
   authProps = Object.assign({},authProps),

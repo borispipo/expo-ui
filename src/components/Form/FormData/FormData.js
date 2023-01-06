@@ -12,7 +12,6 @@ import {renderActions} from "$ecomponents/Dialog/utils";
 import {handleBeforeSaveCallback} from "./utils";
 import componentsTypes from "./componentsTypes";
 import { keyboardShortcuts } from "../utils";
-import {getScreenProps} from "$cnavigation";
 import appConfig from "$capp/config";
 
 export default class FormDataComponent extends AppComponent{
@@ -65,7 +64,7 @@ export default class FormDataComponent extends AppComponent{
         return true;
     }
     getAppBarActionsProps(props){
-        let {data,onCancel,perm,beforeSaveArgumentsMutator,beforeSave,actions,saveDataMutator,...rest} = getScreenProps(defaultObj(props,this.props));
+        let {data,onCancel,perm,beforeSaveArgumentsMutator,beforeSave,actions,saveDataMutator,...rest} = (defaultObj(props,this.props));
         const onSave = typeof props.onSave ==='function'? props.onSave : this.props.onSave ;
         beforeSave = typeof beforeSave =='function'? beforeSave : x=>true;
         return getAppBarActionsProps({

@@ -16,7 +16,7 @@ import {isMobileOrTabletMedia} from "$platform/dimensions";
 import Tab  from "$ecomponents/Tab";
 import Surface from "$ecomponents/Surface";
 import View from "$ecomponents/View";
-import {getScreenProps,goBack as navGoBack} from "$cnavigation";
+import {goBack as navGoBack} from "$cnavigation";
 import {renderTabsContent,renderActions} from "./utils";
 import theme from "$theme";
 import cActions from "$cactions";
@@ -72,7 +72,7 @@ export const isDocEditing = (data,fields,checkPrimaryKey)=>{
 export default class TableDataScreenComponent extends FormDataScreen{
     constructor(props){
         super(props);
-        const mainProps = getScreenProps(props);
+        const mainProps = props;
         extendObj(this.state,this.prepareStateData(mainProps));
         const table = defaultObj(mainProps.table);
         const fields = {},primaryKeyFields = {};
@@ -239,7 +239,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
             newElementLabel,
             prepareField,
             ...rest
-        } = getScreenProps(props);
+        } = props;
         const table = this.table;
         const {datas,currentIndex,data} = this.state; 
         const tableName = this.tableName;
@@ -353,7 +353,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
         return rActionsArg;
     }
     renderTabs(args){
-        const tabs = this.getMainProps().tabs;
+        const tabs = this.props.tabs;
         if(typeof tabs =='function'){
             return tabs(args);
         }
@@ -566,10 +566,9 @@ export default class TableDataScreenComponent extends FormDataScreen{
         return this.hidePreloaderTimeout;
     }
     UNSAFE_componentWillReceiveProps(nextProps){
-        const props = getScreenProps(nextProps);
-        const {data,datas}= props;
+        const {data,datas}= nextProps;
         if(stableHash({data,datas}) != stableHash({data:this.state.data,datas:this.state.datas})){
-            this.setState(this.prepareStateData(props));
+            this.setState(this.prepareStateData(nextProps));
         }
         return;
     }
@@ -808,12 +807,6 @@ export default class TableDataScreenComponent extends FormDataScreen{
     }
     getAppBarTitle (){
         return defaultStr(this.titleProp,this.table.text,this.table.label);
-    }
-    getMainProps(){
-        if(isObj(this.INITIAL_STATE.props) && Object.size(this.INITIAL_STATE.props,true)) {
-            this.INITIAL_STATE.props
-        }
-        return getScreenProps(this.props);
     }
     getAppBarProps(a){
         const r = super.getAppBarProps(a);

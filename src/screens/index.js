@@ -2,14 +2,10 @@ import {defaultBool,defaultArray,defaultVal,isObj,isNonNullString,defaultObj,isA
 import {sanitizeName,GROUP_NAMES} from "./utils";
 import mainScreens from "$mainScreens"
 import React from "$react";
-import { BackHandler } from "react-native";
-import APP from "$capp";
-import {useDrawer} from "$ecomponents/Drawer";
-import {navigationRef,getScreenProps,setRoute,setActiveNavigation,setScreenOptions,goBack} from "$cnavigation";
+import ScreenWrapper from "./ScreenWrapper";
+import { SCREEN_OPTIONS } from "./utils";
 
 export * from "./utils";
-
-export const SCREEN_OPTIONS = {};
 
 
 export const handleScreen = ({Screen,Factory,ModalFactory,result,useTheme,filter,index})=>{
@@ -33,9 +29,9 @@ export const handleScreen = ({Screen,Factory,ModalFactory,result,useTheme,filter
         screenName = defaultStr(screenName,Screen.screenName);
         if(isNonNullString(screenName)){
             let name = screenName;
-            let sanitizedName = sanitizeName(screenName);
+            const sanitizedName = sanitizeName(screenName);
             let extra = filter({Screen,name,sanitizedName}),
-            authRequired = !!Screen.authRequired;
+            authRequired = typeof Screen.authRequired =="boolean"? Screen.authRequired : true;
             if(extra ===false){
                 return null;
             }
@@ -62,6 +58,9 @@ export const handleScreen = ({Screen,Factory,ModalFactory,result,useTheme,filter
             screensGroups[groupName] = defaultArray(screensGroups[groupName]);
             screensGroups[groupName].push(<ScreenComponent key={sanitizedName} name={sanitizedName} options={args=>{
                 const options = typeof Screen.options === 'function'? Screen.options(args) : typeof screenOptions ==='function'? screenOptions(args) : defaultObj(Screen.options,screenOptions);
+                options.screenName = screenName;
+                options.Screen = Screen;
+                options.authRequired = authRequired;
                 SCREEN_OPTIONS[sanitizedName] = options;
                 options.withAppBar = Screen.isModalScreen ? true : false;
                 if(options.headerShown === false || Screen.headerShown === false){
@@ -69,67 +68,10 @@ export const handleScreen = ({Screen,Factory,ModalFactory,result,useTheme,filter
                 }
                 options.elevation = typeof options.elevation =='number'? options.elevation : typeof Screen.elevation =='number'? Screen.elevation : undefined;
                 options.back = args.navigation.canGoBack();
-                const {title,subtitle} = getScreenProps(args);
-                options.title = defaultVal(options.title,title);
-                options.subtitle = defaultVal(options.subtitle,subtitle);
+                options.extra = defaultObj(extra);
+                options.isModal = Screen.isModalScreen;
                 return options;
-            }}>
-                {props =>{
-                    const options = defaultObj(SCREEN_OPTIONS[sanitizedName]);
-                    const {drawerRef} = useDrawer()
-                    const {navigation,route} = props;
-                    setActiveNavigation(navigation);
-                    setRoute(route);
-                    React.useEffect(()=>{
-                        const unsubscribe = navigation.addListener('focus', (a) => {
-                            APP.trigger(APP.EVENTS.SCREEN_FOCUS,{
-                                screenName,
-                                sanitizedName,
-                                options,
-                            })
-                        });
-                        const unsubscribeBlur =  navigation.addListener('blur', (a) => {
-                            APP.trigger(APP.EVENTS.SCREEN_BLUR,{
-                                screenName,
-                                sanitizedName,
-                                options,
-                            })
-                        });
-                        const backAction = (a) => {
-                            if(drawerRef && drawerRef.current.canToggle() && drawerRef.current.isOpen()){
-                                drawerRef.current.closeDrawer();
-                                return true;
-                            }
-                            let isGoingBack = false;
-                            if(navigationRef.canGoBack()){
-                                if(isGoingBack) return true;
-                                isGoingBack = true;
-                                const opts = navigationRef.getCurrentOptions();
-                                const aProps = defaultObj(opts.appBarProps);
-                                goBack({...opts,...aProps,...defaultObj(aProps.appBarProps)});
-                                isGoingBack = false;
-                                return true;
-                            }
-                            APP.trigger(APP.EVENTS.BACK_BUTTON,{groupName,route:navigationRef.getCurrentRoute(),screenName:sanitizedName,source:'screen'});
-                            return true;
-                        };
-                        const subscription = BackHandler.addEventListener('hardwareBackPress', backAction);
-                        return ()=>{    
-                            if(unsubscribe){
-                                unsubscribe();
-                            }
-                            if(unsubscribeBlur){
-                                unsubscribeBlur();
-                            }
-                            if(subscription?.remove)subscription.remove();
-                            return BackHandler.removeEventListener('hardwareBackPress', backAction);
-                        }
-                    },[]);
-                    setScreenOptions(options);
-                    const allowDrawer = typeof options.allowDrawer ==='boolean'? options.allowDrawer : typeof Screen.allowDrawer =='boolean'? Screen.allowDrawer : Screen.isModalScreen == true ? false : true;
-                    return <Screen authRequired={authRequired||allowDrawer} backAction={Screen.isModalScreen} modal={Screen.isModalScreen} allowDrawer={allowDrawer} withDrawer = {allowDrawer !== false ? true : false} {...props} screenName={sanitizedName} extra ={defaultObj(extra)} options={options} />
-                }}
-            </ScreenComponent>)
+            }} component = {ScreenWrapper}/>);
         } else {
             console.error("Aucun nom définit pour l'écran ",Screen,index,". cet écran ne pourra pas être pris en compte dans l'application et peut provoquer des bugs.")
         }

@@ -192,3 +192,6 @@ export const formatValue = (value,format,abreviateValues)=>{
     }
     return abreviateValues ? value.abreviate() : value.formatNumber();
 }
+
+
+export const arrayValueSeparator = ", ";

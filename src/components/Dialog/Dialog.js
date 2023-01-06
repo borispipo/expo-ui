@@ -20,7 +20,6 @@ import {ACTION_ICON_SIZE} from "$ecomponents/AppBar";
 import DialogFooter from "./DialogFooter";
 import { Dimensions } from "react-native";
 import Surface from "$ecomponents/Surface";
-import stableHash from "stable-hash";
 
 export const FOOTER_HEIGHT = 50;
 export const HEADER_HEIGHT = 50;

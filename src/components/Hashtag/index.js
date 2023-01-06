@@ -1,10 +1,10 @@
 import {isNonNullString,defaultObj} from "$utils";
-//import dataFileManager from "$database/dataFileManager";
 import {open as showPreloader,close as hidePreloader} from "$epreloader";
 import Label from "$ecomponents/Label";
 import templates from "$ecomponents/Form/Fields/sprintfSelectors";
 import Tooltip from "$ecomponents/Tooltip";
 import { Pressable } from "react-native";
+import React from "$react";
 
 /*** 
  * API The component ReactHashtag is actually pretty generic. Is not something that someone can't do in half an hour. But, this one has some generic API that could make you turn.
@@ -65,7 +65,7 @@ const defaultRenderText = ({text,code,value,dbName,table,hashtag})=>{
         title +=( (title)? "\n":"") +" Table : [" + table.toUpperCase()+"]";
     }
     if(dbName){
-        title +=( (title)? "\n":"") + dataFileManager.dataFileText +" : ["+dbName+"]";
+        //title +=( (title)? "\n":"") + dataFileManager.dataFileText +" : ["+dbName+"]";
     }
     return <Tooltip Component={Label} cursorPointer primary style={[{textDecorationLine:'underline'}]} title={title}>
         {"#"+text}

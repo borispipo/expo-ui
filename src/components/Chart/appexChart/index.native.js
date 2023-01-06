@@ -8,7 +8,7 @@ import { methodsNames } from "./utils";
 export const ChartComponent = React.forwardRef(({chartContext,testID,chartId,id,webViewProps,options,...props},ref)=>{
     webViewProps = defaultObj(webViewProps);
     const webViewRef = React.useRef(null);
-    const chartId = React.useRef(defaultStr(chartId,id,options?.chart?.id,uniqid("chart-webview-id")));
+    chartId = React.useRef(defaultStr(chartId,id,options?.chart?.id,uniqid("chart-webview-id")));
     const jsonOptions = JSON.stringify(options);
     const exec = (method,a)=>{
         if(!webViewRef.current) return;

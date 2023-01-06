@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 import {defaultStr,base64toBlob,dataURLToBlob,getTypeFromDataURL,isNonNullString,getFileName,getFileExtension,defaultNumber,defaultBool,dataURLToBase64,isBlob,isBase64,isDataURL} from "$utils";
 const FileSaver = require('file-saver');
-const mime = require('mime-types')
+const mime = require('react-native-mime-types')
 const XLSX = require("xlsx");
 import Preloader from "$preloader";
 

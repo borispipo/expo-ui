@@ -2,12 +2,10 @@
 import {SIGN_IN} from "$cauth/routes"
 import Screen from "$escreen";
 import Login from "$eauth/Login";
-import {getScreenProps} from "$cnavigation";
 import {getTitle} from "./utils";
 
 
-function AuthSignInScreen(_props){
-    const props = getScreenProps(_props);
+function AuthSignInScreen(props){
     const title = getTitle();
     return <Screen 
         title = {title}

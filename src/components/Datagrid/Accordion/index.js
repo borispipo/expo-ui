@@ -21,13 +21,12 @@ import BackToTop from "$ecomponents/BackToTop";
 import FiltersAccordionComponent from "./Filters";
 import RenderType from "../RenderType";
 import { flatMode} from "$ecomponents/TextField";
-import {FlashList} from "$ecomponents/List";
+import List from "$ecomponents/Table/List";
 import theme,{Colors} from "$theme";
 import {getRowStyle,styles as rStyles} from "../utils";
 import Avatar from "$ecomponents/Avatar";
 import {defaultObj,isOb,isNonNullString} from "$utils";
 import PropTypes from "prop-types";
-import {isTouchDevice} from "$platform";
 
 const DatagridFactory = (Factory)=>{
     Factory = Factory || CommonDatagrid;
@@ -38,7 +37,7 @@ const DatagridFactory = (Factory)=>{
             this.frozenItems = 0;
             this.listRef = React.createRef(null);
             this.state.refreshing = false;
-            this.state.isReady = !this.bindResizeEvents();
+            //this.state.isReady = !this.bindResizeEvents();
             this.updateLayout = this.updateLayout.bind(this);
             this.backToTopRef = React.createRef(null);
         }
@@ -222,9 +221,6 @@ const DatagridFactory = (Factory)=>{
         }
         bindResizeEvents(){
             return true;
-        }
-        onResizePage(){
-            this.updateLayout();
         }
         getPageSize (){
             return INFINITE_SCROLL_PAGE_SIZE;
@@ -414,10 +410,7 @@ const DatagridFactory = (Factory)=>{
                     }
                 ]
             }
-            const {y} = this.state.layout;
-            const {height:winheight,width:winWidth} = Dimensions.get("window");
-            const containerHeight = winheight - y;
-            this.renderedListHeight = Math.max(300,containerHeight - (this.hasScrollViewParent() ? 50:0));
+            const maxHeight = this.getMaxListHeight();
             const isLoading = this.isLoading();
             const _progressBar = this.getProgressBar();
             const pointerEvents = this.getPointerEvents(); 
@@ -535,7 +528,7 @@ const DatagridFactory = (Factory)=>{
             </ScrollView>
         </View>  
         return <View testID={testID+"_Container"} pointerEvents={pointerEvents} style={[styles.container]} collapsable={false}>
-                { <View testID={testID+"_ContentContainer"} style={[this.bindResizeEvents()?{height:this.renderedListHeight}:undefined]}> 
+                { <View testID={testID+"_ContentContainer"} style={[{maxHeight}]}> 
                     <View testID={testID+"_AccordionHeader"} style={[styles.accordionHeader]} ref={this.layoutRef} onLayout={this.updateLayout.bind(this)}>
                         {this.props.showActions !== false ? <DatagridActions 
                             testID={testID+"_Actions"}
@@ -570,11 +563,12 @@ const DatagridFactory = (Factory)=>{
                             </View>
                         ) : null}
                     </View>
-                    {hasData && !canRenderChart ? <FlashList
+                    {hasData && !canRenderChart ? <List
                         estimatedItemSize = {150}
                         prepareItems = {false}
                         {...rest}
                         {...accordionProps}
+                        onRender = {this.onRender.bind(this)}
                         testID = {testID}
                         extraData = {this.state.refresh}
                         contentInset={{ right: 10, top: 10, left: 10, bottom: 10 }}

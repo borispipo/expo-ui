@@ -196,6 +196,10 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             const fetchCB = ({data,total})=>{
                 totalRef.current = total;
                 dataRef.current = data;
+                const dd = Object.size(data);
+                if(dd>total){
+                    total = dd;
+                }
                 hasResultRef.current = true;
                 if(onFetchData && typeof onFetchData =='function'){
                     onFetchData({allData:data,total,data,context:innerRef.current})

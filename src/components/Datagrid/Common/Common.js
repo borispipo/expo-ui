@@ -2883,7 +2883,6 @@ export default class CommonDatagridComponent extends AppComponent {
             delete this.filteredValues[i];
         })
         this.filters = filters;
-        console.log(this.filters," is fffff");
         this.refresh(true);
         this.isClearingAllFilters = false;
     }
@@ -3217,7 +3216,7 @@ export default class CommonDatagridComponent extends AppComponent {
         if(this.isRenderingRef.current === true){
             setTimeout(()=>{
                 this.isRenderingRef.current = false;
-                return this.setIsLoading(false);
+                return this.setIsLoading(false,undefined,undefined,"yes mannnnaaaaaa");
             },500);
         }
     }
@@ -3226,7 +3225,7 @@ export default class CommonDatagridComponent extends AppComponent {
      * @param {function | boolean} cb | enablePointerEvents
      * @param {boolean|function} enablePointerEvents
      */
-    setIsLoading (loading,cb,enablePointerEvents){
+    setIsLoading (loading,cb,enablePointerEvents,timeout){
         if(typeof cb =='boolean'){
             const t = enablePointerEvents;
             enablePointerEvents = cb;
@@ -3235,23 +3234,20 @@ export default class CommonDatagridComponent extends AppComponent {
         if(typeof enablePointerEvents =='boolean'){
             this.enablePointerEventsRef.current = enablePointerEvents;
         }
-        const timeout = 300;
-        setTimeout(()=>{
-           cb = typeof cb =='function'? cb : x=>true;
-            if(this.canSetIsLoading() && typeof loading =='boolean'){
-                if(loading === true){
-                    this.isRenderingRef.current = true;
-                } else if(this.isRenderingRef.current === true){
-                    return setTimeout(cb,timeout);;
-                }
-                return this.progressBarRef.current.setIsLoading(loading,()=>{
-                    setTimeout(cb,timeout);
-                });
-            } else {
+        timeout = typeof timeout =='number'? timeout : 500;
+        cb = typeof cb =='function'? cb : x=>true;
+        if(this.canSetIsLoading() && typeof loading =='boolean'){
+            if(loading === true){
+                this.isRenderingRef.current = true;
+            } else if(this.isRenderingRef.current === true){
+                  return setTimeout(cb,timeout);;
+              }
+               return this.progressBarRef.current.setIsLoading(loading,()=>{
                 setTimeout(cb,timeout);
-            }
-        },loading === false && enablePointerEvents === false ? timeout : 0);
-        return false;
+            });
+        } else {
+           setTimeout(cb,timeout);
+        }
     }
      /**** met à jour l'état de progression de la mise à jour du tableau */
      updateProgress(isLoading,cb){
@@ -3324,17 +3320,13 @@ export default class CommonDatagridComponent extends AppComponent {
         return false;
     }
     UNSAFE_componentWillReceiveProps(nextProps){
-        if(Object.size(nextProps.data) === Object.size(this.props.data) && (nextProps.data == this.props.data || stableHash(nextProps.data) === stableHash(this.props.data))) {
-            /*if( !this.isRenderingRef.current && typeof this.props.isLoading=='boolean' && nextProps.isLoading !== this.props.isLoading && typeof nextProps.isLoading =='boolean'){
-                this.setIsLoading(nextProps.isLoading)
-            }*/
+        if((stableHash(nextProps.data) === stableHash(this.props.data))) {
             return false;
         }
-        this.setIsLoading(true,()=>{
-            this.prepareData({...nextProps,force:true},(state)=>{
-                this.setState(state)
-            });
-        },true);
+        this.setIsLoading(true,true);
+        this.prepareData({...nextProps,force:true},(state)=>{
+            this.setState(state)
+        });
     }
     getDefaultPreloader(props){
         return CommonDatagridComponent.getDefaultPreloader();

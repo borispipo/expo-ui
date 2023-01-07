@@ -187,7 +187,8 @@ export const formatValue = (value,format,abreviateValues)=>{
     if(typeof value =='boolean'){
         return value ? "Oui" : "Non";
     }
-    if(format && typeof format =='string' && format.toLowerCase() =='money'){
+    format = typeof format =='string'? format.toLowerCase().trim() : "";
+    if(format =='money'){
         return abreviateValues? value.abreviate2FormatMoney() : value.formatMoney();
     }
     return abreviateValues ? value.abreviate() : value.formatNumber();

@@ -132,37 +132,6 @@ VirtuosoListComponent.displayName = "VirtuosoListComponent";
 
 export default VirtuosoListComponent;
 
-function isScrollable (node){
-    if(!node) return false;
-    const dim = dimensions(node);
-    if(!dim) return false;
-    if(dim.scrollHeight>dim.clientHeight) return true;
-    if(dim.totalHeight > (dim.clientHeight+dim.scrollHeight+100)) return true;
-    return false;
- }
-function lookupForContent (node,level){
-    if(!node || !isDOMElement(node) || level>=5) return null;
-    if(typeof level !='number'){
-        level = 0;
-    }
-    console.log("looking for ",node,level,dimensions(node));
-    if(isScrollable(node)){
-        return node;
-    }
-    return lookupForContent(node.querySelector("div:first-child"),level+1)
-}
-
-function dimensions(el) {
-    if(!isDOMElement(el)) return null;
-    var elHeight = el.offsetHeight;
-    const marginBottom = parseInt(window.getComputedStyle(el).getPropertyValue('margin-bottom'));
-    const paddingBottom = parseInt(window.getComputedStyle(el).getPropertyValue('padding-bottom'));
-    return {
-        height:elHeight,marginBottom,paddingBottom,totalHeight : elHeight+marginBottom+paddingBottom,
-        width : el.offsetWidth,scrollHeight : el.scrollHeight,clientHeight  : el.clientHeight,
-    }
-}
-
 const normalizeEvent = (e)=>{
     return {
       nativeEvent: {

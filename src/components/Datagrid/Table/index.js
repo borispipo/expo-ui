@@ -165,7 +165,6 @@ const DatagridFactory = (Factory)=>{
             const hasFootersFields = this.hasFootersFields();
             const {columnsWidths:widths} = this.state;
             const showFooters = this.canShowFooters(), showFilters = this.canShowFilters();
-            const isLoading = this.isLoading();
             const progressBar = this.getProgressBar();
             const pointerEvents = this.getPointerEvents(); 
 
@@ -192,7 +191,7 @@ const DatagridFactory = (Factory)=>{
             }   
             const maxHeight = this.getMaxListHeight();
             const rPagination = showPagination ? <View style={[styles.paginationContainer]}>
-                <ScrollView horizontal showsHorizontalScrollIndicator={!isLoading} style={styles.paginationContainerStyle} contentContainerStyle={styles.minW100}>
+                <ScrollView horizontal  style={styles.paginationContainerStyle} contentContainerStyle={styles.minW100}>
                     <View style={[styles.paginationContent]}>
                         <View testID={testID+"_HeaderQueryLimit"}>
                             {this.renderQueryLimit(this.getStateDataSize().formatNumber())}

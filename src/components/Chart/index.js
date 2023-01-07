@@ -1,7 +1,6 @@
 import React from '$react'
 import PropTypes from 'prop-types'
-import {defaultStr,defaultVal,extendObj,defaultObj,uniqid,defaultNumber} from "$utils";
-import stableHash from 'stable-hash';
+import {defaultStr,defaultVal,defaultObj,uniqid} from "$utils";
 import Chart from "./appexChart";
 import theme from "$theme";
 import { destroyChart } from './appexChart/utils';
@@ -35,7 +34,7 @@ const ChartComponent = React.forwardRef(({options,onRender,style,height,width,ch
         chartContext.current.updateOptions(options);
       }
     }
-  },[stableHash(options)]);
+  },[(options)]);
   React.useOnRender(onRender);
   React.useEffect(()=>{
       return ()=>{

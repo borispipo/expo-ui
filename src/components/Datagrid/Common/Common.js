@@ -1419,12 +1419,53 @@ export default class CommonDatagridComponent extends AppComponent {
             }}
         />
    }
+   configureSectionLists(){
+        const config = this.getChartConfig();
+        return new Promise((resolve)=>{
+            DialogProvider.open({
+                title : "Paramètres de groupe",
+                data : config,
+                fields : {
+                    displayGroupLabels : {
+                        type : "switch",
+                        text  : "Afficher les libelés de groupées",
+                        tooltip : "Afficher/Masquer les noms de colonnes sur les entêtes des valeurs groupées",
+                        defaultValue : 1,
+                    },
+                    displayGroupLabelsSeparator : {
+                        type : "text",
+                        label : "Séparateur de valeurs d'entêtes",
+                        title : "Définisser un séparateur pour les valeurs d'entêtes de groupe, lorsque le tableau est groupé par plusieurs colonnes",
+                        defaultValue : ", "
+                    },
+                },
+                actions : [
+                    {
+                        text : "Configurer",
+                        icon : "check",
+                        onPress : ({data})=>{
+                            const chartConfig = {...config,...data};
+                            this.setSessionData("chartConfig",chartConfig);
+                            DialogProvider.close();
+                            this.setIsLoading(true,true);
+                            this.prepareData({data:this.INITIAL_STATE.data,config:chartConfig},(state)=>{
+                                this.setState({...state,chartConfig},()=>{
+                                    resolve(chartConfig)
+                                })
+                            })
+                        }
+                    }
+                ]
+            })
+        })
+   }
    configureChart(refreshChart){
         if(!this.isChartRendable()){
             return Promise.reject({message:'Impossible de configurer le graphe car le type de données ne permet pas de rendu de type graphe'});
         }
         const xItems = {},yItems = {},config = defaultObj(this.state.chartConfig);
-        const series = {};
+        const series = {},seriesGroups = {};
+        const footers = this.getFootersFields();
         const isValidConfig = this.isValidChartConfig();
         Object.map(this.state.columns,(field,f)=>{
             if(isObj(field) && !this.isSelectableColumn(field) && !this.isIndexColumn(field)){
@@ -1432,6 +1473,9 @@ export default class CommonDatagridComponent extends AppComponent {
                 if(type === 'number' || type=='decimal'){
                     yItems[f] = field;
                     series[f] = field;
+                    if(isObj(footers[f])){
+                        seriesGroups[f] = field;
+                    }
                 } else {
                     xItems[f] = field;
                 }
@@ -1482,7 +1526,7 @@ export default class CommonDatagridComponent extends AppComponent {
                     sectionListHeadersSeries : {
                         text : "Series des données groupées",
                         type : "select",
-                        items : yItems,
+                        items : seriesGroups,
                         multiple : true,
                     },
                     dataLabels : {
@@ -1635,6 +1679,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 text : "Format des dates",
                 type : "dateFormat",
                 required : true,
+                defaultValue : DateLib.defaultDateFormat,
             },
         }
    }
@@ -1934,14 +1979,13 @@ export default class CommonDatagridComponent extends AppComponent {
         if(!isValidAggregator(aggregatorFunction)){
             aggregatorFunction = this.getActiveAggregatorFunction();
         }
-                
         const code = aggregatorFunction.code;
         const isDonut = chartType.isDonut || chartType.isRadial;
         const config = this.getChartConfig();
         //@see : https://apexcharts.com/docs/series/
         ///lorsqu'on affiche uniquement les totaux des sections, alors la visualition se fait sur uniquement sur la base des valeurs
         ///on parcoure uniquement les entêtes des sectionLis
-        const dataIndexes={},dataInexesNames = {};
+        const dataIndexes={};
         //la variable sectionListHeaderSeries, permet de récupérer les colonnes de type montant à utiliser pour le rendu du chart
         const tableFooters = this.getFootersFields();
         const defaultSectionListHeadersSeries = this.getDefaultSectionHeadersSeries();
@@ -1959,7 +2003,6 @@ export default class CommonDatagridComponent extends AppComponent {
                 seriesConfig = defaultSectionListHeadersSeries;
             }
         }
-        const seriesNamesMapping = {};
         /**** boucle sur chaque éléments trouvée dans le tableau des données sectionListData */
         const loopForFooter = ({column,serieName,footers,header})=>{
             if(!isObj(column) || !isObj(footers)) return null;
@@ -2055,13 +2098,20 @@ export default class CommonDatagridComponent extends AppComponent {
         const aggregatorFunction = this.getActiveAggregatorFunction().eval;
         const emptyValue = this.getEmptySectionListHeaderValue();
         const indexes = {};
-        let series = [],xaxis = {},customConfig = {},seriesNamesToColumns={};
+        let series = [],xaxis = {},customConfig = {};
         let count = 0;
         //on réinitialise le mappage entre les index
         Object.map(this.chartSeriesNamesColumnsMapping,(_,k)=>{
             delete this.chartSeriesNamesColumnsMapping[k];
         });
         if(!this.isSectionList()){
+            const sColumns = {};
+            Object.map(seriesConfig,(s,v)=>{
+                if(!isNonNullString(s) || !this.state.columns[s]) return null;
+                const columnDef = this.state.columns[s];
+                if(!isObj(columnDef)) return null;
+                sColumns[s] = columnDef;
+            })
             this.state.data.map((data,index)=>{
                 if(!isObj(data))return null;
                 const txt = this.renderRowCell({
@@ -2074,10 +2124,7 @@ export default class CommonDatagridComponent extends AppComponent {
                     columnField : xAxisColumn.field,
                 });
                 const text = isNonNullString(txt)? txt : emptyValue;
-                Object.map(seriesConfig,(s,v)=>{
-                    if(!isNonNullString(s) || !this.state.columns[s]) return null;
-                    const columnDef = this.state.columns[s];
-                    if(!isObj(columnDef)) return null;
+                Object.map(sColumns,(columnDef,s)=>{
                     indexes[s] = defaultObj(indexes[s]);
                     const current = indexes[s];
                     current[text] =  typeof current[text] =="number"? current[text] : 0;
@@ -2294,6 +2341,7 @@ export default class CommonDatagridComponent extends AppComponent {
                     closeOnPress : false,
                     divider : true,
                     style : theme.styles.bold,
+                    onPress : this.configureSectionLists.bind(this),
                 },
                 this.canDisplayOnlySectionListHeaders() && this.state.displayType =='table' && {
                     text : "Afficher uniquement totaux",
@@ -2578,8 +2626,9 @@ export default class CommonDatagridComponent extends AppComponent {
         return defaultNumber(this.sectionListDataSize.current)
     }
     prepareData(args,cb){
-        let {pagination,aggregatorFunction:customAggregatorFunction,displayOnlySectionListHeaders:cdisplayOnlySectionListHeaders,data,force,sectionListColumns,updateFooters} = defaultObj(args);
+        let {pagination,config,aggregatorFunction:customAggregatorFunction,displayOnlySectionListHeaders:cdisplayOnlySectionListHeaders,data,force,sectionListColumns,updateFooters} = defaultObj(args);
         cb = typeof cb ==='function'? cb : typeof args.cb == 'function'? args.cb : undefined;
+        config = isObj(config) && Object.size(config,true)? config : this.getChartConfig();
         const aggregatorFunction = isNonNullString(customAggregatorFunction) && customAggregatorFunction in  this.aggregatorFunctions ? this.aggregatorFunctions[customAggregatorFunction] : this.getActiveAggregatorFunction();
         sectionListColumns = isObj(sectionListColumns) ? sectionListColumns : this.state.sectionListColumns;
         const displayOnlySectionListHeaders = typeof cdisplayOnlySectionListHeaders == 'boolean'?cdisplayOnlySectionListHeaders : this.state.displayOnlySectionListHeaders;
@@ -2631,7 +2680,7 @@ export default class CommonDatagridComponent extends AppComponent {
                     return;
                 }
                 if(hasSectionColumns){
-                    let sHeader = this.getSectionListHeader({data:d,columnsLength : sectionListColumnsSize,fieldsSize:sectionListColumnsSize,sectionListColumnsLength:sectionListColumnsSize,sectionListColumnsSize,allData:data,rowData:d,index:i,rowIndex,context:this,columns,fields:columns});
+                    let sHeader = this.getSectionListHeader({config,data:d,columnsLength : sectionListColumnsSize,fieldsSize:sectionListColumnsSize,sectionListColumnsLength:sectionListColumnsSize,sectionListColumnsSize,allData:data,rowData:d,index:i,rowIndex,context:this,columns,fields:columns});
                     if(sHeader === false) return;//on omet la donnée si la fonction de récupération de son header retourne false
                     if(!isNonNullString(sHeader) || sHeader.toLowerCase().trim() =="undefined"){
                         if(this.props.ignoreEmptySectionListHeader !== false){
@@ -2709,7 +2758,10 @@ export default class CommonDatagridComponent extends AppComponent {
         if(this.getSectionListHeaderProp){
            return this.getSectionListHeaderProp(args);
         }
-        const {fields,sectionListColumnsSize,data} = args;
+        const chartConfig = isObj(args.config) && Object.size(args.config,true)? args.config : this.getChartConfig();
+        const displayGroupLabels = "displayGroupLabels" in chartConfig? chartConfig.displayGroupLabels : true;
+        const displayGroupLabelsSeparator = typeof chartConfig.displayGroupLabelsSeparator =='string'? chartConfig.displayGroupLabelsSeparator : arrayValueSeparator;
+        const {fields,sectionListColumnsSize} = args;
         const d = [];
         Object.map(fields,(field,i)=>{
             const txt = this.renderRowCell({
@@ -2720,13 +2772,13 @@ export default class CommonDatagridComponent extends AppComponent {
                 columnField : defaultStr(field.field,i),
             });
             if(!isNonNullString(txt) && typeof txt !=='number') return;
-            if(sectionListColumnsSize == 1){
+            if(sectionListColumnsSize == 1 || !displayGroupLabels){
                 d.push(txt);
             } else {
                 d.push("{0} : {1}".sprintf(defaultStr(field.label,field.txt),txt))
             }
         });
-        return d.length ? d.join(arrayValueSeparator) : undefined;
+        return d.length ? d.join(displayGroupLabelsSeparator) : undefined;
      }
     /*** retourne le type d'item à rendre à la fonction flashlist 
      * @see : https://shopify.github.io/flash-list/docs/guides/section-list

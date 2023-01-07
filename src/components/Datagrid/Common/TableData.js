@@ -175,6 +175,7 @@ export default class CommonTableDatagrid extends CommonDatagrid{
                         cb(data)
                     } 
                     resolve(data);
+                    this.isRenderingRef.current = false;
                     this.isFetchingData = undefined;
                     this.setIsLoading(false,false);
                 })

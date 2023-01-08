@@ -2339,6 +2339,7 @@ export default class CommonDatagridComponent extends AppComponent {
                     text : "Grouper par",
                     icon : "group",
                     closeOnPress : false,
+                    right : (p)=><Icon {...p} name="material-settings"/>,
                     divider : true,
                     style : theme.styles.bold,
                     onPress : this.configureSectionLists.bind(this),

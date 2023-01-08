@@ -11,7 +11,7 @@ import {styles} from "$theme";
 const CurrencyFormat = React.forwardRef(({disabled,readOnly,right,isFilter,editable,...props},ref)=>{
     const isEditable = disabled !== true && readOnly !== true && editable !== false;
     const defaultValue = isNonNullString(props.defaultValue) && props.defaultValue.contains("v" && props.defaultValue) && props.defaultValue || defaultStr(appConfig.currencyFormat,"%v %s");
-    const title = "Format d'affichage des valeurs numériques : une chaine de caractère constitué des lettre %v et %s où %v représente la valeur du montant et %s représente la devise : exemple %s%v => $10 et %s %v => 10 $";
+    const title = "Format d'affichage des valeurs numériques : une chaine de caractère constituée des lettre %v et %s où %v représente la valeur du montant et %s représente la devise : exemple %s%v => $10 et %v %s => 10 $";
     return <TextField      
         affix = {false}
         enableCopy = {false}

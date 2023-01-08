@@ -215,10 +215,6 @@ const DatagridFactory = (Factory)=>{
         hasScrollViewParent(){
             return this.props.hasScrollViewParent ? true : false;
         }
-        updateLayout(a){
-            if(!this.bindResizeEvents()) return;
-            return super.updateLayout(a);
-        }
         bindResizeEvents(){
             return true;
         }

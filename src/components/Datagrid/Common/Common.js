@@ -2825,7 +2825,7 @@ export default class CommonDatagridComponent extends AppComponent {
                     const key2 = key+column;
                     if(!this.state.columns[column] || !footers[column]) {
                         if(this.isAccordion()) return null;
-                        cells.push(<View key={key2} testID={testID+"_FooterCellContainer_"+key2} style={[tableStyles.headerItemOrCell,{width}]}></View>)
+                        cells.push(<View key={key2} testID={testID+"_FooterCellContainer_"+key2} style={[{width,marginLeft:0,paddingLeft:0,marginRight:0,paddingRight:0}]}></View>)
                     } else {
                         const footer = footers[column];
                         cells.push(<View key={key2} testID={testID+"_FooterCellContainer_"+key2} style={[tableStyles.headerItemOrCell,!isA?{width,alignItems:'flex-start',justifyContent:'flex-start'}:{marginLeft:0,paddingLeft:0,marginRight:5}]}>
@@ -2844,8 +2844,8 @@ export default class CommonDatagridComponent extends AppComponent {
                 });
             }
         }
-        return <View testID={testID+"_ContentContainer"}  style={[theme.styles.w100,isA && this.state.displayOnlySectionListHeaders && {borderTopColor:theme.colors.divider,borderTopWidth:1},isA ? [theme.styles.ph2,theme.styles.pt1] : [theme.styles.pt1,theme.styles.ph1],theme.styles.justifyContentCenter,theme.styles.alignItemsCenter,theme.styles.pb1,!cells && theme.styles.ml1,theme.styles.mr1,cStyle]}>
-            <Label testID={testID+"_Label"} splitText numberOfLines={3} textBold style={[theme.styles.w100,{color:theme.colors.primaryOnSurface,fontSize:isA?15 :16},lStyle]}>{label}</Label>
+        return <View testID={testID+"_ContentContainer"}  style={[theme.styles.w100,isA && this.state.displayOnlySectionListHeaders && {borderTopColor:theme.colors.divider,borderTopWidth:1},isA ? [theme.styles.ph2,theme.styles.pt1] : [theme.styles.pt1,theme.styles.noPadding,theme.styles.noMargin],theme.styles.justifyContentCenter,theme.styles.alignItemsCenter,theme.styles.pb1,!cells && theme.styles.ml1,theme.styles.mr1,cStyle]}>
+            <Label testID={testID+"_Label"} splitText numberOfLines={3} textBold style={[theme.styles.w100,{color:theme.colors.primaryOnSurface,fontSize:isA?15 :16},lStyle,theme.styles.ph1]}>{label}</Label>
             {cells ? <View testID={testID+"_TableRow"} style = {[theme.styles.w100,theme.styles.row,isA && theme.styles.pt1,theme.styles.alignItemsFlexStart,this.isAccordion() && theme.styles.rowWrap]}
             >{cells}</View> : null}
         </View>
@@ -3360,11 +3360,11 @@ export default class CommonDatagridComponent extends AppComponent {
         this.measureLayout(state=>{
             if(isObj(state)){
                 this.layoutRef.current = state;
-                return;
+                /*
                 if(!this.state.isReady){
                     state.isReady = true;
                 }
-                this.setState(state);
+                this.setState(state);*/
             }
         },isObj(p) && typeof p.force ==='boolean'?p.force : !this.state.isReady)
     }

@@ -216,6 +216,9 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                 });
             }
             const {url:fUrl,fetcher:cFetcher,...rest} = getFetcherOptions(url,opts);
+            if(showProgressRef.current ===false){
+                rest.showError = false;
+            }
             return cFetcher(fUrl,rest).then(fetchCB).finally(()=>{
                 isFetchingRef.current = false;
             });

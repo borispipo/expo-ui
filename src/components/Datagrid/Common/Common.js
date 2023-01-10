@@ -3272,6 +3272,9 @@ export default class CommonDatagridComponent extends AppComponent {
         return isObj(this.progressBarRef.current) && typeof this.progressBarRef.current.setIsLoading =='function' ? true : false;
     }
     onRender(){
+        if(typeof this.props.onRender ==='function'){
+            this.props.onRender({context:this});
+        }
         if(this.isRenderingRef.current === true){
             setTimeout(()=>{
                 this.isRenderingRef.current = false;
@@ -3382,7 +3385,7 @@ export default class CommonDatagridComponent extends AppComponent {
         if((stableHash(nextProps.data) === stableHash(this.props.data))) {
             return false;
         }
-        this.setIsLoading(true);
+        this.setIsLoading(true,true);
         this.prepareData({...nextProps,force:true},(state)=>{
             this.setState(state)
         });
@@ -3393,7 +3396,7 @@ export default class CommonDatagridComponent extends AppComponent {
     isLoading (){
         if(this.state.isReady === false || this.isRenderingRef.current) return true;
         if(typeof this.props.isLoading =='boolean') return this.props.isLoading;
-        return !!this.isLoadingRef.current;
+        return this.isLoadingRef.current === true ? true : false;
     }
     getLinesProgressBar(){
         return CommonDatagridComponent.LinesProgressBar(this.props);

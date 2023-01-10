@@ -3382,7 +3382,7 @@ export default class CommonDatagridComponent extends AppComponent {
         if((stableHash(nextProps.data) === stableHash(this.props.data))) {
             return false;
         }
-        this.setIsLoading(true,true);
+        this.setIsLoading(true);
         this.prepareData({...nextProps,force:true},(state)=>{
             this.setState(state)
         });
@@ -3393,7 +3393,7 @@ export default class CommonDatagridComponent extends AppComponent {
     isLoading (){
         if(this.state.isReady === false || this.isRenderingRef.current) return true;
         if(typeof this.props.isLoading =='boolean') return this.props.isLoading;
-        return this.isLoadingRef.current === true ? true : false;
+        return !!this.isLoadingRef.current;
     }
     getLinesProgressBar(){
         return CommonDatagridComponent.LinesProgressBar(this.props);

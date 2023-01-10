@@ -66,7 +66,7 @@ export default function DatabaseStatisticContainer ({dashboardProps,onRefreshAll
                     setIsLoading(false);
                     refreshingRef.current = false;
                 });
-            },100);
+        },100);
     }
 
     React.useEffect(()=>{

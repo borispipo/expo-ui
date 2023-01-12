@@ -33,8 +33,6 @@ export const getOnPressAction = (props) =>{
     if(isFunction(_onPress)){
         return  (event,ev2)=>{
             const args = React.getOnPressArgs(event,ev2);
-            console.log(args," is pressed");
-            return;
             const cb = ()=>{
                 if(isExpandable || closeOnPress === false){
                     return _onPress({...props,...args,drawerRef});;

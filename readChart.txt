@@ -4,3 +4,5 @@
 
 Les valeurs pouvant appartenir au séries groupées des charts peuvent être uniquement les valeurs calculées du footer, 
 lorsque les colonnes sont grouépes
+
+Configure git credentialHelper http : credential.useHttpPath true, @see : https://microsoft.github.io/Git-Credential-Manager-for-Windows/Docs/Configuration.html#:~:text=useHttpPath,changes%20the%20behavior%20of%20Git.

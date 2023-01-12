@@ -179,20 +179,22 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                 isLoadingRef.current = false;
                 return;
             }
-            opts = extendObj({},opts,fetchOptionsRef.current);
-            opts.queryParams = defaultObj(opts.queryParams);
-            opts.queryParams.withTotal = true;
+            opts = defaultObj(opts);
+            opts.fetchOptions = isObj(opts.fetchOptions)? Object.clone(opts.fetchOptions) : {};
+            opts.fetchOptions.withTotal = true;
+            opts.fetchOptions.fields = fetchFields;
+            extendObj(true,opts.fetchOptions,fetchOptionsRef.current);
             if(canHandleLimit){
-                opts.queryParams.limit = limitRef.current;
-                opts.queryParams.page = pageRef.current -1;
+                opts.fetchOptions.limit = limitRef.current;
+                opts.fetchOptions.page = pageRef.current -1;
             } else {
-                delete opts.queryParams.limit;
-                delete opts.queryParams.page;
-                delete opts.queryParams.offset;
+                delete opts.limit;
+                delete opts.fetchOptions.limit;
+                delete opts.fetchOptions.page;
+                delete opts.page;
+                delete opts.offset;
             }
-            if(isObj(opts.sort)){
-                opts.queryParams.sort = opts.sort;
-            }
+
             const fetchCB = ({data,total})=>{
                 totalRef.current = total;
                 dataRef.current = data;
@@ -209,7 +211,6 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             hasResultRef.current = false;
             isFetchingRef.current = true;
             if(typeof fetcher =='function'){
-                url = setQueryParams(url,opts.queryParams);
                 return fetcher(url,opts).then(fetchCB).finally(()=>{
                     isFetchingRef.current = false;
                     isLoadingRef.current = false;
@@ -221,6 +222,9 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             }
             return cFetcher(fUrl,rest).then(fetchCB).finally(()=>{
                 isFetchingRef.current = false;
+            }).catch((e)=>{
+                console.log(e," is swr fetching data");
+                throw e;
             });
         },
         showError  : false,
@@ -409,7 +413,6 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             beforeFetchData = {(args)=>{
                 if(typeof beforeFetchData =="function" && beforeFetchData(args)==false) return;
                 let {fetchOptions:opts,force} = args;
-                opts.fields = fetchFields;
                 opts = getFetchOptions({showError:showProgressRef.current,...opts});
                 isInitializedRef.current = true;
                 fetchOptionsRef.current = opts;

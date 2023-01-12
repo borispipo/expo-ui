@@ -3266,12 +3266,12 @@ export default class CommonDatagridComponent extends AppComponent {
         return isObj(this.progressBarRef.current) && typeof this.progressBarRef.current.setIsLoading =='function' ? true : false;
     }
     onRender(){
-        if(this.isRenderingRef.current === true){
+        //if(this.isRenderingRef.current === true){
             setTimeout(()=>{
                 this.isRenderingRef.current = false;
                 return this.setIsLoading(false,undefined,undefined,"yes mannnnaaaaaa");
             },500);
-        }
+        //}
     }
     /***
      * @param {boolean} loading

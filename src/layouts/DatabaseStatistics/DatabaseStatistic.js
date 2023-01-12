@@ -170,7 +170,7 @@ export default function DatabaseStatisticContainer ({dashboardProps,onRefreshAll
         onPress = {onPress}
         title = {title}
         //style = {[theme.styles.pv1]}
-        description = {isLoading || isDatagridLoading?progressBar:<CountUp 
+        description = {isLoading ?progressBar:<CountUp 
             from={0} 
             to={count}
             style = {counUpStyle}

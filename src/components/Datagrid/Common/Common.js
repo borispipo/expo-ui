@@ -2367,6 +2367,7 @@ export default class CommonDatagridComponent extends AppComponent {
        this.beforePrepareColumns();
        args = defaultObj(args);
        const sectionListColumns = {};
+       const nSectionList = {};
        const sListColumns = isObj(args.sectionListColumns) ? args.sectionListColumns : this.getSectionListColumns();
        const filteredColumns = isObjOrArray(args.filteredColumns)?args.filteredColumns : isObjOrArray(this.state.filteredColumns) ? this.state.filteredColumns : {};
        const columns = args.columns || this.state.columns;
@@ -2541,7 +2542,7 @@ export default class CommonDatagridComponent extends AppComponent {
             if(this.props.groupable !== false && header.groupable !== false && !this.isSelectableColumn(header,header.field) && !this.isIndexColumn(header,header.field)){
                 const isInSectionListHeader = isObj(sListColumns[field]);
                 if(isInSectionListHeader){
-                    sectionListColumns[field] = {
+                    nSectionList[field] = {
                         ...header,
                          width,
                          type,
@@ -2565,7 +2566,7 @@ export default class CommonDatagridComponent extends AppComponent {
                     mItem.right = (p)=>{
                         return <Icon name="material-settings" {...p} onPress={(e)=>{
                             //React.stopEventPropagation(e);
-                            this.configureSectionListColumn({...mItem,...defaultObj(sectionListColumns[field])});
+                            this.configureSectionListColumn({...mItem,...defaultObj(nSectionList[field])});
                             //return false;
                         }}/>
                     }
@@ -2575,6 +2576,11 @@ export default class CommonDatagridComponent extends AppComponent {
             columnIndex++;
             visibleColumnIndex++;
             
+        })
+        Object.map(sListColumns,(f,i)=>{
+            if(i in nSectionList){
+                sectionListColumns[i] = nSectionList[i];
+            }
         })
         this.preparedColumns.sortedColumns = sortedColumns;
         this.preparedColumns.sortedColumn = sortedColumn;
@@ -3266,12 +3272,15 @@ export default class CommonDatagridComponent extends AppComponent {
         return isObj(this.progressBarRef.current) && typeof this.progressBarRef.current.setIsLoading =='function' ? true : false;
     }
     onRender(){
-        //if(this.isRenderingRef.current === true){
-            setTimeout(()=>{
+        if(typeof this.props.onRender ==='function'){
+            this.props.onRender({context:this});
+        }
+        if(this.isRenderingRef.current === true){
+            //setTimeout(()=>{
                 this.isRenderingRef.current = false;
                 return this.setIsLoading(false,undefined,undefined,"yes mannnnaaaaaa");
-            },500);
-        //}
+            //},500);
+        }
     }
     /***
      * @param {boolean} loading

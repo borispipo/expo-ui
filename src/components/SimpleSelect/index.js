@@ -68,7 +68,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
     const prevMenuItems = React.usePrevious(menuItems,stableHash);
     const hasInitializedRef = React.useRef(false);
     const areItemsEquals = hasInitializedRef.current && prevMenuItems == menuItems;//JSON.stringify(prevMenuItems) == JSON.stringify(menuItems);
-    const prepareItems = React.useCallback(()=>{
+    const preparedItems = React.useCallback(()=>{
         const items = [];
         selectedRef.current = null;
         let currentSelectedValue = value;
@@ -112,7 +112,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
     React.useEffect(()=>{
         if(compare(defaultValue == value) && areItemsEquals) return;
         if(!areItemsEquals){
-            prepareItems();
+            preparedItems();
         } else {
             selectValue(defaultValue);
         }

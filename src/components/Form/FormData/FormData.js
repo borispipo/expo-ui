@@ -194,12 +194,18 @@ export default class FormDataComponent extends AppComponent{
                 const type = defaultStr(field.jsType,field.type,"text").trim().toLowerCase().replaceAll("_","");
                 const isDate = (type.contains('date') || type.contains('time'));
                 const Component = componentsTypes[type] || componentsTypes.default;
-                let {defaultValue,useDefaultValueFromData,hidden,renderFormDataField,getMediaQueryStyle,printLabels,queryLimit,selected,value,visible,dataFilesInterest,perm,ignore,form,responsiveProps:customResponsiveProps,...rest} = field;
+                let {defaultValue,useDefaultValueFromData,primaryKey,hidden,renderFormDataField,getMediaQueryStyle,printLabels,queryLimit,selected,value,visible,dataFilesInterest,perm,ignore,form,responsiveProps:customResponsiveProps,...rest} = field;
                 rest = Object.assign({},rest);
                 delete rest.import;
                 delete rest.export;
                 if(form === false || ignore || (isNonNullString(perm) && !Auth.isAllowedFromStr(perm))){
                     return null;
+                }
+                if(rest.nullable === false){
+                    rest.required = true;
+                }
+                if(primaryKey === true && typeof rest.required !=='boolean'){
+                    rest.required = true;
                 }
                 hidden = visible === false ? true : hidden;
                 if(typeof rest.filter !=='function'){

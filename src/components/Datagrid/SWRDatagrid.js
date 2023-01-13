@@ -183,7 +183,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             opts.fetchOptions = isObj(opts.fetchOptions)? Object.clone(opts.fetchOptions) : {};
             opts.fetchOptions.withTotal = true;
             opts.fetchOptions.fields = fetchFields;
-            extendObj(true,opts.fetchOptions,fetchOptionsRef.current);
+            extendObj(true,opts.fetchOptions,fetchOptionsRef.current?.fetchOptions);
             if(canHandleLimit){
                 opts.fetchOptions.limit = limitRef.current;
                 opts.fetchOptions.page = pageRef.current -1;

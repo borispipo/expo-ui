@@ -19,17 +19,18 @@ import appConfig from "$appConfig";
  *  foreignKeyTable : la tableData dans laquelle effectuer les donées de la requêtes
  *  foreignKeyLabel : Le libélé dans la table étrangère
  */
-const TableDataSelectField = React.forwardRef((_props,ref)=>{
-    let {foreignKeyColumn,foreignKeyTable,fetchItemsPath,foreignKeyLabel,dropdownActions,fields,fetchItems:customFetchItem,convertFiltersToSQL,mutateFetchedItems,getForeignKeyTable,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchDataOpts,...props} = _props;
-    props = defaultObj(props);
+const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyTable,fetchItemsPath,foreignKeyLabel,dropdownActions,fields,fetchItems:customFetchItem,convertFiltersToSQL,mutateFetchedItems,getForeignKeyTable,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchDataOpts,...props},ref)=>{
     props.data = defaultObj(props.data);
     foreignKeyColumn = foreignKeyColumn.trim();
     convertFiltersToSQL = defaultVal(convertFiltersToSQL,willConvertFiltersToSQL());
-    getForeignKeyTable = getForeignKeyTable || appConfig.getDatabaseTableData;
+    getForeignKeyTable = getForeignKeyTable || appConfig.getTableData;
     let fKeyTable = typeof getForeignKeyTable =='function' ? getForeignKeyTable(foreignKeyTable,props) : undefined;
     fetchItemsPath = defaultStr(fetchItemsPath).trim();
+    
     if(!fetchItemsPath && (!isObj(fKeyTable) || !(defaultStr(fKeyTable.tableName,fKeyTable.table)))){
-        console.error("type de données invalide pour la fKeyTable ",fKeyTable," composant SelectTableData",_props);
+        console.log(appConfig.getTableData,fKeyTable,fetchItemsPath,getForeignKeyTable,"i s fkeddd for ",foreignKeyColumn,foreignKeyTable,props)
+    
+        console.error("type de données invalide pour la foreignKeyTable ",fKeyTable," composant SelectTableData",foreignKeyColumn,foreignKeyTable,props);
         return null;
     }
     fKeyTable = defaultObj(fKeyTable);

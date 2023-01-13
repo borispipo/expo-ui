@@ -19,13 +19,12 @@ export default function ExpoUIApp (options){
     const {initConfig,...opts} = options;
     appConfig.current = options.config;
     if(typeof initConfig ==='function'){
-        initConfig({appConfig});
+        initConfig({appConfig,config:appConfig});
     }
     const App = require('./src/App').default(opts);
     if (false) {
         const root = createRoot(document.getElementById("root") || document.getElementById("main"));
     } else {
-        console.log("registring compddd");
         registerRootComponent(App);
     }
 }

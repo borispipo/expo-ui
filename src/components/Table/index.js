@@ -60,7 +60,7 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
     const hasEmptyData = emptyData && React.isValidElement(emptyData);
     const layoutRef = React.useRef({});
     React.useOnRender(onRender);
-    const prepareColumns = React.useCallback(()=>{
+    const preparedColumns = React.useMemo(()=>{
         const cols = {},headers = {},footers = {},filters = {},vColumnsMapping = [],visibleColumns = [],columnsNames = [];
         let hasFooters = false;
         columnProps = defaultObj(columnProps);
@@ -129,12 +129,12 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
         });
         return {columns:cols,columnsNames,headers,visibleColumns,vColumnsMapping,hasFooters,footers,filters};
       },[columns]);
-    const {columns:cols,headers,footers,filters,hasFooters:stateHasFooters,columnsNames,vColumnsMapping,visibleColumns} =  prepareColumns();
+    const {columns:cols,headers,footers,filters,hasFooters:stateHasFooters,columnsNames,vColumnsMapping,visibleColumns} =  preparedColumns;
     headerContainerProps = defaultObj(headerContainerProps);
     footerContainerProps = defaultObj(footerContainerProps);
     const dimensions = Dimensions.get("window");
     const maxHWidth = dimensions.width - defaultNumber(layoutRef.current.left,layoutRef.current.x);
-    const {fFilters,headersContent,footersContent,totalWidths} = React.useCallback(()=>{
+    const {fFilters,headersContent,footersContent,totalWidths} = React.useMemo(()=>{
         const headersContent = [],footersContent = [],fFilters = [];
         let totalWidths = 0;
         visibleColumns.map((i,index)=>{
@@ -149,13 +149,12 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
         });
         
         return {headersContent,totalWidths,footersContent,fFilters};
-    },[visibleColumns,showFilters,showFooters,layoutRef.current])();
-    const colString = columnsNames.join(",");
+    },[visibleColumns,showFilters,showFooters,layoutRef.current]);
     const prevData = React.usePrevious(data);
-    const prevColString = React.usePrevious(colString);
+    const prevColumns = React.usePrevious(columns);
     const itemsRef = React.useRef(null);
-    const prepareItems = React.useCallback(()=>{
-        if(data === prevData && prevColString == colString && Array.isArray(itemsRef.current)){
+    const items = React.useMemo(()=>{
+        if(data === prevData && prevColumns == columns && Array.isArray(itemsRef.current)){
             return itemsRef.current;
         }
         const items = [];
@@ -189,7 +188,7 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
         });
         itemsRef.current = items;
         return items;
-    },[data,colString]);
+    },[data,columns]);
     const scrollContentContainerStyle = {flex:1,width:listWidth,minWidth:totalWidths,height:'100%'};
     const scrollEventThrottle = isMobileNative()?200:50;
     const scrollViewFlexGrow = {flexGrow:0};
@@ -257,7 +256,6 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
             }
         }
     }
-    const items = prepareItems();
     return <View testID= {testID+"_Container"}  {...containerProps} onLayout={(e)=>{
         layoutRef.current = e.nativeEvent.layout;
         if(containerProps.onLayout){
@@ -340,7 +338,7 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
                         numberOfLines = {1}
                         responsive = {false}
                         testID = {testID}
-                        prepareItems = {false}
+                        preparedItems = {false}
                         items = {items}
                         contentContainerStyle = {[styles.contentContainer,{with:listWidth,minWidth:totalWidths,position:'absolute',right:'0'}]}
                         style = {[styles.datagrid,{width:listWidth,minWidth:totalWidths}]}

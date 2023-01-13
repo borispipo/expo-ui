@@ -26,6 +26,7 @@ const DrawerItemsComponent = React.forwardRef((props,ref)=> {
                 {...rest}
                 minimized={minimized} 
                 key={key}
+                divider = {rest.divider !== false && items.length ? true : false}
             >
               {items}
             </DrawerSection>

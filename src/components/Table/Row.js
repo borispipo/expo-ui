@@ -5,12 +5,12 @@ import React from "$react";
 import { View } from "react-native";
 import PropTypes from "prop-types";
 export default function TableRowComponent({cells,columns,...rest}){
-    const children = React.useCallback(()=>{
+    const children = React.useMemo(()=>{
         if(Array.isArray(cells)){
             return cells.map((cell,index)=>columns[index]? <React.Fragment key={index}>{cell}</React.Fragment> : null )
         }
         return cells;
-    },[cells,columns])();
+    },[cells,columns]);
     return <View {...rest}>
         {children}
     </View>

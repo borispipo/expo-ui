@@ -13,7 +13,7 @@ export * from "./utils";
 const FabLayoutComponent = React.forwardRef(({style,screenName,tables,...props},ref)=>{
   const [isLoggedIn,setIsLoggedIn] = React.useState(isAuthLoggedIn());
   const isMounted = React.useIsMounted();
-  const actions = React.useCallback(()=>{
+  const actions = React.useMemo(()=>{
       if(!isLoggedIn) return null;
       const a = [];
       Object.map(tables,(table,i,index)=>{
@@ -48,7 +48,7 @@ const FabLayoutComponent = React.forwardRef(({style,screenName,tables,...props},
           })
       })
       return a.length ? a : null;
-  },[isLoggedIn])();
+  },[isLoggedIn]);
   React.useEffect(()=>{
       const onLogin = ()=>{
           if(!isMounted())return;

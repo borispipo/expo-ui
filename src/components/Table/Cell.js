@@ -7,14 +7,14 @@ import {defaultObj} from "$utils";
 import Label from "$ecomponents/Label";
 
 function TableCellComponent({cellArgs,rowArgs,children,renderCell,rowIndex,style,...rest}){
-    const {content,containerProps} = React.useCallback(()=>{
+    const {content,containerProps} = React.useMemo(()=>{
         const rArgs = {...cellArgs,...rowArgs,containerProps : {}};
         const r = typeof renderCell =='function' && renderCell (rArgs) ||  children;
         return {
             content : typeof r =='string' || typeof r =='number'? <Label children={r}/> : React.isValidElement(r)? r : null,
             containerProps : defaultObj(rArgs.containerProps)
         }
-    },[children])();
+    },[children]);
     return (<View  {...containerProps} {...rest} style={[style,containerProps.style]} >
         {content}
     </View>);

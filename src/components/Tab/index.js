@@ -58,7 +58,7 @@ const TabComponent = React.forwardRef((props,ref)=>{
         } 
     },[children,activeIndex]);
     testID = defaultStr(testID,"RN_TabComponentComponent");
-    const {tabs,contents,childrenProps} = React.useCallback(()=>{
+    const {tabs,contents,childrenProps} = React.useMemo(()=>{
         const tabs = [],contents = [],childrenProps=[];
         React.Children.map(children,(child,index)=>{
             if(!isObj(child)) return null;
@@ -78,7 +78,7 @@ const TabComponent = React.forwardRef((props,ref)=>{
             </React.Fragment>)
         })
         return {tabs,contents,childrenProps}
-    },[children])();
+    },[children]);
     return <View {...rest} testID={testID} style={[styles.container,tabItemsProps.style]}>
         <TabItems testID={testID+"_TabItems"} {...tabItemsProps} activeIndex={index} style={[styles.tab,rest.style]} onChange={setActiveIndex}>
             {tabs}

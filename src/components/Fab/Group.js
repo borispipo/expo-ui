@@ -170,7 +170,7 @@ const FabGroupComponent = React.forwardRef((props,innerRef)=>{
         backgroundColor = theme.colors.secondary;
         color = theme.colors.secondaryText;
     }
-    const actions = React.useCallback(()=>{
+    const actions = React.useMemo(()=>{
         if(!open) return []
         const actions =  prepareActions === false && Array.isArray(customActions)? customActions : [];
         if((prepareActions !== false || !actions.length)){
@@ -192,7 +192,7 @@ const FabGroupComponent = React.forwardRef((props,innerRef)=>{
             }); 
         }
         return actions;
-    },[customActions,prepareActions,open])();
+    },[customActions,prepareActions,open]);
     
     React.useEffect(()=>{
         onMount && onMount(context);

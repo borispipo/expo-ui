@@ -9,12 +9,12 @@ import React from "$react";
 import { View } from "react-native";
 import PropTypes from "prop-types";
 export default function TableHeaderComponent({cells,columns,...rest}){
-    const children = React.useCallback(()=>{
+    const children = React.useMemo(()=>{
         if(Array.isArray(cells)){
             return null;
         }
         return cells;
-    },[cells,columns])();
+    },[cells,columns]);
     return <View {...rest}>
         {children}
     </View>

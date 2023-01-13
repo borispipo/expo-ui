@@ -93,7 +93,7 @@ export default function DatabaseStatisticContainer ({dashboardProps,onRefreshAll
             tableName
         })
     };
-    const fetchFields = React.useCallback(()=>{
+    const fetchFields = React.useMemo(()=>{
         const fetchFields = [];
         Object.map(columns,(field,f)=>{
             const ff = defaultStr(isObj(field) && field.filter !== false? field.field: undefined,f);
@@ -102,7 +102,7 @@ export default function DatabaseStatisticContainer ({dashboardProps,onRefreshAll
             }
         });
         return fetchFields;
-    },[columns])();
+    },[columns]);
     const counUpStyle = {fontSize:20,fontWeight:'bold',color:theme.colors.secondaryOnSurface};
     title =  React.isValidElement(title,true)?<Label splitText numberOfLines={1} color={theme.colors.primaryOnSurface} style={[{fontSize:15}]}>{title}</Label>: null;
     const titleText = title && React.getTextContent(title) || null;

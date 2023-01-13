@@ -17,6 +17,6 @@ export const canAutoFocusSearchField = ({visible,items})=>{
     const count = typeof items =='number'? items : typeof (items) === 'object' ? Object.size(items) : 0;
     if(!visible) return false;
     const ret = count > MAX_AUTO_FOCUS_ITEMS && true || false;
-    if(!isNativeMobile() && !isTouchDevice()) return ret;
+    if(!isNativeMobile() && !isTouchDevice()) return true;
     return isNativeMobile()? ret : false;
 }

@@ -128,7 +128,7 @@ const TableComponent = React.forwardRef(({containerProps,sortedColumn,listContai
           columnIndex++;
         });
         return {columns:cols,columnsNames,headers,visibleColumns,vColumnsMapping,hasFooters,footers,filters};
-      },[columns,sortedColumn]);
+      },[columns,sortedColumn,props.footers]);
     const {columns:cols,headers,footers,filters,hasFooters:stateHasFooters,columnsNames,vColumnsMapping,visibleColumns} =  preparedColumns;
     headerContainerProps = defaultObj(headerContainerProps);
     footerContainerProps = defaultObj(footerContainerProps);

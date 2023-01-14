@@ -342,6 +342,7 @@ const DatagridFactory = (Factory)=>{
                         }
                     }}
                     data = {this.state.data}
+                    footers = {this.getFooterValues()}
                     renderHeaderCell={this.renderHeaderCell.bind(this)}
                     renderFilterCell={this.renderFilterCell.bind(this)}
                     renderFooterCell={this.renderFooterCell.bind(this)}

@@ -1,6 +1,6 @@
 import React,{BaseComponent as AppComponent} from '$react';
 import View from "$components/View";
-import ScrollView  from "$components/ScrollView";
+import { ScrollView } from 'react-native';
 import {
   Platform,
   StyleSheet,

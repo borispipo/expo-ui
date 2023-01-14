@@ -32,7 +32,8 @@ import { AppState } from 'react-native'
 import {canFetchOffline} from "$capi/utils";
 import {defaultNumber} from "$utils";
 import { timeout as SWR_REFRESH_TIMEOUT} from '$ecomponents/Datagrid/SWRDatagrid';
-
+import { Dimensions,Keyboard } from 'react-native';
+import {isTouchDevice} from "$platform";
 import * as Utils from "$utils";
 Object.map(Utils,(v,i)=>{
   if(typeof v =='function' && typeof window !='undefined' && window && !window[i]){
@@ -48,6 +49,7 @@ export default function getIndex(options){
     const activeScreenRef = React.useRef('');
     const prevActiveScreenRef = React.useRef('');
     const appStateRef = React.useRef({});
+    const isKeyboardOpenRef = React.useRef(false);
     React.useEffect(()=>{
         ///la fonction de rappel lorsque le composant est monté
         let cb = typeof onMount =='function'? onMount() : null;
@@ -64,9 +66,39 @@ export default function getIndex(options){
         }
         APP.on(APP.EVENTS.SCREEN_FOCUS,onScreenFocus);
         APP.on(APP.EVENTS.SCREEN_BLUR,onScreenBlur);
+        const triggerKeyboardToggle = (status)=>{
+          APP.trigger(APP.EVENTS.KEYBOARD_DID_TOGGLE,{shown:status,status,visible:status,hide : !status});
+        }
+        const keyBoardDidShow = ()=>{
+          APP.trigger(APP.EVENTS.KEYBOARD_DID_SHOW);
+          triggerKeyboardToggle(true);
+        },keyBoardDidHide = ()=>{
+          APP.trigger(APP.EVENTS.KEYBOARD_DID_HIDE);
+          triggerKeyboardToggle(false);
+        }
+        const keyBoardDidShowListener = Keyboard.addListener("keyboardDidShow",keyBoardDidShow);
+        const keyBoardDidHideListener = Keyboard.addListener("keyboardDidHide",keyBoardDidHide);
+        const listener = isTouchDevice() && typeof window !=='undefined' && window && window.visualViewport && typeof window.visualViewport.addEventListener =='function'? 
+          () => {
+            const minKeyboardHeight = 300;
+            const screen = Dimensions.get("screen");
+            const newState = screen.height - minKeyboardHeight > window.visualViewport.height
+            if (isKeyboardOpenRef.current != newState) {
+                isKeyboardOpenRef.current = newState;
+                newState ? keyBoardDidShow() : keyBoardDidHide();
+            }
+        } : undefined;
+        if(listener){
+            window.visualViewport.addEventListener('resize', listener);
+        }
         return ()=>{
           APP.off(APP.EVENTS.SCREEN_FOCUS,onScreenFocus);
           APP.off(APP.EVENTS.SCREEN_BLUR,onScreenBlur);
+          keyBoardDidShowListener && keyBoardDidShowListener.remove && keyBoardDidShowListener.remove();
+          keyBoardDidHideListener && keyBoardDidHideListener.remove && keyBoardDidHideListener.remove();
+          if(listener){
+            window.visualViewport.removeEventListener('resize', listener);
+          }
           if(typeof onUnmount =='function'){
              onUnmount();
           }

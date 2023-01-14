@@ -1,6 +1,5 @@
 import {StyleSheet,useWindowDimensions} from 'react-native';  
 import DrawerLayout from './DrawerLayout';
-import ScrollView  from "$ecomponents/ScrollView";
 import {isIos} from "$cplatform";
 import React from "$react";
 import PropTypes from "prop-types";

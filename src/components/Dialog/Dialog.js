@@ -2,8 +2,8 @@
 import {defaultStr,isObj} from "$utils";
 import {Dialog} from "react-native-paper";
 import {isNonNullString,defaultVal,defaultNumber,defaultObj,defaultBool } from "$utils";
-import {StyleSheet} from "react-native";
-import ScrollView  from "$ecomponents/ScrollView";
+import {StyleSheet,ScrollView} from "react-native";
+//import ScrollView  from "$ecomponents/ScrollView";
 import Modal from "$ecomponents/Modal";
 import PropTypes from "prop-types";
 import React from "$react";

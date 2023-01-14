@@ -1,7 +1,6 @@
 import * as React from 'react'
 import Types from 'prop-types';
-import {StyleSheet,View,useWindowDimensions} from "react-native";
-import ScrollView  from "$ecomponents/ScrollView";
+import {StyleSheet,ScrollView,View,useWindowDimensions} from "react-native";
 import {Paragraph,Button,List } from "react-native-paper";
 import Portal from "$ecomponents/Portal";
 import theme from "$theme";

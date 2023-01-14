@@ -1,6 +1,5 @@
 import React from "$react";
-import {StyleSheet } from "react-native";
-import ScrollView  from "$ecomponents/ScrollView";
+import {StyleSheet,ScrollView } from "react-native";
 import DrawerItems from "./DrawerItems";
 import {MINIMIZED_ICON_SIZE,ICON_SIZE, canBeMinimizedOrPermanent} from './utils';
 import DrawerHeader from "./DrawerHeader";

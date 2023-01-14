@@ -3,7 +3,6 @@ import {StyleSheet} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import PropTypes from "prop-types";
 import {defaultObj,defaultStr,defaultNumber,defaultBool} from "$utils";
-import ScrollView from '$ecomponents/ScrollView';
 import View from "$ecomponents/View";
 import { useNavigation} from '$cnavigation';
 import Fab from "$elayouts/Fab";
@@ -13,6 +12,7 @@ import ErrorBoundary from "$ecomponents/ErrorBoundary";
 import Portal from "$ecomponents/Portal";
 import theme,{StyleProp} from "$theme";
 import StatusBar from "$ecomponents/StatusBar";
+import { ScrollView } from 'react-native';
 
 const getDefaultTitle = (nTitle,returnStr)=>{
   let titleStr = React.getTextContent(nTitle);

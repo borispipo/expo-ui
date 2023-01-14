@@ -1,49 +1,42 @@
 import React from '$react';
-import { FlatList } from 'react-native';
-import { ScrollView,Dimensions,useWindowDimensions } from 'react-native';
+import { ScrollView,Dimensions } from 'react-native';
 import PropTypes from "prop-types";
 import View from "$ecomponents/View";
-import {isMobileNative,isTouchDevice} from "$cplatform";
-import {isDesktopMedia} from "$cdimensions";
+import theme from "$theme";
 import {defaultStr,defaultObj} from "$utils";
-const isNative = isMobileNative();
 import APP from "$capp/instance";
-const ScrollViewComponent = React.forwardRef((props,ref) => {
-  const {virtualized,contentProps,mediaQueryUpdateNativeProps,testID:customTestID,children,screenIndent:sIndent,...rest} = props;
+const ScrollViewComponent = React.forwardRef(({virtualized,contentProps,containerProps,mediaQueryUpdateNativeProps,testID:customTestID,children,screenIndent:sIndent,...rest},ref) => {
+  const isKeyboardOpenRef = React.useRef(false);
   const testID = defaultStr(customTestID,'RN_ScrollViewComponent');
-  const cProps = defaultObj(contentProps);
+  containerProps = defaultObj(containerProps)
   const [layout,setLayout] = React.useState(Dimensions.get("window"));
   const {height} = layout;
   React.useEffect(()=>{
+    const onKeyboardToggle = ({visible})=>{
+      isKeyboardOpenRef.current = visible;
+     };
     const onResizePage = ()=>{
-      if(isTouchDevice()) return;
       setTimeout(()=>{
+         //if(isKeyboardOpenRef.current) return;
          setLayout(Dimensions.get("window"))
-      },200);
+      },300);
     }
     APP.on(APP.EVENTS.RESIZE_PAGE,onResizePage);
+    APP.on(APP.EVENTS.KEYBOARD_DID_TOGGLE,onKeyboardToggle)
     return ()=>{
       APP.off(APP.EVENTS.RESIZE_PAGE,onResizePage);
+      APP.off(APP.EVENTS.KEYBOARD_DID_TOGGLE,onKeyboardToggle);
     }
-  },[])
-  const showIndicator = true;//!isTouchDevice() || isDesktopMedia();
-  return  virtualized ? <FlatList
-    //showsHorizontalScrollIndicator = {showIndicator}  
-    //showsVerticalScrollIndicator={showIndicator} 
-    {...rest}
-    ref = {ref}
-    testID = {testID}
-    data={[]}
-    keyExtractor={(_e, i) => 'dom' + i.toString()}
-    ListEmptyComponent={null}
-    renderItem={null}
-    contentContainerStyle = {[!isNative && {flex:1,flexGrow: 1,maxHeight:Math.max(height-100,250)},rest.contentContainerStyle]}
-    ListHeaderComponent={() => <View testID={testID+'_FlatListContent'} {...cProps} mediaQueryUpdateNativeProps = {mediaQueryUpdateNativeProps}
-    >{children}</View>}
-    /> : <ScrollView 
-      //showsHorizontalScrollIndicator = {showIndicator}  
-      //showsVerticalScrollIndicator={showIndicator} 
-      ref={ref} {...rest} testID={testID} children={children}/>
+  },[]);
+  const contentContainerStyle = [{maxHeight:Math.max(height-100,250),width:'100%'},rest.contentContainerStyle];
+  return  <View {...containerProps} style={[theme.styles.w100,containerProps.style]} testID={testID+"_ScrollViewContainer"}>
+    <ScrollView 
+      ref={ref} {...rest} 
+      testID={testID}
+      children={children}
+      contentContainerStyle = {contentContainerStyle}
+    />
+  </View>
 });
 
 ScrollViewComponent.displayName = "ScrollViewComponent";

@@ -16,7 +16,7 @@ import {defaultStr} from "$utils";
 import View from "$ecomponents/View";
 import {Easing} from "react-native";
 import Portal from "$ecomponents/Portal";
-import ScrollView  from "$ecomponents/ScrollView";
+import { ScrollView } from "react-native";
 
 import {
   BackHandler,

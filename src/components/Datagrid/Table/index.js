@@ -1,8 +1,7 @@
 import CommonDatagrid,{TableData as CommonDatagridTableData} from "../Common";
 import {defaultObj,defaultArray,defaultStr,defaultDecimal,isNonNullString} from "$utils";
 import View from "$ecomponents/View";
-import { StyleSheet,Dimensions,Pressable } from "react-native";
-import ScrollView  from "$ecomponents/ScrollView";
+import { StyleSheet,Dimensions,Pressable ,ScrollView} from "react-native";
 import {isMobileOrTabletMedia} from "$cplatform/dimensions";
 import DatagridActions from "../Actions";
 import {SELECTABLE_COLUMN_WIDTH,getRowStyle} from "../utils";
@@ -161,7 +160,7 @@ const DatagridFactory = (Factory)=>{
                 last:pagLast, 
                 total:pagination.rows,pages:countPages
             })*/
-            const {visibleColumns} = this.preparedColumns;
+            const {visibleColumns,sortedColumn} = this.preparedColumns;
             const hasFootersFields = this.hasFootersFields();
             const {columnsWidths:widths} = this.state;
             const showFooters = this.canShowFooters(), showFilters = this.canShowFilters();
@@ -319,6 +318,7 @@ const DatagridFactory = (Factory)=>{
                         }
                         this.updateLayout(args);
                     }}
+                    sortedColumn = {sortedColumn}
                     onRender = {this.onRender.bind(this)}
                     getItemType = {this.getFlashListItemType.bind(this)}
                     renderItem = {this.renderFlashListItem.bind(this)}

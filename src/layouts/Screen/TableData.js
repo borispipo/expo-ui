@@ -88,7 +88,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
                         args = {...f,...args,fetch,columnField:name,fieldName:name,id:args.value};
                         const {context} = args;
                         const r = typeof onBlur =='function'? onBlur (args) : undefined;
-                        if(r === false) return r;
+                        if(r === false || (!args.value && typeof args.value != 'number')) return r;
                         //on applique la validation seulement en cas de non mise à jour
                         if(!this.isCurrentDocEditingUpdate() && context && typeof context.onNoValidate =='function'){
                             const cb = typeof field.fetchUniqueId =='function'? field.fetchUniqueId : typeof this.fetchUniqueId =='function'? this.fetchUniqueId : undefined;
@@ -181,7 +181,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
     }
     /**** retourne les props en cours d'édition */
     getCurrentEditingProps (){
-        return defaultObj(this.INITIAL_STATE.props);
+        return defaultObj(this.currentRenderingProps);
     }
     /* Attention, cette méthode est appélée dans la méthode getComponentProps de la classe parente. 
     *  Tenir de cette information capitale pour bien négocier l'appel de la dite méthode. Elle permet de retourner 
@@ -303,7 +303,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
             isUpdated,
             fields,
         });
-        const rActionsArg = this.INITIAL_STATE.props = {
+        const rActionsArg = this.currentRenderingProps = {
             ...rest,
             ...formProps,
             context,

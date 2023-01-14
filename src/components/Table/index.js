@@ -45,7 +45,7 @@ const getOnScrollCb = (refs,pos,cb2)=>{
     return isMobileNative()? cb : debounce(cb,200);
 }
 
-const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRender,height,progressBar,filter:customFilter,renderListContent,children,renderEmpty,renderItem,isRowSelected,headerScrollViewProps,footerScrollViewProps,scrollViewProps,showFooters,renderFooterCell,footerCellContainerProps,filterCellContainerProps,headerContainerProps,headerCellContainerProps,headerProps,rowProps:customRowProps,renderCell,cellContainerProps,hasFooters,renderHeaderCell,renderFilterCell,columnProps,getRowKey,columnsWidths,colsWidths,footerContainerProps,showHeaders,showFilters,columns,data,testID,...props},tableRef)=>{
+const TableComponent = React.forwardRef(({containerProps,sortedColumn,listContainerStyle,onRender,height,progressBar,filter:customFilter,renderListContent,children,renderEmpty,renderItem,isRowSelected,headerScrollViewProps,footerScrollViewProps,scrollViewProps,showFooters,renderFooterCell,footerCellContainerProps,filterCellContainerProps,headerContainerProps,headerCellContainerProps,headerProps,rowProps:customRowProps,renderCell,cellContainerProps,hasFooters,renderHeaderCell,renderFilterCell,columnProps,getRowKey,columnsWidths,colsWidths,footerContainerProps,showHeaders,showFilters,columns,data,testID,...props},tableRef)=>{
     containerProps = defaultObj(containerProps);
     testID = defaultStr(testID,"RN_TableComponent");
     cellContainerProps = defaultObj(cellContainerProps);
@@ -128,7 +128,7 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
           columnIndex++;
         });
         return {columns:cols,columnsNames,headers,visibleColumns,vColumnsMapping,hasFooters,footers,filters};
-      },[columns]);
+      },[columns,sortedColumn]);
     const {columns:cols,headers,footers,filters,hasFooters:stateHasFooters,columnsNames,vColumnsMapping,visibleColumns} =  preparedColumns;
     headerContainerProps = defaultObj(headerContainerProps);
     footerContainerProps = defaultObj(footerContainerProps);
@@ -340,7 +340,7 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
                         testID = {testID}
                         prepareItems = {false}
                         items = {items}
-                        contentContainerStyle = {[styles.contentContainer,{with:listWidth,minWidth:totalWidths,position:'absolute',right:'0'}]}
+                        contentContainerStyle = {[styles.contentContainer,{width:listWidth,minWidth:totalWidths,position:'absolute',right:'0'}]}
                         style = {[styles.datagrid,{width:listWidth,minWidth:totalWidths}]}
                         keyExtractor = {typeof getRowKey =='function'? getRowKey : React.getKey}
                         onScroll = {getOnScrollCb([absoluteScrollViewRef],(args)=>{

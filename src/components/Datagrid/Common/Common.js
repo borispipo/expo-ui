@@ -1403,8 +1403,9 @@ export default class CommonDatagridComponent extends AppComponent {
             },true);
         },TIMEOUT);
    }
-   formatValue(value,format){
-        return formatValue(value,format,this.state.abreviateValues);
+   formatValue(value,format,columnField){
+        const formatter = isNonNullString(columnField) && isObj(this.state.columns[columnField]) && typeof this.state.columns[columnField].formatValue =='function' && this.state.columns[columnField].formatValue|| undefined;
+        return formatValue(value,format,this.state.abreviateValues,formatter);
     }
    renderAggregatorFunctionsMenu(){
         const m = this.getAggregatorFunctionsMenuItems(false,false);
@@ -2187,7 +2188,7 @@ export default class CommonDatagridComponent extends AppComponent {
                     if(dataLabelFormatter){
                         return dataLabelFormatter({value,column,columnDef:column,columnField,serie,serieName,seriesIndex})
                     }
-                    return this.formatValue(value,column.format);
+                    return this.formatValue(value,column.format,columnField);
                 }
             }),
             title :extendObj(true,{}, {
@@ -2247,7 +2248,7 @@ export default class CommonDatagridComponent extends AppComponent {
         }
         yLabels.formatter = (value)=>{
             const format = (yLabelFormat =='money' || (isDonut && yAxisColumn.format =="money")) || (yLabelsColumn && yLabelsColumn.format =='money') ? 'money' : '';
-            return this.formatValue(value,format);
+            return this.formatValue(value,format,yAxisColumn.field);
         }
         chartOptions.chart.id = this.chartIdPrefix+"-"+defaultStr(chartType.key,"no-key");
         if(!chartType.isDonut){

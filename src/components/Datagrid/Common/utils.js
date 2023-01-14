@@ -122,7 +122,8 @@ export const renderRowCell = (arg)=>{
         renderProps = renderProps.call(context,renderArgs);
     }
     if(canFormatValue){
-        _render = formatValue(_render,columnDef.format,abreviateValues);
+        const formatter = typeof columnDef.formatValue =='function'? columnDef.formatValue : undefined;
+        _render = formatValue(_render,columnDef.format,abreviateValues,formatter);
     }
     if(!renderText && _render && isObj(renderProps)){
         let Component = defaultVal(renderProps.Component,Label);
@@ -182,12 +183,15 @@ export const  renderSelectFieldCell= ({rowData,columnDef,columnField})=>{
     return _render 
 }
 
-export const formatValue = (value,format,abreviateValues)=>{
+export const formatValue = (value,format,abreviateValues,formatter)=>{
     if(typeof value !='number') return value;
     if(typeof value =='boolean'){
         return value ? "Oui" : "Non";
     }
     format = typeof format =='string'? format.toLowerCase().trim() : "";
+    if(typeof formatter =='function'){
+        return formatter({value,format,abreviateValues,abreviate:abreviateValues});
+    }
     if(format =='money'){
         return abreviateValues? value.abreviate2FormatMoney() : value.formatMoney();
     }

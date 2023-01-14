@@ -53,9 +53,9 @@ export default class Field extends AppComponent {
         } = props;
         Object.defineProperties(this,{
             type : {value : defaultStr(jsType,type,"text").trim().toLowerCase()},
-            __disabledSymbol : {value : Symbol('_disabled'),override:false,writable:false},
-            __isDisabledSymbol : { value : Symbol('_isDisabled'),override:false,writable:false},
-            __isReadOnlySymbol : { value : Symbol('_isReadOnly'),override:false,writable:false},
+            isEditableSymbol : {value : Symbol('isEditableSymbol'),override:false,writable:false},
+            ///pour rendre le champ enabled à partir du symbol
+            forceEnableSymbol : {value : Symbol('enableSymbol'),override:false,writable:false},
             isEnabled : {
                 value : ()=>{
                     return !this.isDisabled();
@@ -64,31 +64,69 @@ export default class Field extends AppComponent {
             isFilter : {
                 value : ()=>defaultVal(renderfilter,render_filter) ? true : false,override : false,writable : false,
             },
-            isReadOnly : {
+            isEditableBySymbol : {
                 value : ()=>{
-                    return this[this.__isReadOnlySymbol] == true;
-                },override : false, writable : false
+                    return !!this[this.isEditableSymbol];
+                }
+            },
+            isEnabledBySymbol : {
+                value : ()=>{
+                    return !!this[this.forceEnableSymbol];
+                }
             },
             isEditable : {
-                value : x=> this.isReadOnly(), override : false, writable : false,
+                value : ()=>{
+                    return this.isEditableBySymbol() && this.state.isFieldEditable && !this.state.isReadOnlyOrDisabled && true || false;
+                }
+            },
+            forceEnableBySymbol : {
+                value : (toggle)=>{
+                    if(typeof toggle =='boolean'){
+                        this[this.forceEnableSymbol] = toggle;
+                    }
+                }
+            },
+            isReadOnly : {
+                value : ()=>{
+                    return !!this.state.isReadOnlyOrDisabled || !this.isEditableBySymbol();
+                },override : false, writable : false
             },
             isDisabled : {
                 value : ()=>{
-                    return this[this.__isDisabledSymbol] === true;
+                    return !!this.state.isReadOnlyOrDisabled || !this.isEditableBySymbol();
                 }, override : false,writable : false
             }
             /*** désactive le champ */
             ,disable : {
                 value : ()=>{
-                    this[this.__disabledSymbol] = true;
-                    this.setState({_sKey:!this.state._sKey})
+                    this.setState({isReadOnlyOrDisabled:true})
                 }, override : false, writable : false 
             }
             /**** active le champ */
             ,enable : {
                 value : () => {
-                    this[this.__disabledSymbol] = false;
-                    this.setState({_sKey:!this.state._sKey});
+                    this.forceEnableBySymbol(true);
+                    this.setState({isReadOnlyOrDisabled:false});
+                }, override : false, writable : false
+            },
+            show : {
+                value : () => {
+                    this.setState({isFieldVisible:true})
+                }, override : false, writable : false
+            },
+            hide : {
+                value : () => {
+                    this.setState({isFieldVisible:false})
+                }, override : false, writable : false
+            },
+            isVisible : {
+                value : () => {
+                    return this.state.isFieldVisible;
+                }, override : false, writable : false
+            },
+            isHidden : {
+                value : () => {
+                    return !this.state.isFieldVisible;
                 }, override : false, writable : false
             },
             /** si la valeur valide à retourner par le field est de type decimal */
@@ -181,6 +219,9 @@ export default class Field extends AppComponent {
         this.keybaordEvents = [...Object.keys(defaultKeyboardEvents),...this.keybaordEvents]
         this.state.isMobile = isMobileMedia();
         this.state.textFieldMode = theme.textFieldMode;
+        this.state.isReadOnlyOrDisabled = false;
+        this.state.isFieldEditable = true;
+        this.state.isFieldVisible = typeof this.props.visible =='boolean'? this.props.visible : true;
     }
     validatorBeforeValidate({value,validRule,validParams,event,...rest}){
         let _result = undefined;
@@ -813,63 +854,58 @@ export default class Field extends AppComponent {
         rest.name = this.name;
         rest.label = label;
         rest.data = data;
-        
-        
         rest.validRule = rest.validType = this.INITIAL_STATE.validType;
         rest.validParams = this.INITIAL_STATE.validParams;
-        
-        if(!isUndefined(this.___visible)){
-            visible = this.___visible;
-        }
-        this.___visible = undefined;
-        if(!isUndefined(this[this.__disabledSymbol])){
-            disabled = this[this.__disabledSymbol];
-        }
-        
-        let callArgs = {context:this,field:this.name,name:this.name,
-            value:this.validatingValue,//rest.defaultValue,
-            validValue:this.state.validValue,...rest,data,props:this.props};
-        readOnly = defaultVal(readOnly);
-        if(isFunction(readOnly)){
-            //windowResized spécifie tout simplement que le composant est rendu après rédimensionnemnet de la page
-            readOnly = readOnly.call(this,callArgs);
-        } 
-        if(!isUndefined(readOnly)) rest.readOnly = readOnly?true:false;
-
-        if(isFunction(editable)){
-            editable = editable.call(this,callArgs);
-        } 
-        if(isBool(editable)) rest.editable = editable;
-        else rest.editable = rest.readOnly ? false : true;
-        if(isFunction(disabled)){
-            disabled = disabled.call(this,callArgs);
-        } 
-        if(!isBool(disabled)) rest.disabled = disabled;
-        else rest.disabled = disabled ? true : false;
-
-        if(isFunction(archived)){
-            archived = archived.call(this,callArgs);
-        }
-        if(archived === true){
-            editable = false;
+        if(this.state.isReadOnlyOrDisabled){
             disabled = true;
-        }
-        
-        if(rest.readOnly || rest.disabled){
+            readOnly = true;
+            rest.disabled = rest.readOnly = true;
             rest.editable = false;
-        }
-        if(!disabled){
-            disabled = defaultBool(this.props.disabled,false);
-        }
-        rest.disabled = disabled;
+        } else if(this.isEnabledBySymbol()){
+            rest.disabled = rest.readOnly = false;
+            rest.editable = true;
+        } else {    
+            const callArgs = {context:this,field:this.name,name:this.name,value:this.validatingValue,validValue:this.state.validValue,...rest,data,props:this.props};
+            readOnly = defaultVal(readOnly);
+            if(isFunction(readOnly)){
+                readOnly = readOnly.call(this,callArgs);
+            } 
+            if(!isUndefined(readOnly)) readOnly = readOnly?true:false;
+            if(isFunction(editable)){
+                editable = editable.call(this,callArgs);
+            } 
+            if(isBool(editable)) editable = editable;
+            else rest.editable = readOnly ? false : true;
+            if(isFunction(disabled)){
+                disabled = disabled.call(this,callArgs);
+            } 
+            if(!isBool(disabled)) disabled = disabled ? true : false;
 
-        this[this.__isDisabledSymbol] = rest.disabled;
-        this[this.__isReadOnlySymbol] = rest.readOnly || rest.editable === false ? true : false;
-        
-        if(isFunction(visible)){
-            visible = visible({field:this.name,name:this.name,...rest,value:this.validatingValue,data});
+            if(isFunction(archived)){
+                archived = archived.call(this,callArgs);
+            }
+            if(archived === true){
+                editable = false;
+                disabled = true;
+            }
+            if(readOnly || disabled){
+                editable = false;
+            }
+            rest.disabled = disabled;
+            rest.readOnly = readOnly;
+            rest.editable = editable;
+            if(disabled || readOnly || !editable){
+                this[this.isEditableSymbol] = false;
+            }
         }
-        visible = defaultVal(visible,true); 
+        if(this.state.isFieldVisible){
+            if(isFunction(visible)){
+                visible = visible({field:this.name,name:this.name,...rest,value:this.validatingValue,data});
+            }
+            visible = typeof visible =='boolean'? visible : true; 
+        } else{
+            visible = false;
+        }
         rest.defaultValue = this.validatingValue;
         rest.style = [{backgroundColor:'transparent'},rest.style,!visible?{display:'none'}:undefined];
        
@@ -877,17 +913,14 @@ export default class Field extends AppComponent {
         if(!isFunction(rest.filter)){
             delete rest.filter;
         }
-
         delete rest.export;
         delete rest.colIndex;
         delete rest.accordion;
         delete rest._id;
         delete rest.import;
         delete rest.dataFilesInterest;
-        
         delete rest.archivable;
         delete rest.archivable;
-
         this.___formattedField = undefined;
         let _type = this.type;
         format = defaultStr(format);
@@ -926,6 +959,7 @@ export default class Field extends AppComponent {
         }
         const hasWrapper = !isFilter ? true : false;
         const wrapperProps = hasWrapper ? Object.assign({},responsiveProps) : {};
+        const visibleStyle = !visible && {display:"none",opacity:0};
         if(hasWrapper){
             const rP = {};
             if(_type =='switch' || _type =='checkbox' || _type =='image'){
@@ -938,7 +972,7 @@ export default class Field extends AppComponent {
                     rP.width = "100%";
                 }
             }
-            wrapperProps.style = [{marginVertical:10},responsive !== false?grid.col(windowWidth):{width:'100%'},rP,wrapperProps.style];
+            wrapperProps.style = [{marginVertical:10},responsive !== false?grid.col(windowWidth):{width:'100%'},rP,wrapperProps.style,visibleStyle];
         }
         if(isFunction(getProps)){
             rest = {...rest,...defaultObj(getProps.call(this,{...rest,context:this}))};
@@ -971,6 +1005,7 @@ export default class Field extends AppComponent {
                 handleKeys={this.keybaordEvents}
                 onKeyEvent = {this.onKeyEvent.bind(this)}
                 isDisabled = {rest.disabled}
+                style = {[wrapperProps.style,visibleStyle]}
             >
                 {(kProps)=>{
                     return this._render({...rest,...kProps},this.setRef.bind(this))

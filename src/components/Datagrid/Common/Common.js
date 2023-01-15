@@ -26,7 +26,6 @@ import { evalSingleValue,Footer,getFooterColumnValue,isValidAggregator,extendAgg
 import { makePhoneCall,canMakePhoneCall as canMakeCall} from "$makePhoneCall";
 import copyToClipboard from "$capp/clipboard";
 import { Pressable } from "react-native";
-import stableHash from "stable-hash";
 import DatagridProgressBar from "$ecomponents/Table/ProgressBar";
 import View from "$ecomponents/View";
 import {Menu} from "$ecomponents/BottomSheet";
@@ -3383,7 +3382,7 @@ export default class CommonDatagridComponent extends AppComponent {
         return false;
     }
     UNSAFE_componentWillReceiveProps(nextProps){
-        if((stableHash(nextProps.data) === stableHash(this.props.data))) {
+        if(React.areEquals(nextProps.data,(this.props.data))) {
             return false;
         }
         this.setIsLoading(true,true);

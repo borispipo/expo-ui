@@ -14,7 +14,6 @@ import Icon from "$ecomponents/Icon";
 import {isDesktopMedia} from "$cplatform/dimensions";
 import { matchOperators,getSearchTimeout,canAutoFocusSearchField} from "$ecomponents/Dropdown/utils";
 import Dialog from "$ecomponents/Dialog";
-import stableHash from "stable-hash";
 
 const  SimpleSelect = React.forwardRef((props,ref)=>{
     let {style : customStyle,onMount,mode,showSearch,anchorContainerProps,renderText,contentContainerProps,withCheckedIcon,testID,selectionColor,dialogProps,onShow,anchor,onUnmont,controlled,onDismiss,visible:controlledVisible,selectedColor,inputProps,itemProps,itemContainerProps,label,listProps,editable,readOnly,text,filter,renderItem,itemValue,getItemValue,defaultValue,items:menuItems,onPress,onChange,disabled,...rest} = props;
@@ -53,8 +52,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
     renderText = typeof renderText ==='function'? renderText : ({item,content,index})=>{
         return React.getTextContent(content);
     }
-    const menuItemsHash = stableHash(menuItems);
-    const items = React.useMemo(()=>{
+    const items = React.useStableMemo(()=>{
         const items = [];
         selectedRef.current = null;
         //let currentSelectedValue = value;
@@ -92,7 +90,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
         });
         return items;
         //return ({...state,value:currentSelectedValue,items});
-    },[menuItemsHash])
+    },[menuItems])
     React.useEffect(()=>{
         if(compare(defaultValue == value)) return;
         selectValue(defaultValue);

@@ -1,11 +1,10 @@
-import {FlashList,BigList,FlatList} from "$ecomponents/List";
 import View from "$ecomponents/View";
 import {defaultObj,defaultStr,debounce,defaultNumber,defaultVal} from "$utils";
 import PropTypes from "prop-types";
 export const DEFAULT_COLUMN_WIDTH = 60;
 import React from "$react";
 import Label from "$ecomponents/Label";
-import { StyleSheet,View as RNView,ScrollView,NativeModules,Dimensions} from "react-native";
+import { StyleSheet,View as RNView,ScrollView,Dimensions} from "react-native";
 import { getRowStyle } from "$ecomponents/Datagrid/utils";
 import {isMobileNative} from "$cplatform";
 import theme from "$theme";
@@ -13,7 +12,6 @@ import AbsoluteScrollView from "./AbsoluteScrollView";
 import Cell from "./Cell";
 import Row from "./Row";
 import List from "./List";
-import ProgressBar from "./ProgressBar";
 const isSCrollingRef = React.createRef();
 const scrollLists = (opts,refs)=>{
     refs.map((ref)=>{
@@ -60,7 +58,7 @@ const TableComponent = React.forwardRef(({containerProps,sortedColumn,listContai
     const hasEmptyData = emptyData && React.isValidElement(emptyData);
     const layoutRef = React.useRef({});
     React.useOnRender(onRender);
-    const preparedColumns = React.useMemo(()=>{
+    const preparedColumns = React.useStableMemo(()=>{
         const cols = {},headers = {},footers = {},filters = {},vColumnsMapping = [],visibleColumns = [],columnsNames = [];
         let hasFooters = false;
         columnProps = defaultObj(columnProps);

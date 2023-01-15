@@ -12,8 +12,7 @@ import ErrorBoundary from "$ecomponents/ErrorBoundary";
 import Portal from "$ecomponents/Portal";
 import theme,{StyleProp} from "$theme";
 import StatusBar from "$ecomponents/StatusBar";
-import { ScrollView } from 'react-native';
-
+import ScrollView from "$ecomponents/ScrollView";
 const getDefaultTitle = (nTitle,returnStr)=>{
   let titleStr = React.getTextContent(nTitle);
   if(!titleStr){

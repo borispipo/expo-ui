@@ -1,5 +1,4 @@
 import {defaultStr,isNumber,isPromise,defaultVal,extendObj,defaultObj,uniqid,isObj,isObjOrArray} from "$utils";
-import stableHash from "stable-hash";
 import {FormData} from "$ecomponents/Form";
 import FormDataScreen from "./FormData";
 import ScreenContainer from "./Screen";
@@ -418,7 +417,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
                 mainContent = ct;
             } else {
                 mainContent = <View  {...contentProps} testID={testID+"_ContentContainer"} style={[styles.container,styles.noPadding]}>
-                    <ScrollView virtualized testID={testID+"_MainContentScrollView"} contentProps={{style:theme.styles.p1}}>
+                    <ScrollView testID={testID+"_MainContentScrollView"} contentProps={{style:theme.styles.p1}}>
                         <Surface elevation={elevation} testID={testID+"_ContentHeader"} style={[styles.screenContent,theme.styles.p1,header?styles.screenContentWithHeader:null]}>
                             {header}
                             {content}
@@ -431,7 +430,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
             }
         } else {
             mainContent = <Surface  {...contentProps} testID={testID+"_MainContentContainer"} elevation={elevation} style={[styles.container,styles.noPadding,{paddingTop:0,marginTop:0}]}>
-                <ScrollView virtualized testID={testID+"_MainContentScrollViewWithoutTab"}>
+                <ScrollView testID={testID+"_MainContentScrollViewWithoutTab"}>
                     <View testID={testID+"_MainContent"} style={[styles.screenContent,!isMobOrTab && theme.styles.p1,header?styles.screenContentWithHeader:null]}>
                         {header}
                         {content}
@@ -567,7 +566,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
     }
     UNSAFE_componentWillReceiveProps(nextProps){
         const {data,datas}= nextProps;
-        if(stableHash({data,datas}) != stableHash({data:this.state.data,datas:this.state.datas})){
+        if(!React.areEquals({data,datas},{data:this.state.data,datas:this.state.datas})){
             this.setState(this.prepareStateData(nextProps));
         }
         return;

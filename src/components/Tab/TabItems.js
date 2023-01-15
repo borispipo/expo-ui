@@ -5,13 +5,13 @@ import {
   StyleSheet,
   Platform,
 } from 'react-native';
-import ScrollView  from "$ecomponents/ScrollView";
 import PropTypes from "prop-types";
 import theme,{StylePropTypes,Colors} from "$theme";
 import {isMobileNative,isMobileBrowser} from "$cplatform"
 import {defaultStr} from "$utils";
 import {Elevations} from "$ecomponents/Surface";
-
+import stableHash from "stable-hash";
+import ScrollView from '$ecomponents/ScrollView';
 const showScrollBarIndicator = !isMobileBrowser() && !isMobileNative();
 
 import TabItem from "./TabItem";
@@ -96,6 +96,33 @@ const TabItemsComponent = ({
   indicatorStyle.left = getLeftPosition();
   testID = defaultStr(testID,"RNE_TabComponent");
   scrollViewProps = defaultObj(scrollViewProps)
+  const childrenContent = React.useMemo(()=>{
+    return React.Children.map(children, (child, index) => {
+      const active = index === activeIndex?true : false;
+      return React.cloneElement(
+        child,
+        {
+          onPress: () => {
+            onChange(index);
+          },
+          onLayout: (event) => {
+            const { width } = event.nativeEvent.layout;
+            const previousItemPosition =
+              tabItemsPosition.current[index - 1]?.position || 0;
+
+            tabItemsPosition.current[index] = {
+              position: previousItemPosition + width,
+              width,
+            };
+          },
+          activeIndex,
+          index,
+          active,
+          testID : testID+'_Children_'+index
+        }
+      );
+    })
+  },[stableHash({children,activeIndex})])
   return (<View
       {...rest}
       testID = {testID}
@@ -119,32 +146,9 @@ const TabItemsComponent = ({
       ref={scrollViewRef} 
       testID={testID+"_ScrollView"} 
       onScroll={onScrollHandler}
+      disableIndicator
     >
-      {React.Children.map(children, (child, index) => {
-            const active = index === activeIndex?true : false;
-            return React.cloneElement(
-              child,
-              {
-                onPress: () => {
-                  onChange(index);
-                },
-                onLayout: (event) => {
-                  const { width } = event.nativeEvent.layout;
-                  const previousItemPosition =
-                    tabItemsPosition.current[index - 1]?.position || 0;
-
-                  tabItemsPosition.current[index] = {
-                    position: previousItemPosition + width,
-                    width,
-                  };
-                },
-                activeIndex,
-                index,
-                active,
-                testID : testID+'_Children_'+index
-              }
-            );
-          })}
+      {childrenContent}
           {!disableIndicator && (
               <Animated.View
                 {...indicatorProps}

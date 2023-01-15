@@ -1,4 +1,4 @@
-import {StyleSheet,useWindowDimensions} from 'react-native';  
+import {StyleSheet,Dimensions} from 'react-native';  
 import DrawerLayout from './DrawerLayout';
 import {isIos} from "$cplatform";
 import React from "$react";
@@ -6,14 +6,12 @@ import PropTypes from "prop-types";
 import {defaultObj,isObj,isNonNullString} from "$utils";
 import theme,{Colors,flattenStyle} from "$theme";
 import DrawerItems from './DrawerItems';
-import {isDesktopMedia} from "$cplatform/dimensions";
-import {isMobileNative} from "$cplatform";
+import {isDesktopMedia,getCurrentMedia} from "$cplatform/dimensions";
 import {open,close} from "$epreloader";
 import {DRAWER_POSITIONS,DRAWER_TYPES,MINIMIZED_WIDTH,getDrawerWidth,MINIMIZED_ICON_SIZE,ICON_SIZE} from './utils';
 import Icon,{MENU_ICON} from "$ecomponents/Icon";
 import apiSession from "./session";
 import View from "$ecomponents/View";
-import Dimensions from "$cdimensions";
 import {closeDrawer} from './DrawerItems/utils';
 import {DrawerContext} from "./Provider";
 import NavigationView from "./NavigationView";
@@ -36,9 +34,9 @@ const DrawerComponent = React.forwardRef((props,ref)=>{
       onDrawerOpen,onDrawerClose,onDrawerToggle,header,headerProps,toggleIconProps,
       permanentToggleIcon,minimizedToggleIcon,temporaryToggleIcon,withMinimizedIcon,
       isItemActive,onPageResize,navigationViewRef,
-      children,drawerType} = props;
+      children,
+      drawerType} = props;
     sessionName = defaultStr(sessionName);
-    useWindowDimensions();
     const sessionRef = React.useRef({});
     const session = React.useMemo(()=>{
         if(sessionName){

@@ -35,19 +35,24 @@ const DrawerNavigationViewComponent = React.forwardRef((props,ref)=>{
                         style = {flattenStyle([{margin:0,marginHorizontal:0},toggleIconProps.style])}
                         onPress = {(e)=>{
                             ///si le drawer n'est pas visible alors on le rend visible
-                            if(!isPermanent || !drawerRef.current.isOpen()){
-                                return context.toggle();
+                            if(typeof context.toggle === 'function'){
+                                if(!isPermanent || !drawerRef.current.isOpen()){
+                                    return context.toggle();
+                                }
                             }
-                            /*** si le drawer est minimisé */
-                            if(isMinimized){
-                                context.toggleMinimized(false);//on passe au mode non minimisé
-                            } else if(minimizable !== false) {
-                                return context.toggleMinimized(!isMinimized,{permanent:true});
+                            
+                            if(typeof context.toggleMinimized ==='function'){
+                                /*** si le drawer est minimisé */
+                                if(isMinimized){
+                                    context.toggleMinimized(false);//on passe au mode non minimisé
+                                } else if(minimizable !== false) {
+                                    return context.toggleMinimized(!isMinimized,{permanent:true});
+                                }
                             }
                         }}
                         onLongPress = {(e)=>{
                             React.stopEventPropagation(e);
-                            if(isMinimized || !canBeMinimizedOrPermanent()){
+                            if(isMinimized || (!canBeMinimizedOrPermanent() && !isPermanent)){
                             ///le long press n'a pas d'effet sur le drawer quand il est minimié
                                 return;
                             }

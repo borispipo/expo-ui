@@ -4,7 +4,6 @@ import PropTypes from "prop-types";
 import View from "$ecomponents/View";
 import theme from "$theme";
 import {defaultStr,defaultObj} from "$utils";
-import stableHash from "stable-hash";
 import APP from "$capp/instance";
 const ScrollViewComponent = React.forwardRef(({virtualized,contentProps,containerProps,mediaQueryUpdateNativeProps,testID:customTestID,children:cChildren,screenIndent:sIndent,...rest},ref) => {
   const isKeyboardOpenRef = React.useRef(false);
@@ -12,11 +11,7 @@ const ScrollViewComponent = React.forwardRef(({virtualized,contentProps,containe
   containerProps = defaultObj(containerProps)
   const [layout,setLayout] = React.useState(Dimensions.get("window"));
   const {height} = layout;
-  const [children,setChildren] = React.useState(cChildren);
-  const hash = stableHash(cChildren);
-  React.useEffect(()=>{
-    setChildren(children);
-  },[hash]);
+  const children = React.useStableMemo(()=>cChildren,[cChildren]);
   React.useEffect(()=>{
     const onKeyboardToggle = ({visible})=>{
       isKeyboardOpenRef.current = visible;

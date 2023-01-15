@@ -344,7 +344,12 @@ export default class DropdownAlert extends Component {
     return this.queue.size;
   };
   _processQueue = () => {
-    const data = this.queue.firstItem;
+    let data = this.queue.firstItem;
+    console.log("will open ",data,this.alertData);
+    if(data && React.areEquals(data,this.alertData)){
+        this.queue.dequeue();
+        this._processQueue();
+    }
     if (data) {
       this.open(data);
     }
@@ -352,7 +357,7 @@ export default class DropdownAlert extends Component {
   open = (data = {}) => {
     this.alertData = data;
     const position = data.top || this.isKeyboardOpen() ? "top" : data.position;
-    this.setState({isOpen: true,key:!this.state.key,position},()=>{
+    this.setState({isOpen: true,position},()=>{
       this.animate(1, 450, () => {
         if (data.interval > 0) {
           this.closeAutomatic(data.interval);

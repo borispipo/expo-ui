@@ -1,4 +1,4 @@
-import {StyleSheet,Dimensions} from 'react-native';  
+import {StyleSheet} from 'react-native';  
 import DrawerLayout from './DrawerLayout';
 import {isIos} from "$cplatform";
 import React from "$react";
@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 import {defaultObj,isObj,isNonNullString} from "$utils";
 import theme,{Colors,flattenStyle} from "$theme";
 import DrawerItems from './DrawerItems';
-import {isDesktopMedia,getCurrentMedia} from "$cplatform/dimensions";
+import Dimensions,{isDesktopMedia,getCurrentMedia} from "$cplatform/dimensions";
 import {open,close} from "$epreloader";
 import {DRAWER_POSITIONS,DRAWER_TYPES,MINIMIZED_WIDTH,getDrawerWidth,MINIMIZED_ICON_SIZE,ICON_SIZE} from './utils';
 import Icon,{MENU_ICON} from "$ecomponents/Icon";

@@ -3382,7 +3382,7 @@ export default class CommonDatagridComponent extends AppComponent {
         return false;
     }
     UNSAFE_componentWillReceiveProps(nextProps){
-        if(React.areEquals(nextProps.data,(this.props.data))) {
+        if(React.areEquals(nextProps.data,this.props.data) || (stableHash(nextProps.data) === stableHash(this.props.data))) {
             return false;
         }
         this.setIsLoading(true,true);

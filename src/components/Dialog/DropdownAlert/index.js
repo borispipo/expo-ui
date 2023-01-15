@@ -3,6 +3,7 @@ import {isObj,defaultStr} from "$utils";
 import View from "$ecomponents/View";
 import Portal from "$ecomponents/Portal";
 import theme,{Colors} from "$theme";
+import stableHash from "stable-hash";
 import Dimensions,{isMobileMedia,isTabletMedia,isDesktopMedia} from "$dimensions";
 import {
   StyleSheet,
@@ -344,17 +345,19 @@ export default class DropdownAlert extends Component {
     return this.queue.size;
   };
   _processQueue = () => {
-    let data = this.queue.firstItem;
-    console.log("will open ",data,this.alertData);
-    if(data && React.areEquals(data,this.alertData)){
-        this.queue.dequeue();
-        this._processQueue();
+    const data = this.queue.firstItem;
+    if(data && this.activeData){
+        if(data.type == this.activeData.type && React.getTextContent(data.title) == React.getTextContent(this.activeData.title) && React.getTextContent(data.message) == React.getTextContent(this.activeData.message)){
+            this.queue.dequeue();
+            return this._processQueue();
+        }
     }
     if (data) {
       this.open(data);
     }
   };
   open = (data = {}) => {
+    this.activeData = data;
     this.alertData = data;
     const position = data.top || this.isKeyboardOpen() ? "top" : data.position;
     this.setState({isOpen: true,position},()=>{

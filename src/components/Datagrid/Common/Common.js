@@ -38,6 +38,7 @@ import sprintf from "$cutils/sprintf";
 import { renderRowCell,formatValue,arrayValueSeparator } from "./utils";
 import {ScrollView} from "react-native";
 import Button from "$ecomponents/Button";
+import stableHash from "stable-hash";
 import * as XLSX from "xlsx";
 
 export const TIMEOUT = 100;

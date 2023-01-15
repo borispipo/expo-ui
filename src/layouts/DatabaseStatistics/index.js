@@ -31,7 +31,7 @@ export default function DatabaseStatisticScreen ({withScreen,fetchDataProps,tabl
             }
             if(table.databaseStatistic === false || table.databaseStatistics === false) return null;
             const chartAllowedPerm =  defaultStr(table.chartAllowedPerm);
-            if(chartAllowedPerm && !Auth.isAllowedFromStr(chartAllowedPerm || !Auth.isTableDataAllowed({table:tableName}))) return null;
+            if((chartAllowedPerm && !Auth.isAllowedFromStr(chartAllowedPerm)) || (!Auth.isTableDataAllowed({table:tableName}))) return null;
             content.push(<Cell elevation = {5} withSurface mobileSize={12} desktopSize={3} tabletSize={4} {...contentProps} key = {index} >
                 <DatabaseStatistic
                     icon = {table.icon}

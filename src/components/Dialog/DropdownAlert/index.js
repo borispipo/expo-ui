@@ -352,6 +352,7 @@ export default class DropdownAlert extends Component {
             return this._processQueue();
         }
     }
+    this.activeData = data;
     if (data) {
       this.open(data);
     }

@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "2.45.5",
+  "version": "2.46.0",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "index.js",
   "scripts": {
@@ -61,7 +61,7 @@
     "@emotion/native": "^11.10.0",
     "@expo/html-elements": "^0.2.0",
     "@expo/vector-icons": "^13.0.0",
-    "@fto-consult/common": "^2.7.2",
+    "@fto-consult/common": "^2.8.1",
     "@gorhom/portal": "^1.0.14",
     "@react-native-async-storage/async-storage": "~1.17.3",
     "@react-native-community/datetimepicker": "6.5.2",

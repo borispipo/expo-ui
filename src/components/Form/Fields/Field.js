@@ -99,24 +99,24 @@ export default class Field extends AppComponent {
             /*** désactive le champ */
             ,disable : {
                 value : ()=>{
-                    this.setState({isReadOnlyOrDisabled:true})
+                    this.setState({isReadOnlyOrDisabled:true,sk:!this.state.sk})
                 }, override : false, writable : false 
             }
             /**** active le champ */
             ,enable : {
                 value : () => {
                     this.forceEnableBySymbol(true);
-                    this.setState({isReadOnlyOrDisabled:false});
+                    this.setState({isReadOnlyOrDisabled:false,sk:!this.state.sk});
                 }, override : false, writable : false
             },
             show : {
                 value : () => {
-                    this.setState({isFieldVisible:true})
+                    this.setState({isFieldVisible:true,sk:!this.state.sk})
                 }, override : false, writable : false
             },
             hide : {
                 value : () => {
-                    this.setState({isFieldVisible:false})
+                    this.setState({isFieldVisible:false,sk:!this.state.sk})
                 }, override : false, writable : false
             },
             isVisible : {
@@ -862,6 +862,8 @@ export default class Field extends AppComponent {
             rest.disabled = rest.readOnly = true;
             rest.editable = false;
         } else if(this.isEnabledBySymbol()){
+            disabled = readOnly = false;
+            editable = true;
             rest.disabled = rest.readOnly = false;
             rest.editable = true;
         } else {    

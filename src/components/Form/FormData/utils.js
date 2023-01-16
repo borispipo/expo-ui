@@ -15,7 +15,7 @@ export const canHandleShurtCut = x=> !isMobileNative(true) && !isMobileBrowser()
 
 const canHandleS = canHandleShurtCut();
 export const getAppBarActionsProps = function(_props){
-    let {actions,formName,save,cancel,actionMutator,saveButton,saveButtonIcon,data,children,style,...props} = defaultObj(_props);
+    let {actions,formName,save,cancel,actionMutator,saveButton,saveButtonIcon,data,style,...props} = defaultObj(_props);
     props = Object.assign({},props);
     cancel = defaultFunc(cancel);
     save = defaultFunc(save);

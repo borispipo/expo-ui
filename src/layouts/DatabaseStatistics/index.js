@@ -6,6 +6,7 @@ import DatabaseStatistic from "./DatabaseStatistic";
 import theme from "$theme";
 import PropTypes from "prop-types";
 import Auth from "$cauth";
+import Surface from "$ecomponents/Surface";
 
 export const title = 'Statistiques en BD';
 export default function DatabaseStatisticScreen ({withScreen,fetchDataProps,tableFilter,fetchCount,fetchData,title:customTitle,contentProps,containerProps,tables,Component,...props}){
@@ -31,20 +32,23 @@ export default function DatabaseStatisticScreen ({withScreen,fetchDataProps,tabl
             }
             if(table.databaseStatistic === false || table.databaseStatistics === false) return null;
             const chartAllowedPerm =  defaultStr(table.chartAllowedPerm);
+            const testID = "RN_DatabaseStatisticsCell_"+index;
             if((chartAllowedPerm && !Auth.isAllowedFromStr(chartAllowedPerm)) || (!Auth.isTableDataAllowed({table:tableName}))) return null;
-            content.push(<Cell elevation = {5} withSurface mobileSize={12} desktopSize={3} tabletSize={4} {...contentProps} key = {index} >
-                <DatabaseStatistic
-                    icon = {table.icon}
-                    key = {index}
-                    table = {table}
-                    fetchData = {fetchData}
-                    fetchDataProps = {fetchDataProps}
-                    index = {suffix}
-                    title = {defaultStr(table.text,table.label,table.title)}
-                    fetchCount = {table.fetchCount|| typeof fetchCount =='function'? (a,b)=>{
-                        return fetchCount({table,tableName})
-                    }:undefined}
-                ></DatabaseStatistic>
+            content.push(<Cell elevation = {5} withSurface mobileSize={12} desktopSize={3} tabletSize={4} {...contentProps} testID={testID} key = {index} >
+                <Surface testID = {testID+"_Surface"} elevation = {5} style={[theme.styles.w100]}>
+                    <DatabaseStatistic
+                        icon = {table.icon}
+                        key = {index}
+                        table = {table}
+                        fetchData = {fetchData}
+                        fetchDataProps = {fetchDataProps}
+                        index = {suffix}
+                        title = {defaultStr(table.text,table.label,table.title)}
+                        fetchCount = {table.fetchCount|| typeof fetchCount =='function'? (a,b)=>{
+                            return fetchCount({table,tableName})
+                        }:undefined}
+                    ></DatabaseStatistic>
+                </Surface>
             </Cell>
             )
         });

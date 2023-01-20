@@ -1,4 +1,3 @@
-//import MaterialIcon from "./MaterialCommunityIcon";
 import {defaultVal,defaultObj,defaultStr,isNonNullString} from "$utils";
 import PropTypes from "prop-types";
 import Tooltip from "$ecomponents/Tooltip";

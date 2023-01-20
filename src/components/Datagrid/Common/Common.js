@@ -9,7 +9,7 @@ import Tooltip from "$ecomponents/Tooltip";
 import setQueryLimit from "./setQueryLimit";
 import {showConfirm} from "$ecomponents/Dialog";
 import Label from "$ecomponents/Label";
-import Icon,{COPY_ICON} from "$ecomponents/Icon";
+import Icon,{COPY_ICON,CHECKED_ICON,UNCHECKED_ICON} from "$ecomponents/Icon";
 import filterUtils from "$cfilters";
 import {sortBy,isDecimal,defaultVal,sanitizeSheetName,extendObj,isObjOrArray,isObj,defaultNumber,defaultStr,isFunction,defaultBool,defaultArray,defaultObj,isNonNullString,defaultDecimal} from "$utils";
 import {Datagrid as DatagridContentLoader} from "$ecomponents/ContentLoader";
@@ -267,18 +267,15 @@ export default class CommonDatagridComponent extends AppComponent {
             isRenderingRef : {value : {current:false}},
             chartSeriesNamesColumnsMapping : {value : {}},//le mappage entre les index des series et les colonnes coorespondantes
         }) 
+        const config = extendObj(true,{},this.getSessionData("config"),this.props.chartConfig);
+        Object.map(config,(v,k)=>{
+            if(typeof v =='function'){
+                delete config[k];
+            }
+        })
         this.state.abreviateValues = "abreviateValues" in this.props? !!this.props.abreviateValues : !!this.getSessionData("abreviateValues");
-        const sessionAggregator = defaultStr(this.getSessionData("aggregatorFunction")).trim();
-        const aggregatorProps = defaultStr(this.props.aggregatorFunction).trim();
-        let aggregatorFunction = null;
-        if(aggregatorProps && isValidAggregator(this.aggregatorFunctions[aggregatorProps])){
-            aggregatorFunction = aggregatorProps;
-        } else if(isNonNullString(sessionAggregator) && isValidAggregator(this.aggregatorFunctions[sessionAggregator])){
-            aggregatorFunction = sessionAggregator;
-        } else {
-            aggregatorFunction = Object.keys(this.aggregatorFunctions)[0];
-        }
-        this.state.aggregatorFunction= aggregatorFunction;
+        const sessionAggregator = this.getSessionData("aggregatorFunction"); 
+        this.state.aggregatorFunction= this.isValidAggregator(config.aggregatorFunction) && config.aggregatorFunction || this.isValidAggregator(this.props.aggregatorFunction) && this.props.aggregatorFunction || this.isValidAggregator(sessionAggregator) && sessionAggregator || Object.keys(this.aggregatorFunctions)[0];;
         this.isLoading = this.isLoading.bind(this);
         this.getProgressBar = this.getProgressBar.bind(this);
         this.sortRef.current.dir = defaultStr(this.sortRef.current.dir,this.sortRef.current.column == "date"?"desc":'asc')
@@ -306,15 +303,14 @@ export default class CommonDatagridComponent extends AppComponent {
             }
         });
         this.state.filteredColumns = defaultObj(this.getSessionData("filteredColumns"+this.getSessionNameKey()),this.props.filters);
-        this.filtersSelectors = {selector:this.getFilters()};
         const {sectionListColumns} = this.prepareColumns();
         this.state.sectionListColumns = sectionListColumns;
         if(this.canHandleColumnResize()){
             this.state.columnsWidths = this.preparedColumns.widths;
         }
-        this.state.chartConfig = extendObj(true,{},this.getSessionData("chartConfig"),this.props.chartConfig);
-        if(!("sparkline" in this.state.chartConfig) && this.isDashboard()){
-            this.state.chartConfig.sparkline = true;
+        this.state.config = config;
+        if(!("sparkline" in this.state.config) && this.isDashboard()){
+            this.state.config.sparkline = true;
         }
         const dType = defaultStr(this.props.displayType,this.getSessionData("displayType"),"table");
         this.state.displayType = this.displayTypes[dType] ? this.displayTypes[dType].code : "table" in this.displayTypes ? "table" : Object.keys(this.displayTypes)[0]?.code;
@@ -368,7 +364,31 @@ export default class CommonDatagridComponent extends AppComponent {
         }
         this.persistDisplayType(this.state.displayType);
     }
+    /*** si l'on peut récuperer à distance, les colonnes seulement visibles */
+    canFetchOnlyVisibleColumns(){
+        return this.props.canFetchOnlyVisibleColumns !== false;
+    }
+    isFetchOnlyVisibleColumnsEnabled(){
+        return this.canFetchOnlyVisibleColumns() && !!this.state.fetchOnlyVisibleColumns;
+    }
+    fetchDataIfCanFetchColumnsIfVisible(){
+        if(!this.canFetchOnlyVisibleColumns()) return;
+        if(this.isFetchOnlyVisibleColumnsEnabled()){
+            return this.fetchData({force:true});
+        }
+    }
+    toggleFetchOnlyVisibleColumns(){
+        if(!this.canFetchOnlyVisibleColumns()){
+            return Promise.reject({});
+        }
+        const fetchOnlyVisibleColumns = !this.isFetchOnlyVisibleColumnsEnabled();
+        return new Promise((resolve,reject)=>{
 
+        })
+    }
+    isValidAggregator(aggregatorFunction){
+        return isNonNullString(aggregatorFunction) && isValidAggregator(this.aggregatorFunctions[aggregatorFunction])
+    }
     /*** si une ligne peut être selectionable */
     canSelectRow(row){
         return isObj(row) && row.isSectionListHeader !== true ? true : false;
@@ -1005,6 +1025,17 @@ export default class CommonDatagridComponent extends AppComponent {
     */
     renderCustomMenu(){
         const customMenu = []
+        if(this.canFetchOnlyVisibleColumns()){
+            const isFE = this.isFetchOnlyVisibleColumnsEnabled();
+            customMenu.push({
+                text : "Valeurs colonne visibles",
+                tooltip : "Récupérer uniquement les valeurs des colonnes visibles",
+                icon : "material-radio-button-{0}".sprintf(isFE?"on":"off"),
+                onPress : (e)=>{
+                    this.toggleFetchOnlyVisibleColumns();
+                }
+            })
+        }
         Object.map(this.props.customMenu,(menu,i)=>{
             if(isObj(menu)){
                 const {onPress,label,text,children,...rest} = menu;
@@ -1177,7 +1208,7 @@ export default class CommonDatagridComponent extends AppComponent {
             }
             this.setIsLoading(true,()=>{
                 this.prepareColumns({columns});
-                this.setState({columns});
+                this.setState({columns},this.fetchDataIfCanFetchColumnsIfVisible.bind(this));
             })
         },TIMEOUT)
    }
@@ -1301,7 +1332,7 @@ export default class CommonDatagridComponent extends AppComponent {
      return !this.isPivotDatagrid() && this.hasFootersFields();
    }
    isValidChartConfig(){
-        const config = this.state.chartConfig;
+        const config = this.state.config;
         return isNonNullString(config.x) && isNonNullString(config.y);
    }
    canRenderChart(){
@@ -1323,21 +1354,21 @@ export default class CommonDatagridComponent extends AppComponent {
                 });
             },true)
         } else {
-            const cb = (chartConfig)=>{
+            const cb = (config)=>{
                 setTimeout(()=>{
                     this.setIsLoading(true,()=>{
-                        this.setState({chartConfig,displayType},()=>{
+                        this.setState({config,displayType},()=>{
                             this.persistDisplayType(displayType);
                         })
                     },true);
                 },200);
             }
             if(!this.isValidChartConfig()){
-                return this.configureChart(false).then((chartConfig)=>{
-                    cb(chartConfig);
+                return this.configureChart(false).then((config)=>{
+                    cb(config);
                 });
             }
-            cb({...this.state.chartConfig});
+            cb({...this.state.config});
         }
    }
    getActiveAggregatorFunction(){
@@ -1421,7 +1452,7 @@ export default class CommonDatagridComponent extends AppComponent {
         />
    }
    configureSectionLists(){
-        const config = this.getChartConfig();
+        const config = this.getConfig();
         return new Promise((resolve)=>{
             DialogProvider.open({
                 title : "Paramètres de groupe",
@@ -1445,13 +1476,13 @@ export default class CommonDatagridComponent extends AppComponent {
                         text : "Configurer",
                         icon : "check",
                         onPress : ({data})=>{
-                            const chartConfig = {...config,...data};
-                            this.setSessionData("chartConfig",chartConfig);
+                            const nConfig = {...config,...data};
+                            this.setSessionData("config",nConfig);
                             DialogProvider.close();
                             this.setIsLoading(true,true);
-                            this.prepareData({data:this.INITIAL_STATE.data,config:chartConfig},(state)=>{
-                                this.setState({...state,chartConfig},()=>{
-                                    resolve(chartConfig)
+                            this.prepareData({data:this.INITIAL_STATE.data,config:nConfig},(state)=>{
+                                this.setState({...state,config:nConfig},()=>{
+                                    resolve(nConfig)
                                 })
                             })
                         }
@@ -1464,7 +1495,7 @@ export default class CommonDatagridComponent extends AppComponent {
         if(!this.isChartRendable()){
             return Promise.reject({message:'Impossible de configurer le graphe car le type de données ne permet pas de rendu de type graphe'});
         }
-        const xItems = {},yItems = {},config = defaultObj(this.state.chartConfig);
+        const xItems = {},yItems = {},config = defaultObj(this.state.config);
         const series = {},seriesGroups = {};
         const footers = this.getFootersFields();
         const isValidConfig = this.isValidChartConfig();
@@ -1496,7 +1527,7 @@ export default class CommonDatagridComponent extends AppComponent {
             }
         }
         return new Promise((resolve,reject)=>{
-            const data = this.getChartConfig();
+            const data = this.getConfig();
             DialogProvider.open({
                 title : 'Configuration des graphes',
                 subtitle : false,
@@ -1608,23 +1639,23 @@ export default class CommonDatagridComponent extends AppComponent {
                         text : "Configurer",
                         icon : "check",
                         onPress : ({data})=>{
-                            const chartConfig = {...config,...data};
-                            this.setSessionData("chartConfig",chartConfig);
+                            const nConfig = {...config,...data};
+                            this.setSessionData("config",nConfig);
                             DialogProvider.close();
                             if(!isValidConfig && refreshChart !== false){
-                                return this.setState({chartConfig},()=>{
-                                    resolve(chartConfig)
+                                return this.setState({config:nConfig},()=>{
+                                    resolve(nConfig)
                                 })
                             }
-                            resolve(chartConfig);
+                            resolve(nConfig);
                         }
                     }
                 ]
             })
         })
    }
-   getChartConfig(){
-      return defaultObj(this.state.chartConfig);
+   getConfig(){
+      return defaultObj(this.state.config);
    }
    getChartIsRendableArgs(){
         return {
@@ -1640,7 +1671,7 @@ export default class CommonDatagridComponent extends AppComponent {
    downloadChart(){
         if(!this.chartRef.current || !this.chartRef.current.dataURI) return Promise.reject({message:'Référence du graphique non valide'});
         return this.chartRef.current.dataURI().then(({ imgURI, blob })=>{
-            const config = this.getChartConfig();
+            const config = this.getConfig();
             const fileName = sprintf(defaultStr(config.fileName,config.title,"graphe"));
             FileSystem.write({content:imgURI,fileName})
         });
@@ -1890,9 +1921,9 @@ export default class CommonDatagridComponent extends AppComponent {
                         text : "Configurer les graphes",
                         icon :"material-settings",
                         onPress : ()=>{
-                            this.configureChart(false).then((chartConfig)=>{
+                            this.configureChart(false).then((config)=>{
                                 this.setIsLoading(true,()=>{
-                                    this.setState({chartConfig});
+                                    this.setState({config});
                                 },true)
                             })
                         }
@@ -1968,7 +1999,7 @@ export default class CommonDatagridComponent extends AppComponent {
     *   @param {object} de la forme suivante : 
     *       @param {object} chartType le type de chart, l'un des types du tableau displayTypes en haut du présent fichier
     *       @param {object} yAxisColumn la colonne de l'axe vertical y
-    *       @param {object} xAxisColumn la colonne de l'axe des x de la courbe, pris dans les configurations du chart, chartConfig
+    *       @param {object} xAxisColumn la colonne de l'axe des x de la courbe, pris dans les configurations du chart, config
     *       @param {object} la fonction d'aggrégation, l'une des fonctions issues des fonctions d'aggrégations aggregatorsFuncions, @see : dans $components/Datagrid/Footer
     *   en affichage des tableaux de type sectionList, seul les colonnes de totalisation sont utilisées pour l'affichage du graphe
     *   Le nombre de graphes (series) à afficher est valable pour tous les graphes sauf les graphes de type pie/donut. 
@@ -1977,12 +2008,12 @@ export default class CommonDatagridComponent extends AppComponent {
    getSectionListHeadersChartOptions({chartType,yAxisColumn,xAxisColumn,aggregatorFunction}){
         if(!this.isSectionList()) return null;
         if(!isObj(chartType) || !isObj(yAxisColumn) || !yAxisColumn.field) return null;
-        if(!isValidAggregator(aggregatorFunction)){
+        if(!this.isValidAggregator(aggregatorFunction)){
             aggregatorFunction = this.getActiveAggregatorFunction();
         }
         const code = aggregatorFunction.code;
         const isDonut = chartType.isDonut || chartType.isRadial;
-        const config = this.getChartConfig();
+        const config = this.getConfig();
         //@see : https://apexcharts.com/docs/series/
         ///lorsqu'on affiche uniquement les totaux des sections, alors la visualition se fait sur uniquement sur la base des valeurs
         ///on parcoure uniquement les entêtes des sectionLis
@@ -2076,7 +2107,7 @@ export default class CommonDatagridComponent extends AppComponent {
             return null;
         }
         const isDonut = chartType.isDonut || chartType.isRadial;
-        const config = this.getChartConfig();
+        const config = this.getConfig();
         if(!this.state.columns[config.y]) return null;
         const yAxisColumn = this.state.columns[config.y];
         const type = defaultStr(yAxisColumn.jsType,yAxisColumn.type).toLowerCase();
@@ -2636,7 +2667,7 @@ export default class CommonDatagridComponent extends AppComponent {
     prepareData(args,cb){
         let {pagination,config,aggregatorFunction:customAggregatorFunction,displayOnlySectionListHeaders:cdisplayOnlySectionListHeaders,data,force,sectionListColumns,updateFooters} = defaultObj(args);
         cb = typeof cb ==='function'? cb : typeof args.cb == 'function'? args.cb : undefined;
-        config = isObj(config) && Object.size(config,true)? config : this.getChartConfig();
+        config = isObj(config) && Object.size(config,true)? config : this.getConfig();
         const aggregatorFunction = isNonNullString(customAggregatorFunction) && customAggregatorFunction in  this.aggregatorFunctions ? this.aggregatorFunctions[customAggregatorFunction] : this.getActiveAggregatorFunction();
         sectionListColumns = isObj(sectionListColumns) ? sectionListColumns : this.state.sectionListColumns;
         const displayOnlySectionListHeaders = typeof cdisplayOnlySectionListHeaders == 'boolean'?cdisplayOnlySectionListHeaders : this.state.displayOnlySectionListHeaders;
@@ -2766,9 +2797,9 @@ export default class CommonDatagridComponent extends AppComponent {
         if(this.getSectionListHeaderProp){
            return this.getSectionListHeaderProp(args);
         }
-        const chartConfig = isObj(args.config) && Object.size(args.config,true)? args.config : this.getChartConfig();
-        const displayGroupLabels = "displayGroupLabels" in chartConfig? chartConfig.displayGroupLabels : true;
-        const displayGroupLabelsSeparator = typeof chartConfig.displayGroupLabelsSeparator =='string'? chartConfig.displayGroupLabelsSeparator : arrayValueSeparator;
+        const config = isObj(args.config) && Object.size(args.config,true)? args.config : this.getConfig();
+        const displayGroupLabels = "displayGroupLabels" in config? config.displayGroupLabels : true;
+        const displayGroupLabelsSeparator = typeof config.displayGroupLabelsSeparator =='string'? config.displayGroupLabelsSeparator : arrayValueSeparator;
         const {fields,sectionListColumnsSize} = args;
         const d = [];
         Object.map(fields,(field,i)=>{
@@ -2780,7 +2811,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 columnField : defaultStr(field.field,i),
             });
             if(!isNonNullString(txt) && typeof txt !=='number') return;
-            if(sectionListColumnsSize == 1 || !displayGroupLabels){
+            if(!displayGroupLabels){
                 d.push(txt);
             } else {
                 d.push("{0} : {1}".sprintf(defaultStr(field.label,field.txt),txt))
@@ -3115,8 +3146,7 @@ export default class CommonDatagridComponent extends AppComponent {
             this._pagination.page = 1;
             this._pagination.start = 0;
         }
-        this.filtersSelectors = {selector:this.getFilters()};
-        return this.fetchData({force:true,isFiltering : true,fetchOptions:this.filtersSelectors});
+        return this.fetchData({force:true});
     }
     onSetQueryLimit(){
         if(!this.canSetQueryLimit()) return;
@@ -3168,6 +3198,36 @@ export default class CommonDatagridComponent extends AppComponent {
                 {isDecimal(cLImit) && cLImit > 0 && <Label primary textBold style={styles.queryLimit}> | {cLImit.formatNumber()}</Label>}
             </Pressable>
        </Tooltip>
+    }
+    /*** récupère les fetchOptions du datagrid */
+    getFetchOptions({fetchOptions,convertToSQL}){
+        const fetchFilters = this.getFilters({convertToSQL:typeof convertToSQL =='boolean'? convertToSQL : false});
+        fetchOptions = Object.clone(isObj(fetchOptions)? fetchOptions : {});
+        fetchOptions.selector = defaultObj(fetchOptions.selector);
+        fetchOptions.dataSources = this.currentDataSources;
+        fetchOptions = extendObj(true,true,{},fetchOptions,{selector : fetchFilters});
+        fetchOptions.sort = this.getSort();
+        const ff = this.getFilterableColumnsNames();
+        let fields = ff;
+        if(this.isFetchOnlyVisibleColumnsEnabled()){
+            fields = [];
+            Object.map(ff,(field)=>{
+                if(isNonNullString(field) && isObj(this.state.columns[field]) && this.state.columns[field].visible !== false){
+                    fields.push(field);
+                }
+            })
+            console.log("will fetch fields",fields)
+        }
+        fetchOptions.fields = fields;
+        let limit = this.getQueryLimit();
+        if(limit > 0 && !this.isPivotDatagrid()){
+            fetchOptions.limit = limit;
+        } else {
+            if(!isDecimal(fetchOptions.limit) || fetchOptions.limit <=0){
+                delete fetchOptions.limit
+            }
+        }
+        return fetchOptions;
     }
     getFetchDataOpts(){
         return this.props.fetchDataOpts;
@@ -3273,15 +3333,11 @@ export default class CommonDatagridComponent extends AppComponent {
         return isObj(this.progressBarRef.current) && typeof this.progressBarRef.current.setIsLoading =='function' ? true : false;
     }
     onRender(){
-        if(typeof this.props.onRender ==='function'){
-            this.props.onRender({context:this});
+        if(typeof this.props.onRender ==='function' && this.props.onRender({context:this}) === false){
+            return ;
         }
-        if(this.isRenderingRef.current === true){
-            //setTimeout(()=>{
-                this.isRenderingRef.current = false;
-                return this.setIsLoading(false,undefined,undefined,"yes mannnnaaaaaa");
-            //},500);
-        }
+        this.isRenderingRef.current = false;
+        return this.setIsLoading(false,undefined,undefined);
     }
     /***
      * @param {boolean} loading
@@ -3749,6 +3805,10 @@ CommonDatagridComponent.propTypes = {
     renderCustomPagination : PropTypes.func,
     getActionsArgs : PropTypes.func,//fonction permettant de récupérer les props supplémentaires à passer aux actions du datagrid
     displayOnlySectionListHeaders : PropTypes.bool,// si uniquement les entêtes des sections seront affichés, valides uniquement en affichage des sectionHeader 
+    /***les props de configuration du chart, */
+    config : PropTypes.shape({
+        aggregatorFunction  : PropTypes.string, //la fonction d'aggrégation à utiliser
+    }),
     /*** les options de configuration du graphe */
     chartConfig : PropTypes.shape({
         //type : PropTypes.oneOfType(chartDisplayType).isRequired,//le type de graphe : l'une des valeurs parmis les éléments cités plus haut
@@ -3771,6 +3831,9 @@ CommonDatagridComponent.propTypes = {
     aggregatorFunction : PropTypes.string,
     /*** permet de faire une mutation sur les options de la recherche, immédiatement avant le lancement de la recherche */
     fetchOptionsMutator : PropTypes.func,
+    /*** si les données à récupérer à distance seront  */
+    fetchOnlyVisibleColumns : PropTypes.bool,
+    canFetchOnlyVisibleColumns : PropTypes.bool,//si l'on peut modifier le type d'affichage lié à la possibilité de récupérer uniquement les données reletives aux colonnes visibles
     useLinesProgressBar  : PropTypes.bool,//si le progress bar lignes horizontale seront utilisés
     abreviateValues : PropTypes.bool, //si les valeurs numériques seront abregées
 }

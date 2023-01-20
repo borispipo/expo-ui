@@ -90,23 +90,7 @@ export default class CommonTableDatagrid extends CommonDatagrid{
                     force = cb;
                     cb = undefined;
                 }
-                const fetchFilters = this.getFilters({convertToSQL:false});
-                fetchOptions = defaultObj(fetchOptions);
-                fetchOptions = Object.clone(fetchOptions);
-                fetchOptions.selector = defaultObj(fetchOptions.selector);
-                fetchOptions.dataSources = this.currentDataSources;
-                fetchOptions = extendObj(true,true,{},fetchOptions,{selector : fetchFilters});
-                fetchOptions.dataSources = this.currentDataSources;
-                fetchOptions.sort = this.getSort();
-                fetchOptions.fields = this.getFilterableColumnsNames();
-                let limit = this.getQueryLimit();
-                if(limit > 0 && !this.isPivotDatagrid()){
-                    fetchOptions.limit = limit;
-                } else {
-                    if(!isDecimal(fetchOptions.limit) || fetchOptions.limit <=0){
-                        delete fetchOptions.limit
-                    }
-                }
+                fetchOptions = this.getFetchOptions({fetchOptions,convertToSQL:false});
                 if(typeof this.props.fetchOptionsMutator =='function' && this.props.fetchOptionsMutator(fetchOptions) === false){
                     this.isFetchingData = false;
                     return resolve(this.state.data);

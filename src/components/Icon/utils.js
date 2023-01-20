@@ -12,3 +12,7 @@ export const PRINT_ICON = "printer";
 
 export const ICON_SIZE = 24;
 export const ICON_OFFSET = 12;
+
+export const CHECKED_ICON = isIos()? 'check' : "checkbox-marked";
+
+export const UNCHECKED_ICON = "checkbox-blank-outline";

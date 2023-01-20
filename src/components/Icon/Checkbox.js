@@ -1,15 +1,15 @@
 import {defaultObj,defaultStr} from "$utils";
 import PropTypes from "prop-types";
 import theme,{Colors} from "$theme";
-import {isIos} from "$cplatform";
 import React from "$react";
 import Icon from "./Icon";
+import {CHECKED_ICON,UNCHECKED_ICON} from "$ecomponents/Icon/utils";
 
 /****** icon de type checkbox variant en fonction de l'environnement ou la plateforme */
 const Checkbox = React.forwardRef((props,ref)=>{
     const {checked:customChecked,color:customColor,primary,secondary,primaryOnCheck,secondaryOnCheck,onChange,checkedIcon:customCheckedIcon,uncheckedIcon:customUncheckedIcon,onPress,...rest} = props; 
-    const checkedIcon = defaultStr(checkedIcon,isIos()? 'check' : "checkbox-marked");
-    const uncheckedIcon = defaultStr(uncheckedIcon,"checkbox-blank-outline");
+    const checkedIcon = defaultStr(checkedIcon,CHECKED_ICON);
+    const uncheckedIcon = defaultStr(uncheckedIcon,UNCHECKED_ICON);
     const [checked,setIsChecked] = React.useStateIfMounted(!!checked);
     const isMounted = React.useIsMounted();
     const prevChecked = React.usePrevious(checked);

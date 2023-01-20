@@ -36,10 +36,10 @@ import notify from "$cnotify";
 import FileSystem from "$file-system";
 import sprintf from "$cutils/sprintf";
 import { renderRowCell,formatValue,arrayValueSeparator } from "./utils";
-import {ScrollView} from "react-native";
 import Button from "$ecomponents/Button";
 import stableHash from "stable-hash";
 import * as XLSX from "xlsx";
+import {convertToSQL} from "$ecomponents/Filter";
 
 export const TIMEOUT = 100;
 
@@ -264,6 +264,7 @@ export default class CommonDatagridComponent extends AppComponent {
             sectionListColumnsSize : {value : {current:0}}, //la taille du nombre d'éléments de section dans les colonnes
             chartRef : {value : {current:null}},
             layoutRef : {value : {}},
+            hidePreloaderOnRenderKey : {value : uniqid("hide-preloader-on-render")},
             isRenderingRef : {value : {current:false}},
             chartSeriesNamesColumnsMapping : {value : {}},//le mappage entre les index des series et les colonnes coorespondantes
         }) 
@@ -272,7 +273,8 @@ export default class CommonDatagridComponent extends AppComponent {
             if(typeof v =='function'){
                 delete config[k];
             }
-        })
+        });
+        this.state.fetchOnlyVisibleColumns = !!defaultVal(this.props.fetchOnlyVisibleColumns,config.fetchOnlyVisibleColumns,this.getSessionData("fetchOnlyVisibleColumns"));
         this.state.abreviateValues = "abreviateValues" in this.props? !!this.props.abreviateValues : !!this.getSessionData("abreviateValues");
         const sessionAggregator = this.getSessionData("aggregatorFunction"); 
         this.state.aggregatorFunction= this.isValidAggregator(config.aggregatorFunction) && config.aggregatorFunction || this.isValidAggregator(this.props.aggregatorFunction) && this.props.aggregatorFunction || this.isValidAggregator(sessionAggregator) && sessionAggregator || Object.keys(this.aggregatorFunctions)[0];;
@@ -287,6 +289,7 @@ export default class CommonDatagridComponent extends AppComponent {
         this.INITIAL_STATE = {
             data,
         }
+        this.prepareFetchData();
         this._datagridId = isNonNullString(this.props.id)? this.props.id : uniqid("datagrid-id")
         this.canDoFilter = true;    
         this.filters =  {}
@@ -366,25 +369,28 @@ export default class CommonDatagridComponent extends AppComponent {
     }
     /*** si l'on peut récuperer à distance, les colonnes seulement visibles */
     canFetchOnlyVisibleColumns(){
-        return this.props.canFetchOnlyVisibleColumns !== false;
+        return this.isTableData() && this.props.canFetchOnlyVisibleColumns !== false && true || false;
     }
     isFetchOnlyVisibleColumnsEnabled(){
         return this.canFetchOnlyVisibleColumns() && !!this.state.fetchOnlyVisibleColumns;
     }
     fetchDataIfCanFetchColumnsIfVisible(){
         if(!this.canFetchOnlyVisibleColumns()) return;
-        if(this.isFetchOnlyVisibleColumnsEnabled()){
-            return this.fetchData({force:true});
-        }
+        this.toggleHidePreloaderOnRender(false);
+        return this.fetchData({force:true});
     }
     toggleFetchOnlyVisibleColumns(){
         if(!this.canFetchOnlyVisibleColumns()){
             return Promise.reject({});
         }
         const fetchOnlyVisibleColumns = !this.isFetchOnlyVisibleColumnsEnabled();
-        return new Promise((resolve,reject)=>{
-
-        })
+        setTimeout(()=>{
+            this.setIsLoading(true,()=>{
+                this.toggleHidePreloaderOnRender(true);
+                this.setSessionData("fetchOnlyVisibleColumns",fetchOnlyVisibleColumns);
+                this.setState({fetchOnlyVisibleColumns},this.fetchDataIfCanFetchColumnsIfVisible.bind(this))
+            },true) 
+        },TIMEOUT)
     }
     isValidAggregator(aggregatorFunction){
         return isNonNullString(aggregatorFunction) && isValidAggregator(this.aggregatorFunctions[aggregatorFunction])
@@ -977,7 +983,7 @@ export default class CommonDatagridComponent extends AppComponent {
         this._previousSortObj = Object.clone(this.sortRef.current);
         this.sortRef.current = sort;
         this.prepareColumns({sortedColumn : this.sortRef.current});
-        if(typeof this.props.onSort =='function' && this.props.onSort({...sort,context:this,sort,data:this.INITIAL_STATE.data,fields:this.state.columns,columns:this.state.columns}) === false){
+        if(typeof this.props.onSort =='function' && this.props.onSort({context:this,sort,data:this.INITIAL_STATE.data,fields:this.state.columns,columns:this.state.columns}) === false){
             return;
         }
         this.prepareData({data:this.INITIAL_STATE.data,updateFooters:false},(state)=>{
@@ -1028,7 +1034,7 @@ export default class CommonDatagridComponent extends AppComponent {
         if(this.canFetchOnlyVisibleColumns()){
             const isFE = this.isFetchOnlyVisibleColumnsEnabled();
             customMenu.push({
-                text : "Valeurs colonne visibles",
+                text : "Valeurs Cols visibles",
                 tooltip : "Récupérer uniquement les valeurs des colonnes visibles",
                 icon : "material-radio-button-{0}".sprintf(isFE?"on":"off"),
                 onPress : (e)=>{
@@ -1208,6 +1214,7 @@ export default class CommonDatagridComponent extends AppComponent {
             }
             this.setIsLoading(true,()=>{
                 this.prepareColumns({columns});
+                this.toggleHidePreloaderOnRender(this.canFetchOnlyVisibleColumns());
                 this.setState({columns},this.fetchDataIfCanFetchColumnsIfVisible.bind(this));
             })
         },TIMEOUT)
@@ -2484,6 +2491,9 @@ export default class CommonDatagridComponent extends AppComponent {
                 },
                 title : title,
                 icon : visible?CHECKED_ICON_NAME : null,
+                right : false ? (p)=><Icon {...p} icon="material-gear"
+                    onPress = {(e)=>{console.log(e," is pressed toddd config")}}
+                /> : undefined
             });
             restCol.field = header.field;
             
@@ -3100,23 +3110,117 @@ export default class CommonDatagridComponent extends AppComponent {
         this.previousDataSources = dataSources;
         this.previousServer = server;
     }
+    prepareFetchData(fetchData){
+        this.INITIAL_STATE.fetchData = defaultVal(fetchData,this.props.fetchData);
+    }
     beforeFetchData(){}
-    fetchData({fetchOptions}){
-        if(typeof this.props.fetchData =='function'){
-            const r = this.props.fetchData(fetchOptions);
-            if(isPromise(r)){
-                return r.then((data)=>{
-                    if(isObjOrArray(data)){
-                        this.setIsLoading(true,()=>{
-                            this.prepareData({data},(state)=>{
-                                this.setState(state)
-                            })
-                        },true)
-                    }
-                })
+        /**** retourne la liste des items, utile lorsqu'une s'agit d'une fonction 
+        Lorsque data est une chaine de caractère, alors elle doit être sous la forme recommandée par la function 
+        getDataFunc de l'object dataSource
+        la props data, peut être une chaine de caractère contenant le nom de la base et de la bd de travail de l'application
+        example common[articles], dans ce cas, la fonction fetchData, aura pour rôle de chercher toutes les données qui match
+        la table dans la base common.
+        Elle pourra éventuellement passer directement la limite et les filtres à la fonction fetchdata
+    */
+    fetchData ({cb,callback,force,fetchOptions,...rest}){
+        if(!this._isMounted()) return Promise.resolve(this.state.data);
+        if(this.isFetchingData) {
+            if(!isPromise(this.fetchingPromiseData)){
+                this.fetchingPromiseData = Promise.resolve(this.state.data)
             }
+            return this.fetchingPromiseData;
+        };
+        this.isFetchingData = true;
+        cb = typeof cb =='function'? cb : typeof callback =='function'? callback : undefined;
+        this.fetchingPromiseData = new Promise((resolve,reject)=>{
+            setTimeout(()=>{
+                if(typeof cb === 'boolean'){
+                    force = cb;
+                    cb = undefined;
+                }
+                fetchOptions = this.getFetchOptions({fetchOptions,convertToSQL:false});
+                if(typeof this.props.fetchOptionsMutator =='function' && this.props.fetchOptionsMutator(fetchOptions) === false){
+                    this.isFetchingData = false;
+                    return resolve(this.state.data);
+                }
+                if(this.beforeFetchData(fetchOptions) === false) return resolve(this.state.data);
+                if(this.willConvertFiltersToSQL()){
+                    fetchOptions.selector = convertToSQL(fetchOptions.selector);
+                }
+                if(typeof this.props.beforeFetchData =='function' && this.props.beforeFetchData({...rest,context:this,force,fetchOptions,options:fetchOptions}) === false){
+                    this.isFetchingData = false;
+                    return resolve(this.state.data);
+                }
+                if(force !== true && isArray(this.INITIAL_STATE.data)) {
+                    return this.resolveFetchedDataPromise({cb,data:this.INITIAL_STATE.data}).then(resolve).catch(reject)
+                }
+                let fetchData  = this.INITIAL_STATE.fetchData;
+                if(isFunction(this.props.fetchData)){
+                    /**** l'on peut définir la props fetchData, qui est la fonction appelée pour la recherche des données */
+                    fetchData = this.props.fetchData.call(this,fetchOptions);
+                }
+                fetchData = isFunction(fetchData)? fetchData.call(this,fetchOptions) : fetchData;
+                this.setIsLoading(true,()=>{
+                    if(isPromise(fetchData)){
+                        return fetchData.then(data=>{
+                            return this.resolveFetchedDataPromise({cb,data,force}).then((data)=>{
+                                resolve(data);
+                            }).catch((e)=>{
+                                console.log(e,' fetching datagrid data')
+                                reject(e);
+                            });
+                        }).catch((e)=>{
+                            console.log(e," resolve fetching data for datagrid");
+                            return this.resolveFetchedDataPromise({cb,data:[],force}).then((data)=>{
+                                resolve(data);
+                            }).catch((e)=>{
+                                console.log(e,' fetching datagrid data')
+                                reject(e);
+                            });;
+                        })
+                    } else {
+                        let data = !isPromise(fetchData)? Object.toArray(fetchData) : [];
+                        ///if(data.length <=0) data = this.state.data;
+                        return this.resolveFetchedDataPromise({cb,data,force}).then((data)=>{
+                            resolve(data);
+                        }).catch((e)=>{
+                            console.log(e,' fetching datagrid data')
+                            reject(e);
+                        });
+                    }     
+                },true);
+            },1);
+        })
+        return this.fetchingPromiseData;
+    }
+    resolveFetchedDataPromise(arg){
+        arg = defaultObj(arg);
+        const d = arg.data;
+        if(isObj(d) && d.data && typeof d.data ==='object'){
+            arg.data = d.data;
+            arg.total = defaultNumber(arg.total,arg.data.total);
         }
-        return Promise.resolve(this.state.data);
+        if(typeof arg.total != 'number'){
+            arg.total = Object.size(arg.data);
+        }
+        const {cb,total,data} = arg;
+        return new Promise((resolve)=>{
+            this.prepareData(arg,(state)=>{
+                state.data = Array.isArray(state.data)? state.data : [];
+                if(typeof this.props.onFetchData =='function'){
+                    this.props.onFetchData({...arg,allData:data,context:this,props:this.props,data:state.data})
+                }
+                this.setState(state,()=>{
+                    if(isFunction(cb)) {
+                        cb(data)
+                    } 
+                    resolve(data);
+                    this.isRenderingRef.current = false;
+                    this.isFetchingData = undefined;
+                    this.setIsLoading(false,false);
+                })
+            });
+        })
     }
     /****  Filtre le tableau */
     doFilter ({value,field,selector,event,force}){
@@ -3205,7 +3309,7 @@ export default class CommonDatagridComponent extends AppComponent {
         fetchOptions = Object.clone(isObj(fetchOptions)? fetchOptions : {});
         fetchOptions.selector = defaultObj(fetchOptions.selector);
         fetchOptions.dataSources = this.currentDataSources;
-        fetchOptions = extendObj(true,true,{},fetchOptions,{selector : fetchFilters});
+        fetchOptions.selector = fetchFilters;
         fetchOptions.sort = this.getSort();
         const ff = this.getFilterableColumnsNames();
         let fields = ff;
@@ -3215,8 +3319,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 if(isNonNullString(field) && isObj(this.state.columns[field]) && this.state.columns[field].visible !== false){
                     fields.push(field);
                 }
-            })
-            console.log("will fetch fields",fields)
+            });
         }
         fetchOptions.fields = fields;
         let limit = this.getQueryLimit();
@@ -3332,7 +3435,15 @@ export default class CommonDatagridComponent extends AppComponent {
     canSetIsLoading(){
         return isObj(this.progressBarRef.current) && typeof this.progressBarRef.current.setIsLoading =='function' ? true : false;
     }
+    canHidePreloaderOnRender(){
+        const cH = this[this.hidePreloaderOnRenderKey];
+        return typeof cH =='boolean'? cH : true;
+    }
+    toggleHidePreloaderOnRender(toggle){
+        this[this.hidePreloaderOnRenderKey] = !!toggle;
+    }
     onRender(){
+        if(!this.canHidePreloaderOnRender()) return ;
         if(typeof this.props.onRender ==='function' && this.props.onRender({context:this}) === false){
             return ;
         }

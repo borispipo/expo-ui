@@ -167,26 +167,26 @@ const DatagridFactory = (Factory)=>{
             const progressBar = this.getProgressBar();
             const pointerEvents = this.getPointerEvents(); 
 
-            let restItems = [...this.renderCustomMenu()];
+            const restItems = [...this.renderCustomMenu()];
             let max = this.getMaxSelectableRows();
             if(selectableMultiple && max){
                 max = max.formatNumber();
-                restItems = [
-                    ...(selectableMultiple && !canRenderChart ? [{
+                if(selectableMultiple && !canRenderChart){
+                    restItems.push({
                         label : "Sélectionner "+max.formatNumber(),
                         icon : "select-all",
                         onPress : (x,event)=>{
                             this.handleAllRowsToggle(true);
                         }
-                    },
-                    {
+                    });
+                    restItems.push({
                         label : "Tout désélectionner",
                         onPress : (x,event)=>{
                             this.handleAllRowsToggle(false);
                         },
                         icon : "select"
-                    }] : [])
-                ]
+                    });
+                }
             }   
             const maxHeight = this.getMaxListHeight();
             const rPagination = showPagination ? <View style={[styles.paginationContainer]}>

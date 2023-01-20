@@ -8,7 +8,6 @@
 import Datagrid from "./IndexComponent";
 import {defaultStr,defaultObj,defaultVal,isNonNullString,defaultNumber,isObjOrArray,isObj,extendObj} from "$utils";
 import {Pressable} from "react-native";
-import SimpleSelect from "$ecomponents/SimpleSelect";
 import React from "$react";
 import Auth from "$cauth";
 import DateLib from "$lib/date";
@@ -20,13 +19,10 @@ import Icon from "$ecomponents/Icon";
 import Label from "$ecomponents/Label";
 import { StyleSheet,View } from "react-native";
 import theme from "$theme";
-import useSWR,{useInfinite} from "$swr";
+import useSWR from "$swr";
 import appConfig from "$capp/config";
-import APP from "$capp/instance";
-
+import {getRowsPerPagesLimits} from "./Common/utils";
 import PropTypes from "prop-types";
-import {isDesktopMedia} from "$dimensions";
-import ActivityIndicator from "$ecomponents/ActivityIndicator";
 import {Menu} from "$ecomponents/BottomSheet";
 import session from "$session";
 
@@ -69,9 +65,7 @@ export const getSWROptions = ()=>{
     }
 }
 
-const getDefaultPaginationRowsPerPageItems = ()=>{
-    return [5,10,15,20,25,30,40,50,60,80,100,500,1000,...(isDesktopMedia() ? [1500,2000,2500,3000,3500,4000,4500,5000,10000]:[])];
-}
+
 /****la fonction fetcher doit toujours retourner : 
  *  1. la liste des éléments fetchés dans la props data
  *  2. le nombre total d'éléments de la liste obtenue en escluant les clause limit et offset correspondant à la même requête
@@ -160,6 +154,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     if(fetchPath){
         fetchPath = setQueryParams(fetchPath,"SWRFetchPathKey",fPathRef.current)
     }
+    const sortRef = React.useRef({});
     const innerRef = React.useRef(null);
     const showProgressRef = React.useRef(true);
     const dataRef = React.useRef([]);
@@ -181,9 +176,8 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             }
             opts = defaultObj(opts);
             opts.fetchOptions = isObj(opts.fetchOptions)? Object.clone(opts.fetchOptions) : {};
-            opts.fetchOptions.withTotal = true;
-            opts.fetchOptions.fields = fetchFields;
             extendObj(true,opts.fetchOptions,fetchOptionsRef.current?.fetchOptions);
+            opts.fetchOptions.sort = sortRef.current;
             if(canHandleLimit){
                 opts.fetchOptions.limit = limitRef.current;
                 opts.fetchOptions.page = pageRef.current -1;
@@ -194,7 +188,6 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                 delete opts.page;
                 delete opts.offset;
             }
-
             const fetchCB = ({data,total})=>{
                 totalRef.current = total;
                 dataRef.current = data;
@@ -291,7 +284,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         text : "Limite nbre elts par page",
         divider : true,
     }]
-    getDefaultPaginationRowsPerPageItems().map((item)=>{
+    getRowsPerPagesLimits().map((item)=>{
         itLimits.push({
             text : item.formatNumber(),
             icon : limitRef.current == item ? 'check' : null,
@@ -314,8 +307,8 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             {...rest}
             sort = {sort}
             onSort = {({sort})=>{
+                sortRef.current = sort;
                 if(!canSortRemotely()) return;
-                fetchOptionsRef.current.sort = sort;
                 pageRef.current = firstPage;
                 doRefresh(true);
                 return false;
@@ -380,7 +373,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                             {...iconProp}
                             title = {"Aller à la page suivante {0}".sprintf(nextPage && nextPage.formatNumber()||undefined)}
                             name="material-keyboard-arrow-right"
-                            disabled = {nextPage >= totalPages || getNextPage() === false ? true : false}
+                            disabled = {nextPage > totalPages || getNextPage() === false ? true : false}
                             onPress = {()=>{
                                 const page = getNextPage();
                                 if(page === false) return;
@@ -416,6 +409,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                 opts = getFetchOptions({showError:showProgressRef.current,...opts});
                 isInitializedRef.current = true;
                 fetchOptionsRef.current = opts;
+                sortRef.current = opts.fetchOptions.sort;
                 if(force){
                     pageRef.current = firstPage;
                 }

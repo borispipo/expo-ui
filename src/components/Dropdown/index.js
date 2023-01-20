@@ -923,7 +923,7 @@ class DropdownComponent extends AppComponent {
                         }}
                         containerProps = {{...containerProps,style:[containerProps.style,styles.mbO]}}
                         error = {!!error}
-                        right = {loadingElement ? (loadingElement) : disabled? null : (props)=>{
+                        right = {loadingElement ? loadingElement : disabled? null : (props)=>{
                             let r = React.isValidElement(defRight)?<>{defRight}</> : <></>;
                             if(typeof defRight =='function'){
                                 const t = defRight(props);

@@ -9,9 +9,23 @@ const ScrollViewComponent = React.forwardRef(({virtualized,contentProps,containe
   const isKeyboardOpenRef = React.useRef(false);
   const testID = defaultStr(customTestID,'RN_ScrollViewComponent');
   containerProps = defaultObj(containerProps)
+  const layoutRef = React.useRef(null);
   const [layout,setLayout] = React.useState(Dimensions.get("window"));
   const {height} = layout;
+  const hasInitializedRef = React.useRef(false);
   const children = React.useStableMemo(()=>cChildren,[cChildren]);
+  const updateLayout = ()=>{
+      return new Promise((resolve)=>{
+          if(layoutRef.current && layoutRef.current.measureInWindow){
+              layoutRef.current.measureInWindow((x, y, width, height) => {
+                  const r = { x, y, width, height };
+                  setLayout({...Dimensions.get("window"),layout:r});
+                  hasInitializedRef.current = true;
+                  resolve(r);
+              });
+          }
+      })
+  }
   React.useEffect(()=>{
     const onKeyboardToggle = ({visible})=>{
       isKeyboardOpenRef.current = visible;
@@ -19,7 +33,7 @@ const ScrollViewComponent = React.forwardRef(({virtualized,contentProps,containe
     const onResizePage = ()=>{
       setTimeout(()=>{
          if(isKeyboardOpenRef.current) return;
-         setLayout(Dimensions.get("window"))
+         updateLayout();
       },300);
     }
     APP.on(APP.EVENTS.RESIZE_PAGE,onResizePage);
@@ -29,8 +43,21 @@ const ScrollViewComponent = React.forwardRef(({virtualized,contentProps,containe
       APP.off(APP.EVENTS.KEYBOARD_DID_TOGGLE,onKeyboardToggle);
     }
   },[]);
-  const contentContainerStyle = [{maxHeight:Math.max(height-100,250),width:'100%'},rest.contentContainerStyle];
-  return  <View {...containerProps} style={[theme.styles.w100,containerProps.style]} testID={testID+"_ScrollViewContainer"}>
+
+  const cStyle = {maxHeight:Math.max(height-100,250),width:'100%'};
+  if(isObj(layout.layout) && typeof layout.layout.y =='number'){
+      const {layout : {x,y}} = layout;
+      const minHeight = height - y;
+      if(minHeight> 0){
+          cStyle.minHeight = minHeight;
+      }
+  }
+  const contentContainerStyle = [cStyle,rest.contentContainerStyle];
+  return  <View ref={layoutRef} onLayout={()=>{
+    if(!hasInitializedRef.current){
+       updateLayout();
+    }
+  }} {...containerProps} style={[theme.styles.w100,containerProps.style]} testID={testID+"_ScrollViewContainer"}>
     <ScrollView 
       ref={ref} {...rest} 
       testID={testID}

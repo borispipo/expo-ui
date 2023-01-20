@@ -18,8 +18,8 @@ const ScrollViewComponent = React.forwardRef(({virtualized,contentProps,containe
       return new Promise((resolve)=>{
           if(layoutRef.current && layoutRef.current.measureInWindow){
               layoutRef.current.measureInWindow((x, y, width, height) => {
-                  const r = { x, y, width, height };
-                  setLayout({...Dimensions.get("window"),layout:r});
+                  const r = {...Dimensions.get("window"),layout:{ x, y, width, height }};
+                  setLayout(r);
                   hasInitializedRef.current = true;
                   resolve(r);
               });
@@ -45,7 +45,7 @@ const ScrollViewComponent = React.forwardRef(({virtualized,contentProps,containe
   },[]);
 
   const cStyle = {maxHeight:Math.max(height-100,250),width:'100%'};
-  if(isObj(layout.layout) && typeof layout.layout.y =='number'){
+  if(isObj(layout.layout) && typeof layout.layout.y =='number' && layout.layout.y>=10){
       const {layout : {x,y}} = layout;
       const minHeight = height - y;
       if(minHeight> 0){

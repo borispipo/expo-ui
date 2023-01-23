@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "2.48.0",
+  "version": "2.48.1",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "index.js",
   "scripts": {
@@ -84,6 +84,7 @@
     "htmlparser2-without-node-native": "^3.9.2",
     "mongo-parse": "^2.1.0",
     "parent-package-json": "^2.0.1",
+    "pdfmake": "^0.2.7",
     "prop-types": "^15.8.1",
     "react": "18.1.0",
     "react-apexcharts": "^1.4.0",

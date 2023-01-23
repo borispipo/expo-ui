@@ -89,8 +89,8 @@ export const getFilterComponentProps = (_props)=>{
     } else if(type == 'switch' || type =='radio' || type ==='checkbox') {
         type = 'select';
         let {checkedLabel,checkedTooltip,uncheckedTooltip,checkedValue,uncheckedLabel,uncheckedValue,...pR} = props;
-        checkedLabel = defaultVal(checkedLabel,'Non')
-        uncheckedLabel = defaultVal(uncheckedLabel,'Oui')
+        checkedLabel = defaultVal(checkedLabel,'Oui')
+        uncheckedLabel = defaultVal(uncheckedLabel,'Non')
         checkedValue = defaultVal(checkedValue,1); uncheckedValue = defaultVal(uncheckedValue,0)
         props = pR;
         props.items = [{code:checkedValue,label:checkedLabel},{code:uncheckedValue,label:uncheckedLabel}];

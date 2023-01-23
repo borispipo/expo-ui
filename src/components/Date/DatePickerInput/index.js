@@ -65,7 +65,7 @@ const DatePickerInput = React.forwardRef(({
   inputMode = defaultStr(inputMode,"start");
   locale = defaultStr(locale,defaultLocale);
   const theme = useTheme()
-  const [state,setState] = React.useStateIfMounted({
+  const [state,setState] = React.useState({
     errorText : null,
     inputDate : toDateObj(defaultValue,format),
     visible : false

@@ -255,7 +255,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
         />
     const inputRef = React.useRef(null);
     const canFilter = !props.disabled && !props.readOnly && props.editable !== false && visible;
-    const [filterText,setFilterText] = React.useStateIfMounted("");
+    const [filterText,setFilterText] = React.useState("");
     let filterRegex = undefined;
     if(canFilter && isNonNullString(filterText)){
         filterRegex = new RegExp(filterText.replace(matchOperators, '\\$&'), 'gi');

@@ -12,7 +12,7 @@ const BottomSheetMenuComponent = React.forwardRef((props,ref)=>{
     rest = defaultObj(rest);
     const isControlled = controlled ? true : false;
     const visibleRef = React.useRef(null);
-    const [state,setState] = React.useStateIfMounted({
+    const [state,setState] = React.useState({
         visible : false,
         height : undefined,
     });

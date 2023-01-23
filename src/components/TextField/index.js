@@ -126,7 +126,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
         }
     }
     const isSecureText = type =="password"?true : false;
-    const [secureTextEntry,setSecureTextEntry] = React.useStateIfMounted(isSecureText);
+    const [secureTextEntry,setSecureTextEntry] = React.useState(isSecureText);
     const prevSecureTextEntry = React.usePrevious(secureTextEntry);
     containerProps = defaultObj(containerProps);
     mode = defaultStr(mode,theme.textFieldMode);
@@ -138,7 +138,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
     const isNormalMode = mode == normalMode ? true : false;
     const isFlatMode =  mode == flatMode ? true : false;
     
-    const [inputState, setInputState] = React.useStateIfMounted({
+    const [inputState, setInputState] = React.useState({
         focused : false,
         touched: false,
     });
@@ -152,7 +152,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
         if((upper !== true && lower !== true) || isAndroid) return typeof t =='string'? t : "";
         return isNonNullString(t)? (upper ? t.toUpperCase() : lower ? t.toLowerCase():t) : ""
     };
-    const [text, _setText] = React.useStateIfMounted(toCase(defaultValue));
+    const [text, _setText] = React.useState(toCase(defaultValue));
     const previousText = React.usePrevious(text);
     
 

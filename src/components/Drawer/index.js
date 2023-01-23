@@ -91,7 +91,7 @@ const DrawerComponent = React.forwardRef((props,ref)=>{
     if(minimized === undefined){
        minimized = false;
     }
-    const [state,_setState] = React.useStateIfMounted({
+    const [state,_setState] = React.useState({
         minimized,
         permanent,
     });

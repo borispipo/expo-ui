@@ -80,7 +80,7 @@ export default function DGGridFooters (props){
     } else {
         Component = defaultVal(Component,View)
     }
-    const [state,setState] = React.useStateIfMounted({
+    const [state,setState] = React.useState({
         columns,
         data,
     })

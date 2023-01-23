@@ -125,7 +125,7 @@ const FabGroupComponent = React.forwardRef((props,innerRef)=>{
     const fabIdRef = React.useRef(defaultStr(fabId,uniqid("fab-id-ref")));
     fabId = fabIdRef.current;
     const isMountedRef = React.useRef(false);
-    const [state, setState] = React.useStateIfMounted({ 
+    const [state, setState] = React.useState({ 
         open: typeof customOpen =='boolean'? customOpen : false,
         display : typeof customDisplay ==='boolean'? customDisplay : true,
     });

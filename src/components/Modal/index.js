@@ -92,7 +92,7 @@ const ModalComponent = React.forwardRef((props,ref)=>{
         removeListeners();
       }
       setTimeout(()=>{
-        if(prevVisible.current ===visible) return;
+        if(prevVisible ===visible) return;
         if(visible){
            if(onShow){
             onShow();

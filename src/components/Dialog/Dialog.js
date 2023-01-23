@@ -308,7 +308,7 @@ DialogComponent.propTypes= {
 
 
 export const DialogControlledComponent = React.forwardRef(({visible:dVisible,...props},ref)=>{
-    const [visible,setVisible] = React.useStateIfMounted(defaultBool(dVisible,false));
+    const [visible,setVisible] = React.useState(defaultBool(dVisible,false));
     const {onDismiss,onClose,onVisibilityChanged,...rest} = props;
     React.useEffect(()=>{
         if(typeof dVisible =='boolean' && dVisible !== visible){

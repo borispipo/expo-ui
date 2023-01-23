@@ -54,7 +54,7 @@ export default function TimePickerComponent (props){
     }
     withSeconds = defaultBool(withSeconds,true);
     const prevDefaultValue = React.usePrevious(defaultValue);
-    const [state,setState] = React.useStateIfMounted({
+    const [state,setState] = React.useState({
         visible : false,
         ...parseTime(defaultValue,withSeconds),
     })

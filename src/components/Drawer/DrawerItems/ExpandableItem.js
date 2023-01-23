@@ -11,7 +11,7 @@ export default function ExpandableItem(props){
     let {children,expanded,expandedIcon,testID,minimized,onPress,expandIconProps,unexpandedIcon,onToggleExpand,wrapperProps,...rest} = props;
     testID = defaultStr(testID,"RN_ExpandableDrawerItemComponent")
     wrapperProps = defaultObj(wrapperProps);
-    const [expandedControled,setExpended] = React.useStateIfMounted(defaultBool(expanded,false))
+    const [expandedControled,setExpended] = React.useState(defaultBool(expanded,false))
     let _expanded = expanded;
     if(!isBool(expanded)){
         _expanded = expandedControled;

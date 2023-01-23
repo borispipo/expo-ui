@@ -605,7 +605,7 @@ class DropdownComponent extends AppComponent {
     }
     UNSAFE_componentWillReceiveProps(nextProps){
         const {items,defaultValue,selected} = nextProps;
-        if(items !== this.props.items){
+        if(!React.areEquals(items,this.props.items)){
             const nState = this.prepareItems({items,defaultValue,selected});
             return this.updateSelected(nState);
         }
@@ -983,6 +983,9 @@ class DropdownComponent extends AppComponent {
         const ListComponent = isBigList ? BigList : List;
         const autoFocus = canAutoFocusSearchField({visible,items:renderingItems});
         dialogProps = defaultObj(dialogProps);
+        if(this.props.name =="RG_Compta"){
+            restProps.testMeCompta = true;
+        }
         return (
             <Fragment>
                 {!withBottomSheet && isMob && anchor}

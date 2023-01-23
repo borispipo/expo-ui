@@ -61,7 +61,7 @@ export default function PhoneInputComponent(props){
     contentContainerProps = defaultObj(contentContainerProps);
     contentContainerProps.style = [styles.inputContainer,contentContainerProps.style];
     const ref = React.useRef(null);
-    const [state,setState] = React.useStateIfMounted({
+    const [state,setState] = React.useState({
         visible : false,
         ...prepareState({defaultValue,country})
     })

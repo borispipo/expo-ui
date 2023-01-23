@@ -45,7 +45,7 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
             isScrolling = isS;
         }
     }
-    const [state,setState] = React.useStateIfMounted({
+    const [state,setState] = React.useState({
         expanded : false,
     });
     const toggleExpander = ()=>{

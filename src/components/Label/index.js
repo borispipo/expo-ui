@@ -113,7 +113,7 @@ LabelComponentExported.propTypes = {
 export default LabelComponentExported;
 
 LabelComponentExported.withRef = React.forwardRef((props,ref)=>{
-    const [state,setState] = React.useStateIfMounted({
+    const [state,setState] = React.useState({
         children : props.children,
     });
     const context = {

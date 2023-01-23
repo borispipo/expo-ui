@@ -7,11 +7,13 @@ import Label from "$ecomponents/Label";
 import { StyleSheet,View as RNView,ScrollView,Dimensions} from "react-native";
 import { getRowStyle } from "$ecomponents/Datagrid/utils";
 import {isMobileNative} from "$cplatform";
+import {isMobileMedia} from "$dimensions";
 import theme from "$theme";
 import AbsoluteScrollView from "./AbsoluteScrollView";
 import Cell from "./Cell";
 import Row from "./Row";
 import List from "./List";
+import FiltersOrFooters from "./FiltersOrFooters";
 const isSCrollingRef = React.createRef();
 const scrollLists = (opts,refs)=>{
     refs.map((ref)=>{
@@ -57,7 +59,7 @@ const TableComponent = React.forwardRef(({containerProps,sortedColumn,listContai
     const emptyData = renderListContent === false ?null : typeof renderEmpty =='function' && !Object.size(data,true)? renderEmpty() : null;
     const hasEmptyData = emptyData && React.isValidElement(emptyData);
     const layoutRef = React.useRef({});
-    React.useOnRender(onRender);
+    
     const preparedColumns = React.useStableMemo(()=>{
         const cols = {},headers = {},footers = {},filters = {},vColumnsMapping = [],visibleColumns = [],columnsNames = [];
         let hasFooters = false;
@@ -151,10 +153,14 @@ const TableComponent = React.forwardRef(({containerProps,sortedColumn,listContai
     const prevData = React.usePrevious(data);
     const prevColumns = React.usePrevious(columns);
     const itemsRef = React.useRef(null);
+    const hasChangedDataRef = React.useRef(false);
+    hasChangedDataRef.current = false;
     const items = React.useMemo(()=>{
         if(data === prevData && prevColumns == columns && Array.isArray(itemsRef.current)){
+            hasChangedDataRef.current = false;
             return itemsRef.current;
         }
+        hasChangedDataRef.current = true;
         const items = [];
         const filter = typeof customFilter =='function'? customFilter : x=>true;
         data.map((item,index)=>{
@@ -230,15 +236,6 @@ const TableComponent = React.forwardRef(({containerProps,sortedColumn,listContai
         get headerScrollViewContext(){return headerScrollViewRef.current},
     }
     const showTableHeaders = showHeaders !== false || showFilters ;
-    const hContent = showTableHeaders &&  headersContent.length ? <View testID={testID+"_Header"} {...headerContainerProps} style={[styles.header,headerContainerProps.style,footersContent.length]}>
-        {headersContent}
-    </View> : null,
-    fContent = showTableHeaders && footersContent.length ? <View testID={testID+"_Footer"} {...footerContainerProps} style={[styles.header,styles.footers,footerContainerProps.style,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}>
-        {footersContent}
-    </View> : null,
-    filtersContent = fFilters.length ? <View testID={testID+"_Filters"} style={[styles.header,styles.footers,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}>
-        {fFilters}
-    </View> : null
     const absoluteScrollViewRefCanScroll = React.useRef(true);
     React.setRef(tableRef,context);
     const cStyle = {width:listWidth}
@@ -254,6 +251,20 @@ const TableComponent = React.forwardRef(({containerProps,sortedColumn,listContai
             }
         }
     }
+    React.useOnRender((a,b,c)=>{
+        if(onRender){
+            onRender(a,b,c);
+        }
+        if(hasChangedDataRef.current){
+            if(headerScrollViewRef.current && headerScrollViewRef.current.scrollTo){
+                headerScrollViewRef.current.scrollTo({
+                    x : 0,
+                    y : 0,
+                    animated : true,
+                })
+            }
+        }
+    });
     return <View testID= {testID+"_Container"}  {...containerProps} onLayout={(e)=>{
         layoutRef.current = e.nativeEvent.layout;
         if(containerProps.onLayout){
@@ -266,7 +277,8 @@ const TableComponent = React.forwardRef(({containerProps,sortedColumn,listContai
                     {...headerScrollViewProps} 
                     contentContainerStyle = {[allScrollViewProps.contentContainerStyle,headerScrollViewProps.contentContainerStyle,{flex:1,flexWrap: 'wrap'}]}
                     style = {[allScrollViewProps.style,headerScrollViewProps.style,{height:'100%',flex:1,flexWrap:'wrap'}]}
-                    ref={headerScrollViewRef} horizontal {...allScrollViewProps}
+                    ref={headerScrollViewRef} 
+                    horizontal {...allScrollViewProps}
                     onScroll = {getOnScrollCb([scrollViewRef,footerScrollViewRef],null,(args)=>{
                         return;
                         const nativeEvent = args.nativeEvent;
@@ -275,9 +287,15 @@ const TableComponent = React.forwardRef(({containerProps,sortedColumn,listContai
                     showsHorizontalScrollIndicator
             >
                     <View testID={testID+"Header2FootersWrapper"} style={[theme.styles.w100]}>
-                        {hContent}
-                        {filtersContent}
-                        {fContent}
+                        <FiltersOrFooters visible={!!(showTableHeaders &&  headersContent.length)} testID={testID+"_Header"} {...headerContainerProps} style={[styles.header,headerContainerProps.style,footersContent.length]}>
+                            {headersContent}
+                        </FiltersOrFooters>
+                        <FiltersOrFooters visible = {!!fFilters.length} testID={testID+"_Filters"} style={[styles.header,styles.footers,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}>
+                            {fFilters}
+                        </FiltersOrFooters>
+                        <FiltersOrFooters visible={!!(showTableHeaders && footersContent.length)} testID={testID+"_Footer"} {...footerContainerProps} style={[styles.header,styles.footers,footerContainerProps.style,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}>
+                            {footersContent}
+                        </FiltersOrFooters>
                     </View>
                 </ScrollView>
             </RNView>

@@ -93,7 +93,7 @@ const AppBarComponent = React.forwardRef((props,ref)=> {
     const [context] = React.useState({});
     actions = typeof actions =='function'? actions(getCallAgs()) : actions;
     const dimensions = Dimensions.get("window");
-    const [layout,setLayout] = React.useStateIfMounted({
+    const [layout,setLayout] = React.useState({
        width : dimensions.width,
        height : dimensions.height,
     })

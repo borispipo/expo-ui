@@ -55,7 +55,7 @@ const RadioComponent = React.forwardRef((props,ref)=>{
     } 
     delete p.checked;
     defaultValue = defaultVal(defaultValue,value,0);
-    const [status,setStatus] = React.useStateIfMounted(defaultValue == checkedValue ? checkedStatus : uncheckedStatus)
+    const [status,setStatus] = React.useState(defaultValue == checkedValue ? checkedStatus : uncheckedStatus)
     const previousStatus = React.usePrevious(status);
     const checked = status===checkedStatus?true:false;
     if(checked){

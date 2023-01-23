@@ -9,7 +9,7 @@ import Dialog from "$ecomponents/Dialog";
 const ImageEditorComponent = React.forwardRef((props,ref)=>{
     let {source,dialogProps,visible,imageProps,...rest} = props;
     const isMounted = React.useIsMounted();
-    const [context] = React.useStateIfMounted({});
+    const [context] = React.useState({});
     imageProps = defaultObj(imageProps);
     dialogProps = defaultObj(dialogProps);
     context.dialogRef = React.useRef(null);

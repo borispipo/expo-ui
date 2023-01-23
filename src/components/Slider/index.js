@@ -45,7 +45,7 @@ const SliderComponent = React.forwardRef((props,ref)=>{
     valueProps = defaultObj(valueProps);
     contentProps = defaultObj(contentProps);
     const defVal = prepareValue({value,defaultValue});
-    const [sValue,setSValue] = React.useStateIfMounted(defVal)
+    const [sValue,setSValue] = React.useState(defVal)
     const prevValue = React.usePrevious(isArray(sValue) && isDecimal(sValue[0])? sValue[0]:sValue);
     React.useEffect(()=>{
         const value = isArray(sValue) && isDecimal(sValue[0]) ? sValue[0] : isDecimal(sValue)? sValue : undefined;

@@ -30,7 +30,7 @@ const MenuComponent = React.forwardRef((props,ref)=>{
     testID = defaultStr(testID,"RN_MenuComponent");
     anchorProps.testID = defaultStr(anchorProps.testID,testID+"_Anchor");
     menuProps = defaultObj(menuProps);
-    const [visible, setVisible] = React.useStateIfMounted(false);
+    const [visible, setVisible] = React.useState(false);
     const prevSibible = React.usePrevious(visible);
     const openMenu = (event,callback) => {
         if(callback === true && typeof onAnchorPress ==='function' && onAnchorPress(event) ===false){

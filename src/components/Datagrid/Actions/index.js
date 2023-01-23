@@ -16,7 +16,7 @@ export default function DatagridActions (_props){
   let {actions,actionProps,selectedRowsActions,bindResizeEvent,context,selectedRows:_selectedRows,...props} = _props;
   props = defaultObj(props);
   context = defaultObj(context);
-  const [state,setState] = React.useStateIfMounted({
+  const [state,setState] = React.useState({
     selectedRows : defaultObj(_selectedRows),
   });
   const selectedRowsCallBackRef = React.useRef(null);

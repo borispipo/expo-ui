@@ -7,11 +7,11 @@ import {defaultObj} from "$utils";
 const ImageEditorComponent = React.forwardRef((props,ref)=>{
     let {source,uri,onSuccess,imageUri,lockAspectRatio,dialogProps,onDismiss,visible,imageProps,...rest} = props;
     const isMounted = React.useIsMounted();
-    const [context] = React.useStateIfMounted({});
+    const [context] = React.useState({});
     imageProps = defaultObj(imageProps);
     dialogProps = defaultObj(dialogProps);
     context.dialogRef = React.useRef(null);
-    const [imageData,setImageData] = React.useStateIfMounted(null);
+    const [imageData,setImageData] = React.useState(null);
 
 
     return <View style={[styles.container]}>

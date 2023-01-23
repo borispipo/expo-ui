@@ -10,7 +10,7 @@ const Checkbox = React.forwardRef((props,ref)=>{
     const {checked:customChecked,color:customColor,primary,secondary,primaryOnCheck,secondaryOnCheck,onChange,checkedIcon:customCheckedIcon,uncheckedIcon:customUncheckedIcon,onPress,...rest} = props; 
     const checkedIcon = defaultStr(checkedIcon,CHECKED_ICON);
     const uncheckedIcon = defaultStr(uncheckedIcon,UNCHECKED_ICON);
-    const [checked,setIsChecked] = React.useStateIfMounted(!!checked);
+    const [checked,setIsChecked] = React.useState(!!checked);
     const isMounted = React.useIsMounted();
     const prevChecked = React.usePrevious(checked);
     const callOnChangeRef = React.useRef(true);
@@ -26,7 +26,7 @@ const Checkbox = React.forwardRef((props,ref)=>{
             onChange({value:checked?1:0,checked});
         }
     },[checked])
-    const [context] = React.useStateIfMounted({
+    const [context] = React.useState({
         check : (callOnChange)=>{
             if(!isMounted()) return;
             if(typeof callOnChange =='boolean'){

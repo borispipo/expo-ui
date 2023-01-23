@@ -59,7 +59,7 @@ const SwitchComponent = React.forwardRef((props,ref)=>{
         defaultValue = on ?checkedValue : uncheckedValue;
     } 
     defaultValue = defaultVal(defaultValue,value,0);
-    const [isSwitchOn,setIsSwitchOn] = React.useStateIfMounted(defaultValue == checkedValue ? true : false)
+    const [isSwitchOn,setIsSwitchOn] = React.useState(defaultValue == checkedValue ? true : false)
     const toggleIsSwitchOn = (a)=> {
         if(typeof onPress ==='function' && onPress(a) === false){
             return;

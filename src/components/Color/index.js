@@ -19,7 +19,7 @@ const ColorPickerComponent = React.forwardRef ((props,ref)=>{
     const isMob = isMobileOrTabletMedia();
     const _label = defaultStr(label,text);
     const pickerRef = React.useRef(null);
-    const [state,setState] = React.useStateIfMounted({
+    const [state,setState] = React.useState({
         color : Colors.isValid(defaultValue)? defaultValue : undefined,
         visible : false,
     })

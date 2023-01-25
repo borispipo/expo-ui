@@ -9,11 +9,6 @@ export default class FormSwitchField extends Field{
     isTextField(){
         return false;
     }
-    setValue (value){
-        if(this._fieldRef && this._fieldRef.setValue){
-            return this._fieldRef.setValue(value);
-        }
-    }
     _render(props,setRef){
         props.onChange = (args)=>{
             this.validate(args);

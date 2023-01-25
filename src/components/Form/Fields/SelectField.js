@@ -82,6 +82,7 @@ export default class FormSelectField extends Field{
         if(this._field && isFunction(this._field.selectValue)){
            this._field.selectValue(value,reset,cb);
         }
+        return super.setValue(value,reset,cb);
     }
     removeNotAllowedProps(props,{formName}){
         return;

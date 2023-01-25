@@ -287,7 +287,8 @@ export default class Field extends AppComponent {
     onValidatorValid(args){
         if(!this.isFilter() && ((this.props.allowWhiteSpaces === false) || ((this.type ==='id' || this.type =='piece') && this.props.allowWhiteSpaces !== true))){
             const value = isNonNullString(args.value) && args.value.replaceAll("/","").replaceAll("\\",'') || undefined;
-            if(value && (value.contains(" ") || !isValidDataFileName(value))){
+        
+            if(value && this.type !=='email' && !defaultStr(this.getValidRule()).toLowerCase().contains('email') && (value.contains(" ") || !isValidDataFileName(value.replaceAll("@","")))){
                 return "Veuillez renseigner une valeur ne contenant pas d'espace ou de caractère accentués";
             }
         }

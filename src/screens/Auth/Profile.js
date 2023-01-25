@@ -16,7 +16,7 @@ export default function UserProfileScreen(props){
     const themeRef = React.useRef(defaultObj(user.theme));
     const hasChangeRef = React.useRef(false);
     const authProfileFields = typeof SignIn2SignOut.authProfileFields =='function'?SignIn2SignOut.authProfileFields(props) : SignIn2SignOut.authProfileFields;
-    const fields = isObj(authProfileFields)? authProfileFields : {};
+    const fields = isObj(authProfileFields)? Object.clone(authProfileFields) : {};
     const formFields = {
         avatar : {
             ...avatarProps,

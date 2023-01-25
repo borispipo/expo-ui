@@ -59,6 +59,7 @@ export default class FormDataActionComponent extends FormData {
         const cb = ()=>{
             if(typeof mainProps.onBackActionPress =='function' && mainProps.onBackActionPress(args) === false) return
             else if(hasP && typeof this.props.onBackActionPress =='function' && this.props.onBackActionPress(args) === false) return;
+            else if(typeof this.props.onCancel =='function' && this.props.onCancel(args) === false) return;
             if(typeof callback =='function'){
               return  callback(args);
             }

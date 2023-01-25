@@ -27,6 +27,8 @@ const ButtonComponent = React.forwardRef(({
   children,
   text,
   label,
+  isCancelButton,
+  error,
   upperCase = true,
   accessibilityLabel,
   onPress,
@@ -59,6 +61,7 @@ const ButtonComponent = React.forwardRef(({
   borderRadius,
   ...rest
 },ref) => {
+  isCancelButton = isCancelButton || error && true || false;
   children = defaultVal(children,label,text);
   testID = defaultStr(testID,'RN_ButtonComponent');
   upperCase = upperCase ? true : false;
@@ -137,10 +140,10 @@ const ButtonComponent = React.forwardRef(({
   };
   contentContainerProps = defaultObj(contentContainerProps);
   containerProps = defaultObj(containerProps);
-  style = StyleSheet.flatten(style) || {};
+  style = Object.assign(StyleSheet.flatten(style) || {});
   labelStyle = StyleSheet.flatten([labelStyle]);
   const disabled = isDisabled || isLoading;
-  let textColor = Colors.isValid(buttonColor)?buttonColor : Colors.isValid(labelStyle.color) ? labelStyle.color : Colors.isValid(style.color)? style.color  : theme.colors.primary,
+  let textColor = Colors.isValid(buttonColor)?buttonColor : Colors.isValid(labelStyle.color) ? labelStyle.color : Colors.isValid(style.color)? style.color : isCancelButton? theme.colors.errorText  : theme.colors.primary,
     borderWidth;
     const restButtonStyle = {
       opacity : disabled ? DISABLED_OPACITY : undefined
@@ -149,10 +152,13 @@ const ButtonComponent = React.forwardRef(({
   iconProps = defaultObj(iconProps);
   labelProps = defaultObj(labelProps);
   contentProps = defaultObj(contentProps);
-  
+  if(isCancelButton){
+    style.backgroundColor = theme.colors.error;
+    style.color = theme.styles.errorText ;
+  }
   if (!disabled && hasElevation) {
-    backgroundColor = Colors.isValid(backgroundColor)? backgroundColor : Colors.isValid(style.backgroundColor)?style.backgroundColor : undefined;
-    borderColor = Colors.isValid(borderColor)? borderColor : Colors.isValid(style.borderColor)? style.borderColor : undefined;
+    backgroundColor = Colors.isValid(backgroundColor)? backgroundColor : Colors.isValid(style.backgroundColor)?style.backgroundColor  : undefined;
+    borderColor = Colors.isValid(borderColor)? borderColor : Colors.isValid(style.borderColor)? style.borderColor : isCancelButton ? theme.styles.errorText : undefined;
   }
   if(theme.isDark() && !hasElevation){
     textColor = white;

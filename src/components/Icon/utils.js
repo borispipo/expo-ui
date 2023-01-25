@@ -15,4 +15,6 @@ export const ICON_OFFSET = 12;
 
 export const CHECKED_ICON = isIos()? 'check' : "checkbox-marked";
 
+export const CHECK_ICON = 'check';
+
 export const UNCHECKED_ICON = "checkbox-blank-outline";

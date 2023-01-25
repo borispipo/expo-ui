@@ -45,7 +45,7 @@ const DialogComponent = React.forwardRef((props,ref)=>{
         titleProps,
         visible,
         scrollViewProps,withScrollView,
-        footerProps,footer,actionMutator,actions,overlayProps,
+        footerProps,footer,actionMutator,overlayProps,
         ModalComponent,
         isProvider,
         isAlert,
@@ -53,6 +53,7 @@ const DialogComponent = React.forwardRef((props,ref)=>{
         isFormData,
         isPreloader,
         borderRadius,
+        onCancel,
      ...modalProps
     } = props;
      withScrollView = typeof withScrollView =='boolean'? withScrollView : false;
@@ -82,12 +83,13 @@ const DialogComponent = React.forwardRef((props,ref)=>{
         modalProps.fullScreen = fullScreen;
         propsMutator(modalProps);
     }
+    let actions = modalProps.actions;
     controlledProps = defaultObj(controlledProps);
     appBarProps = defaultObj(appBarProps);
     subtitle = subtitle !== false ? defaultVal(appBarProps.subtitle,modalProps.subtitle,subtitle) : null;
     backActionProps = Object.assign({},backActionProps);
     backActionProps.color =  Colors.isValid(backActionProps.color)? backActionProps.color : theme.colors.primaryText;
-    cancelButton = cancelButton === false ? null : isObj(cancelButton)? {...cancelButton} : {};
+    cancelButton = cancelButton === false || modalProps.cancelButton === false ? null : isObj(cancelButton)? {...cancelButton} : {};
     if(isNonNullString(no)){
         no = {label:no};
     }
@@ -102,6 +104,9 @@ const DialogComponent = React.forwardRef((props,ref)=>{
         args = {...React.getOnPressArgs(args),isProvider,isFullScreen:isFullScreenDialog(),isPreloader,context,props};
         if(typeof onBackActionPress =='function' && onBackActionPress(args) === false) return true;
         if(typeof backActionProps.onPress =='function' && backActionProps.onPress(args)=== false) return true;
+        if(onCancelButtonPress && onCancelButtonPress(args) === false) return true;
+        else if(typeof onCancel =='function' && onCancel(args) === false) return true;
+        else if(isObj(cancelButton) && cancelButton.onPress && cancelButton.onPress(args) === false) return true;
         if(force === false && !isDimissable) return true;
         if(isAlert && typeof onAlertRequestClose =='function'){
             return onAlertRequestClose(args);
@@ -248,12 +253,11 @@ const DialogComponent = React.forwardRef((props,ref)=>{
                             icon : 'cancel',
                             mode : 'contained',
                             error : true,
+                            canSave : false,
                             ...cancelButton,
                             text : undefined,
                             label : defaultVal(cancelButton.label,cancelButton.text,"Annuler"),
                             onPress : (a1,a2)=>{
-                                if(onCancelButtonPress && onCancelButtonPress(a1,a2) === false) return;
-                                else if(cancelButton.onPress && cancelButton.onPress(a1,a2) === false) return;
                                 return handleBack(a1,true);
                             }
                         }}

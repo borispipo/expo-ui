@@ -150,7 +150,11 @@ export default function LoginComponent(props){
             nextButtonRef.current?.enable();
         }
         if(step > 1){
-            if(canSubmit(args) && beforeSubmit(args) !== false){
+            const cS = canSubmit(args);
+            if(typeof cS === 'string' && cS){
+                return notifyUser(cS);
+            }
+            if(cS && beforeSubmit(args) !== false){
                 ///pour modifier automatiquement la données à mettre à jour
                 if(typeof mutateData =='function'){
                     mutateData(data);

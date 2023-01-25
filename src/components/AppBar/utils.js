@@ -155,9 +155,9 @@ export const splitActions = (args)=>{
                     return false;
                 }
                 if(menus.length && countActions > 1){
-                    menus.push({...action,isMenuItem:true});
+                    menus.push({...action,isCancelButton:true,isMenuItem:true});
                 } else {
-                    _actions.push(<Button testID={'RN_AppBarCancelButton'} {...action} key={action.key}/>)
+                    _actions.push(<Button isCancelButton testID={'RN_AppBarCancelButton'} {...action} key={action.key}/>)
                 }
             }
         }

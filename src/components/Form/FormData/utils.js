@@ -48,7 +48,7 @@ export const getAppBarActionsProps = function(_props){
                     action.tooltip +=" ("+keyboardShortcuts[shortcut]+")";
                 }
             }
-            isAction = defaultBool(isAction,canSave,true);
+            isAction = defaultBool(isAction,canSave,rest.isAction,rest.canSave,true);
             action.formName = formName;
             if(isAction) {
                 action.isFormAction = true;
@@ -91,7 +91,6 @@ export const handleBeforeSaveCallback = (beforeSaveCallback,successCb,arg)=>{
             }
             successCb(arg);
         }).catch((e)=>{
-            console.log(e,' form-list-saving-data')
             if(isNonNullString(e)){
                 notify.error(e);
             } else if(e){

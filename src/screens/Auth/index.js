@@ -4,5 +4,12 @@
 
 import AuthSignInScreen from "./SignIn";
 import UserProfileScreen from "./Profile";
+//import PermProfiles from "./PermProfiles";
+export default [AuthSignInScreen,UserProfileScreen,
+    //PermProfiles
+];
 
-export default [AuthSignInScreen,UserProfileScreen];
+//export {PermProfiles};
+
+//export {default as PermLines} from "./PermLines";
+//export {default as PermProfile} from "./PermProfile";

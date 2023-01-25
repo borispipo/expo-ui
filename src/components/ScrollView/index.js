@@ -5,10 +5,13 @@ import View from "$ecomponents/View";
 import theme from "$theme";
 import {defaultStr,defaultObj} from "$utils";
 import APP from "$capp/instance";
-const ScrollViewComponent = React.forwardRef(({virtualized,contentProps,containerProps,mediaQueryUpdateNativeProps,testID:customTestID,children:cChildren,screenIndent:sIndent,...rest},ref) => {
-  const isKeyboardOpenRef = React.useRef(false);
+const ScrollViewComponent = React.forwardRef(({virtualized,vertical,horizontal,contentProps,containerProps,mediaQueryUpdateNativeProps,testID:customTestID,children:cChildren,screenIndent:sIndent,...rest},ref) => {
   const testID = defaultStr(customTestID,'RN_ScrollViewComponent');
   containerProps = defaultObj(containerProps)
+  if(horizontal === true || vertical === false){
+     return <ScrollView horizontal testID={testID} ref={ref} {...rest} children={cChildren}/>
+  }
+  const isKeyboardOpenRef = React.useRef(false);
   const layoutRef = React.useRef(null);
   const [layout,setLayout] = React.useState(Dimensions.get("window"));
   const {height} = layout;
@@ -60,6 +63,7 @@ const ScrollViewComponent = React.forwardRef(({virtualized,contentProps,containe
   }} {...containerProps} style={[theme.styles.w100,containerProps.style]} testID={testID+"_ScrollViewContainer"}>
     <ScrollView 
       ref={ref} {...rest} 
+      vertical = {vertical}
       testID={testID}
       children={children}
       contentContainerStyle = {contentContainerStyle}
@@ -71,6 +75,9 @@ ScrollViewComponent.displayName = "ScrollViewComponent";
 export default ScrollViewComponent;
 
 ScrollViewComponent.propTypes = {
+   ...defaultObj(ScrollView.propTypes),
+   horizontal : PropTypes.bool,
+   vertical : PropTypes.bool,
     virtualized : PropTypes.bool,
     contentProps : PropTypes.object,
 }

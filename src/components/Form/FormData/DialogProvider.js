@@ -5,6 +5,7 @@ import {isMobileOrTabletMedia} from "$cplatform/dimensions";
 import {MAX_WIDTH} from "$ecomponents/Dialog/utils";
 import {extendObj,defaultObj,isObj,defaultBool,defaultStr} from "$utils";
 import grid from "$theme/grid";
+import {isDesktopMedia} from "$cdimensions";
 
 let dialogProviderRef = null;
 
@@ -59,7 +60,8 @@ const FormDataDialogProvider = React.forwardRef((props,innerRef)=>{
             const isMob = isMobileOrTabletMedia();
             if(closeAction === true || state.closeAction === true) return rest;
             rest.windowWidth = !isMob ? MAX_WIDTH : undefined;
-            rest.actions = Array.isArray(rest.actions)? [...rest.actions] : isObj(rest.actions)? {...rest.actions} : null;
+            rest.actions = Array.isArray(rest.actions)? Object.clone(rest.actions) : isObj(rest.actions)? Object.clone(rest.actions) : null;
+            rest.cancelButton = false;
             if(rest.actions && (!isMob || rest.fullScreen === false)){
                 if(isDesktopMedia() && typeof rest.maxActions !=='number'){
                     rest.maxActions = 2;
@@ -67,7 +69,7 @@ const FormDataDialogProvider = React.forwardRef((props,innerRef)=>{
                 const closeBtn ={
                     text : 'Annuler',
                     icon : 'close',
-                    secondary : true,
+                    isCancelButton : true,
                     ...defaultObj(closeAction),
                     onPress : context.close,
                     isAction : false,

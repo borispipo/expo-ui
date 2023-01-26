@@ -910,7 +910,7 @@ export default class Field extends AppComponent {
             visible = false;
         }
         rest.defaultValue = this.validatingValue;
-        rest.style = [{backgroundColor:'transparent'},rest.style,!visible?{display:'none'}:undefined];
+        rest.style = [{backgroundColor:'transparent'},rest.style,!visible && theme.styles.hidden,!visible?{display:'none',opacity:0}:undefined];
        
         /**** si ce n'est pas un composant de type dropdown*/
         if(!isFunction(rest.filter)){

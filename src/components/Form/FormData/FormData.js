@@ -194,7 +194,7 @@ export default class FormDataComponent extends AppComponent{
                 const type = defaultStr(field.jsType,field.type,"text").trim().toLowerCase().replaceAll("_","");
                 const isDate = (type.contains('date') || type.contains('time'));
                 const Component = componentsTypes[type] || componentsTypes.default;
-                let {defaultValue,useDefaultValueFromData,primaryKey,hidden,renderFormDataField,getMediaQueryStyle,printLabels,queryLimit,selected,value,visible,dataFilesInterest,perm,ignore,form,responsiveProps:customResponsiveProps,...rest} = field;
+                let {defaultValue,useDefaultValueFromData,primaryKey,hidden,renderFormDataField,getMediaQueryStyle,printLabels,queryLimit,selected,value,dataFilesInterest,perm,ignore,form,responsiveProps:customResponsiveProps,...rest} = field;
                 rest = Object.assign({},rest);
                 delete rest.import;
                 delete rest.export;
@@ -207,7 +207,6 @@ export default class FormDataComponent extends AppComponent{
                 if(primaryKey === true && typeof rest.required !=='boolean'){
                     rest.required = true;
                 }
-                hidden = visible === false ? true : hidden;
                 if(typeof rest.filter !=='function'){
                     delete rest.filter;
                 }
@@ -218,9 +217,6 @@ export default class FormDataComponent extends AppComponent{
                     }
                 } else {
                     rest.defaultValue  = defaultValue;
-                }
-                if(hidden){
-                    rest.style = flattenStyle([rest.style,theme.styles.hidden]);
                 }
                 if(rest.defaultValue === null){
                     rest.defaultValue = undefined;
@@ -250,7 +246,7 @@ export default class FormDataComponent extends AppComponent{
                         archivable = {this.props.archivable || this.isArchivable()}  
                         name = {name}
                         responsive = {responsive}
-                        responsiveProps = {{...responsiveProps,...customResponsiveProps,style:[responsiveProps.style,customResponsiveProps.style,hidden?theme.styles.hidden:null]}}
+                        responsiveProps = {{...responsiveProps,...customResponsiveProps,style:[responsiveProps.style,customResponsiveProps.style]}}
                 />);
             }
         });

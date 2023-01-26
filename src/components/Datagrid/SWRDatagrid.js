@@ -237,6 +237,13 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             cb();
         }
     },[isValidating,customIsLoading])
+    React.useEffect(()=>{
+        setTimeout(x=>{
+            if(error && innerRef.current && innerRef.current.isLoading && innerRef.current.isLoading()){
+                innerRef.current.setIsLoading(false,false);
+            }
+        },500)
+    },[error])
     const doRefresh = (showProgress)=>{
         showProgressRef.current = showProgress ? typeof showProgress ==='boolean' : false;
         if(isFetchingRef.current) return;

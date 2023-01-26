@@ -280,7 +280,6 @@ export default class TableDataScreenComponent extends FormDataScreen{
         if(isObj(customFields)){
             extendObj(true,fields,customFields);
         }
-        console.log(this.primaryKeyFields," is pkeyFields heeeee");
         ///on effectue une mutator sur le champ en cours de modification
         if(typeof prepareField =='function'){
             Object.map(fields,(field,i,counterIndex)=>{

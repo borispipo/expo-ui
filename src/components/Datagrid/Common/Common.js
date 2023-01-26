@@ -1748,9 +1748,6 @@ export default class CommonDatagridComponent extends AppComponent {
                     defaultValue : 0,
                     type : "switch",
                 }  : null,
-                addEmptyRowAfterTotal : {
-                    
-                },
             },
             actions : [{text:'Exporter',icon : "check"}],
             onSuccess:({data:config})=>{

@@ -21,7 +21,9 @@ import appConfig from "$appConfig";
  */
 const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyTable,fetchItemsPath,foreignKeyLabel,dropdownActions,fields,fetchItems:customFetchItem,convertFiltersToSQL,mutateFetchedItems,getForeignKeyTable,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchDataOpts,...props},ref)=>{
     props.data = defaultObj(props.data);
-    foreignKeyColumn = foreignKeyColumn.trim();
+    if(isNonNullString(foreignKeyColumn)){
+        foreignKeyColumn = foreignKeyColumn.trim();
+    }
     convertFiltersToSQL = defaultVal(convertFiltersToSQL,willConvertFiltersToSQL());
     getForeignKeyTable = getForeignKeyTable || appConfig.getTableData;
     let fKeyTable = typeof getForeignKeyTable =='function' ? getForeignKeyTable(foreignKeyTable,props) : undefined;
@@ -66,7 +68,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyTable
     if(isFilter){
         isUpdate = false;
     }
-    const defaultFields = [foreignKeyColumn];
+    const defaultFields = Array.isArray(foreignKeyColumn)? foreignKeyColumn : [foreignKeyColumn];
     if(isNonNullString(foreignKeyLabel)){
         foreignKeyLabel = foreignKeyLabel.trim();
         defaultFields.push(foreignKeyLabel);
@@ -185,7 +187,18 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyTable
     const rItem = (p)=>{
         if(!isObj(p) || !isObj(p.item)) return null;
         let itemLabel = typeof foreignKeyLabel =='function'? foreignKeyLabel(p) : undefined;
-        if(isNonNullString(foreignKeyLabel)){
+        if(typeof foreignKeyLabel ==='array'){
+            let itl = "";
+            foreignKeyLabel.map(fk=>{
+                const itv = p.item[fk];
+                itL+= (itl?", ":"")+ (typeof itv =='number' && itv || defaultStr(itv))
+            })
+            if(itl){
+                itemLabel = itl;
+            }
+            
+        }
+        if(!itemLabel && isNonNullString(foreignKeyLabel)){
             itemLabel = defaultStr(p.item[foreignKeyLabel] !== undefined && p.item[foreignKeyLabel] !== null && p.item[foreignKeyLabel].toString(), p.item[foreignKeyColumn] !== undefined && p.item[foreignKeyColumn] !== null && p.item[foreignKeyColumn].toString());
         }
         const itemCode = p.item[foreignKeyColumn] !== undefined && p.item[foreignKeyColumn] !== null && p.item[foreignKeyColumn].toString() || undefined;
@@ -253,9 +266,13 @@ TableDataSelectField.propTypes = {
     foreignKeyTable : PropTypes.string, //le nom de la fKeyTable data à laquelle se reporte le champ
     fetchItemsPath : PropTypes.string, //le chemin d'api pour récupérer les items des données étrangères en utilisant la fonction fetch
     beforeFetchItems : PropTypes.func, //appelée immédiatement avant l'exécution de la requête fetch
-    foreignKeyColumn : PropTypes.string.isRequired,//le nom de la clé étrangère à laquelle fait référence la colone dans la fKeyTable
+    foreignKeyColumn : PropTypes.oneOfType(
+        PropTypes.string,
+        //PropTypes.arrayOf(PropTypes.string)
+    ).isRequired,//le nom de la clé étrangère à laquelle fait référence la colone dans la fKeyTable
     foreignKeyLabel : PropTypes.oneOfType([
         PropTypes.string,
+        PropTypes.arrayOf(PropTypes.string), ///si c'est un tableau, il s'agit des colonnes qui seront utilisées pour le rendu du foreignKey
         PropTypes.func, //s'il s'agit d'une fonciton qui sera appelée
     ]),
     onFetchItems : PropTypes.func,

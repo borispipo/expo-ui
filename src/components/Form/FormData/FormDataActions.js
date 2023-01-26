@@ -4,6 +4,7 @@ import Dimensions from "$cplatform/dimensions";
 import {defaultStr,isObj,defaultObj,isNonNullString,defaultVal,defaultFunc} from "$utils";
 import React from "$react";
 import {isWeb} from "$cplatform";
+import PropTypes from "prop-types";
 
 export default class FormDataActionComponent extends FormData {
     isFullScreen(){
@@ -31,12 +32,26 @@ export default class FormDataActionComponent extends FormData {
         const isEditing = this.isDocEditing(data);
         let subtitle = (isEditing?'Modifier':this.getNewElementLabel());
         let title = React.getTextContent(defaultVal(appBarProps.title,mainProps.title,this.props.title));
+        const cArgs = {...mainProps,isEditing,isDocUpdate:isEditing,isUpdate:isEditing,data};
+        let hasFoundTitle = false,hasFoundSubtitle = false;
+        if(typeof this.props.getAppBarTitle =='function'){
+            const t = defaultStr(this.props.getAppBarTitle(cArgs))
+            hasFoundTitle = isNonNullString(t);
+            if(hasFoundTitle){
+                title = t;
+            }
+        }
+        if(typeof this.props.getAppBarSubtitle =='function'){
+            const st = this.props.getAppBarSubtitle(cArgs);
+            hasFoundSubtitle = st === false || isNonNullString(st);
+            subtitle = hasFoundSubtitle ? st : subtitle;
+        }
         if(isEditing){
             let _title = this.getPrimaryKeysFieldsValueText(data);
-            if(isNonNullString(_title)){
+            if(!hasFoundSubtitle && isNonNullString(_title)){
                 subtitle+= " ["+_title+"]"
             }
-        } else {
+        } else if(!hasFoundSubtitle) {
             subtitle = " ["+subtitle+"]";
         }
         if(this.props.title !== false && mainProps.title !== false) {
@@ -147,4 +162,6 @@ export default class FormDataActionComponent extends FormData {
 
 FormDataActionComponent.propTypes = {
     ...FormData.propTypes,
+    getAppBarTitle: PropTypes.func,//la fonction pour récupérer l'appbat title
+    getAppBarSubtitle : PropTypes.func, //la fonction pour récupérer le subtitle de l'appBar
 }

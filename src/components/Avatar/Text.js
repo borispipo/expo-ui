@@ -23,7 +23,7 @@ const AvatarTextComponent = (props) => {
   const size = defaultNumber(customSize,defaultSize);
   const testID = defaultStr(customTestID,"RN_AvatarComponent.Text");
   const style = Object.assign({},StyleSheet.flatten(customStyle));
-  let label = defaultStr(customLabel,children);
+  let label = React.getTextContent(customLabel,children);
   if(!label) return null;
   label = label.trim();
   const color = Colors.isValid(customColor)? customColor : Colors.isValid(style.color)? style.color : undefined;
@@ -62,7 +62,7 @@ const AvatarTextComponent = (props) => {
 };
 
 AvatarTextComponent.propTypes = {
-  label: PropTypes.string,
+  label: PropTypes.any,
   size: PropTypes.number,
   color: PropTypes.string,
   labelStyle: StylePropTypes,

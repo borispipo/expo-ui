@@ -145,9 +145,9 @@ export default class FormDataComponent extends AppComponent{
     isDocEditing (data){
         data = defaultObj(data);
         if(typeof this.props.isDocEditing =='function'){
-            return this.props.isDocEditing({data,context:this}) ? true : false;
+            return this.props.isDocEditing(data,{context:this}) ? true : false;
         } else if(typeof this.props.isDocUpdate =='function'){
-            return this.props.isDocUpdate({data,context:this}) ? true : false;
+            return this.props.isDocUpdate(data,{context:this}) ? true : false;
         }
         return false;
     }

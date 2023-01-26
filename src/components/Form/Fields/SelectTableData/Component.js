@@ -12,6 +12,7 @@ import fetch from "$capi"
 import {willConvertFiltersToSQL} from "$ecomponents/Datagrid/utils";
 import React from "$react";
 import appConfig from "$appConfig";
+import {isJSON,parseJSON} from "$utils/json";
 
 /*** la tabledataSelectField permet de faire des requêtes distantes pour rechercher les données
  *  Elle doit prendre en paramètre et de manière requis : les props suivante : 
@@ -19,10 +20,14 @@ import appConfig from "$appConfig";
  *  foreignKeyTable : la tableData dans laquelle effectuer les donées de la requêtes
  *  foreignKeyLabel : Le libélé dans la table étrangère
  */
-const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyTable,fetchItemsPath,foreignKeyLabel,dropdownActions,fields,fetchItems:customFetchItem,convertFiltersToSQL,mutateFetchedItems,getForeignKeyTable,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchDataOpts,...props},ref)=>{
+const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,convertFiltersToSQL,mutateFetchedItems,getForeignKeyTable,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchDataOpts,...props},ref)=>{
     props.data = defaultObj(props.data);
     if(isNonNullString(foreignKeyColumn)){
         foreignKeyColumn = foreignKeyColumn.trim();
+    }
+    if(isNonNullString(foreignKeyLabel)){
+        foreignKeyLabel = foreignKeyLabel.trim();
+        foreignKeyLabel = foreignKeyLabel.ltrim("[").rtrim("]").split(",");
     }
     convertFiltersToSQL = defaultVal(convertFiltersToSQL,willConvertFiltersToSQL());
     getForeignKeyTable = getForeignKeyTable || appConfig.getTableData;
@@ -30,8 +35,6 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyTable
     fetchItemsPath = defaultStr(fetchItemsPath).trim();
     
     if(!fetchItemsPath && (!isObj(fKeyTable) || !(defaultStr(fKeyTable.tableName,fKeyTable.table)))){
-        console.log(appConfig.getTableData,fKeyTable,fetchItemsPath,getForeignKeyTable,"i s fkeddd for ",foreignKeyColumn,foreignKeyTable,props)
-    
         console.error("type de données invalide pour la foreignKeyTable ",fKeyTable," composant SelectTableData",foreignKeyColumn,foreignKeyTable,props);
         return null;
     }
@@ -69,6 +72,13 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyTable
         isUpdate = false;
     }
     const defaultFields = Array.isArray(foreignKeyColumn)? foreignKeyColumn : [foreignKeyColumn];
+    if(Array.isArray(foreignKeyLabel)){
+        foreignKeyLabel.map(f=>{
+            if(isNonNullString(f)){
+                defaultFields.push(f);
+            }
+        })
+    }
     if(isNonNullString(foreignKeyLabel)){
         foreignKeyLabel = foreignKeyLabel.trim();
         defaultFields.push(foreignKeyLabel);
@@ -187,11 +197,12 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyTable
     const rItem = (p)=>{
         if(!isObj(p) || !isObj(p.item)) return null;
         let itemLabel = typeof foreignKeyLabel =='function'? foreignKeyLabel(p) : undefined;
-        if(typeof foreignKeyLabel ==='array'){
+        if(Array.isArray(foreignKeyLabel)){
             let itl = "";
             foreignKeyLabel.map(fk=>{
+                if(!fk) return;
                 const itv = p.item[fk];
-                itL+= (itl?", ":"")+ (typeof itv =='number' && itv || defaultStr(itv))
+                itl+= (itl?" ":"")+ (typeof itv =='number' && itv || defaultStr(itv))
             })
             if(itl){
                 itemLabel = itl;
@@ -266,13 +277,18 @@ TableDataSelectField.propTypes = {
     foreignKeyTable : PropTypes.string, //le nom de la fKeyTable data à laquelle se reporte le champ
     fetchItemsPath : PropTypes.string, //le chemin d'api pour récupérer les items des données étrangères en utilisant la fonction fetch
     beforeFetchItems : PropTypes.func, //appelée immédiatement avant l'exécution de la requête fetch
-    foreignKeyColumn : PropTypes.oneOfType(
+    foreignKeyColumn : PropTypes.oneOfType([
         PropTypes.string,
         //PropTypes.arrayOf(PropTypes.string)
-    ).isRequired,//le nom de la clé étrangère à laquelle fait référence la colone dans la fKeyTable
+    ]).isRequired,//le nom de la clé étrangère à laquelle fait référence la colone dans la fKeyTable
     foreignKeyLabel : PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.arrayOf(PropTypes.string), ///si c'est un tableau, il s'agit des colonnes qui seront utilisées pour le rendu du foreignKey
+        PropTypes.func, //s'il s'agit d'une fonciton qui sera appelée
+    ]),
+    /***les séparateurs de label */
+    foreignKeyLabelIndex : PropTypes.oneOfType([
+        PropTypes.string,
         PropTypes.func, //s'il s'agit d'une fonciton qui sera appelée
     ]),
     onFetchItems : PropTypes.func,

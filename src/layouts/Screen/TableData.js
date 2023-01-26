@@ -142,7 +142,6 @@ export default class TableDataScreenComponent extends FormDataScreen{
             archiveProp : {value : typeof mainProps.archive =='function' && mainProps.archive || undefined },
             testIDProp : {value : defaultStr(mainProps.testID)},
             showPreloaderOnUpsert : {value : mainProps.showPreloaderOnUpsert},
-            isDocEditingProp : {value : typeof mainProps.isDocEditing =='function'? mainProps.isDocEditing : typeof mainProps.isDocUpdate =='function'? mainProps.isDocUpdate : undefined}
         });
         this.hidePreloader = this.hidePreloader.bind(this);
         this.showPreloader = this.showPreloader.bind(this);
@@ -281,6 +280,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
         if(isObj(customFields)){
             extendObj(true,fields,customFields);
         }
+        console.log(this.primaryKeyFields," is pkeyFields heeeee");
         ///on effectue une mutator sur le champ en cours de modification
         if(typeof prepareField =='function'){
             Object.map(fields,(field,i,counterIndex)=>{
@@ -525,10 +525,13 @@ export default class TableDataScreenComponent extends FormDataScreen{
     }
     isDocEditing(data){
         data = defaultObj(data);
-        if(!this.isDocEditingProp){
+        const isDocEditingCb = typeof this.props.isDocEditing =='function'? this.props.isDocEditing : typeof this.props.isDocUpdate =='function'? this.props.isDocUpdate : undefined;
+        if(!isDocEditingCb){
             if(isDocEditing(data,this.primaryKeyFields,({index:field,data})=>{
                 return checkPrimary(data,field);
             })) return true;
+        } else {
+            return isDocEditingCb(data,{context:this});
         }
         return super.isDocEditing(data);
     }

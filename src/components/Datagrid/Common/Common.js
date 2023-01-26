@@ -3447,6 +3447,9 @@ export default class CommonDatagridComponent extends AppComponent {
         if(typeof this.props.onRender ==='function' && this.props.onRender({context:this}) === false){
             return ;
         }
+        if(this.isTableData() && this.isRenderingRef.current !== true){
+            return;
+        }
         this.isRenderingRef.current = false;
         return this.setIsLoading(false,undefined,undefined);
     }

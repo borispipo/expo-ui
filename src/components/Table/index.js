@@ -251,7 +251,7 @@ const TableComponent = React.forwardRef(({containerProps,sortedColumn,listContai
             }
         }
     }
-    React.useOnRender((a,b,c)=>{
+    const onComponentRender = (a,b,c)=>{
         if(onRender){
             onRender(a,b,c);
         }
@@ -264,7 +264,7 @@ const TableComponent = React.forwardRef(({containerProps,sortedColumn,listContai
                 })
             }
         }
-    });
+    };
     return <View testID= {testID+"_Container"}  {...containerProps} onLayout={(e)=>{
         layoutRef.current = e.nativeEvent.layout;
         if(containerProps.onLayout){
@@ -299,7 +299,7 @@ const TableComponent = React.forwardRef(({containerProps,sortedColumn,listContai
                     </View>
                 </ScrollView>
             </RNView>
-            {hasEmptyData ? <View testID={testID+"_Empty"} style={styles.hasNotData}>
+            {hasEmptyData ? <View onRender={onComponentRender} testID={testID+"_Empty"} style={styles.hasNotData}>
                     {emptyData}
             </View> : <ScrollView {...scrollViewProps} scrollEventThrottle = {scrollEventThrottle} horizontal contentContainerStyle={[scrollContentContainerStyle,scrollViewProps.contentContainerStyle,{height:'100%'}]} showsVerticalScrollIndicator={false}  
                     onScroll = {getOnScrollCb([headerScrollViewRef,footerScrollViewRef],null,(args)=>{
@@ -337,6 +337,7 @@ const TableComponent = React.forwardRef(({containerProps,sortedColumn,listContai
                                 content : {height,width}
                             });
                         }}
+                        onRender = {onComponentRender}
                         onLayout = {(args)=>{
                             if(props.onLayout){
                                 //props.onLayout(args);

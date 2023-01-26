@@ -35,7 +35,7 @@ const ChartComponent = React.forwardRef(({options,onRender,style,height,width,ch
       }
     }
   },[(options)]);
-  React.useOnRender(onRender);
+  React.useOnRender(onRender,Math.max(options.series.length/20,500));
   React.useEffect(()=>{
       return ()=>{
         destroyChart(chartContext.current);

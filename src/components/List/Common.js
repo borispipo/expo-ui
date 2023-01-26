@@ -11,7 +11,7 @@ import Label from "$ecomponents/Label";
 import { useWindowDimensions,Dimensions } from "react-native";
 
 const CommonListComponent = React.forwardRef((props,ref)=>{
-    let {responsive,defaultItemHeight,itemHeight,windowWidth,componentProps,columnWrapperStyle,onViewableItemsChanged,withFlatListItem,Component,withBackToTop,backToTopRef:customBackToTopRef,withBackToTopButton,onScroll,onScrollEnd,onMount,onUnmount,renderScrollViewWrapper,prepareItems,getItemKey,getKey,keyExtractor,items,filter,renderItem,numColumns,containerProps,bindResizeEvents,...rest} = props;
+    let {responsive,defaultItemHeight,itemHeight,windowWidth,onRender,componentProps,columnWrapperStyle,onViewableItemsChanged,withFlatListItem,Component,withBackToTop,backToTopRef:customBackToTopRef,withBackToTopButton,onScroll,onScrollEnd,onMount,onUnmount,renderScrollViewWrapper,prepareItems,getItemKey,getKey,keyExtractor,items,filter,renderItem,numColumns,containerProps,bindResizeEvents,...rest} = props;
     withBackToTopButton = withBackToTop === true || withBackToTopButton == true || isMobileMedia()? true : false;
     rest = defaultObj(rest);
     containerProps = defaultObj(containerProps);
@@ -145,7 +145,7 @@ const CommonListComponent = React.forwardRef((props,ref)=>{
         console.error(context.items," is not valid list data array",props);
         context.items = [];
     }
-    
+    React.useOnRender(onRender,Math.max(items.length/10 || 0,500));
     React.setRef(ref,context);
     React.useEffect(()=>{
         React.setRef(ref,context);

@@ -5,7 +5,7 @@ import {isMobileNative} from "$cplatform";
 import {debounce,isNumber} from "$utils";
 
 
-const ViewComponent = React.forwardRef(({mediaQueryUpdateNativeProps,onLayoutTimeout,onLayout,autoHeight,autoWidth,elevation,...props},ref)=>{
+const ViewComponent = React.forwardRef(({mediaQueryUpdateNativeProps,onRender,onLayoutTimeout,onLayout,autoHeight,autoWidth,elevation,...props},ref)=>{
     const style = React.useMediaQueryUpdateStyle(props);
     const autoSize = autoHeight||autoWidth ? true : false;
     const [state,setState] = autoSize ? React.useState({}) : [{}];
@@ -22,6 +22,7 @@ const ViewComponent = React.forwardRef(({mediaQueryUpdateNativeProps,onLayoutTim
             setState({height:h,width:w});
         }
     };
+    React.useOnRender(onRender);
     return <View
          {...props} 
          style = {[style,

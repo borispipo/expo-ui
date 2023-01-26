@@ -583,7 +583,7 @@ const DatagridFactory = (Factory)=>{
                         keyExtractor = {this.getRowKey.bind(this)}
                     /> : canRenderChart    ?<View testID={testID+"_ChartContainer"} {...chartContainerProps} style={[theme.styles.w100,chartContainerProps.style]}>
                         {this.renderChart()}
-                    </View> :  <View style={styles.hasNotData}>
+                    </View> :  <View onRender = {this.onRender.bind(this)} style={styles.hasNotData}>
                         {this.renderEmpty()}
                     </View>}
                 </View>}

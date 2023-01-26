@@ -26,7 +26,7 @@ const propTypes = {
     isScrolling : PropTypes.func,
 };
 /***@see : https://virtuoso.dev/virtuoso-api-reference/ */
-const VirtuosoListComponent = React.forwardRef(({items,testID,renderItem,onEndReached,onLayout,onContentSizeChange,onScroll,isScrolling,estimatedItemSize,onEndReachedThreshold,containerProps,style,...props},ref)=>{
+const VirtuosoListComponent = React.forwardRef(({items,onRender,testID,renderItem,onEndReached,onLayout,onContentSizeChange,onScroll,isScrolling,estimatedItemSize,onEndReachedThreshold,containerProps,style,...props},ref)=>{
     const r2 = {};
     for(let i in propTypes){
         if(i in props){
@@ -95,6 +95,7 @@ const VirtuosoListComponent = React.forwardRef(({items,testID,renderItem,onEndRe
             React.setRef(ref,null);
         }
     },[]);
+    React.useOnRender(onRender,Math.max(Array.isArray(items) && items.length/10 || 0,500))
     return <View {...containerProps} {...props} style={[{flex:1},containerProps.style,style,{minWidth:'100%',maxWidth:'100%'}]} onLayout={onLayout} testID={testID}>
         <Virtuoso
             {...r2}

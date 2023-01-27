@@ -603,17 +603,25 @@ export default class CommonDatagridComponent extends AppComponent {
     getSelectedRowsCount(){
         return isDecimal(this.selectedRowsCount) ? this.selectedRowsCount: 0;
     }
+
+    //si la ligne peut être sélectionnée
+    canSelectCheckedRow(){
+        if(!this.isSelectable()) return false;
+        if(this.isSelectableMultiple()) return true;
+        return this.selectedRowsCount <= 1 ? true : false;
+    }
     /**** fonction appelée lorsque l'on clique sur la checkbox permettant de sélectionner la ligne */
     handleRowToggle ({row,rowIndex,rowData,rowKey,index, selected,cb,callback},cb2){
-        if(!this.canSelectRow(row)) return ;
-        if(typeof rowKey !=='string' && typeof rowKey !=='number') return;
-        let selectableMultiple = defaultVal(this.props.selectableMultiple,true);
+        if(!this.canSelectRow(row)) return false;
+        if(typeof rowKey !=='string' && typeof rowKey !=='number') return false;
+        let selectableMultiple = this.isSelectableMultiple();
         rowIndex = defaultNumber(rowIndex,index);
         cb = defaultFunc(cb,callback,cb2)
         row = rowData = defaultObj(row,rowData);
-        let size = this.selectedRowsCount;
-        if(selected && !selectableMultiple && size >= 1){
-            return notify.warning("Vous ne pouvez sélectionner plus d'un élément")
+        const size = this.selectedRowsCount;
+        if(selected && !this.canSelectCheckedRow()){
+            notify.warning("Vous ne pouvez sélectionner plus d'un élément");
+            return false;
         }
         if(!selectableMultiple){
             this.setSelectedRows();
@@ -629,7 +637,8 @@ export default class CommonDatagridComponent extends AppComponent {
             this.selectedRowsCount +=1;
             let max = this.getMaxSelectedRows();
             if(max && size>= max){
-                return notify.warning("Vous avez atteint le nombre maximum d'éléments sélectionnable, qui est de "+max.formatNumber())
+                notify.warning("Vous avez atteint le nombre maximum d'éléments sélectionnable, qui est de "+max.formatNumber())
+                return false;
             }
             selectedRows[rowKey] = row;
         } else {
@@ -645,6 +654,7 @@ export default class CommonDatagridComponent extends AppComponent {
         } else {
             this.callSRowCallback({selected,rowData,row,rowIndex,rowKey,cb});
         }
+        return true;
     }
     canExportAskDisplayMainContent(){
         return false;
@@ -3692,8 +3702,8 @@ export default class CommonDatagridComponent extends AppComponent {
             rowData,
             checked : this.isRowSelected(rowKey,rowIndex),
             rowsRefs : this.selectedRowsRefs,
-            onChange : ({checked})=>{
-                this.handleRowToggle({row:rowData,rowData,rowIndex,rowKey,selected:checked})
+            onPress : ({checked})=>{
+                return this.handleRowToggle({row:rowData,rowData,rowIndex,rowKey,selected:!checked})
             }
             }),style:{},extra:{style:{}}};
         } else if((columnField == this.getIndexColumnName())){

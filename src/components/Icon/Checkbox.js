@@ -16,6 +16,7 @@ const Checkbox = React.forwardRef((props,ref)=>{
     const callOnChangeRef = React.useRef(true);
     const callOnChange = callOnChangeRef.current;
     callOnChangeRef.current = true;
+    
     React.useEffect(()=>{
         if(customChecked === checked || !isMounted()) return;
         setIsChecked(customChecked);
@@ -64,7 +65,7 @@ const Checkbox = React.forwardRef((props,ref)=>{
         color = {color}
         icon={checked?checkedIcon:uncheckedIcon}
         onPress = {(e)=>{
-            if(onPress && onPress({event:e,checked}) === false) return;
+            if(onPress && onPress({event:e,context,checked}) === false) return;
             setIsChecked(!checked)
         }}
     />

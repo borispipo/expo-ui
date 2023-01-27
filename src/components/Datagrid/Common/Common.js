@@ -561,7 +561,7 @@ export default class CommonDatagridComponent extends AppComponent {
     callSRowCallback({selected,row,rowIndex,key,cb}){
         let count = Object.size(this.selectedRows);
         let sArg = this.getActionsArgs(selected);
-        sArg.count = count;
+        sArg.count = sArg.selectedRowsCount = count;
         sArg.rowIndex = sArg.index = rowIndex;
         sArg.rowKey = key;
         if(count >0){
@@ -581,11 +581,11 @@ export default class CommonDatagridComponent extends AppComponent {
             }
         } else {
             if(count > 0 && isFunction(this.props.onRowsDeselected)){
-                this.props.onRowsDeselected.call(this,{context:this,props:this.props});
+                this.props.onRowsDeselected.call(this,{...sArg,context:this,props:this.props});
             }
         }
         if(isFunction(cb)){
-            cb(selected,row,rowIndex,{context:this})
+            cb(selected,row,rowIndex,{...sArg,context:this})
         }
     }
     toggleSelectableColumnCheckbox(update){
@@ -825,6 +825,7 @@ export default class CommonDatagridComponent extends AppComponent {
             allData : this.INITIAL_STATE.data,
             props : this.props,
             selectedRows : this.selectedRows,
+            selectedRowsCount : this.selectedRowsCount,
             context:this,
             isMobile : isMobileOrTabletMedia(),
             Auth,

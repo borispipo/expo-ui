@@ -4,7 +4,6 @@ const path = require("path");
 const isObj = x => x && typeof x =='object' && !Array.isArray(x);
 // Expo CLI will await this method so you can optionally return a promise.
 module.exports = async function(env, argv,opts) {
-    const dir = path.resolve(__dirname);
     env = env || {};
     opts = typeof opts =="object" && opts ? opts : {};
     const babel = isObj(opts.babel)? opts.babel : {};
@@ -33,7 +32,6 @@ module.exports = async function(env, argv,opts) {
       {
           test: /.mjs$/,
           include: /node_modules/,
-          include: /node_modules/,
           type: "javascript/auto",
           use: {loader: 'babel-loader'}
     });
@@ -52,7 +50,7 @@ module.exports = async function(env, argv,opts) {
     config.performance.maxEntrypointSize = typeof config.performance.maxEntrypointSize =='number'? config.performance.maxEntrypointSize : 512000;
     config.performance.maxAssetSize = typeof config.performance.maxAssetSize =='number'? config.performance.maxAssetSize : 512000;
     config.devtool = (config.mode === 'development') ? 'inline-source-map' : false;
-    require("./compiler.config.js")({config,...opts,dir});
+    require("./compiler.config.js")({config,...opts});
     if(isElectron){
       const electronPath = process.cwd();
       config.output = config.output || {};

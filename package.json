@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "2.49.6",
+  "version": "3.0.0",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "index.js",
   "scripts": {
@@ -41,6 +41,9 @@
     "fix-dependencies": "expo-cli doctor --fix-dependencies",
     "delete-node-modules": "rimraf ./**/node_modules",
     "modifier-url-remote-git": "git remote set-url origin 'https://borispipo@github.com/borispipo/smart-eneo.git'"
+  },
+  "bin": {
+    "electron": "bin/electron/index.js"
   },
   "repository": {
     "type": "git",

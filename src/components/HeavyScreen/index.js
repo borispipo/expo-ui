@@ -13,7 +13,7 @@ const OptimizedHeavyScreen = React.forwardRef(({
     </Transition.Together>
   ),
   style,
-  children,
+  children:cChildren,
   isLoading,
   timeout,
   testID,
@@ -23,6 +23,7 @@ const OptimizedHeavyScreen = React.forwardRef(({
   timeout = isNumber(timeout)? timeout : isNumber(transitionTimeout)? transitionTimeout : undefined;
   const { transitionRef, areInteractionsComplete } = useAfterInteractions(timeout);
   let Placeholder = placeholder;
+  const children = React.useStableMemo(()=>cChildren,[cChildren])
   placeholder = React.isComponent(Placeholder)? <Placeholder /> : React.isValidElement(Placeholder)? Placeholder :  null;
   return (
     <Transitioning.View

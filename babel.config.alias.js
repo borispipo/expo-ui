@@ -1,15 +1,16 @@
 const path = require("path");
 module.exports = (opts)=>{
     const dir = path.resolve(__dirname);
+    const base = opts.base || process.cwd();
     const assets = path.resolve(dir,"assets");
     opts = typeof opts =='object' && opts ? opts : {};
     opts.platform = "expo";
     opts.assets = opts.assets || opts.alias && typeof opts.alias =='object' && opts.alias.$assets || assets;
-    opts.base = opts.base || dir;
+    opts.base = opts.base || base;
     opts.withPouchDB = opts.withPouchDB !== false && opts.withPouchdb !== false ? true : false;
     delete opts.withPouchdb;
     const r = require(`@fto-consult/common/babel.config.alias`)(opts);
-    const expo = require("./lookup-expo-ui-path")()?path.resolve(r.$src,"..","expo-ui","src") : path.resolve(dir,"src");
+    const expo = path.resolve(require("./expo-ui-path")(),"src");
     r["$eauth"] = path.resolve(expo,"auth");
     r["$ecomponents"] = r["$expo-components"] = path.resolve(expo,"components");
     r["$etableLink"] = r["$eTableLink"] = path.resolve(r["$ecomponents"],"TableLink");

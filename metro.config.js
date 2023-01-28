@@ -1,6 +1,6 @@
 const { getDefaultConfig } = require('@expo/metro-config');
 const path = require("path");
-module.exports = (opts)=>{
+module.exports = function(opts){
   opts = opts && typeof opts =='object'? opts : {};
   let {assetExts,sourceExts} = opts;
   assetExts = Array.isArray(assetExts)? assetExts: [];
@@ -22,7 +22,6 @@ module.exports = (opts)=>{
       ...config.resolver.sourceExts,
       ...sourceExts,"txt",
       'jsx', 'js','tsx',
-      "mjs","cjs",
   ]
   // Remove all console logs in production...
   config.transformer.minifierConfig.compress.drop_console = true;

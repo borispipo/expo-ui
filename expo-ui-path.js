@@ -13,7 +13,7 @@ module.exports = function (){
             suffix = path.join(suffix,p);
         }
     })
-    const expoUIPath = "@fto-consult/expo-ui";
+    const expoUIPath = path.resolve(process.cwd(),"node_modules","@fto-consult","expo-ui");
     const sep = path.sep;
     const rootPath = process.cwd();
     const src = path.resolve(rootPath,"src");

@@ -113,20 +113,23 @@ module.exports = (opts)=>{
     });
     const $assets = r.$assets;
     const electronPaths = {
+        ...r,
+        sourceCode : r.$src,
         assets : $assets,
         images : r.$images,
         projectRoot : base,//la racine au projet
     };
     const electronAssetsPath = path.resolve(dir,"electron","assets");
     if($assets){
-        const l1 = path.resolve($assets,"logo.png"), l2 = path.resolve($assets,"images","logo.png");
+        const l1 = path.resolve($assets,"logo.png"), l2 = path.resolve($assets,"logo.png");
         const logoPath = fs.existsSync(l1)? l1 : fs.existsSync(l2)? l2 : undefined;
-        if(logoPath){
-            fs.copyFileSync(logoPath,path.resolve(electronAssetsPath,"images","logo.png"),fs.constants.COPYFILE_FICLONE);
+        const ePath = path.resolve(electronAssetsPath,"images","logo.png");
+        if(logoPath && require("./electron/createDir")(ePath)){
+            fs.copyFileSync(logoPath,ePath,fs.constants.COPYFILE_FICLONE);
             electronPaths.logo = logoPath;
         }
     }
     ///on sauvegarde les chemins des fichiers utiles, qui seront utilisées par la variable electron plus tard
-    require("./writeFile")(path.resolve(dir,"electron","paths.json"),JSON.stringify(electronPaths));
+    require("./electron/writeFile")(path.resolve(dir,"electron","paths.json"),JSON.stringify(electronPaths));
     return r;
 }

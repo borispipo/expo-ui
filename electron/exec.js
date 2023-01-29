@@ -1,8 +1,9 @@
 const exec = require('child_process').exec;
 const fs = require("fs");
 const _exec = (cmd,cmdOpts,logMessages)=>{
+    cmdOpts = typeof cmdOpts =='object' && cmdOpts || {};
     return new Promise((resolve,reject)=>{
-        const timer = loaderTimer();
+        const timer = cmdOpts.loader !==false ? loaderTimer(cmd) : null;
         exec(cmd,cmdOpts, (error, stdout, stderr) => {
             if (error) {
                 logMessages !== false && console.log(`error: ${error.message}`);;
@@ -25,11 +26,12 @@ const _exec = (cmd,cmdOpts,logMessages)=>{
     })
 }
 const loaderTimer = function(timout) {
+    const text = typeof timout =='string' && timout ||'';
     timout = typeof timout =='number'? timout : 250;
     var P = ["\\", "|", "/", "-"];
     var x = 0;
     return setInterval(function() {
-      process.stdout.write("\r" + P[x++]);
+      process.stdout.write("\r"+text+" "+P[x++]);
       x &= 3;
     }, timout);
   };

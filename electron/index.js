@@ -1,21 +1,44 @@
 const {app, BrowserWindow,Tray,Menu,MenuItem,systemPreferences,powerMonitor,dialog, nativeTheme} = require('electron')
 const appConfig  = {}//require("../src/app/config");
-const session = require("./session");
+const session = require("./src/session");
 const path = require("path");
+const paths = require("./paths.json");
+const images = paths.$images, assets = paths.$assets, logo = paths.logo;
 // Gardez une reference globale de l'objet window, si vous ne le faites pas, la fenetre sera
 // fermee automatiquement quand l'objet JavaScript sera garbage collected.
 let win = undefined;
 let fs = require("fs");
-let icon = undefined;
-const imagesPath = path.join(__dirname,"assets/images")
-if(process.platform =="win32" && fs.existsSync(path.join(imagesPath, "icon.ico"))){
-   icon = path.join(imagesPath, "icon.ico");
-} else if(process.platform =="linux" && fs.existsSync(path.join(imagesPath, "icon.png"))){
-   icon = path.join(imagesPath, "icon.png");
-} else if(process.platform =='darwin' && fs.existsSync(path.join(imagesPath, "icon.incs"))){
-  icon = path.join(imagesPath, "icon.incs");
+const isWindow = process.platform =="win32",
+isMac = process.platform =='darwin',
+isLinux = process.platform =="linux";
+const getIcon = (p)=>{
+    if(Array.isArray(p)){
+       for(let i in p){
+         const r = getIcon(p[i]);
+         if(r) return r;
+       }
+    } else if(typeof p =='string' && p && fs.existsSync(p)){
+      const ext = isWindow ? ".ico" : isMac ? ".incs" : ".png";
+      const possibles =  ["icon","logo","favicon"];
+      for(let i in possibles){
+        const icon = path.join(p,possibles[i]+ext);
+        if(fs.existsSync(icon)){
+           return icon;
+        }
+      }
+    }
+    return undefined;
 }
-
+const icon = isLinux && logo && fs.existsSync(logo) && logo || getIcon(
+    logo && fs.existsSync(logo) && path.dirname(logo),
+    images,
+    assets,
+)
+/*console.log(icon," is iccccccc");
+console.log(logo," is logo ",images,assets);
+throw {
+  message : "icon is "+icon+" logo is "+logo+" image is "+images+" assets is "+assets
+}*/
 Menu.setApplicationMenu(null);
 let clipboadContextMenu = (_, props) => {
   if (props.isEditable || props.selectionText) {
@@ -248,7 +271,7 @@ app.whenReady().then(() => {
   });
 })
 
-let {ipcMain} = require("electron");
+const {ipcMain} = require("electron");
 
 ipcMain.on("electron-restart-app",x =>{
   app.relaunch();
@@ -291,7 +314,7 @@ ipcMain.on("update-system-tray",(event,opts)=>{
   tray.setContextMenu(contextMenu) 
 })
 ipcMain.on("electron-get-path",(event,pathName)=>{
-  let p = app.getPath(pathName);
+  const p = app.getPath(pathName);
   event.returnValue = p;
   return p;
 });

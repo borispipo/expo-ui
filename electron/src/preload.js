@@ -1,7 +1,6 @@
 (function(window) {
     let showingExitApp = undefined;
-    let sudo = require('sudo-prompt');
-    const { exec } = require('child_process');
+    const exec = require("../exec");
     if(typeof window.isElectron != 'function'){
         Object.defineProperties(window,{
             ELECTRON : {
@@ -23,8 +22,7 @@
             },
         })
     } 
-    ELECTRON;
-    let fs = require("fs");
+    const fs = require("fs");
     let _app = require("./app.config");
     require("./pload")(ELECTRON);
     const {ipcRenderer} = require('electron')
@@ -286,65 +284,7 @@
                 value : getPath, override:false,writable:false
             },
             exec : {
-                value : (opts,successCB,errorCB)=>{
-                    if(isNonNullString(opts)){
-                        opts = {cmd:opts};
-                    }
-                    let {cmd} = opts;
-                    opts = defaultObj(opts);
-                    successCB = defaultFunc(successCB,opts.onSuccess)
-                    errorCB = defaultFunc(errorCB,opts.onError);
-                    return new Promise((resolve,reject)=>{
-                        let handle = function(error, stdout, stderr) {
-                            if(error){
-                                errorCB({error,stderr})
-                                return reject({error,stderr})
-                            }
-                            successCB(stdout);
-                            resolve(stdout);
-                        }
-                        if(opts.sudo || opts.runAsAdmin){
-                            sudo.exec(cmd, opts,handle)   
-                        } else {
-                            exec(cmd,handle);
-                        }
-                    })
-                }
-            },
-            installNewAppVersion : {
-                value : (conf,successCB,errorCB)=>{
-                    if(isNonNullString(conf)){
-                        conf = {filePath:conf}
-                    }
-                    conf = defaultObj(conf);
-                    let {notify} = APP.require("$dialog");
-                    
-                    if(isNonNullString(conf.filePath) && fs.existsSync(conf.filePath)){
-                        let cmd = conf.filePath;
-                        if(ELECTRON.DEVICE.isLinux){
-                            cmd = "dpkg -i "+cmd;
-                        }
-                        let rootPath = path.join(__dirname,'..')
-                        let incs = path.join(rootPath, ELECTRON.DEVICE.isWindows?'icon.ico':ELECTRON.DEVICE.isLinux?'icon.png':'incs');
-                        const options = {
-                            title : "Authorisez "+APP.getName()+"",
-                            name: APP.getName(),
-                            incs,
-                            icon : incs,
-                            cmd,
-                            sudo:true,
-                            onSoucces : (stdout)=>{
-                                let message = "Le processus d'installation de la mise à jour de l'application a été exécutée evec succès. Veuillez relancer l'application";
-                                notify.success(message);
-                            },
-                            onError: ({error})=>{
-                                notify.error("Erreur lors de l'exécution du fichier d'installation : "+defaultStr(error.message));
-                            }
-                            //icns: '/Applications/Electron.app/Contents/Resources/Electron.icns'
-                        };
-                        return ELECTRON.exec(options,successCB,errorCB)       
-                    }
-                }, override : false, writable : false
+                value : exec,
             },
             updateSystemTheme : {
                 value : (theme)=>{

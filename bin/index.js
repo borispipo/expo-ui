@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+//#!/usr/bin/env node
 /**@see : https://blog.shahednasser.com/how-to-create-a-npx-tool/ */
 'use strict';
 process.on('unhandledRejection', err => {
@@ -25,6 +25,7 @@ if(!parsedArgs.script || !(parsedArgs.script in supportedScript)){
 const {script} = parsedArgs;
 let cmd = null;
 /**** 
+ *    1. installer electron globallement : npm i -g electron@latest
  *  cmde : [cmd] start electron config=[path-to-config-relative-to-project-dir] 
  *        splash=[path-to-splashcreen-relative-to-project-root] 
  *        output-dir|out = [path-to-output-dir-relative-to-root-project]
@@ -64,10 +65,9 @@ if(parsedArgs.electron){
       if(parsedArgs.compile || !fs.existsSync(path.resolve(webBuildDir,"index.html"))){
         cmd = "npx expo export:web";
         console.log("******************** exporting app : "+cmd);
-        return exec({cmd:cmd,projectRoot}).then(next).catch(reject);
-      } else {
-         next();
+        return exec({cmd,projectRoot}).then(next).catch(reject);
       }
+      next();
   });
   return promise.then(()=>{
     if(!fs.existsSync(buildOutDir) || !fs.existsSync(indexFile)){
@@ -75,15 +75,22 @@ if(parsedArgs.electron){
     }
     switch(script){
         case "start":
-           cmd = "npx electron ./";
-           console.log("executing electron script "+cmd)
-           return exec({
-              cmd, projectRoot : electronDir,
+           cmd = "electron "+electronDir;
+           return new Promise((resolve,reject)=>{
+              exec({
+                cmd, 
+                projectRoot : electronDir,
+              }).finally(()=>{
+                console.log("ant to exit");
+              })
+              setTimeout(resolve,1000)
            })
           break;
         case "build":
           break;
     }
+  }).catch((e)=>{
+    console.log(e," is cathing ggg");
   }).finally(()=>{
     process.exit();
   });

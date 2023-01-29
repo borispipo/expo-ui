@@ -24,6 +24,6 @@ module.exports = function(opts){
       'jsx', 'js','tsx',
   ]
   // Remove all console logs in production...
-  config.transformer.minifierConfig.compress.drop_console = true;
+  //config.transformer.minifierConfig.compress.drop_console = false;
   return config;
 }

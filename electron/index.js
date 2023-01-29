@@ -1,8 +1,7 @@
 const {app, BrowserWindow,Tray,Menu,MenuItem,systemPreferences,powerMonitor,dialog, nativeTheme} = require('electron')
-let appConfig  = require("../src/app/config");
-let appReady = false;
+const appConfig  = {}//require("../src/app/config");
+const session = require("./session");
 const path = require("path");
-const parentDir = path.resolve(__dirname);
 // Gardez une reference globale de l'objet window, si vous ne le faites pas, la fenetre sera
 // fermee automatiquement quand l'objet JavaScript sera garbage collected.
 let win = undefined;
@@ -34,8 +33,7 @@ let clipboadContextMenu = (_, props) => {
   } 
 };
 
-let Conf = require('./src/config');
-let session = new Conf({cwd:app.getPath('userData')});
+
 
 const setOSTheme = (theme) => {
   theme = theme && typeof theme == "string"? theme : "light";
@@ -110,7 +108,7 @@ function createWindow () {
   win = createBrowserWindow({
     showOnLoad : false,
     loadURL : undefined,
-    preload : path.resolve(__dirname,'src/preload.js'),
+    //preload : path.resolve(__dirname,'src/preload.js'),
     webPreferences : {
       devTools : true,
     }
@@ -121,7 +119,7 @@ function createWindow () {
       width: 500, height: 400, transparent: true, frame: false, alwaysOnTop: true});
   let copyRight = appConfig.name+" version "+appConfig.version+". "+appConfig.copyRight;
   copyRight = encodeURI(copyRight);
-  splash.loadURL(`file://${__dirname}/src/splash/index.html?copyRight=${copyRight}`);
+  //splash.loadURL(`file://${__dirname}/src/splash/index.html?copyRight=${copyRight}`);
   let hasInitWindows = false;
   win.on('show', () => {
     //win.blur();

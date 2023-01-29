@@ -72,7 +72,7 @@ export default function ImageComponent(props){
     drawProps = defaultObj(drawProps);
     const flattenStyle = StyleSheet.flatten(props.style) || {};
     defaultSrc = defaultVal(defaultSrc);
-    editable = defaultBool(editable,true);
+    editable = defaultBool(editable,false);
     if(disabled){
         editable = false;
     }

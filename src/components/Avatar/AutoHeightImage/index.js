@@ -1,5 +1,5 @@
 ///@see : https://github.com/vivaxy/react-native-auto-height-image
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from '$react';
 import ImagePolyfill from './ImagePolyfill';
 import AnimatableImage from './AnimatableImage';
 import PropTypes from 'prop-types';
@@ -22,6 +22,7 @@ function AutoHeightImage(props) {
     maxHeight,
     onError,
     testID:cTestID,
+    preloader,
     ...rest
   } = props;
   const [height, setHeight] = useState(
@@ -29,14 +30,14 @@ function AutoHeightImage(props) {
       DEFAULT_HEIGHT
   );
   const mountedRef = useRef(false);
-
-  useEffect(function () {
+  const toolgeMounted = function () {
     mountedRef.current = true;
     return function () {
       mountedRef.current = false;
     };
-  }, []);
-
+  }
+  useEffect(toolgeMounted,[])
+  React.useOnRender(toolgeMounted,0);
   useEffect(
     function () {
       (async function () {
@@ -75,7 +76,7 @@ function AutoHeightImage(props) {
         onError={onError}
         {...rest}
       />
-      {!mountedRef.current ? <ActivityIndicator testID={testID+"_ActivityIndicator"} color={theme.colors.primary}/> : null}
+      {!mountedRef.current && preloader !== false && (!width || !height) ? <ActivityIndicator testID={testID+"_ActivityIndicator"} color={theme.colors.primary}/> : null}
   </View>
   );
 }
@@ -85,13 +86,15 @@ AutoHeightImage.propTypes = {
   width: PropTypes.number.isRequired,
   maxHeight: PropTypes.number,
   onHeightChange: PropTypes.func,
-  animated: PropTypes.bool
+  animated: PropTypes.bool,
+  preloader : PropTypes.bool,//si l'on affichera le preloader
 };
 
 AutoHeightImage.defaultProps = {
   maxHeight: Infinity,
   onHeightChange: NOOP,
-  animated: false
+  animated: false,
+  preloader : true,
 };
 
 export default AutoHeightImage;

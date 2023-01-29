@@ -86,7 +86,11 @@ export default function LoginComponent(props){
             },1000)
         }
     },[withPortal])
-    const {header,withScrollView:customWithScrollView,children,initialize,contentTop,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,mutateData,beforeSubmit:beforeSubmitForm,canSubmit:canSubmitForm,onStepChange,...loginProps} = defaultObj(getProps({
+    const {header,
+        headerTopContent:HeaderTopContent,
+        containerProps : customContainerProps,
+        contentProp,
+        withScrollView:customWithScrollView,children,initialize,contentTop,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,mutateData,beforeSubmit:beforeSubmitForm,canSubmit:canSubmitForm,onStepChange,...loginProps} = defaultObj(getProps({
         ...state,
         setState,
         state,
@@ -101,6 +105,8 @@ export default function LoginComponent(props){
         ProviderSelector,
         previousButtonRef,
     }));
+    const containerProps = defaultObj(customContainerProps);
+
     React.useEffect(()=>{
         Preloader.closeAll();
         /*** pour initializer les cordonnées du composant login */
@@ -191,13 +197,22 @@ export default function LoginComponent(props){
     });
     const withScrollView = typeof customWithScrollView =='boolean'? customWithScrollView : true;
     const Wrapper = withPortal ? ScreenWithoutAuthContainer  : withScrollView ? ScrollView: View;
+    const mQueryUpdateProps = (a)=>{
+        const style = StyleSheet.flatten([updateMediaQueryStyle(),containerProps.style]);
+        if(typeof containerProps.updateMediaQueryStyle =='function'){
+            return containerProps.updateMediaQueryStyle({style})
+        }
+        return {style};
+    };
     const wrapperProps = withPortal ? {appBarProps,authRequired:false,title:loginTitle,withScrollView} : { style:styles.wrapper};
+    const sH = React.isComponent(HeaderTopContent)? <HeaderTopContent
+        mediaQueryUpdateNativeProps = {mQueryUpdateProps}
+    /> : React.isValidElement(HeaderTopContent)? HeaderTopContent : null;
     return <Wrapper testID = {testID+"_Wrapper" }{...wrapperProps}>
         <DialogProvider ref={dialogProviderRef}/>
+        {sH}
         <Surface style={[styles.container,{backgroundColor}]} testID={testID}>
-            <Surface elevation = {0} mediaQueryUpdateNativeProps = {(a)=>{
-                return {style:updateMediaQueryStyle()}
-            }} testID={testID+"_Content"} style={[styles.content,updateMediaQueryStyle(),{backgroundColor}]}>
+            <Surface elevation = {0} {...containerProps} mediaQueryUpdateNativeProps = {mQueryUpdateProps} {...containerProps} testID={testID+"_Content"} style={[styles.content,updateMediaQueryStyle(),{backgroundColor},containerProps.style]}>
                 <FormData 
                     formName = {formName}
                     testID = {testID+"_FormData"}

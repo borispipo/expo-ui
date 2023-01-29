@@ -20,7 +20,7 @@ import {getTitle} from "$escreens/Auth/utils";
 import {isWeb} from "$cplatform";
 import ProviderSelector from "./ProviderSelector";
 import { ScrollView } from "react-native";
-
+import PropTypes from "prop-types";
 import getLoginProps from "$getLoginProps";
 const getProps = typeof getLoginProps =='function'? getLoginProps : x=>null;
 
@@ -89,7 +89,8 @@ export default function LoginComponent(props){
     const {header,
         headerTopContent:HeaderTopContent,
         containerProps : customContainerProps,
-        contentProp,
+        withHeaderAvatar,
+        contentProps : customContentProps,
         withScrollView:customWithScrollView,children,initialize,contentTop,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,mutateData,beforeSubmit:beforeSubmitForm,canSubmit:canSubmitForm,onStepChange,...loginProps} = defaultObj(getProps({
         ...state,
         setState,
@@ -106,6 +107,7 @@ export default function LoginComponent(props){
         previousButtonRef,
     }));
     const containerProps = defaultObj(customContainerProps);
+    const contentProps = defaultObj(customContentProps);
 
     React.useEffect(()=>{
         Preloader.closeAll();
@@ -198,9 +200,9 @@ export default function LoginComponent(props){
     const withScrollView = typeof customWithScrollView =='boolean'? customWithScrollView : true;
     const Wrapper = withPortal ? ScreenWithoutAuthContainer  : withScrollView ? ScrollView: View;
     const mQueryUpdateProps = (a)=>{
-        const style = StyleSheet.flatten([updateMediaQueryStyle(),containerProps.style]);
-        if(typeof containerProps.updateMediaQueryStyle =='function'){
-            return containerProps.updateMediaQueryStyle({style})
+        const style = StyleSheet.flatten([updateMediaQueryStyle(),contentProps.style]);
+        if(typeof contentProps.updateMediaQueryStyle =='function'){
+            return contentProps.updateMediaQueryStyle({style})
         }
         return {style};
     };
@@ -211,14 +213,14 @@ export default function LoginComponent(props){
     return <Wrapper testID = {testID+"_Wrapper" }{...wrapperProps}>
         <DialogProvider ref={dialogProviderRef}/>
         {sH}
-        <Surface style={[styles.container,{backgroundColor}]} testID={testID}>
-            <Surface elevation = {0} {...containerProps} mediaQueryUpdateNativeProps = {mQueryUpdateProps} {...containerProps} testID={testID+"_Content"} style={[styles.content,updateMediaQueryStyle(),{backgroundColor},containerProps.style]}>
+        <Surface style={[styles.container,{backgroundColor}]} {...containerProps} testID={testID}>
+            <Surface elevation = {0} {...contentProps} mediaQueryUpdateNativeProps = {mQueryUpdateProps} {...contentProps} testID={testID+"_Content"} style={[styles.content,updateMediaQueryStyle(),{backgroundColor},contentProps.style]}>
                 <FormData 
                     formName = {formName}
                     testID = {testID+"_FormData"}
                     style = {[styles.formData,{backgroundColor}]}
                     header = {<View style = {[styles.header]}>
-                        <Avatar testID={testID+"_Avatar"} size={50} secondary icon = 'lock'/>
+                        {withHeaderAvatar !== false && <Avatar testID={testID+"_Avatar"} size={50} secondary icon = 'lock'/> || null}
                         {
                             React.isValidElement(header)? header : 
                             <Label testID={testID+"_HeaderText"} bool style={{color:theme.colors.primaryOnSurface,fontSize:18,paddingTop:10}}>Connectez vous SVP</Label>
@@ -333,3 +335,15 @@ const styles = StyleSheet.create({
     }
 });
 
+LoginComponent.propTypes = {
+    withHeaderAvatar:PropTypes.bool,//si l'on affichera l'avatar de connexion
+    headerTopContent : PropTypes.oneOfType([
+        PropTypes.func,
+        PropTypes.node,
+        PropTypes.element,
+    ]),
+    header : PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.element,
+    ]),
+}

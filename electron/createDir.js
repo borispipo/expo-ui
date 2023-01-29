@@ -1,6 +1,7 @@
-const path = require("path");
 const getDirName = require('path').dirname;
-module.exports = function writeFile(path, contents, cb) {
+const fs = require("fs");
+module.exports = function createDir(path) {
+    if(!path || typeof path !='string') return false;
     const p = getDirName(path);
     if(!fs.existsSync(p)){
        try {
@@ -9,8 +10,5 @@ module.exports = function writeFile(path, contents, cb) {
          console.log(e," making write file directory")
        }
     }
-    if(fs.existsSync(p)){
-      return fs.writeFileSync(path, contents, cb);
-    }
-    throw {message : 'impossible de créer le repertoire '+p};
-  }
+    return fs.existsSync(p);
+}

@@ -11,7 +11,8 @@ import TableLink from "$TableLink";
 import {Flag} from "$ecomponents/Countries";
 import { StyleSheet } from "react-native";
 import {isDesktopMedia} from "$dimensions";
-
+import {View} from "react-native";
+import theme from "$theme";
 export const renderRowCell = (arg)=>{
     let {rowData,getRowKey,context,formatValue:customFormatValue,renderRowCell:customRenderRowCell,abreviateValues,isSectionListHeader,rowIndex,index,rowCounterIndex,columnDef,columnField} = arg;
     context = context || this;
@@ -24,10 +25,6 @@ export const renderRowCell = (arg)=>{
     getRowKey = typeof getRowKey =='function'? getRowKey : React.getKey;
     columnDef = defaultObj(columnDef);
     let _type = defaultStr(columnDef.jsType,columnDef.type).trim().toLowerCase().replaceAll("_","");
-    let renderProps = undefined;
-    if(isObj(columnDef.datagrid)){
-        renderProps = columnDef.datagrid.renderProps;
-    }
     const style = Object.assign({},StyleSheet.flatten(columnDef.style));
     if(!renderText && columnDef.visible === false){
         style.display = "none";
@@ -70,16 +67,47 @@ export const renderRowCell = (arg)=>{
         else if(!renderText && (isNonNullString(columnDef.foreignKeyTable) || columnDef.primaryKey === true || arrayValueExists(['id','piece'],_type))){
             const id = rowData[columnField]?.toString();
             if(isNonNullString(id)){
-                _render = <TableLink 
-                    id = {id}
-                    foreignKeyTable = {defaultStr(columnDef.foreignKeyTable,columnDef.table,columnDef.tableName)}
-                    foreignKeyColumn = {defaultStr(columnDef.foreignKeyColumn,columnDef.field)}
-                    {...columnDef}
-                    data = {rowData}
-                    columnField = {columnField}
-                >
-                    {renderSelectFieldCell({columnDef,columnField,rowData})}
-                </TableLink>             
+                const rProps = {
+                    foreignKeyTable : defaultStr(columnDef.foreignKeyTable,columnDef.table,columnDef.tableName),
+                    foreignKeyColumn : defaultStr(columnDef.foreignKeyColumn,columnDef.field),
+                    ...columnDef,
+                    multiple : undefined,
+                    readOnly : undefined,
+                    disabled : undefined,
+                    editable : undefined,
+                    data : rowData,
+                    columnField,
+                }
+                const sepp = ",";
+                if(columnDef.multiple && id.contains(sepp)){
+                    let hasC = false,sep2 ="";
+                    _render = <View style={[style,theme.styles.row,theme.styles.flexWrap]} testID={"RN_RowCell_"+columnDef.field+"multiple_"}>
+                        {id.split(sepp).map((idd,index)=>{
+                            if(!isNonNullString(idd)) return null;
+                            idd = idd.trim();
+                            if(!idd) return null;
+                            if(hasC){
+                                sep2=", ";
+                            }
+                            hasC = true;
+                            return <TableLink 
+                                key = {index}
+                                {...rProps}
+                                id = {idd}
+                            >
+                                {sep2+idd}
+                            </TableLink>
+                        })}
+                    </View>
+                    
+                } else {
+                    _render = <TableLink 
+                        {...rProps}
+                        id = {id}
+                    >
+                        {renderSelectFieldCell({columnDef,rowCellValue:id,columnField,rowData})}
+                    </TableLink>   
+                } 
             }
         } else if((_type.contains('select'))){
             _render= renderSelectFieldCell({columnDef,columnField,rowData,data:rowData})
@@ -119,17 +147,9 @@ export const renderRowCell = (arg)=>{
         }
         _render = __r;
     }
-    if(isFunction(renderProps)){
-        renderProps = renderProps.call(context,renderArgs);
-    }
     if(canFormatValue){
         const formatter = typeof columnDef.formatValue =='function'? columnDef.formatValue : undefined;
         _render = formatValue(_render,columnDef.format,abreviateValues,formatter);
-    }
-    if(!renderText && _render && isObj(renderProps)){
-        let Component = defaultVal(renderProps.Component,Label);
-        delete renderProps.Component;
-        _render = <Component {...renderProps}>{_render}</Component>
     }
     if(renderText){
         if(typeof _render =='number' || typeof _render =='boolean' || typeof _render =="string"){
@@ -144,8 +164,8 @@ export const renderRowCell = (arg)=>{
     return {render:_render,style,extra,key};
 }
 
-export const  renderSelectFieldCell= ({rowData,columnDef,columnField})=>{
-    let v1 = rowData[columnField],_render = v1;
+export const  renderSelectFieldCell= ({rowData,rowCellValue,columnDef,columnField})=>{
+    let v1 = rowCellValue || rowData[columnField],_render = v1;
     if(isObjOrArray(columnDef.items)){
             if(columnDef.multiple){
                 v1 = Object.toArray(v1);
@@ -180,6 +200,17 @@ export const  renderSelectFieldCell= ({rowData,columnDef,columnField})=>{
                     return "";
                 }
         }
+    }
+    if(Array.isArray(_render) || isObj(_render)){
+        let rr = "",sep = "";
+        Object.map(_render,(r)=>{
+            const t = React.getTextContent(r);
+            if(isNonNullString(t)){
+                rr+=(sep)+t;
+                sep = arrayValueSeparator;
+            }
+        })
+        return rr;
     }
     return _render 
 }

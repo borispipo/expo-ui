@@ -52,7 +52,7 @@ export const getSWROptions = ()=>{
     const delay = defaultNumber(appConfig.get("swrRefreshTimeout"),timeout);
     return {
         dedupingInterval : delay,
-        errorRetryInterval : delay*2,
+        errorRetryInterval : Math.max(delay*2,timeout),
         errorRetryCount : 5,
         revalidateOnMount : false,//enable or disable automatic revalidation when component is mounted
         revalidateOnFocus : true, //automatically revalidate when window gets focused (details)

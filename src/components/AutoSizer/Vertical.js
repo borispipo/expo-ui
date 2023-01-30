@@ -48,14 +48,8 @@ const AutoSizerVerticalComponent = React.forwardRef(({onLayout,testID,maxHeight,
   const hasUpdateLayout = hasUpdateLayoutRef.current;
   const cStyle ={width:'100%',maxHeight:Math.max(height-100,250)};
   const contentLayout = defaultObj(layout.layout);
-  if(typeof contentLayout.y =='number' && contentLayout.y>=10){
-      const {x,y}= contentLayout;
-      const mHeight = height - y;
-      if(mHeight> 0){
-          cStyle.minHeight = mHeight;
-      }
-  }
-  const fStyle = {flex:1,flexDirection:'column',maxHeight:(layout.height-defaultNumber(contentLayout.y)),maxWidth : Math.max(layout.width-defaultNumber(contentLayout.x)),justifyContent:'center',alignItems:'center'};
+  cStyle.minHeight = Math.min(Math.max(layout.height-defaultNumber(contentLayout.y),minHeight && minHeight ||250));
+  const fStyle = !hasUpdateLayout && {flex:1,flexDirection:'column',maxHeight:(layout.height-defaultNumber(contentLayout.y)),maxWidth : Math.max(layout.width-defaultNumber(contentLayout.x)),justifyContent:'center',alignItems:'center'};
   return  <View ref={React.useMergeRefs(layoutRef,ref)} 
         onLayout={(a,b,c)=>{
             if(onLayout && onLayout(a,b,c) === false) return;
@@ -65,7 +59,7 @@ const AutoSizerVerticalComponent = React.forwardRef(({onLayout,testID,maxHeight,
         }} 
     {...rest} 
     style={[theme.styles.w100,cStyle,style,fStyle,maxHeight && {maxHeight}, minHeight && {minHeight}]} testID={testID+"_ScrollViewContainer"}>
-    {hasUpdateLayoutRef.current ?children : <ActivityIndicator size={'large'}/>}
+    {hasUpdateLayout ?children : <ActivityIndicator size={'large'}/>}
   </View>
 });
 

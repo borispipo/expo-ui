@@ -1,17 +1,18 @@
 import React from '$react';
-import { ScrollView,Dimensions,StyleSheet} from 'react-native';
+import { ScrollView,Dimensions} from 'react-native';
 import PropTypes from "prop-types";
 import View from "$ecomponents/View";
 import theme from "$theme";
-import {defaultStr,defaultObj} from "$utils";
+import {defaultStr,defaultObj,defaultNumber} from "$utils";
 import APP from "$capp/instance";
 import ActivityIndicator from "$ecomponents/ActivityIndicator";
-const ScrollViewComponent = React.forwardRef(({virtualized,autoSize,vertical,horizontal,contentProps,containerProps,mediaQueryUpdateNativeProps,testID:customTestID,children:cChildren,screenIndent:sIndent,...rest},ref) => {
+const ScrollViewComponent = React.forwardRef(({autoSize,containerProps,maxHeight,minHeight,testID:customTestID,children:cChildren,...rest},ref) => {
   const testID = defaultStr(customTestID,'RN_ScrollViewComponent');
-  containerProps = defaultObj(containerProps)
-  if(horizontal === true || vertical === false || autoSize !== true){
-     return <ScrollView horizontal = {horizontal} vertical = {vertical} testID={testID} ref={ref} {...rest} children={cChildren}/>
+  const autoSizeRef = React.useRef(autoSize);
+    if(!autoSizeRef.current || rest.horizontal === true || rest.vertical === false){
+      return <ScrollView testID={testID} ref={ref} {...rest} children={cChildren}/>
   }
+  containerProps = defaultObj(containerProps)
   const hasUpdateLayoutRef = React.useRef(false);
   const isKeyboardOpenRef = React.useRef(false);
   const layoutRef = React.useRef(null);
@@ -53,15 +54,10 @@ const ScrollViewComponent = React.forwardRef(({virtualized,autoSize,vertical,hor
   },[]);
   const hasUpdateLayout = hasUpdateLayoutRef.current;
   const cStyle ={width:'100%',maxHeight:Math.max(height-100,250)};
-  if(isObj(layout.layout) && typeof layout.layout.y =='number' && layout.layout.y>=10){
-      const {layout : {x,y}} = layout;
-      const minHeight = height - y;
-      if(minHeight> 0){
-          cStyle.minHeight = minHeight;
-      }
-  }
+  const contentLayout = defaultObj(layout.layout);
+  cStyle.minHeight = Math.min(Math.max(layout.height-defaultNumber(contentLayout.y),250));
   const contentContainerStyle = ([cStyle,rest.contentContainerStyle]);
-  const fStyle = !hasUpdateLayout && {flex:1};
+  const fStyle = !hasUpdateLayout && {flex:1,maxWidth:layout.width - defaultNumber(contentLayout.x)};
   return  <View ref={layoutRef} onLayout={()=>{
     if(!hasInitializedRef.current){
        updateLayout();
@@ -69,10 +65,9 @@ const ScrollViewComponent = React.forwardRef(({virtualized,autoSize,vertical,hor
   }} {...containerProps} style={[theme.styles.w100,containerProps.style,fStyle]} testID={testID+"_ScrollViewContainer"}>
     <ScrollView 
       ref={ref} {...rest} 
-      vertical = {vertical}
       testID={testID}
-      children={hasUpdateLayoutRef.current?children : <ActivityIndicator size={'large'} 
-      style={[{flex:1},hasUpdateLayout && rest.style]}/>}
+      children={hasUpdateLayout?children : <ActivityIndicator size={'large'} 
+      style={[{flex:1}]}/>}
       contentContainerStyle = {[contentContainerStyle,fStyle]}
     />
   </View>
@@ -83,9 +78,7 @@ export default ScrollViewComponent;
 
 ScrollViewComponent.propTypes = {
    ...defaultObj(ScrollView.propTypes),
-   horizontal : PropTypes.bool,
-   vertical : PropTypes.bool,
    autoSize : PropTypes.bool,//si la taille du scrollView sera autoSize
-    virtualized : PropTypes.bool,
-    contentProps : PropTypes.object,
+   maxHeight : PropTypes.number,
+   minHeight : PropTypes.number,
 }

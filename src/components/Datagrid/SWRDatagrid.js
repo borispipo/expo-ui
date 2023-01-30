@@ -328,6 +328,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                     style : [theme.styles.noMargin,theme.styles.noPadding],
                 }
                 const sStyle = [styles.limitStyle1,theme.styles.noPadding,theme.styles.noMargin];
+                console.log("rendering ",sStyle);
                 return <View testID={testID+"_PaginationContainer"} pointerEvents={pointerEvents}>
                     <View style={[theme.styles.row,theme.styles.w100]} pointerEvents={pointerEvents} testID={testID+"_PaginationContentContainer"}>
                         <Menu

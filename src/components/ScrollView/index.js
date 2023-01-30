@@ -5,12 +5,14 @@ import View from "$ecomponents/View";
 import theme from "$theme";
 import {defaultStr,defaultObj} from "$utils";
 import APP from "$capp/instance";
+import {isWeb as isw} from "$cplatform";
 const ScrollViewComponent = React.forwardRef(({virtualized,vertical,horizontal,contentProps,containerProps,mediaQueryUpdateNativeProps,testID:customTestID,children:cChildren,screenIndent:sIndent,...rest},ref) => {
   const testID = defaultStr(customTestID,'RN_ScrollViewComponent');
   containerProps = defaultObj(containerProps)
   if(horizontal === true || vertical === false){
      return <ScrollView horizontal testID={testID} ref={ref} {...rest} children={cChildren}/>
   }
+  const isWeb = isw();
   const isKeyboardOpenRef = React.useRef(false);
   const layoutRef = React.useRef(null);
   const [layout,setLayout] = React.useState(Dimensions.get("window"));
@@ -55,7 +57,7 @@ const ScrollViewComponent = React.forwardRef(({virtualized,vertical,horizontal,c
           cStyle.minHeight = minHeight;
       }
   }
-  const contentContainerStyle = [cStyle,rest.contentContainerStyle];
+  const contentContainerStyle = [cStyle,rest.contentContainerStyle,isWeb && {display:'block'}];
   return  <View ref={layoutRef} onLayout={()=>{
     if(!hasInitializedRef.current){
        updateLayout();

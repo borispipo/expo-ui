@@ -190,8 +190,8 @@ const DatagridFactory = (Factory)=>{
             }   
             const maxHeight = this.getMaxListHeight();
             const rPagination = showPagination ? <View style={[styles.paginationContainer]}>
-                <ScrollView horizontal  style={styles.paginationContainerStyle} contentContainerStyle={styles.minW100}>
-                    <View style={[styles.paginationContent]}>
+                <ScrollView testID={testID+"_Datagrid_Headers"} horizontal  style={styles.paginationContainerStyle} contentContainerStyle={styles.minW100}>
+                    <View testID={testID+"_HeaderPaginationContent"} style={[styles.paginationContent]}>
                         <View testID={testID+"_HeaderQueryLimit"}>
                             {this.renderQueryLimit(this.getStateDataSize().formatNumber())}
                         </View>
@@ -229,6 +229,7 @@ const DatagridFactory = (Factory)=>{
                              })}
                         </>}
                         <BottomSheetMenu
+                            testID = {testID+"_BottomSheetMenu"}
                             anchor = {(props)=>{
                                 return <Icon {...props} title={isMobile?"Actions":"Colonnes"} name={isMobile?MENU_ICON:'view-column'}></Icon>
                             }}
@@ -292,8 +293,8 @@ const DatagridFactory = (Factory)=>{
                     </View>
                 </ScrollView>
             </View> : null;
-            return <View style={[styles.container,{flex:1,maxHeight}]} pointerEvents={pointerEvents}>
-                <View ref={this.layoutRef}>
+            return <View style={[styles.container,{flex:1,maxHeight}]} testID={testID+"_TableContainer"} pointerEvents={pointerEvents}>
+                <View ref={this.layoutRef} testID={testID+"_LayoutContainer"}>
                     {this.props.showActions !== false ? <DatagridActions 
                         pointerEvents = {pointerEvents}
                         title = {title}
@@ -312,12 +313,6 @@ const DatagridFactory = (Factory)=>{
                 <Table
                     ref = {this.listRef}
                     {...rest}
-                    onLayout = {(args)=>{
-                        if(rest.onLayout){
-                            rest.onLayout(args);
-                        }
-                        this.updateLayout(args);
-                    }}
                     sortedColumn = {sortedColumn}
                     onRender = {this.onRender.bind(this)}
                     getItemType = {this.getFlashListItemType.bind(this)}

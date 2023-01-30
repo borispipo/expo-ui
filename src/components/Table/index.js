@@ -7,7 +7,6 @@ import Label from "$ecomponents/Label";
 import { StyleSheet,View as RNView,ScrollView,Dimensions} from "react-native";
 import { getRowStyle } from "$ecomponents/Datagrid/utils";
 import {isMobileNative} from "$cplatform";
-import {isMobileMedia} from "$dimensions";
 import theme from "$theme";
 import AbsoluteScrollView from "./AbsoluteScrollView";
 import Cell from "./Cell";
@@ -357,7 +356,7 @@ const TableComponent = React.forwardRef(({containerProps,sortedColumn,listContai
                         testID = {testID}
                         prepareItems = {false}
                         items = {items}
-                        contentContainerStyle = {[styles.contentContainer,{width:listWidth,minWidth:totalWidths,position:'absolute',right:'0'}]}
+                        contentContainerStyle = {[styles.contentContainer,{width:listWidth,minWidth:totalWidths}]}
                         style = {[styles.datagrid,{width:listWidth,minWidth:totalWidths}]}
                         keyExtractor = {typeof getRowKey =='function'? getRowKey : React.getKey}
                         onScroll = {getOnScrollCb([absoluteScrollViewRef],(args)=>{

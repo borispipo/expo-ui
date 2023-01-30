@@ -49,8 +49,9 @@ const AbsoluteScrollView = React.forwardRef(({testID,contentProps,listRef,contai
             args = defaultObj(args);
             if(isObj(args.contentOffset) && isObj(args.contentSize)){
                 const {x} = args.contentOffset;
+                const {width:contentWidth} = args.contentSize;
                 const {width} = Dimensions.get("window");
-                const visible = x >= width-10 ? false : true;
+                const visible = x >= width-10 && (contentWidth-x)<10 ? false : true;
                 if(state.visible != visible){
                     return setState({...state,visible});
                 }

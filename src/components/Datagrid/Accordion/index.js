@@ -406,7 +406,6 @@ const DatagridFactory = (Factory)=>{
                     }
                 ]
             }
-            const maxHeight = this.getMaxListHeight();
             const isLoading = this.isLoading();
             const _progressBar = this.getProgressBar();
             const pointerEvents = this.getPointerEvents(); 
@@ -524,7 +523,7 @@ const DatagridFactory = (Factory)=>{
             </ScrollView>
         </View>  
         return <View testID={testID+"_Container"} pointerEvents={pointerEvents} style={[styles.container]} collapsable={false}>
-                { <View testID={testID+"_ContentContainer"} style={[{maxHeight,height:maxHeight}]}> 
+                { <View testID={testID+"_ContentContainer"}> 
                     <View testID={testID+"_AccordionHeader"} style={[styles.accordionHeader]} ref={this.layoutRef} onLayout={this.updateLayout.bind(this)}>
                         {this.props.showActions !== false ? <DatagridActions 
                             testID={testID+"_Actions"}
@@ -564,7 +563,6 @@ const DatagridFactory = (Factory)=>{
                         prepareItems = {false}
                         {...rest}
                         {...accordionProps}
-                        containerProps = {{style:[{maxHeight}]}}
                         onRender = {this.onRender.bind(this)}
                         testID = {testID}
                         extraData = {this.state.refresh}

@@ -1,7 +1,7 @@
 import React from '$react';
 import { ScrollView} from 'react-native';
 import PropTypes from "prop-types";
-import {defaultStr,defaultObj,defaultNumber} from "$utils";
+import {defaultStr,defaultObj} from "$utils";
 import {Vertical as AutoSizeVertical} from "$ecomponents/AutoSizer";
 
 const ScrollViewComponent = React.forwardRef(({autoSize,autoSizeProps,testID,...rest},ref) => {

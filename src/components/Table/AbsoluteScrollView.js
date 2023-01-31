@@ -68,13 +68,22 @@ const AbsoluteScrollView = React.forwardRef(({testID,contentProps,listRef,contai
     React.useEffect(()=>{
         toggleVisible();
     },[styles])
+    let canBeVisible = true;
+    if(isObj(styles.content) && isObj(styles.contentContainer)){
+        if(typeof styles.content.height =='number' && typeof styles.contentContainer.height =='number'){
+            if(styles.content.height -10 <= styles.contentContainer.height){
+                canBeVisible = false;
+            }
+        }
+    }
+    const hidden = (!canBeVisible || !visible || !layoutVisible) ;
     return <Portal>
-        {<View testID={testID+"_Containter"} {...containerProps} style={[mainStyles.container,containerProps.style,styles.container,{left:win.width-10},(!visible || !layoutVisible) &&{display:'none',width:0,opacity:0}]}>
+        {<View testID={testID+"_Containter"} {...containerProps} style={[mainStyles.container,containerProps.style,styles.container,{left:win.width-10},hidden &&{display:'none',width:0,opacity:0}]}>
             <ScrollView
                 {...props}
                 ref = {scrollViewRef}
                 testID={testID}
-                contentContainerStyle = {[props.contentContainerStyle,mainStyles.contentContainer,styles.containerContainer]}
+                contentContainerStyle = {[props.contentContainerStyle,mainStyles.contentContainer,styles.contentContainer]}
                 vertical
             >
                 <View

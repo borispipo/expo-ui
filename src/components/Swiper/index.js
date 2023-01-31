@@ -102,11 +102,8 @@ class SwiperComponent extends React.Component {
   }
 
   UNSAFE_componentWillReceiveProps(nextProps){
-    const children = (() => React.Children.toArray(nextProps.children))();
-    if(!React.areEquals(children,this.children)){
-      this.children = children;
-      this.count = (() => this.children.length)();
-    }
+    this.children = (() => React.Children.toArray(nextProps.children))();
+    this.count = (() => this.children.length)();
     if(typeof nextProps.activeIndex =='number' && nextProps.activeIndex !== this.state.activeIndex){
       this.setState({activeIndex:nextProps.activeIndex},()=>{
         this._fixState();
@@ -332,7 +329,7 @@ class SwiperComponent extends React.Component {
             {this.children.map((el, i) => {
               const childProps = isObj(childrenProps[i])? childrenProps [i] : {};
               const hasScroll = childProps.withScrollView !== false ? withScrollView : false;
-              const W =  hasScroll? Wrapper:React.Fragment,wProps = hasScroll ? {withAutoSizer:true,...wrapperProps,testID:testID+"_ScrollView"+i} : {};
+              const W =  hasScroll? Wrapper:React.Fragment,wProps = hasScroll ? {...wrapperProps,testID:testID+"_ScrollView"+i} : {};
               return (
                 <View
                   key={i}
@@ -342,7 +339,7 @@ class SwiperComponent extends React.Component {
                   style={[
                     childProps.style,
                     contentProps.style,
-                    {width, height},
+                    {width, height,maxHeight:height},
                   ]}
                 >
                   <W {...wProps}>

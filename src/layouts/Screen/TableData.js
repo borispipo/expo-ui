@@ -394,7 +394,11 @@ export default class TableDataScreenComponent extends FormDataScreen{
         const isMobile = isMobileOrTabletMedia();
         const contentProps = restProps.contentProps;
         const elevation = restProps.elevation;
-        const renderingTabsProps = {tabs,data:this.getCurrentData(),isMobile,sessionName:this.INITIAL_STATE.sessionName,props:restProps,tabProps,tabsProps,context,tabKey};
+        const renderingTabsProps = {tabs,data:this.getCurrentData(),tabsPropsMutator:({tabs,tabsProps})=>{
+            if(!isMobileOrTabletMedia()){
+                tabsProps.withScrollView = false;
+            }
+        },isMobile,sessionName:this.INITIAL_STATE.sessionName,props:restProps,tabProps,tabsProps,context,tabKey};
         const hasTabs = Object.size(tabs,true);
         let mainContent = undefined;
         testID = defaultStr(testID,"RN_TableDataScreenItem_"+restProps.tableName);
@@ -417,7 +421,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
                 mainContent = ct;
             } else {
                 mainContent = <View  {...contentProps} testID={testID+"_ContentContainer"} style={[styles.container,styles.noPadding]}>
-                    <ScrollView withAutoSizer testID={testID+"_MainContentScrollView"} contentProps={{style:theme.styles.p1}}>
+                    <ScrollView  withAutoSizer testID={testID+"_MainContentScrollView"} contentProps={{style:theme.styles.p1}}>
                         <Surface elevation={elevation} testID={testID+"_ContentHeader"} style={[styles.screenContent,theme.styles.p1,header?styles.screenContentWithHeader:null]}>
                             {header}
                             {content}
@@ -430,7 +434,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
             }
         } else {
             mainContent = <Surface  {...contentProps} testID={testID+"_MainContentContainer"} elevation={elevation} style={[styles.container,styles.noPadding,{paddingTop:0,marginTop:0}]}>
-                <ScrollView withAutoSizer testID={testID+"_MainContentScrollViewWithoutTab"}>
+                <ScrollView testID={testID+"_MainContentScrollViewWithoutTab"}>
                     <View testID={testID+"_MainContent"} style={[styles.screenContent,!isMobOrTab && theme.styles.p1,header?styles.screenContentWithHeader:null]}>
                         {header}
                         {content}
@@ -443,7 +447,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
             appBarProps.elevation = 0;
             restProps.elevation = 0;
         }
-        return <ScreenContainer {...restProps} appBarProps = {appBarProps} testID={testID}>
+        return <ScreenContainer  {...restProps} withScrollView={false} appBarProps = {appBarProps} testID={testID}>
             {this.wrapRenderingContent(mainContent,{testID})}
         </ScreenContainer>
     }

@@ -328,7 +328,6 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                     style : [theme.styles.noMargin,theme.styles.noPadding],
                 }
                 const sStyle = [styles.limitStyle1,theme.styles.noPadding,theme.styles.noMargin];
-                console.log("rendering ",sStyle);
                 return <View testID={testID+"_PaginationContainer"} pointerEvents={pointerEvents}>
                     <View style={[theme.styles.row,theme.styles.w100]} pointerEvents={pointerEvents} testID={testID+"_PaginationContentContainer"}>
                         <Menu
@@ -417,6 +416,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                 opts = getFetchOptions({showError:showProgressRef.current,...opts});
                 isInitializedRef.current = true;
                 fetchOptionsRef.current = opts;
+                opts.withTotal = true;
                 sortRef.current = opts.fetchOptions.sort;
                 if(force){
                     pageRef.current = firstPage;
@@ -424,6 +424,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                 doRefresh(force);
                 return false;
             }}
+            isSWRDatagrid
             isTableData
             fetchData = {undefined}
             data = {dataRef.current}

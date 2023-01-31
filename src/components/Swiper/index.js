@@ -332,7 +332,7 @@ class SwiperComponent extends React.Component {
             {this.children.map((el, i) => {
               const childProps = isObj(childrenProps[i])? childrenProps [i] : {};
               const hasScroll = childProps.withScrollView !== false ? withScrollView : false;
-              const W =  hasScroll? Wrapper:React.Fragment,wProps = hasScroll ? {autoSize:true,...wrapperProps,testID:testID+"_ScrollView"+i} : {};
+              const W =  hasScroll? Wrapper:React.Fragment,wProps = hasScroll ? {withAutoSizer:true,...wrapperProps,testID:testID+"_ScrollView"+i} : {};
               return (
                 <View
                   key={i}
@@ -342,7 +342,7 @@ class SwiperComponent extends React.Component {
                   style={[
                     childProps.style,
                     contentProps.style,
-                    {width, height,maxHeight:height},
+                    {width, height},
                   ]}
                 >
                   <W {...wProps}>

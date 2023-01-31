@@ -11,12 +11,18 @@ const ScrollViewComponent = React.forwardRef(({withAutoSizer,autoSizerProps,test
       return <ScrollView testID={testID} ref={ref} {...rest}/>
   }
   autoSizerProps = defaultObj(autoSizerProps);
-  return  <AutoSizeVertical isScrollView {...autoSizerProps} testID={testID+"_ScrollViewContainer"}>
+  const autoSizeRef = React.useRef(null);
+  return  <AutoSizeVertical {...autoSizerProps} ref = {autoSizeRef} testID={testID+"_ScrollViewContainer"}>
     <ScrollView 
-      ref={ref} {...rest} 
+      ref={ref} 
+      {...rest} 
       testID={testID}
-      style = {[{flex:1}]}
-      contentContainerStyle = {[{flex:1,height:'100%'},rest.contentContainerStyle]}
+      onContentSizeChange = {(a,b,c,d)=>{
+        if(rest.onContentSizeChange && rest.onContentSizeChange(a,b,c,d)===false) return;
+         if(autoSizeRef.current && autoSizeRef.current.updateLayout){
+           return autoSizeRef.current.updateLayout();
+         }
+      }}
     />
   </AutoSizeVertical>
 });

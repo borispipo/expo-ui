@@ -558,6 +558,9 @@ export default class CommonDatagridComponent extends AppComponent {
     isDatagrid(){
         return false;
     }
+    isSWRDatagrid(){
+        return !!this.props.isSWRDatagrid;
+    }
     callSRowCallback({selected,row,rowIndex,key,cb}){
         let count = Object.size(this.selectedRows);
         let sArg = this.getActionsArgs(selected);
@@ -3337,6 +3340,9 @@ export default class CommonDatagridComponent extends AppComponent {
             if(!isDecimal(fetchOptions.limit) || fetchOptions.limit <=0){
                 delete fetchOptions.limit
             }
+        }
+        if(this.isSWRDatagrid()){
+            fetchOptions.withTotal = true;
         }
         return fetchOptions;
     }

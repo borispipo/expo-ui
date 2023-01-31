@@ -6,12 +6,13 @@ import theme from "$theme";
 import {defaultStr,defaultObj,defaultNumber} from "$utils";
 import APP from "$capp/instance";
 import ActivityIndicator from "$ecomponents/ActivityIndicator";
+import {isWeb} from "$cplatform";
 
 /***
  * ce composant a pour but de définir la taille d'un contenu en se basant sur sa positin top, de manière à ce que, le contentu du composant fit
  * le reste de la taille de la page, avec comme valeur de la props minHeight
  */
-const AutoSizerVerticalComponent = React.forwardRef(({onLayout,testID,maxHeight,minHeight,style,children:cChildren,...rest},ref) => {
+const AutoSizerVerticalComponent = React.forwardRef(({onLayout,isScrollView,withActivityIndicator,testID,withPadding,maxHeight,minHeight,style,children:cChildren,...rest},ref) => {
   testID = defaultStr(testID,'RN_AutoSizerVerticalComponent');
   const hasUpdateLayoutRef = React.useRef(false);
   const layoutRef = React.useRef(null);
@@ -34,6 +35,11 @@ const AutoSizerVerticalComponent = React.forwardRef(({onLayout,testID,maxHeight,
           }
       })
   }
+  React.setRef(ref,{
+    updateLayout,
+    layoutRef,
+    ref : layoutRef
+});
   React.useEffect(()=>{
     const onResizePage = ()=>{
       setTimeout(()=>{
@@ -43,14 +49,22 @@ const AutoSizerVerticalComponent = React.forwardRef(({onLayout,testID,maxHeight,
     APP.on(APP.EVENTS.RESIZE_PAGE,onResizePage);
     return ()=>{
       APP.off(APP.EVENTS.RESIZE_PAGE,onResizePage);
+      React.setRef(ref,null);
     }
   },[]);
   const hasUpdateLayout = hasUpdateLayoutRef.current;
   const cStyle ={width:'100%',maxHeight:Math.max(height-100,250)};
   const contentLayout = defaultObj(layout.layout);
   cStyle.minHeight = Math.min(Math.max(layout.height-defaultNumber(contentLayout.y),minHeight && minHeight ||250));
-  const fStyle = !hasUpdateLayout && {flex:1,flexDirection:'column',maxHeight:(layout.height-defaultNumber(contentLayout.y)),maxWidth : Math.max(layout.width-defaultNumber(contentLayout.x)),justifyContent:'center',alignItems:'center'};
-  return  <View ref={React.useMergeRefs(layoutRef,ref)} 
+  const cMaxHeight = layout.height-defaultNumber(contentLayout.y);
+  if(cMaxHeight>=250){
+    cStyle.maxHeight = cMaxHeight;
+  }
+  if(withPadding !== false){
+      cStyle.paddingBottom = 50;
+  }
+  const fStyle = !hasUpdateLayout && withActivityIndicator !== false && {flex:1,flexDirection:'column',maxHeight:cStyle.maxHeight,maxWidth : Math.max(layout.width-defaultNumber(contentLayout.x)),justifyContent:'center',alignItems:'center'} || {};
+  return  <View ref={layoutRef} 
         onLayout={(a,b,c)=>{
             if(onLayout && onLayout(a,b,c) === false) return;
             if(!hasInitializedRef.current){
@@ -59,7 +73,7 @@ const AutoSizerVerticalComponent = React.forwardRef(({onLayout,testID,maxHeight,
         }} 
     {...rest} 
     style={[theme.styles.w100,cStyle,style,fStyle,maxHeight && {maxHeight}, minHeight && {minHeight}]} testID={testID+"_ScrollViewContainer"}>
-    {hasUpdateLayout ?children : <ActivityIndicator size={'large'}/>}
+    {hasUpdateLayout || withActivityIndicator === false ?children : <ActivityIndicator size={'large'}/>}
   </View>
 });
 
@@ -68,6 +82,7 @@ export default AutoSizerVerticalComponent;
 
 AutoSizerVerticalComponent.propTypes = {
    ...defaultObj(View.propTypes),
+   withActivityIndicator : PropTypes.bool,//si l'on utilisera l'activity indicator pour le chargement du contentu
    maxHeight : PropTypes.number,
    minHeight : PropTypes.number,
 }

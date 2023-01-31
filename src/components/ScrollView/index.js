@@ -16,14 +16,6 @@ const ScrollViewComponent = React.forwardRef(({withAutoSizer,autoSizerProps,test
     <ScrollView 
       ref={ref} {...rest} 
       testID={testID}
-      onContentSizeChange = {(a,b,c,d)=>{
-        if(rest.onContentSizeChange && rest.onContentSizeChange(a,b,c,d)===false) return;
-        return;
-        if(autoSizerRef.current && autoSizerRef.current.updateLayout){
-            console.log("updating layout ",autoSizerRef.current);
-            autoSizerRef.current.updateLayout();
-        }
-      }}
       style = {[{flex:1}]}
       contentContainerStyle = {[{flex:1,height:'100%'},rest.contentContainerStyle]}
     />

@@ -434,7 +434,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
             }
         } else {
             mainContent = <Surface  {...contentProps} testID={testID+"_MainContentContainer"} elevation={elevation} style={[styles.container,styles.noPadding,{paddingTop:0,marginTop:0}]}>
-                <ScrollView testID={testID+"_MainContentScrollViewWithoutTab"}>
+                <ScrollView withAutoSizer testID={testID+"_MainContentScrollViewWithoutTab"}>
                     <View testID={testID+"_MainContent"} style={[styles.screenContent,!isMobOrTab && theme.styles.p1,header?styles.screenContentWithHeader:null]}>
                         {header}
                         {content}

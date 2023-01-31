@@ -20,6 +20,7 @@ const AutoSizerVerticalComponent = React.forwardRef(({onLayout,isScrollView,with
   const {height,width} = layout;
   const hasInitializedRef = React.useRef(false);
   const children = React.useStableMemo(()=>cChildren,[cChildren]);
+  withActivityIndicator = typeof withActivityIndicator =='boolean'? withActivityIndicator : !isScrollView;
   const updateLayout = ()=>{
       return new Promise((resolve)=>{
           hasUpdateLayoutRef.current = true;

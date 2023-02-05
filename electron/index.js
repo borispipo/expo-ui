@@ -4,6 +4,7 @@ const session = require("./session");
 const path = require("path");
 const fs = require("fs");
 const ePath = path.resolve(__dirname);
+const getDirname = require("./getDirname");
 if(!fs.existsSync(path.resolve(ePath,"paths.json"))){
   throw {message : 'Chemin de noms, fichier paths.json introuvable!! Exécutez l\'application en enviornnement web|mobile|android|ios puis re-essayez'}
 }
@@ -18,37 +19,11 @@ const mainProcess = mainProcessRequired && typeof mainProcessRequired =='object'
 // Gardez une reference globale de l'objet window, si vous ne le faites pas, la fenetre sera
 // fermee automatiquement quand l'objet JavaScript sera garbage collected.
 let win = undefined;
-const isWindow = process.platform =="win32",
-isMac = process.platform =='darwin',
-isLinux = process.platform =="linux";
-const getIcon = (p)=>{
-    if(Array.isArray(p)){
-       for(let i in p){
-         const r = getIcon(p[i]);
-         if(r) return r;
-       }
-    } else if(typeof p =='string' && p && fs.existsSync(p)){
-      const ext = isWindow ? ".ico" : isMac ? ".incs" : ".png";
-      const possibles =  ["icon","logo","favicon"];
-      for(let i in possibles){
-        const icon = path.join(p,possibles[i]+ext);
-        if(fs.existsSync(icon)){
-           return icon;
-        }
-      }
-    }
-    return undefined;
-}
-const icon = isLinux && logo && fs.existsSync(logo) && logo || getIcon(
-    logo && fs.existsSync(logo) && path.dirname(logo),
-    images,
-    assets,
-)
-/*console.log(icon," is iccccccc");
-console.log(logo," is logo ",images,assets);
-throw {
-  message : "icon is "+icon+" logo is "+logo+" image is "+images+" assets is "+assets
-}*/
+const icon = require("./getIcon")(
+    logo && fs.existsSync(logo) && getDirname(logo),
+    images && getDirname(images) || '',
+    assets && getDirname(assets) || '',
+);
 Menu.setApplicationMenu(null);
 let clipboadContextMenu = (_, props) => {
   if (props.isEditable || props.selectionText) {
@@ -149,6 +124,10 @@ function createWindow () {
       devTools : true,
     }
   });
+  
+ const log = (message)=>{
+    return win != null && win && win.webContents.send("console.log",message);
+  }
   // create a new `splash`-Window 
   /*** @see : http://leftstick.github.io/splash-screen/ */
   let splash = new BrowserWindow({
@@ -188,6 +167,7 @@ function createWindow () {
       splash = null;
       win.restore();
       win.show();
+      //log(icon," is consooleeeee")
   })    
  
   win.on('close', (e) => {

@@ -319,6 +319,9 @@ ipcRenderer.on("main-app-restaured",()=>{
         message : "TRACK_IDLE",
     });
 });
+ipcRenderer.on('console.log',(event,...message)=>{
+    console.log(...message);
+})
 ipcRenderer.on('appReady',()=>{})
 ipcRenderer.on("main-window-focus",()=>{
     postMessage("WINDOW_FOCUS");

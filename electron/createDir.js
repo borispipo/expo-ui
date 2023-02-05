@@ -1,8 +1,8 @@
-const getDirName = require('path').dirname;
 const fs = require("fs");
 module.exports = function createDir(path,cb) {
     if(!path || typeof path !='string') return false;
-    const p = getDirName(path);
+    const p = require("./getDirname")(path);
+    if(!p) return false;
     if(!fs.existsSync(p)){
        try {
           fs.mkdirSync(p,{ recursive: true});

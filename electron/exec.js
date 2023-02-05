@@ -31,7 +31,7 @@ const loaderTimer = function(timout) {
     var P = ["\\", "|", "/", "-"];
     var x = 0;
     return setInterval(function() {
-      process.stdout.write("\r"+" "+P[x++]);
+      process.stdout.write("\r "+text+P[x++]);
       x &= 3;
     }, timout);
   };

@@ -9,6 +9,12 @@ if(!fs.existsSync(path.resolve(ePath,"paths.json"))){
 }
 const paths = require("./paths.json");
 const images = paths.$images, assets = paths.$assets, logo = paths.logo;
+const projectRoot = paths.projectRoot || '';
+const electronProjectRoot = projectRoot && fs.existsSync(path.resolve(projectRoot,"electron")) && path.resolve(projectRoot,"electron") || null;
+const mainProcessIndex = electronProjectRoot && fs.existsSync(path.resolve(electronProjectRoot,"main.process.js")) && path.resolve(electronProjectRoot,"main.process.js");
+const mainProcessRequired = mainProcessIndex && require(`${mainProcessIndex}`);
+//pour étendre les fonctionnalités au niveau du main proceess, bien vouloir écrire dans le fichier projectRoot/electron/main.process.js
+const mainProcess = mainProcessRequired && typeof mainProcessRequired =='object'? mainProcessRequired : {};
 // Gardez une reference globale de l'objet window, si vous ne le faites pas, la fenetre sera
 // fermee automatiquement quand l'objet JavaScript sera garbage collected.
 let win = undefined;
@@ -107,6 +113,9 @@ function createBrowserWindow (options){
   let showOnLoad = options.showOnLoad ===true ? true : undefined;
   if(showOnLoad){
      options.show = false;
+  }
+  if(mainProcess && typeof mainProcess.beforeCreateWindow =='function'){
+     mainProcess.beforeCreateWindow(options);
   }
   let _win = new BrowserWindow(options);
   if(!menu){
@@ -454,14 +463,25 @@ ipcMain.handle("electron-show-save-dialog",function(event,options){
   }
   return dialog.showSaveDialog(win,options)
 })
+ipcMain.on("electron-is-dev-tools-open",function(event,value) {
+  if(win !==null && win.webContents){
+    return win.webContents.isDevToolsOpened();
+  }
+  return false;
+})
 ipcMain.on("electron-toggle-dev-tools",function(event,value) {
   if(win !==null && win.webContents){
-    if(value){
-        if(!win.webContents.isDevToolsOpened()) win.webContents.openDevTools();
+    const isOpen= win.webContents.isDevToolsOpened();
+    value = value === undefined ? !isOpen : value;
+    if(value && !isOpen){
+        win.webContents.openDevTools();
+        return win.webContents.isDevToolsOpened();
     } else {
-        if(win.webContents.isDevToolsOpened()) win.webContents.closeDevTools();
+        if(isOpen) win.webContents.closeDevTools();
     }
+    return win.webContents.isDevToolsOpened();
   }
+  return false;
 })
 
 ipcMain.on("electron-window-set-progressbar",(event,interval)=>{

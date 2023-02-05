@@ -55,37 +55,36 @@ if(parsedArgs.electron){
   const indexFile = path.resolve(buildOutDir,"index.html");
   const webBuildDir = path.resolve(projectRoot,"web-build");
   const url = parsedArgs.url  && parsedArgs.url.trim() || "";
+  const start = x=>{
+     return new Promise((resolve,reject)=>{
+      cmd = "electron "+electronDir+" url="+url;
+        exec({
+          cmd, 
+          projectRoot : electronDir,
+        }).finally(()=>{
+          console.log("ant to exit");
+        })
+        typeof (resolve) =='function' && setTimeout(resolve,1000);
+    })
+  };
+  if(url){
+    return start().then(process.exit);
+  }
   const promise = new Promise((resolve,reject)=>{
-      const next = ()=>{
+    const next = ()=>{
         if(fs.existsSync(webBuildDir)){
             return copyDir(webBuildDir,buildOutDir).catch(reject).then(resolve);
         } else {
-          reject("fichier web-build exporté par electron innexistant!!");
+          reject("dossier web-build exporté par electron innexistant!!");
         }
       }
       if(!url && (parsedArgs.compile || !fs.existsSync(path.resolve(webBuildDir,"index.html")))){
         cmd = "npx expo export:web";
-        console.log("******************** exporting app : "+cmd);
         return exec({cmd,projectRoot}).then(next).catch(reject);
       }
       next();
   });
   return promise.then(()=>{
-    const start = ()=>{
-      cmd = "electron "+electronDir+" url="+url;
-      return new Promise((resolve,reject)=>{
-          exec({
-            cmd, 
-            projectRoot : electronDir,
-          }).finally(()=>{
-            console.log("ant to exit");
-          })
-          setTimeout(resolve,1000)
-      });
-    }
-    if(url){
-       return start();
-    }
     if(!fs.existsSync(buildOutDir) || !fs.existsSync(indexFile)){
        throw "répertoire d'export web invalide où innexistant ["+buildOutDir+"]"
     }

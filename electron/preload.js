@@ -15,6 +15,8 @@ const _app = require(`${packagePath}`);
 if(!_app || typeof _app !=='object' || typeof _app.name !=='string'){
     throw {message : "Contenu du fichier "+packagePath+" invalide!! Veuillez spécifier un nom valide d'application, propriété <<name>> dudit fichier"}
 }
+const paths = require("./paths.json");
+const projectRoot = paths.projectRoot || '';
 const APP_NAME = _app.name.trim().toUpperCase();
 let backupPathField = "_e_backupDataPath";
 let cBackupPathField = "company"+backupPathField;
@@ -289,10 +291,15 @@ const ELECTRON = {
         return (APP)=>{
             appInstance.set(APP);
         }
-    }
+    },
+    get toggleDevTools(){
+        return async (toggle)=>{
+            return await ipcRenderer.send("electron-toggle-dev-tools",toggle);
+        }
+    } 
 };
 
-require("./pload")(ELECTRON);
+require("./pload")(ELECTRON,paths || {});
 ELECTRON.getBackupPath();
 //require("./app/index")(ELECTRON)
 //require('v8-compile-cache');

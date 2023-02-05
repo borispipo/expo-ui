@@ -8,7 +8,10 @@
 
     /*** le nombre maximal de courbes qu'on peut afficher sur le même graphe***/
     maxSupportedChartSeries {number}
-
+    
+    ///fonction de rappel appelée avant d'exit l'application, doit retourner une promesse que lorsque résolue, exit l'application
+    beforeExit : ()=><Promise>
+    
     /***les fonctions d'aggregations du datagrid**/
     datagridAggregatorFunctions : {objectOf({code:{string},label:{string},eval:{function}})|| arrayOf({code:{string},label:{string},eval:{function}})}
     /**l'ensemble des selectors à appliquer au champs de type hashtag, permettant de faire des liens vers d'autres tables**/

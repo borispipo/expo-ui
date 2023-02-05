@@ -1,5 +1,6 @@
 const path = require("path");
 const fs = require("fs");
+const writeFile = require("./electron/writeFile");
 module.exports = (opts)=>{
     const dir = path.resolve(__dirname);
     const base = opts.base || process.cwd();
@@ -115,13 +116,18 @@ module.exports = (opts)=>{
         outputPath
     });
     const $assets = r.$assets;
+    const $electron = path.resolve(dir,"electron");
     const electronPaths = {
         ...r,
         sourceCode : r.$src,
         assets : $assets,
         images : r.$images,
         projectRoot : base,//la racine au projet
+        electron : $electron,//le chemin racine electron
     };
+    //le chemin ver le repertoire electron
+    r.$eelectron = r["$e-electron"] = $electron;
+    r.$electron = r.$electron || r.$eelectron;
     const electronAssetsPath = path.resolve(dir,"electron","assets");
     if($assets){
         const l1 = path.resolve($assets,"logo.png"), l2 = path.resolve($assets,"logo.png");
@@ -132,7 +138,11 @@ module.exports = (opts)=>{
             electronPaths.logo = logoPath;
         }
     }
+    const jsonPath = path.resolve(base,'package.json');
+    if(fs.existsSync(jsonPath)){
+        require("./electron/copy")(jsonPath,path.resolve(dir,"electron","package.app.json"));
+    }
     ///on sauvegarde les chemins des fichiers utiles, qui seront utilisées par la variable electron plus tard
-    require("./electron/writeFile")(path.resolve(dir,"electron","paths.json"),JSON.stringify(electronPaths));
+    writeFile(path.resolve(dir,"electron","paths.json"),JSON.stringify(electronPaths));
     return r;
 }

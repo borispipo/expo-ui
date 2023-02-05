@@ -1,13 +1,17 @@
 const {app, BrowserWindow,Tray,Menu,MenuItem,systemPreferences,powerMonitor,dialog, nativeTheme} = require('electron')
-const appConfig  = {}//require("../src/app/config");
-const session = require("./src/session");
+const appConfig  = {}//require("../app/config");
+const session = require("./session");
 const path = require("path");
+const fs = require("fs");
+const ePath = path.resolve(__dirname);
+if(!fs.existsSync(path.resolve(ePath,"paths.json"))){
+  throw {message : 'Chemin de noms, fichier paths.json introuvable!! Exécutez l\'application en enviornnement web|mobile|android|ios puis re-essayez'}
+}
 const paths = require("./paths.json");
 const images = paths.$images, assets = paths.$assets, logo = paths.logo;
 // Gardez une reference globale de l'objet window, si vous ne le faites pas, la fenetre sera
 // fermee automatiquement quand l'objet JavaScript sera garbage collected.
 let win = undefined;
-let fs = require("fs");
 const isWindow = process.platform =="win32",
 isMac = process.platform =='darwin',
 isLinux = process.platform =="linux";
@@ -75,10 +79,11 @@ function createBrowserWindow (options){
   let menu = options.menu;
   options.webPreferences = isObj(options.webPreferences)? options.webPreferences : {}
   options.webPreferences = {
+    sandbox: false,
     ...options.webPreferences,
+    contextIsolation: true,
     devTools: typeof options.webPreferences.devTools === 'boolean'? options.webPreferences.devTools : false,
     icon,
-    contextIsolation: false,
     webSecurity : true,
     autoHideMenuBar: true,
     allowRunningInsecureContent: false,
@@ -124,14 +129,13 @@ function createBrowserWindow (options){
   });
   return _win;
 }
-
-
+const args = require("./parseArgs")();
 function createWindow () {
   // Créer le browser window
   win = createBrowserWindow({
     showOnLoad : false,
     loadURL : undefined,
-    //preload : path.resolve(__dirname,'src/preload.js'),
+    preload : path.resolve(__dirname,'preload.js'),
     webPreferences : {
       devTools : true,
     }
@@ -142,7 +146,7 @@ function createWindow () {
       width: 500, height: 400, transparent: true, frame: false, alwaysOnTop: true});
   let copyRight = appConfig.name+" version "+appConfig.version+". "+appConfig.copyRight;
   copyRight = encodeURI(copyRight);
-  //splash.loadURL(`file://${__dirname}/src/splash/index.html?copyRight=${copyRight}`);
+  //splash.loadURL(`file://${__dirname}/splash/index.html?copyRight=${copyRight}`);
   let hasInitWindows = false;
   win.on('show', () => {
     //win.blur();
@@ -183,7 +187,11 @@ function createWindow () {
         win.webContents.send('before-app-exit');
       }
   });
-  win.loadFile(path.resolve(path.join(__dirname,"dist",'index.html')))
+  if(args.url){
+    win.loadURL(args.url);
+  } else {
+    win.loadFile(path.resolve(path.join(__dirname,"dist",'index.html')))
+  }
 
   win.on('unresponsive', async () => {
     const { response } = await dialog.showMessageBox({

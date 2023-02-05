@@ -1,13 +1,15 @@
+
+const { machineIdSync} = require('node-machine-id');
 module.exports = (ELECTRON)=>{
-    let isWin = process.platform === "win32"? true : false;
-    let isLinux = process.platform === "linux"? true : false;
-    let {ipcRenderer} = require("electron");
-    let os = require("os");
+    const isWin = process.platform === "win32"? true : false;
+    const isLinux = process.platform === "linux"? true : false;
+    const {ipcRenderer} = require("electron");
+    const os = require("os");
     let totalRAM = os.totalmem();
     if(typeof totalRAM !=="number"){
         totalRAM = 0;
     }
-    let getMem = (unit,key)=>{
+    const getMem = (unit,key)=>{
         let memory = 0;
         if(typeof os[key] =="function"){
             memory = os[key]();
@@ -27,7 +29,7 @@ module.exports = (ELECTRON)=>{
         }
         return memory;
     }
-    APP.extend(ELECTRON,{
+    const ext = {
         toggleDevTools : (value)=>{
             ipcRenderer.send("electron-toggle-dev-tools",defaultBool(value,true));
         },
@@ -76,22 +78,25 @@ module.exports = (ELECTRON)=>{
             'download-progress',
             'update-downloaded'
         ],
-    })
-    const username = require('username');
-    let { machineIdSync} = require('node-machine-id');
+    };
+    for(var i in ext){
+        ELECTRON[i] = ext[i];
+    }
     if(process.env && typeof process.env =="object"){
-        let logName = process.env["LOGNAME"] || process.env["USER"];
+        const logName = process.env["LOGNAME"] || process.env["USER"];
         if(logName && typeof logName =="string"){
             ELECTRON.DEVICE.computerUserName = logName;
         }
     }
-    let uuid = machineIdSync({original: true});
+    const uuid = machineIdSync({original: true});
     if(uuid && typeof uuid =='string') ELECTRON.DEVICE.uuid = uuid;
-      
-    username().then((u)=>{
-        if(u && typeof u =="string"){
-           ELECTRON.DEVICE.computerUserName = u;
-        }
-    });
+     
+    ELECTRON.DEVICE.computerUserName = process.env.SUDO_USER ||
+        process.env.C9_USER ||
+        process.env.LOGNAME ||
+        process.env.USER ||
+        process.env.LNAME ||
+        process.env.USERNAME || '';
+
    return ELECTRON;
 }

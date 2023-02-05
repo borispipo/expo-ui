@@ -7,7 +7,7 @@ import { NavigationContainer} from '@react-navigation/native';
 import {navigationRef} from "$cnavigation"
 import NetInfo from '$utils/NetInfo';
 import Auth from "$cauth";
-import {isNativeMobile} from "$cplatform";
+import {isNativeMobile,isElectron} from "$cplatform";
 import Navigation from "./navigation";
 import {set as setSession,get as getSession} from "$session";
 import { showConfirm } from "$ecomponents/Dialog";
@@ -17,9 +17,10 @@ import {notify} from "$ecomponents/Dialog";
 import {decycle} from "$utils/json";
 import init from "$capp/init";
 import { setIsInitialized} from "$capp/utils";
-import {isObj,isNonNullString} from "$cutils";
+import {isObj,isNonNullString,isPromise,defaultObj,defaultStr} from "$cutils";
 import {loadFonts} from "$ecomponents/Icon/Font";
 import appConfig from "$capp/config";
+import Preloader from "$preloader";
 
 let MAX_BACK_COUNT = 1;
 let countBack = 0;
@@ -71,6 +72,56 @@ function App(props) {
        });
     };
     const subscription = AppState.addEventListener('change', AppStateService.getInstance().handleAppStateChange);
+    const beforeExitApp = (cb)=>{
+       return new Promise((resolve,reject)=>{
+          Preloader.closeAll();
+          showConfirm({
+              title : "Quitter l'application",
+              message : 'Voulez vous vraiment quitter l\'application?',
+              yes : 'Oui',
+              no : 'Non',
+              onSuccess : ()=>{
+                const foreceExit = ()=>{
+                  BackHandler.exitApp();
+                    if(isElectron() && window.ELECTRON && typeof ELECTRON.exitApp =='function'){
+                        ELECTRON.exitApp({APP});
+                    }
+                }
+                const exit = ()=>{
+                  if(typeof appConfig.beforeExit =='function'){
+                     const r2 = appConfig.beforeExit()
+                     if(!isPromise(r2)){
+                        throw {message:'La fonction before exit de appConfig.beforeExit doit retourner une promesse',returnedResult:r2}
+                     }
+                     return r2.then(foreceExit).catch(reject);
+                  }
+                  foreceExit();
+                }
+                const r = {APP,exit};
+                APP.trigger(APP.EVENTS.BEFORE_EXIT,exit,(result)=>{
+                  if(isObj(result) || Array.isArray(result)){
+                    for(let ik in result){
+                       if(result[ik] === false) return reject({message:'EXIT APP DENIED BY BEFORE EXIT EVENT HANDLER AT POSITON {0}'.sprintf(ik)});
+                    }
+                  }
+                  resolve(r);
+                  if(typeof cb =='function'){
+                     cb(r);
+                  }
+                });
+              },
+              onCancel : reject
+          })
+       })
+    }
+    /**** onBeforeExit prend en paramètre la fonction de rappel CB, qui lorsque la demande de sortie d'application est acceptée, alors elle est exécutée */
+    if(typeof APP.beforeExit !=='function'){
+      Object.defineProperties(APP,{
+         beforeExit : {
+            value : beforeExitApp,
+         }
+      })
+    }
     const backAction = (args) => {
       if(navigationRef && navigationRef.canGoBack()? true : false){
           resetExitCounter();
@@ -92,21 +143,10 @@ function App(props) {
           return false;
       }
       isBackConfirmShowing = true;
-      showConfirm({
-          title : "Quitter l'application",
-          message : 'Voulez vous vraiment quitter l\'application?',
-          yes : 'Oui',
-          no : 'Non',
-          onSuccess : ()=>{
-              isBackConfirmShowing = false;
-              countBack = 0;
-              BackHandler.exitApp();
-          },
-          onCancel : ()=>{
-              isBackConfirmShowing = false;
-              countBack = 0;
-              return;
-          }
+      return beforeExitApp().finally(x=>{
+        isBackConfirmShowing = false;
+      }).then(({exit})=>{
+          exit();
       })
     };
     const unsubscribeNetInfo = NetInfo.addEventListener(state => {
@@ -136,7 +176,11 @@ function App(props) {
           events.push(navigationRef.addListener(i,Events[i]));
         }
     }
-
+    APP.onElectron("BEFORE_EXIT",()=>{
+      return beforeExitApp().then(({exit})=>{
+        exit();
+      })
+    });
     APP.on(APP.EVENTS.BACK_BUTTON,backAction);
     return () => {
         APP.off(APP.EVENTS.BACK_BUTTON,backAction);

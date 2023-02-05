@@ -125,7 +125,6 @@ const DatagridFactory = (Factory)=>{
             chartContainerProps = defaultObj(chartContainerProps);
             testID = this.getTestID();
             rest = defaultObj(rest);
-            let showDataSourceSelector = false;
             if(dataSourceSelector === true){
                 showDataSourceSelector = true;
             }  else if(dataSourceSelector ===false){

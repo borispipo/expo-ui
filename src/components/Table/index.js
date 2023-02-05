@@ -59,7 +59,7 @@ const TableComponent = React.forwardRef(({containerProps,sortedColumn,listContai
     const hasEmptyData = emptyData && React.isValidElement(emptyData);
     const layoutRef = React.useRef({});
     
-    const preparedColumns = React.useStableMemo(()=>{
+    const preparedColumns = React.useMemo(()=>{
         const cols = {},headers = {},footers = {},filters = {},vColumnsMapping = [],visibleColumns = [],columnsNames = [];
         let hasFooters = false;
         columnProps = defaultObj(columnProps);
@@ -278,11 +278,7 @@ const TableComponent = React.forwardRef(({containerProps,sortedColumn,listContai
                     style = {[allScrollViewProps.style,headerScrollViewProps.style,{height:'100%',flex:1,flexWrap:'wrap'}]}
                     ref={headerScrollViewRef} 
                     horizontal {...allScrollViewProps}
-                    onScroll = {getOnScrollCb([scrollViewRef,footerScrollViewRef],null,(args)=>{
-                        return;
-                        const nativeEvent = args.nativeEvent;
-                        console.log(nativeEvent," is n event");
-                    })}
+                    onScroll = {getOnScrollCb([scrollViewRef,footerScrollViewRef])}
                     showsHorizontalScrollIndicator
             >
                     <View testID={testID+"Header2FootersWrapper"} style={[theme.styles.w100]}>

@@ -13,11 +13,10 @@ const fs = require("fs");
 const dir = path.resolve(__dirname);
 const electronDir = path.resolve(dir, "..","electron");
 const exec = require("../electron/exec");
-const args = process.argv.slice(2);
 let projectRoot = process.cwd();
 const createDir = require("../electron/createDir");
-const copyDir = require("../electron/copyDir");
-const parsedArgs = require("./parseArgs")(args,supportedScript);
+const copyDir = require("../electron/copy");
+const parsedArgs = require("../electron/parseArgs")(null,supportedScript);
 if(!parsedArgs.script || !(parsedArgs.script in supportedScript)){
    console.error ("Erreur : script invalide, vous devez spécifier script figurant parmi les script : ["+Object.keys(supportedScript).join(", ")+"]");
    process.exit();
@@ -29,6 +28,7 @@ let cmd = null;
  *  cmde : [cmd] start electron config=[path-to-config-relative-to-project-dir] 
  *        splash=[path-to-splashcreen-relative-to-project-root] 
  *        output-dir|out = [path-to-output-dir-relative-to-root-project]
+ *        url = [url-to-start-electron-to]
  * */
 if(parsedArgs.electron){
   const pathsJSON = path.resolve(electronDir,"paths.json");
@@ -54,6 +54,7 @@ if(parsedArgs.electron){
   const buildOutDir = path.resolve(electronDir,"dist");
   const indexFile = path.resolve(buildOutDir,"index.html");
   const webBuildDir = path.resolve(projectRoot,"web-build");
+  const url = parsedArgs.url  && parsedArgs.url.trim() || "";
   const promise = new Promise((resolve,reject)=>{
       const next = ()=>{
         if(fs.existsSync(webBuildDir)){
@@ -62,7 +63,7 @@ if(parsedArgs.electron){
           reject("fichier web-build exporté par electron innexistant!!");
         }
       }
-      if(parsedArgs.compile || !fs.existsSync(path.resolve(webBuildDir,"index.html"))){
+      if(!url && (parsedArgs.compile || !fs.existsSync(path.resolve(webBuildDir,"index.html")))){
         cmd = "npx expo export:web";
         console.log("******************** exporting app : "+cmd);
         return exec({cmd,projectRoot}).then(next).catch(reject);
@@ -70,21 +71,27 @@ if(parsedArgs.electron){
       next();
   });
   return promise.then(()=>{
+    const start = ()=>{
+      cmd = "electron "+electronDir+" url="+url;
+      return new Promise((resolve,reject)=>{
+          exec({
+            cmd, 
+            projectRoot : electronDir,
+          }).finally(()=>{
+            console.log("ant to exit");
+          })
+          setTimeout(resolve,1000)
+      });
+    }
+    if(url){
+       return start();
+    }
     if(!fs.existsSync(buildOutDir) || !fs.existsSync(indexFile)){
        throw "répertoire d'export web invalide où innexistant ["+buildOutDir+"]"
     }
     switch(script){
         case "start":
-           cmd = "electron "+electronDir;
-           return new Promise((resolve,reject)=>{
-              exec({
-                cmd, 
-                projectRoot : electronDir,
-              }).finally(()=>{
-                console.log("ant to exit");
-              })
-              setTimeout(resolve,1000)
-           })
+           return start();
           break;
         case "build":
           break;

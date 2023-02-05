@@ -3134,10 +3134,11 @@ export default class CommonDatagridComponent extends AppComponent {
         Elle pourra éventuellement passer directement la limite et les filtres à la fonction fetchdata
     */
     fetchData ({cb,callback,force,fetchOptions,...rest}){
-        if(!this._isMounted()) return Promise.resolve(this.state.data);
+        const sData = this.INITIAL_STATE.data || (!this.isTableData() || typeof this.props.fetchData !='function') ? this.props.data : this.state.data;
+        if(!this._isMounted()) return Promise.resolve(sData);
         if(this.isFetchingData) {
             if(!isPromise(this.fetchingPromiseData)){
-                this.fetchingPromiseData = Promise.resolve(this.state.data)
+                this.fetchingPromiseData = Promise.resolve(sData)
             }
             return this.fetchingPromiseData;
         };
@@ -3152,15 +3153,15 @@ export default class CommonDatagridComponent extends AppComponent {
                 fetchOptions = this.getFetchOptions({fetchOptions,convertToSQL:false});
                 if(typeof this.props.fetchOptionsMutator =='function' && this.props.fetchOptionsMutator(fetchOptions) === false){
                     this.isFetchingData = false;
-                    return resolve(this.state.data);
+                    return resolve(sData);
                 }
-                if(this.beforeFetchData(fetchOptions) === false) return resolve(this.state.data);
+                if(this.beforeFetchData(fetchOptions) === false) return resolve(sData);
                 if(this.willConvertFiltersToSQL()){
                     fetchOptions.selector = convertToSQL(fetchOptions.selector);
                 }
                 if(typeof this.props.beforeFetchData =='function' && this.props.beforeFetchData({...rest,context:this,force,fetchOptions,options:fetchOptions}) === false){
                     this.isFetchingData = false;
-                    return resolve(this.state.data);
+                    return resolve(sData);
                 }
                 if(force !== true && isArray(this.INITIAL_STATE.data)) {
                     return this.resolveFetchedDataPromise({cb,data:this.INITIAL_STATE.data}).then(resolve).catch(reject)
@@ -3190,8 +3191,7 @@ export default class CommonDatagridComponent extends AppComponent {
                             });;
                         })
                     } else {
-                        let data = !isPromise(fetchData)? Object.toArray(fetchData) : [];
-                        ///if(data.length <=0) data = this.state.data;
+                        const data = isObjOrArray(fetchData)? fetchData : sData;
                         return this.resolveFetchedDataPromise({cb,data,force}).then((data)=>{
                             resolve(data);
                         }).catch((e)=>{
@@ -3457,7 +3457,7 @@ export default class CommonDatagridComponent extends AppComponent {
         this[this.hidePreloaderOnRenderKey] = !!toggle;
     }
     onRender(){
-        if(!this.canHidePreloaderOnRender()) return ;
+        if(!this.canHidePreloaderOnRender() && this.isTableData() && this.canFetchOnlyVisibleColumns()) return ;
         if(typeof this.props.onRender ==='function' && this.props.onRender({context:this}) === false){
             return ;
         }
@@ -3545,11 +3545,11 @@ export default class CommonDatagridComponent extends AppComponent {
         }
     }
     getPointerEvents(){
-        if(this.enablePointerEventsRef.current) return true;
-        if(this.props.isLoading){
+        if(this.enablePointerEventsRef.current) return "auto";
+        if(this.props.isLoading == true){
             return "none";
         }
-        return this.isLoading()? "none":"auto";
+        return "auto";
     }
     updateLayout(p){
         this.measureLayout(state=>{

@@ -1,10 +1,13 @@
 module.exports = (argv,supportedScript)=>{
+    if(!Array.isArray(argv)) {
+      argv = process.argv.slice(2);
+    }
     const args = {};
-    if(!Array.isArray(argv) || !supportedScript || typeof supportedScript !=='object') return {};
+    supportedScript = typeof supportedScript =='object' && supportedScript || null;
     argv.map(arg=>{
       if(!arg || typeof arg != 'string') return;
       arg = arg.trim();
-      if(arg in supportedScript){
+      if(supportedScript && arg in supportedScript){
          args.script = arg;
       } else if(arg.includes("=")){
           const split = arg.split("=");

@@ -12,7 +12,7 @@ import {isWeb} from "$cplatform";
  * ce composant a pour but de définir la taille d'un contenu en se basant sur sa positin top, de manière à ce que, le contentu du composant fit
  * le reste de la taille de la page, avec comme valeur de la props minHeight
  */
-const AutoSizerVerticalComponent = React.forwardRef(({onLayout,isScrollView,withActivityIndicator,testID,withPadding,maxHeight,minHeight,style,children:cChildren,...rest},ref) => {
+const AutoSizerVerticalComponent = React.forwardRef(({onLayout,isScrollView,getRenderingStyle,withActivityIndicator,testID,withPadding,maxHeight,minHeight,style,children:cChildren,...rest},ref) => {
   testID = defaultStr(testID,'RN_AutoSizerVerticalComponent');
   const hasUpdateLayoutRef = React.useRef(false);
   const layoutRef = React.useRef(null);
@@ -58,13 +58,24 @@ const AutoSizerVerticalComponent = React.forwardRef(({onLayout,isScrollView,with
   const contentLayout = defaultObj(layout.layout);
   cStyle.minHeight = Math.min(Math.max(layout.height-defaultNumber(contentLayout.y),minHeight && minHeight ||250));
   const cMaxHeight = layout.height-defaultNumber(contentLayout.y);
-  if(cMaxHeight>=250){
+  if(cMaxHeight>=200){
     cStyle.maxHeight = cMaxHeight;
   }
   if(withPadding !== false){
       cStyle.paddingBottom = 50;
   }
-  const fStyle = !hasUpdateLayout && withActivityIndicator !== false && {flex:1,flexDirection:'column',maxHeight:cStyle.maxHeight,maxWidth : Math.max(layout.width-defaultNumber(contentLayout.x)),justifyContent:'center',alignItems:'center'} || {};
+  const restStyle = {};
+  const canUpdate = hasUpdateLayout || hasUpdateLayout || withActivityIndicator === false;
+  const fStyle = !canUpdate && {flex:1,flexDirection:'column',maxHeight:cStyle.maxHeight,maxWidth : Math.max(layout.width-defaultNumber(contentLayout.x)),justifyContent:'center',alignItems:'center'} || {};
+  if(maxHeight){
+    restStyle.maxHeight = maxHeight;
+  }
+  if(minHeight){
+     restStyle.minHeight = minHeight;
+  }
+  if(canUpdate && typeof getRenderingStyle ==='function'){
+      getRenderingStyle({...cStyle,...restStyle});
+  }
   return  <View ref={layoutRef} 
         onLayout={(a,b,c)=>{
             if(onLayout && onLayout(a,b,c) === false) return;
@@ -73,8 +84,8 @@ const AutoSizerVerticalComponent = React.forwardRef(({onLayout,isScrollView,with
             }
         }} 
     {...rest} 
-    style={[theme.styles.w100,cStyle,style,fStyle,maxHeight && {maxHeight}, minHeight && {minHeight}]} testID={testID+"_ScrollViewContainer"}>
-    {hasUpdateLayout || withActivityIndicator === false ?children : <ActivityIndicator size={'large'}/>}
+    style={[theme.styles.w100,cStyle,style,fStyle,restStyle]} testID={testID+"_ScrollViewContainer"}>
+    { canUpdate?children : <ActivityIndicator size={'large'}/>}
   </View>
 });
 

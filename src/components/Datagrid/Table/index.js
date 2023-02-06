@@ -187,7 +187,6 @@ const DatagridFactory = (Factory)=>{
                     });
                 }
             }   
-            const maxHeight = this.getMaxListHeight();
             const rPagination = showPagination ? <View style={[styles.paginationContainer]}>
                 <ScrollView testID={testID+"_Datagrid_Headers"} horizontal  style={styles.paginationContainerStyle} contentContainerStyle={styles.minW100}>
                     <View testID={testID+"_HeaderPaginationContent"} style={[styles.paginationContent]}>
@@ -292,7 +291,7 @@ const DatagridFactory = (Factory)=>{
                     </View>
                 </ScrollView>
             </View> : null;
-            return <View style={[styles.container,{flex:1,maxHeight}]} testID={testID+"_TableContainer"} pointerEvents={pointerEvents}>
+            return <View style={[styles.container,{flex:1}]} testID={testID+"_TableContainer"} pointerEvents={pointerEvents}>
                 <View ref={this.layoutRef} testID={testID+"_LayoutContainer"}>
                     {this.props.showActions !== false ? <DatagridActions 
                         pointerEvents = {pointerEvents}

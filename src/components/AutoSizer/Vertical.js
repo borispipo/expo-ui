@@ -12,7 +12,7 @@ import {isWeb} from "$cplatform";
  * ce composant a pour but de définir la taille d'un contenu en se basant sur sa positin top, de manière à ce que, le contentu du composant fit
  * le reste de la taille de la page, avec comme valeur de la props minHeight
  */
-const AutoSizerVerticalComponent = React.forwardRef(({onLayout,isScrollView,getRenderingStyle,withActivityIndicator,testID,withPadding,maxHeight,minHeight,style,children:cChildren,...rest},ref) => {
+const AutoSizerVerticalComponent = React.forwardRef(({onLayout,isScrollView,screenIndent,getRenderingStyle,withActivityIndicator,testID,withPadding,paddingBottom,maxHeight,minHeight,style,children:cChildren,...rest},ref) => {
   testID = defaultStr(testID,'RN_AutoSizerVerticalComponent');
   const hasUpdateLayoutRef = React.useRef(false);
   const layoutRef = React.useRef(null);
@@ -56,13 +56,19 @@ const AutoSizerVerticalComponent = React.forwardRef(({onLayout,isScrollView,getR
   const hasUpdateLayout = hasUpdateLayoutRef.current;
   const cStyle ={width:'100%',maxHeight:Math.max(height-100,250)};
   const contentLayout = defaultObj(layout.layout);
-  cStyle.minHeight = Math.min(Math.max(layout.height-defaultNumber(contentLayout.y),minHeight && minHeight ||250));
-  const cMaxHeight = layout.height-defaultNumber(contentLayout.y);
+  screenIndent = typeof screenIndent =='number' && screenIndent > 50 ? screenIndent : 100;
+  const y = Math.abs(defaultNumber(contentLayout.y));
+  const heightY = y < height - screenIndent ? y : height - screenIndent;
+  cStyle.minHeight = Math.min(Math.max(layout.height-heightY,minHeight && minHeight ||250));
+  const cMaxHeight = layout.height-heightY;
   if(cMaxHeight>=200){
     cStyle.maxHeight = cMaxHeight;
   }
-  if(withPadding !== false){
-      cStyle.paddingBottom = 50;
+  if(typeof paddingBottom =='number'){
+      cStyle.paddingBottom = paddingBottom; //: 50;
+  }
+  if(cStyle.minHeight && cStyle.maxHeight && cStyle.minHeight > cStyle.maxHeight){
+     cStyle.minHeight = cStyle.maxHeight;
   }
   const restStyle = {};
   const canUpdate = hasUpdateLayout || hasUpdateLayout || withActivityIndicator === false;
@@ -97,4 +103,5 @@ AutoSizerVerticalComponent.propTypes = {
    withActivityIndicator : PropTypes.bool,//si l'on utilisera l'activity indicator pour le chargement du contentu
    maxHeight : PropTypes.number,
    minHeight : PropTypes.number,
+   paddingBottom : PropTypes.number,
 }

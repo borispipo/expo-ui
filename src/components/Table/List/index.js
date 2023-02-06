@@ -14,9 +14,8 @@ const normalize = (size)=>{
 const AutoSizeVerticalList = React.forwardRef(({testID,autoSizerProps,...props},ref)=>{
     testID = defaultStr(testID,"RN_AutoSizeVerticalListComponent")
     autoSizerProps = defaultObj(autoSizerProps);
-    const sizeRef = React.useRef({});
-    return <AutoSizeVertical withPadding={false} getRenderingStyle={(size)=>{sizeRef.current = normalize(sizeRef.current);}} testID={testID+"_AutoSizerVertical"} {...autoSizerProps} >
-        <List {...props} autoSizedStyle = {sizeRef.current} style={[props.style,sizeRef.current]} ref={ref}/>
+    return <AutoSizeVertical withPadding={false} testID={testID+"_AutoSizerVertical"} {...autoSizerProps} >
+        <List {...props} style={[props.style]} ref={ref}/>
     </AutoSizeVertical>
 })
 

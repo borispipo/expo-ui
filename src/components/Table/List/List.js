@@ -80,6 +80,7 @@ const VirtuosoListComponent = React.forwardRef(({items,onRender,testID,renderIte
         if(isDOMElement(target) && onContentSizeChange){
             const {nativeEvent:{contentSize}} = normalizeEvent({target});
             setTimeout(()=>{
+                target.style.paddingBottom = "50px";
                 if(contentSize.width !== listSize.width || contentSize.height != listSize.height){
                     sizeRef.current = contentSize;
                     onContentSizeChange(contentSize.width,contentSize.height);
@@ -95,7 +96,7 @@ const VirtuosoListComponent = React.forwardRef(({items,onRender,testID,renderIte
     React.useOnRender((a,b,c)=>{
         if(onRender && onRender(a,b,c));
     },Math.max(Array.isArray(items) && items.length/10 || 0,500))
-    return <View {...containerProps} {...props} style={[{flex:1},containerProps.style,style,{minWidth:'100%',height:'100%',maxWidth:'100%'}]} onLayout={onLayout} testID={testID}>
+    return <View {...containerProps} {...props} style={[{flex:1},containerProps.style,style,autoSizedStyle,{minWidth:'100%',height:'100%',maxWidth:'100%'}]} onLayout={onLayout} testID={testID}>
         <Virtuoso
             {...r2}
             style = {listStyle}

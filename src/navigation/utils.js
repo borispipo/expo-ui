@@ -17,7 +17,8 @@ export const navigateToTableData = function(tableName,params,actionType){
     if(!tableName) return;
     const {perm} = params;
     let isAllowed = true;
-    const isTableData = actionType =='table_data';
+    actionType = defaultStr(actionType,"tabledata").replaceAll(" ","").toLowerCase();
+    const isTableData = actionType =='tabledata';
     if(isNonNullString(perm)){
         isAllowed = Auth.isAllowedFromStr(perm)
     } else if(actionType =='struct_data') {

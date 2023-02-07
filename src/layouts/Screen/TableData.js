@@ -214,7 +214,6 @@ export default class TableDataScreenComponent extends FormDataScreen{
             onKeyEvent,
             canMakePhoneCall : customCanMakePhoneCall,
             makePhoneCallProps : customMakePhoneCallProps,
-            beforeSave,
             closeOnSave,closeAfterSave,
             table : cTable,
             onSave,
@@ -349,6 +348,13 @@ export default class TableDataScreenComponent extends FormDataScreen{
         formProps.onKeyEvent = this.onKeyEvent.bind(this);
         rActionsArg.elevation = typeof rActionsArg.contentProps.elevation ==="number"? contentProps.elevation : typeof elevation == 'number' ? elevation : 5;
         rActionsArg.formProps = formProps;
+        if(typeof this.props.getComponentProps =='function'){
+            const p = this.props.getComponentProps(rActionsArg);
+            if(isObj(p)){
+                this.currentRenderingProps = p;
+                return p;
+            }
+        }
         return rActionsArg;
     }
     renderTabs(args){

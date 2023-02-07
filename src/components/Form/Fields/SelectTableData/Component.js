@@ -50,7 +50,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyTable
         }
     }
     const isMounted = React.useIsMounted();
-    const showAdd = isFilter || !foreignKeyTable ? false : React.useRef(Auth.isTableDataAllowed({foreignKeyTable,action:'create'}) ? defaultVal(props.showAdd,props.showAddBtn,true) : false).current;
+    const showAdd = isFilter || !foreignKeyTable ? false : React.useRef(Auth.isTableDataAllowed({table:foreignKeyTable,action:'create'}) ? defaultVal(props.showAdd,props.showAddBtn,true) : false).current;
     const [state,setState] = React.useState({
         items : [],isLoading : true,
     });

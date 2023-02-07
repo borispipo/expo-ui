@@ -11,5 +11,7 @@ export default [AuthSignInScreen,UserProfileScreen,
 
 //export {PermProfiles};
 
-//export {default as PermLines} from "./PermLines";
+export {default as PermLines} from "./PermLines";
+export {default as PermLine} from "./PermLine";
+export {default as PermText} from "./PermText";
 //export {default as PermProfile} from "./PermProfile";

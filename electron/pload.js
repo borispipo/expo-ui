@@ -101,8 +101,8 @@ module.exports = (ELECTRON,paths)=>{
     
     const projectRoot = (paths || {}).projectRoot;
     const electronProjectRoot = projectRoot && fs.existsSync(path.resolve(projectRoot,"electron")) && path.resolve(projectRoot,"electron") || null;
-    const rendererProcessIndex = electronProjectRoot && fs.existsSync(path.resolve(electronProjectRoot,"renderer.process.js")) && path.resolve(electronProjectRoot,"renderer.process.js");
-    //pour étendre les fonctionnalités au niveau du renderer proceess, bien vouloir écrire dans le fichier projectRoot/electron/renderer.process.js
+    const rendererProcessIndex = electronProjectRoot && fs.existsSync(path.resolve(electronProjectRoot,"renderer","index.js")) && path.resolve(electronProjectRoot,"renderer","index.js");
+    //pour étendre les fonctionnalités au niveau du renderer proceess, bien vouloir écrire dans le fichier projectRoot/electron/renderer/index.js
     // dans lequel exporter une fonction prenant en paramètre l'objet electron, que l'on peut étendre et le rendre accessible depuis l'application
     const rendererProcess = rendererProcessIndex && require(`${rendererProcessIndex}`);    
    (typeof rendererProcess ==='function') && rendererProcess(ELECTRON);

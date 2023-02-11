@@ -5,24 +5,31 @@ process.on('unhandledRejection', err => {
   throw err;
 });
 const supportedScript = {
+  "init" : true, //initialize electron app
   "start" : true,//start electron
   "build" : true, //script pour faire un build
+  "package" : true, ///script pour le packagin de l'application
 }
+const createDir = require("../electron/utils/createDir");
+const writeFile = require("../electron/utils/writeFile");
+const copy = require("../electron/utils/copy");
 const path= require("path");
 const fs = require("fs");
 const dir = path.resolve(__dirname);
 const electronDir = path.resolve(dir, "..","electron");
-const exec = require("../electron/exec");
-let projectRoot = process.cwd();
-const createDir = require("../electron/createDir");
-const copyDir = require("../electron/copy");
-const parsedArgs = require("../electron/parseArgs")(null,supportedScript);
+const exec = require("../electron/utils/exec");
+const projectRoot = path.resolve(process.cwd());
+if(projectRoot == dir){
+   throw `Invalid project root ${projectRoot}; project root must be different to ${dir}`
+}
+
+const parsedArgs = require("../electron/utils/parseArgs")(null,supportedScript);
 if(!parsedArgs.script || !(parsedArgs.script in supportedScript)){
    console.error ("Erreur : script invalide, vous devez spécifier script figurant parmi les script : ["+Object.keys(supportedScript).join(", ")+"]");
    process.exit();
 }
-const {script} = parsedArgs;
 let cmd = null;
+const script = parsedArgs.script;
 /**** 
  *    1. installer electron globallement : npm i -g electron@latest
  *  cmde : [cmd] start electron config=[path-to-config-relative-to-project-dir] 
@@ -39,9 +46,26 @@ if(parsedArgs.electron){
   if(typeof paths !=='object' || !paths || !paths.projectRoot){
       throw "Fichiers des chemins d'application invalide!!! merci d'exécuter l'application en environnement web|android|ios puis réessayez"
   }
-  projectRoot = path.resolve(projectRoot);
+  /**** le project root d'où a été lancé le script electron doit être le même que celui de l'application principale */
+  if(projectRoot !== paths.projectRoot){
+     throw `main app project root ${paths.projectRoot} must be equals to ${projectRoot} in which you want to generate electron app`; 
+  }
+  const electronProjectRoot = path.resolve(projectRoot,"electron");
+  const isElectionInitialized = require("../electron/is-initialized")(electronProjectRoot);
+  if(!isElectionInitialized || script =='init'){
+      if(script !=='init'){
+          console.log("initializing electron application before ....");
+      }
+      return require("./init")({
+         projectRoot,
+         electronDir,
+         electronProjectRoot,
+         paths,
+      });
+  }
+  require("../electron/create-index-file")(electronProjectRoot);
   const out = parsedArgs.out || parsedArgs["output-dir"];
-  const outDir = out && path.dirname(out) && path.resolve(projectRoot,path.dirname(out),"electron") || path.resolve(projectRoot,"dist","electron")
+  const outDir = out && path.dirname(out) && path.resolve(projectRoot,path.dirname(out),"electron") || path.resolve(electronProjectRoot,"bin")
   if(!createDir(outDir)){
       throw "Impossible de créer le répertoire <<"+outDir+">> du fichier binaire!!";
   }
@@ -51,16 +75,17 @@ if(parsedArgs.electron){
       console.warn("Logo de l'application innexistant!! Vous devez spécifier le logo de votre application, fichier ["+(logoPath)+"]")
     }
   }
-  const buildOutDir = path.resolve(electronDir,"dist");
+  const buildOutDir = path.resolve(electronProjectRoot,"dist");
   const indexFile = path.resolve(buildOutDir,"index.html");
   const webBuildDir = path.resolve(projectRoot,"web-build");
+  const packagePath = path.resolve(projectRoot,"package.json");
   const url = parsedArgs.url  && parsedArgs.url.trim() || "";
   const start = x=>{
      return new Promise((resolve,reject)=>{
-      cmd = "electron "+electronDir+" url="+url;
+      cmd = "electron "+electronProjectRoot+" url="+url;
         exec({
           cmd, 
-          projectRoot : electronDir,
+          projectRoot : electronProjectRoot,
         }).finally(()=>{
           console.log("ant to exit");
         })
@@ -73,12 +98,13 @@ if(parsedArgs.electron){
   const promise = new Promise((resolve,reject)=>{
     const next = ()=>{
         if(fs.existsSync(webBuildDir)){
-            return copyDir(webBuildDir,buildOutDir).catch(reject).then(resolve);
+            return copy(webBuildDir,buildOutDir).catch(reject).then(resolve);
         } else {
           reject("dossier web-build exporté par electron innexistant!!");
         }
       }
       if(!url && (parsedArgs.compile || !fs.existsSync(path.resolve(webBuildDir,"index.html")))){
+        console.log("exporting expo web app ...");
         cmd = "npx expo export:web";
         return exec({cmd,projectRoot}).then(next).catch(reject);
       }
@@ -88,12 +114,32 @@ if(parsedArgs.electron){
     if(!fs.existsSync(buildOutDir) || !fs.existsSync(indexFile)){
        throw "répertoire d'export web invalide où innexistant ["+buildOutDir+"]"
     }
-    switch(script){
+    switch(parsedArgs.script){
         case "start":
            return start();
           break;
         case "build":
           break;
+        default :
+          if(!fs.existsSync(packagePath)){
+              throw "package.json file does not exist in "+projectRoot+". please make jure that your have running package script in expo root application";
+          }
+          const packageObj = require(`${packagePath}`);
+          const electronPackage = require(`${path.resolve(electronProjectRoot,'package.json')}`);
+          electronPackage.name = packageObj.name;
+          electronPackage.version = packageObj.version;
+          //copying package json in build folder
+          writeFile(path.resolve(electronProjectRoot,"package.json"),JSON.stringify(electronPackage,null,"\t"));
+          const platform = parsedArgs.platform || process.platform;
+          console.log("packaing app from ",electronProjectRoot);
+          return require("./package")({
+              src : electronProjectRoot,
+              dist : path.resolve(outDir,platform),
+              platform,
+              arch : parsedArgs.arch || undefined,
+              projectRoot : electronProjectRoot,
+         });
+         break;
     }
   }).catch((e)=>{
     console.log(e," is cathing ggg");

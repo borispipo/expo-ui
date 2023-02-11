@@ -1,0 +1,32 @@
+{
+	"name": "sage-ftc",
+	"version": "1.0.0",
+	"description": "Accès distant aux données commerciales et comptables Sage100C de partout",
+	"main": "./index.js",
+	"scripts": {
+		"test": "test",
+		"start": "npx expo start",
+		"start-c": "npx expo start -c",
+		"build": "npx expo export:web",
+		"electron": "node ./expo-ui/bin start electron url=http://localhost:19006/",
+		"build-android": "eas build --clear-cache -p android --profile preview",
+		"delete-node-modules": "rimraf ./**/node_modules",
+		"package": "node ./expo-ui/bin package compile2"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/borispipo/sage-ftc.git"
+	},
+	"keywords": [
+		"XposeFTC",
+		"Sage100C",
+		"Accès",
+		"distant"
+	],
+	"author": "BorisFouomene@fto-consulting",
+	"license": "UNLICENCED",
+	"bugs": {
+		"url": "https://github.com/borispipo/sage-ftc/issues"
+	},
+	"homepage": "./"
+}

@@ -1,31 +1,25 @@
-const {app, BrowserWindow,Tray,Menu,MenuItem,systemPreferences,powerMonitor,dialog, nativeTheme} = require('electron')
-const appConfig  = {}//require("../app/config");
-const session = require("./session");
+const {app, BrowserWindow,Tray,Menu,MenuItem,globalShortcut,systemPreferences,powerMonitor,ipcMain,dialog, nativeTheme} = require('electron')
+const appConfig  = {};
+const session = require("./utils/session");
 const path = require("path");
 const fs = require("fs");
 const ePath = path.resolve(__dirname);
-const getDirname = require("./getDirname");
 if(!fs.existsSync(path.resolve(ePath,"paths.json"))){
   throw {message : 'Chemin de noms, fichier paths.json introuvable!! Exécutez l\'application en enviornnement web|mobile|android|ios puis re-essayez'}
 }
 const paths = require("./paths.json");
-const images = paths.$images, assets = paths.$assets, logo = paths.logo;
 const projectRoot = paths.projectRoot || '';
 const electronProjectRoot = projectRoot && fs.existsSync(path.resolve(projectRoot,"electron")) && path.resolve(projectRoot,"electron") || null;
-const mainProcessIndex = electronProjectRoot && fs.existsSync(path.resolve(electronProjectRoot,"main.process.js")) && path.resolve(electronProjectRoot,"main.process.js");
+const mainProcessIndex = electronProjectRoot && fs.existsSync(path.resolve(electronProjectRoot,"main","index.js")) && path.resolve(electronProjectRoot,"main","index.js");
 const mainProcessRequired = mainProcessIndex && require(`${mainProcessIndex}`);
-//pour étendre les fonctionnalités au niveau du main proceess, bien vouloir écrire dans le fichier projectRoot/electron/main.process.js
+//pour étendre les fonctionnalités au niveau du main proceess, bien vouloir écrire dans le fichier projectRoot/electron/main/index.js
 const mainProcess = mainProcessRequired && typeof mainProcessRequired =='object'? mainProcessRequired : {};
 // Gardez une reference globale de l'objet window, si vous ne le faites pas, la fenetre sera
 // fermee automatiquement quand l'objet JavaScript sera garbage collected.
 let win = undefined;
-const icon = require("./getIcon")(
-    logo && fs.existsSync(logo) && getDirname(logo),
-    images && getDirname(images) || '',
-    assets && getDirname(assets) || '',
-);
 Menu.setApplicationMenu(null);
-let clipboadContextMenu = (_, props) => {
+
+const clipboadContextMenu = (_, props) => {
   if (props.isEditable || props.selectionText) {
     const menu = new Menu();
     if(props.selectionText){
@@ -40,9 +34,9 @@ let clipboadContextMenu = (_, props) => {
     menu.popup();
   } 
 };
-
-
-
+const log = (message)=>{
+  return win != null && win && win.webContents.send("console.log",message);
+}
 const setOSTheme = (theme) => {
   theme = theme && typeof theme == "string"? theme : "light";
   theme = theme.toLowerCase().trim();
@@ -64,7 +58,6 @@ function createBrowserWindow (options){
     ...options.webPreferences,
     contextIsolation: true,
     devTools: typeof options.webPreferences.devTools === 'boolean'? options.webPreferences.devTools : false,
-    icon,
     webSecurity : true,
     autoHideMenuBar: true,
     allowRunningInsecureContent: false,
@@ -89,7 +82,7 @@ function createBrowserWindow (options){
   if(showOnLoad){
      options.show = false;
   }
-  if(mainProcess && typeof mainProcess.beforeCreateWindow =='function'){
+  if(typeof mainProcess.beforeCreateWindow =='function'){
      mainProcess.beforeCreateWindow(options);
   }
   let _win = new BrowserWindow(options);
@@ -113,7 +106,7 @@ function createBrowserWindow (options){
   });
   return _win;
 }
-const args = require("./parseArgs")();
+const args = require("./utils/parseArgs")();
 function createWindow () {
   // Créer le browser window
   win = createBrowserWindow({
@@ -124,17 +117,13 @@ function createWindow () {
       devTools : true,
     }
   });
-  
- const log = (message)=>{
-    return win != null && win && win.webContents.send("console.log",message);
-  }
-  // create a new `splash`-Window 
-  /*** @see : http://leftstick.github.io/splash-screen/ */
-  let splash = new BrowserWindow({
-      width: 500, height: 400, transparent: true, frame: false, alwaysOnTop: true});
-  let copyRight = appConfig.name+" version "+appConfig.version+". "+appConfig.copyRight;
-  copyRight = encodeURI(copyRight);
-  //splash.loadURL(`file://${__dirname}/splash/index.html?copyRight=${copyRight}`);
+
+ const sOptions = {width: 500, height: 400, transparent: true, frame: false, alwaysOnTop: true};
+  const splash = typeof mainProcess.splashScreen ==='function'&& mainProcess.splashScreen(sOptions) 
+    || typeof mainProcess.splash ==='function' && mainProcess.splash(sOptions) 
+    || (mainProcess.splash instanceof BrowserWindow) && mainProcess.splash
+    || (mainProcess.splashScreen instanceof BrowserWindow) && mainProcess.splashScreen;
+    null;
   let hasInitWindows = false;
   win.on('show', () => {
     //win.blur();
@@ -163,8 +152,11 @@ function createWindow () {
 
   win.once("ready-to-show",function(){
       win.minimize()
-      if(splash !== null)splash.destroy();
-      splash = null;
+      try {
+        if(splash && splash instanceof BrowserWindow){
+          splash.destroy();
+        }
+      } catch{ }
       win.restore();
       win.show();
       //log(icon," is consooleeeee")
@@ -179,7 +171,7 @@ function createWindow () {
   if(args.url){
     win.loadURL(args.url);
   } else {
-    win.loadFile(path.resolve(path.join(__dirname,"dist",'index.html')))
+    win.loadFile(path.resolve(path.join(electronProjectRoot,"dist",'index.html')))
   }
 
   win.on('unresponsive', async () => {
@@ -199,7 +191,7 @@ function createWindow () {
   })
 
  // Ouvre les DevTools.
- win.webContents.openDevTools()
+ //win.webContents.openDevTools()
   
   // Émit lorsque la fenêtre est fermée.
   win.on('closed', () => {
@@ -243,8 +235,12 @@ function createWindow () {
   win.on('resize',onWinResizeEv);
   win.off('move',onWinResizeEv);
   win.on('move',onWinResizeEv);
+  if(mainProcess && typeof mainProcess =='object' && typeof mainProcess.onCreateWindow =='function'){
+     mainProcess.onCreateWindow(win);
+  }
 }
-let quit = ()=>{
+
+const quit = ()=>{
   try {
     app.quit();
   } catch(e){
@@ -260,19 +256,42 @@ app.on('window-all-closed', () => {
   }
 })
 
+const toggleDevTools = (value)=>{
+  if(win !==null && win.webContents){
+    const isOpen= win.webContents.isDevToolsOpened();
+    value = value === undefined ? !isOpen : value;
+    if(value && !isOpen){
+        win.webContents.openDevTools();
+        return win.webContents.isDevToolsOpened();
+    } else {
+        if(isOpen) win.webContents.closeDevTools();
+    }
+    return win.webContents.isDevToolsOpened();
+  }
+  return false;
+}
+ipcMain.on("electron-toggle-dev-tools",function(event,value) {
+  return toggleDevTools(value);
+});
+
+
 app.whenReady().then(() => {
-  appReady = true;
+  if(typeof mainProcess.whenReady =='function'){
+     mainProcess.whenReady();
+  } else if(typeof mainProcess.appOnReady =='function'){
+     mainProcess.appOnReady();
+  }
+  globalShortcut.register('CommandOrControl+F12', () => {
+    toggleDevTools();
+  });
+}).then(()=>{
   createWindow();
   app.on('activate', function () {
     if (win == null || (BrowserWindow.getAllWindows().length === 0)) createWindow()
   });
 })
 
-const {ipcMain} = require("electron");
-
-ipcMain.on("electron-restart-app",x =>{
-  app.relaunch();
-})
+ipcMain.on("electron-restart-app",x =>{app.relaunch();})
 let tray = null;
 let isJSON = function (json_string){
   if(!json_string || typeof json_string != 'string') return false;
@@ -284,7 +303,7 @@ ipcMain.on("update-system-tray",(event,opts)=>{
   let {contextMenu,tooltip} = opts;
   if(tray){
   } else {
-    tray = new Tray(icon? icon : undefined);
+    tray = new Tray();
   }        
   if(!tooltip || typeof tooltip !=="string"){
       tooltip = ""
@@ -327,8 +346,15 @@ ipcMain.on("electron-ask-for-media-access",(event,mediaType)=>{
 });
 
 ipcMain.on("electron-get-app-icon",(event)=>{
-  event.returnValue = icon;
-  return icon;
+  event.returnValue = win != win && win.getIcon && win.getIcon();
+});
+ipcMain.on("electron-set-app-icon",(event,iconPath)=>{
+   if(iconPath && win != null){
+      win.setIcon(iconPath);
+      event.returnValue = iconPath;
+   } else {
+      event.returnValue = null;
+   }
 });
 
 ipcMain.on('minimize-main-window', () => {
@@ -449,20 +475,7 @@ ipcMain.on("electron-is-dev-tools-open",function(event,value) {
   }
   return false;
 })
-ipcMain.on("electron-toggle-dev-tools",function(event,value) {
-  if(win !==null && win.webContents){
-    const isOpen= win.webContents.isDevToolsOpened();
-    value = value === undefined ? !isOpen : value;
-    if(value && !isOpen){
-        win.webContents.openDevTools();
-        return win.webContents.isDevToolsOpened();
-    } else {
-        if(isOpen) win.webContents.closeDevTools();
-    }
-    return win.webContents.isDevToolsOpened();
-  }
-  return false;
-})
+
 
 ipcMain.on("electron-window-set-progressbar",(event,interval)=>{
    if(typeof interval !="number" || interval <0) interval = 0;

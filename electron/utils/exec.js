@@ -31,7 +31,7 @@ const loaderTimer = function(timout) {
     var P = ["\\", "|", "/", "-"];
     var x = 0;
     return setInterval(function() {
-      process.stdout.write("\r "+text+P[x++]);
+      process.stdout.write("\r "+text+" "+P[x++]);
       x &= 3;
     }, timout);
   };
@@ -47,7 +47,10 @@ module.exports = function(cmdOpts,options){
         return Promise.reject("Commande de script invalide, veuillez spécifier une chaine de caractère non nulle");
     }
     if(typeof projectRoot =='string' && projectRoot && fs.existsSync(projectRoot)){
-        return _exec('cd '+projectRoot).then((r)=>{
+        return _exec(`cd ${projectRoot}`).then((r)=>{
+            try {
+                process.chdir(projectRoot);
+            } catch(e){}
             return _exec(cmd,cmdOpts,logMessages);
         })
     }

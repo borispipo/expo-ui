@@ -1,6 +1,6 @@
 const path = require("path");
 const fs = require("fs");
-const writeFile = require("./electron/writeFile");
+const writeFile = require("./electron/utils/writeFile");
 module.exports = (opts)=>{
     const dir = path.resolve(__dirname);
     const base = opts.base || process.cwd();
@@ -133,14 +133,14 @@ module.exports = (opts)=>{
         const l1 = path.resolve($assets,"logo.png"), l2 = path.resolve($assets,"logo.png");
         const logoPath = fs.existsSync(l1)? l1 : fs.existsSync(l2)? l2 : undefined;
         const ePath = path.resolve(electronAssetsPath,"images","logo.png");
-        if(logoPath && require("./electron/createDir")(ePath)){
+        if(logoPath && require("./electron/utils/createDir")(ePath)){
             fs.copyFileSync(logoPath,ePath,fs.constants.COPYFILE_FICLONE);
             electronPaths.logo = logoPath;
         }
     }
     const jsonPath = path.resolve(base,'package.json');
     if(fs.existsSync(jsonPath)){
-        require("./electron/copy")(jsonPath,path.resolve(dir,"electron","package.app.json"));
+        require("./electron/utils/copy")(jsonPath,path.resolve(dir,"electron","package.json"));
     }
     ///on sauvegarde les chemins des fichiers utiles, qui seront utilisées par la variable electron plus tard
     writeFile(path.resolve(dir,"electron","paths.json"),JSON.stringify(electronPaths));

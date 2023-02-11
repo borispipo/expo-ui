@@ -1,5 +1,5 @@
-const createDir = require("./createDir");
-const postMessage = require("./postMessage");
+const createDir = require("./utils/createDir");
+const postMessage = require("./utils/postMessage");
 const { contextBridge, ipcRenderer, shell } = require('electron')
 const appInstance = require("./app/instance");
 const path = require("path");
@@ -7,7 +7,7 @@ const fs = require("fs");
 const isObj = x=>x && typeof x =='object' && !Array.isArray(x);
 const isNonNullString = x=>x && typeof x =='string';
 const ePath = path.resolve(__dirname);
-const packagePath = path.resolve(ePath,"package.app.json");
+const packagePath = path.resolve(ePath,"package.json");
 if(!fs.existsSync(packagePath)){
     throw {message : "Chemin du fichier "+packagePath+ " introuvable"};
 }
@@ -40,7 +40,7 @@ if(typeof separator != 'string' || !separator){
         return filePath.substring(0, sepIndex+1);
     })();
 }
-const Config = require('./config');
+const Config = require('./utils/config');
 let confPath = process.env.ProgramData || process.env.ALLUSERSPROFILE;
 if(confPath && typeof confPath =="string"){
     if(fs.existsSync(confPath)){

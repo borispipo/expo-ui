@@ -1,4 +1,4 @@
-const postMessage = require("../postMessage");
+const postMessage = require("../utils/postMessage");
 const callbackRef = {current:null};
 const instanceRef = {current:null};
 const isValid = APP => APP && typeof APP =='object' && typeof APP.trigger =='function';

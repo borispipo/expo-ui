@@ -40,10 +40,8 @@ Object.map(Utils,(v,i)=>{
      window[i] = v;
   }
 });
-export default function getIndex(options){
-  const {App,onMount,onUnmount,preferences:appPreferences} = defaultObj(options);
-  return function MainIndexComponent() {
-    const isScreenFocusedRef = React.useRef(true);
+export default function getIndex({App,onMount,onUnmount,preferences:appPreferences}){
+  const isScreenFocusedRef = React.useRef(true);
     ///garde pour chaque écran sa date de dernière activité
     const screensRef = React.useRef({});//la liste des écrans actifs
     const activeScreenRef = React.useRef('');
@@ -202,7 +200,6 @@ export default function getIndex(options){
         </GestureHandlerRootView>
       </SWRConfig>
     );
-  }
 };
 
 setDeviceIdRef.current = ()=>{

@@ -3,6 +3,8 @@
 // license that can be found in the LICENSE file.
 import {navigate,sanitizeName} from "$cnavigation";
 import {isNonNullString,defaultStr,defaultObj,isObj} from "$utils";
+
+
 export const tableDataRouteName = 'TableData';
 
 export const navigateToTableData = function(tableName,params,actionType){
@@ -69,3 +71,4 @@ export const navigateToTableDataList = function (tableName,params){
     return false;
 }
 
+export * from "$cnavigation";

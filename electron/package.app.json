@@ -1,0 +1,56 @@
+{
+  "name": "sage-ftc",
+  "version": "1.0.0",
+  "description": "Accès distant aux données commerciales et comptables Sage100C de partout",
+  "main": "index.js",
+  "devMail": "sage-ftc@fto-consulting.com",
+  "devWebsite": "http://fto-consulting.com/sage-ftc/",
+  "copyRight": "FTO consulting@Août 2022",
+  "id": "com.ftc.apps.sage.ftc",
+  "theme": {
+    "ligth": {
+      "primary": "#3D8B5F",
+      "secondary": "#354448"
+    }
+  },
+  "convertDatagridFiltersToSQL": true,
+  "scripts": {
+    "test": "test",
+    "start": "npx expo start",
+    "start-c": "npx expo start -c",
+    "build": "npx expo export:web",
+    "electron": "node ./expo-ui/bin start electron url=http://localhost:19006/",
+    "build-android": "eas build --clear-cache -p android --profile preview",
+    "delete-node-modules": "rimraf ./**/node_modules",
+    "package": "node ./expo-ui/bin package compile2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/borispipo/sage-ftc.git"
+  },
+  "keywords": [
+    "XposeFTC",
+    "Sage100C",
+    "Accès",
+    "distant"
+  ],
+  "author": "BorisFouomene@fto-consulting",
+  "license": "UNLICENCED",
+  "bugs": {
+    "url": "https://github.com/borispipo/sage-ftc/issues"
+  },
+  "homepage": "./",
+  "dependencies": {
+    "@fto-consult/expo-ui": "^4.2.0",
+    "react-native": "0.70.5"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
+    "@babel/preset-react": "^7.18.6",
+    "@expo/metro-config": "^0.5.2",
+    "@expo/webpack-config": "^0.17.4",
+    "babel-plugin-inline-dotenv": "^1.7.0",
+    "babel-plugin-module-resolver": "^4.1.0",
+    "babel-plugin-transform-inline-environment-variables": "^0.4.4"
+  }
+}

@@ -7,6 +7,7 @@ const writeFile = require("../electron/utils/writeFile");
 const copy = require("../electron/utils/copy");
 const electronDir = path.resolve(__dirname,"..","electron");
 const createIndexFile = require("../electron/create-index-file");
+const appSuffix = " Desktop";
 
 module.exports = ({
     projectRoot,
@@ -29,6 +30,11 @@ module.exports = ({
             "compile2start" : "npx expo-ui electron start compile",
             "package" : "npx expo-ui electron package",
             "compile2package" : "npx expo-ui electron package compile"
+        }
+        projectRootPackage.realAppName = typeof projectRootPackage.realAppName =="string" && projectRootPackage.realAppName || projectRootPackage.name;
+        projectRootPackage.name = projectRootPackage.name.trim();
+        if(!projectRootPackage.name.endsWith(appSuffix)){
+            projectRootPackage.name +=appSuffix;
         }
         writeFile(electronProjectRootPackage,JSON.stringify(projectRootPackage,null,'\t'));
         if(!fs.existsSync(electronProjectRootPackage)){

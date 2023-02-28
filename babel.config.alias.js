@@ -140,7 +140,7 @@ module.exports = (opts)=>{
     }
     const jsonPath = path.resolve(base,'package.json');
     if(fs.existsSync(jsonPath)){
-        require("./electron/utils/copy")(jsonPath,path.resolve(dir,"electron","package.json"));
+        require("./electron/utils/copy")(jsonPath,path.resolve(dir,"electron","package.app.json"));
     }
     ///on sauvegarde les chemins des fichiers utiles, qui seront utilisées par la variable electron plus tard
     writeFile(path.resolve(dir,"electron","paths.json"),JSON.stringify(electronPaths));

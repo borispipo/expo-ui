@@ -1,0 +1,4 @@
+@see : https://docusaurus.io/fr/docs
+@see : https://www.npmjs.com/package/component-docs
+@see : https://reactcommunity.org/react-docgen/
+@see : https://react-docgen.dev/

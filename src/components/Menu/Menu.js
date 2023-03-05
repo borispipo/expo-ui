@@ -474,7 +474,8 @@ class _Menu extends AppComponent {
       positionStyle.top = SCREEN_INDENT;
     }
     const maxMenuHeight = windowLayout.height - top - SCREEN_INDENT;
-    const contentContainerStyle = maxMenuHeight > SCREEN_INDENT ? {maxHeight:maxMenuHeight} : undefined;
+    const maxHeight = maxMenuHeight >=0 ? Math.max(Math.min(maxMenuHeight,menuLayout.height),150)  : windowLayout.height - SCREEN_INDENT*2;
+    const contentContainerStyle = maxMenuHeight > SCREEN_INDENT ? {maxHeight} : undefined;
     return (
       <View
         testID = {testID}

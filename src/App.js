@@ -40,7 +40,7 @@ Object.map(Utils,(v,i)=>{
      window[i] = v;
   }
 });
-export default function getIndex({App,onMount,onUnmount,preferences:appPreferences}){
+export default function getIndex({onMount,onUnmount,onRender,preferences:appPreferences}){
   const isScreenFocusedRef = React.useRef(true);
     ///garde pour chaque écran sa date de dernière activité
     const screensRef = React.useRef({});//la liste des écrans actifs
@@ -48,6 +48,7 @@ export default function getIndex({App,onMount,onUnmount,preferences:appPreferenc
     const prevActiveScreenRef = React.useRef('');
     const appStateRef = React.useRef({});
     const isKeyboardOpenRef = React.useRef(false);
+    React.useOnRender(onRender);
     React.useEffect(()=>{
         ///la fonction de rappel lorsque le composant est monté
         let cb = typeof onMount =='function'? onMount() : null;
@@ -116,8 +117,6 @@ export default function getIndex({App,onMount,onUnmount,preferences:appPreferenc
         theme,
         ...defaultObj(pref),
     }),[theme,pref]);
-    const child = <Index theme={theme}/>;
-    const children = typeof App =='function'? App({children:child,APP}) : child;
     return (
       <SWRConfig 
         value={{
@@ -187,7 +186,7 @@ export default function getIndex({App,onMount,onUnmount,preferences:appPreferenc
                                   <DialogProvider responsive/>
                                   <AlertProvider SimpleSelect={SimpleSelect}/>
                                   <FormDataDialogProvider/>  
-                                  {children}
+                                  {<Index theme={theme}/>}
                                   <ErrorBoundaryProvider/>
                                   <BottomSheetProvider/>
                                 </PreferencesContext.Provider>  

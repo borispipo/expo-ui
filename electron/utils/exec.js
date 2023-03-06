@@ -2,6 +2,9 @@ const exec = require('child_process').exec;
 const fs = require("fs");
 const _exec = (cmd,cmdOpts,logMessages)=>{
     cmdOpts = typeof cmdOpts =='object' && cmdOpts || {};
+    cmdOpts.env = typeof cmdOpts.env =="object" && cmdOpts.env || {};
+    cmdOpts.env = {...process.env,...cmdOpts.env};
+    cmdOpts.env.platform = cmdOpts.env.platform || "electron";
     return new Promise((resolve,reject)=>{
         const timer = cmdOpts.loader !==false ? loaderTimer(cmd) : null;
         exec(cmd,cmdOpts, (error, stdout, stderr) => {

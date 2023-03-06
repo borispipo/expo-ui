@@ -2,21 +2,30 @@
 const createExpoWebpackConfigAsync = require('@expo/webpack-config')
 const path = require("path");
 const isObj = x => x && typeof x =='object' && !Array.isArray(x);
+const webpack = require("webpack");
+const fs = require("fs");
+const writeFile = require("./electron/utils/writeFile");
+const supportedPlatforms = ["web","electron"];
 // Expo CLI will await this method so you can optionally return a promise.
 module.exports = async function(env, argv,opts) {
     env = env || {};
     opts = typeof opts =="object" && opts ? opts : {};
     const babel = isObj(opts.babel)? opts.babel : {};
-    const isElectron = typeof env.platform =="string" && env.platform.toLowerCase().trim() ==='electron';
+    const isElectron = process.env.isElectron || process.env.platform =="electron" || typeof env.platform =="string" && env.platform.toLowerCase().trim() ==='electron';
     if(isElectron){
        env.platform = "electron";
        env.mode = env.mode =="production" && "production" || "development";
        env.pwa = false;
     }
+    const platform = isElectron && "electron" || process.env.platform && supportedPlatforms.includes(process.platform) && process.platform || typeof opts.platform =="string" && supportedPlatforms.includes(opts.platform)? opts.platform : "web";
+    //writeFile(path.resolve(__dirname,"is-electron-platform.txt"),`platform = ${process.env.platform} and is electron = true ${process.env.isElectron}`)
     const transpileModules = Array.isArray(opts.transpileModules)? opts.transpileModules : [];
+    const projectRoot = opts.projectRoot && typeof opts.projectRoot =="string" && fs.existsSync(opts.projectRoot) && opts.projectRoot || process.cwd();
     const config = await createExpoWebpackConfigAsync(
       {
         ...env,
+        platform,
+        projectRoot,
         babel: {
           ...babel,
           dangerouslyAddModulePathsToTranspile: [
@@ -51,6 +60,10 @@ module.exports = async function(env, argv,opts) {
     config.performance.maxAssetSize = typeof config.performance.maxAssetSize =='number'? config.performance.maxAssetSize : 512000;
     config.devtool = (config.mode === 'development') ? 'inline-source-map' : false;
     require("./compiler.config.js")({config,...opts});
+    // fix "process is not defined" error:
+    config.plugins.push(new webpack.ProvidePlugin({
+      process: 'process/browser',
+    }));
     if(isElectron){
       const electronPath = process.cwd();
       config.output = config.output || {};

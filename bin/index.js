@@ -52,6 +52,8 @@ if(parsedArgs.electron){
   }
   const electronProjectRoot = path.resolve(projectRoot,"electron");
   const isElectionInitialized = require("../electron/is-initialized")(electronProjectRoot);
+  process.env.isElectron = true;
+  process.env.isElectronScript = true;
   if(!isElectionInitialized || script =='init'){
       if(script !=='init'){
           console.log("initializing electron application before ....");

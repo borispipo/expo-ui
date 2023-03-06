@@ -27,7 +27,6 @@
     "babel-plugin-transform-inline-environment-variables": "^0.4.4"
   },
   "dependencies": {
-    "@fto-consult/expo-ui": "^5.0.0",
-    "react-native": "0.71.3"
+    "@fto-consult/expo-ui": "^5.0.1"
   }
 }

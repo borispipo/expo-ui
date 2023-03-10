@@ -10,6 +10,9 @@ import PhoneNumber from "./PhoneNumber";
 import SelectCountry from "$ecomponents/Countries/SelectCountry";
 import {getFlag} from "$ecomponents/Countries";
 
+export {PhoneNumber};
+export * from "./PhoneNumber";
+
 import libPhoneNumber from 'google-libphonenumber';
 const asYouTypeFormatter = libPhoneNumber.AsYouTypeFormatter;
 
@@ -116,6 +119,7 @@ export default function PhoneInputComponent(props){
             country : iso2,
             displayValue,
             defaultValue : modifiedNumber,
+            countryDialCode
         }
         setState(nState);
         return nState;
@@ -137,6 +141,9 @@ export default function PhoneInputComponent(props){
             <>
                 <TextField
                     {...rest}
+                    toCase = {(val)=>{
+                        return (val.startsWith("+")?"+":"")+val.replace(/[^\s0-9]/g, '');
+                    }}
                     testID = {testID}
                     error = {error}
                     errorText = {errorText}
@@ -162,18 +169,19 @@ export default function PhoneInputComponent(props){
                     }
                     keyboardType ={keyboardTypes.number}
                     defaultValue = {state.displayValue}
-                    onChange = {({value:nValue})=>{
+                    onChange = {(args)=>{
+                        const {value:nValue} = args;
                         const prevState = state;
                         const nState = updateValue(nValue);
-                        if(prevState.defaultValue === nState.defaultValue || (prevState.defaultValue.length <= 3 && nState.defaultValue.length <= 3)) return;
-                            let value = nState.displayValue;
-                            if(value.length <=3){
-                                value = "";
-                            }
-                            if(prevState.defaultValue === value) return;
-                            if(onChange){
-                                onChange({value,country:nState.country,displayValue:nState.displayValue,realValue:nState.defaultValue})
-                            }
+                        let value = defaultStr(nState.defaultValue).trim();
+                        if(prevState.defaultValue === value) return;
+                        if(value =="+" || value =="("){
+                            value = "";
+                        }
+                        if(prevState.defaultValue === value) return;
+                        if(onChange){
+                            onChange({...nState,value,country:nState.country,displayValue:nState.displayValue,realValue:nState.defaultValue})
+                        }
                     }}
                     ref = {ref}
                     style = {[props.style,inputProps.style,disabledStyle]}

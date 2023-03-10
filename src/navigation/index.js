@@ -16,7 +16,6 @@ export default function NavigationComponent (props){
     const drawerScreens = handleContent({screens:allScreens,hasGetStarted,initialRouteName,state,Factory:Stack});
     const stackScreens = handleContent({screens:allScreens.modals,hasGetStarted,initialRouteName,state,Factory:Stack});
     if(!drawerScreens.length && !stackScreens.length){
-       willRenderNavigation = false;
        console.error("apps will stuck on splash screen because any valid screen has been found on screens ",allScreens);
     }
     setInitialRouteName(initialRouteName);

@@ -31,7 +31,7 @@ const isIos = _isIos();
 
 
 const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
-    let {defaultValue,color,validType,validRule,placeholder,outlined,placeholderColor,
+    let {defaultValue,toCase:toCustomCase,color,validType,validRule,placeholder,outlined,placeholderColor,
         label,labelProps,labelStyle,fontSize,containerProps,selection,roundness,
         autoCapitalize,disabled,editable,readOnly,elevation,divider,render,
         leftContainerProps,left,right,rightContainerProps,rows,
@@ -149,8 +149,11 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
         if(t === emptyValue){
             t = "";
         }
-        if((upper !== true && lower !== true) || isAndroid) return typeof t =='string'? t : "";
-        return isNonNullString(t)? (upper ? t.toUpperCase() : lower ? t.toLowerCase():t) : ""
+        const ret = ((upper !== true && lower !== true) || isAndroid) ? (typeof t =='string'? t : "") : (isNonNullString(t)? (upper ? t.toUpperCase() : lower ? t.toLowerCase():t) : "");
+        if(toCustomCase){
+            toCustomCase(ret);
+        }
+        return ret;
     };
     const [text, _setText] = React.useState(toCase(defaultValue));
     const previousText = React.usePrevious(text);
@@ -748,5 +751,6 @@ TextFieldComponent.propTypes = {
     ///le style à afficher sur l'affix
     affixStyle : PropTypes.object,
     handleOpacity : PropTypes.bool,///si l'opacité sera géré automatiquement en fonction du status disabled de la textField
+    toCase : PropTypes.func,
 };
 

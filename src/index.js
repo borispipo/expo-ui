@@ -33,7 +33,7 @@ const resetExitCounter = ()=>{
 
 const NAVIGATION_PERSISTENCE_KEY = 'NAVIGATION_STATE';
 
-function App(props) {
+function App({init:initApp}) {
   AppStateService.init();
   const [initialState, setInitialState] = React.useState(undefined);
   const appReadyRef = React.useRef(true);
@@ -156,9 +156,9 @@ function App(props) {
       console.log(e," is net info heinn")
     });
     loadResources().finally(()=>{
-      init().then(()=>{
+      (typeof initApp =='function'?initApp : init)().then(()=>{
         if(Auth.isLoggedIn()){
-          Auth.loginUser(false);
+           Auth.loginUser(false);
         }
         setState({
           ...state,isInitialized:true,isLoading : false,

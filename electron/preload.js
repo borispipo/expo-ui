@@ -93,7 +93,7 @@ const removeListener =  (channel, callback) => {
 };
 const ELECTRON = {
     get getPouchdb(){
-        return (PouchDB,sqlPouch)=> {
+        return ({PouchDB,sqlPouch})=> {
             window.sqlitePlugin = {openDatabase:require('websql')};
             PouchDB.plugin(function CapacitorSqlitePlugin (PouchDB) {
                 PouchDB.adapter('node-sqlite', sqlPouch(), true)

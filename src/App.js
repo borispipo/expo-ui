@@ -40,7 +40,7 @@ Object.map(Utils,(v,i)=>{
      window[i] = v;
   }
 });
-export default function getIndex({onMount,onUnmount,onRender,preferences:appPreferences}){
+export default function getIndex({onMount,onUnmount,onRender,preferences:appPreferences,...rest}){
   const isScreenFocusedRef = React.useRef(true);
     ///garde pour chaque écran sa date de dernière activité
     const screensRef = React.useRef({});//la liste des écrans actifs
@@ -186,7 +186,7 @@ export default function getIndex({onMount,onUnmount,onRender,preferences:appPref
                                   <DialogProvider responsive/>
                                   <AlertProvider SimpleSelect={SimpleSelect}/>
                                   <FormDataDialogProvider/>  
-                                  {<Index theme={theme}/>}
+                                  {<Index {...rest} theme={theme}/>}
                                   <ErrorBoundaryProvider/>
                                   <BottomSheetProvider/>
                                 </PreferencesContext.Provider>  

@@ -1,5 +1,4 @@
 const {app, BrowserWindow,Tray,Menu,MenuItem,globalShortcut,systemPreferences,powerMonitor,ipcMain,dialog, nativeTheme} = require('electron')
-const appConfig  = {};
 const session = require("./utils/session");
 const path = require("path");
 const fs = require("fs");

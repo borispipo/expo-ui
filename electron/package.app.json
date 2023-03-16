@@ -9,7 +9,7 @@
   "devWebsite": "http://fto-consulting.com/salite/",
   "copyRight": "firsto consulting@Jan 2020",
   "id": "com.ftc.apps.salite7",
-  "pouchdbNamePrefix" : "com.ftc.apps.slite-",
+  "pouchdbNamePrefix": "com.ftc.apps.slite-",
   "feeds": {
     "VIDEOS": {
       "link": "http://fto-consulting.com/salite/feeds",
@@ -49,6 +49,7 @@
     "babel-plugin-transform-inline-environment-variables": "^0.4.4"
   },
   "dependencies": {
+    "@fto-consult/common": "^2.21.5",
     "@fto-consult/expo-ui": "^5.0.3"
   }
 }

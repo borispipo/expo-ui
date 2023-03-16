@@ -62,7 +62,7 @@ export default function ScreenWrapperNavComponent(_props){
         }
     },[]);
     setScreenOptions(options);
-    const allowDrawer = typeof options.allowDrawer ==='boolean'? options.allowDrawer : typeof Screen.allowDrawer =='boolean'? Screen.allowDrawer : Screen.isModalScreen == true ? false : true;
+    const allowDrawer = typeof options.allowDrawer ==='boolean'? options.allowDrawer : typeof options.withDrawer =='boolean'? options.withDrawer : typeof Screen.allowDrawer =='boolean'? Screen.allowDrawer : Screen.isModalScreen == true ? false : true;
     return <Screen 
         {...rest}
         key = {sanitizedName}

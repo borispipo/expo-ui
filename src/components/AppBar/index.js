@@ -66,6 +66,7 @@ const AppBarComponent = React.forwardRef((props,ref)=> {
     }
     title = defaultVal(title,params.title,APP.getName());
     backActionProps = Object.assign({},backActionProps);
+    backActionProps.testID = defaultStr(backActionProps.testID,testID+"_BackAction");
     
     let BackActionComponent  = backAction === false ? null : React.isComponent(backAction)? backAction : back ? Appbar.BackAction : Icon ;
     backActionProps.color = backActionProps.color && Colors.isValid(backActionProps.color)? backActionProps.color : anchorStyle.color;
@@ -90,6 +91,7 @@ const AppBarComponent = React.forwardRef((props,ref)=> {
           children = {backAction}
         /> 
     }
+    console.log(backAction," is back actions");
     const [context] = React.useState({});
     actions = typeof actions =='function'? actions(getCallAgs()) : actions;
     const dimensions = Dimensions.get("window");

@@ -6,15 +6,23 @@ import DrawerNavigator from "./Drawer";
 
 export * from "./utils";
 
+/**** la fonction onGetStart doit normalement être appélée lorsque l'application 
+ *  lorsque hasGetStarted est à false, celle-ci rend l'écran Start permettant de rendre le contenu GetStarted
+*/
 export default function NavigationComponent (props){
-    let {state,hasGetStarted,initialRouteName,extra} = props;
+    let {state,hasGetStarted,onGetStart,initialRouteName,extra} = props;
     const allScreens = initScreens({Factory:Stack,ModalFactory:Stack,filter:({name,Screen})=>{
-        return (name === initialRouteName? defaultObj(extra) : true);
+        if(name === initialRouteName){
+            extra = defaultObj(extra);
+            extra.onGetStart = onGetStart;
+            extra.state = state;
+            return extra;
+        }
+        return true;
     }});
-    
     initialRouteName = sanitizeName(initialRouteName);
-    const drawerScreens = handleContent({screens:allScreens,hasGetStarted,initialRouteName,state,Factory:Stack});
-    const stackScreens = handleContent({screens:allScreens.modals,hasGetStarted,initialRouteName,state,Factory:Stack});
+    const drawerScreens = handleContent({screens:allScreens,onGetStart,hasGetStarted,initialRouteName,state,Factory:Stack});
+    const stackScreens = handleContent({screens:allScreens.modals,onGetStart,hasGetStarted,initialRouteName,state,Factory:Stack});
     if(!drawerScreens.length && !stackScreens.length){
        console.error("apps will stuck on splash screen because any valid screen has been found on screens ",allScreens);
     }

@@ -7,8 +7,7 @@ import { SCREEN_OPTIONS } from "./utils";
 
 export * from "./utils";
 
-
-export const handleScreen = ({Screen,Factory,ModalFactory,result,useTheme,filter,index})=>{
+export const handleScreen = ({Screen,Factory,ModalFactory,result,filter,index})=>{
     result = defaultObj(result);
     result.screens = defaultObj(result.screens);
     result.groups = defaultObj(result.groups);
@@ -18,7 +17,7 @@ export const handleScreen = ({Screen,Factory,ModalFactory,result,useTheme,filter
     let screenOptions = undefined;
     if(Array.isArray(Screen)){
         Screen.map((S,i)=>{
-            return handleScreen({Screen:S,Factory,ModalFactory,result,groups,useTheme,filter,index:i});
+            return handleScreen({Screen:S,Factory,ModalFactory,result,groups,filter,index:i});
         })
     } else if(typeof Screen ==='object' && React.isComponent(Screen.Component) && isNonNullString(Screen.screenName)){
         screenName = Screen.screenName;
@@ -40,11 +39,15 @@ export const handleScreen = ({Screen,Factory,ModalFactory,result,useTheme,filter
             if(!GROUP_NAMES[groupName]){
                 groupName = GROUP_NAMES.PRIVATE;
             }
-            if(!authRequired){
-                groupName = groupName || GROUP_NAMES.PUBLIC;
-            } else{
-                groupName = GROUP_NAMES.PRIVATE;
-                authRequired = true;
+            if( groupName !== GROUP_NAMES.INSTALL){
+                if(!authRequired){
+                    groupName = groupName || GROUP_NAMES.PUBLIC;
+                } else{
+                    groupName = GROUP_NAMES.PRIVATE;
+                    authRequired = true;
+                }
+            } else {
+                authRequired = false;
             }
             groups[groupName] = defaultObj(groups[groupName]);
             groups[groupName][sanitizeName] = name;
@@ -84,7 +87,6 @@ export const handleScreen = ({Screen,Factory,ModalFactory,result,useTheme,filter
  * @param Factory {typeof Factory : voir @https://reactnavigation.org/}
  * @param screens {Object {screns:{screens:{},groups:{}}}} l'objet dans lequel le screensat sera retourné
  * @param screens {array} la liste des écrans à rendre dynamiquement dans le FactoryContainer
- * @param useTheme {boolean} si le composant sera wrapper par le hook withTheme de react-native-paper
  * @return {object} : objet comportant deux propriétés : 
  *      screens : {} : liste des écrans de l'application initialisés. il est à noter que, tous les écrans sont dans les sous répertoire du dossier courant
             screens screens est de la forme : {group1:[],group2:[], ...groupN:[]}:
@@ -92,7 +94,7 @@ export const handleScreen = ({Screen,Factory,ModalFactory,result,useTheme,filter
             
         groups : {} : la liste des différents groupes d'écrans rendus par la méthode
  */
-export default function initScreens ({Factory,ModalFactory,useTheme,screens,result,filter}){
+export default function initScreens ({Factory,ModalFactory,screens,result,filter}){
     if(!isArray(screens) || !screens.length){
         screens = mainScreens;
     }
@@ -100,7 +102,6 @@ export default function initScreens ({Factory,ModalFactory,useTheme,screens,resu
     result.screens = defaultObj(result.screens);
     result.groups = defaultObj(result.groups);
     ///lorsque les écrans sont passés enparamètres, par défaut, le wrapper withTheme n'est pas utilisé
-    useTheme = defaultBool(useTheme,false);
     filter = typeof filter =="function" ? filter : x=> true;
     defaultArray(screens).map((Screen,index)=>{
         handleScreen({Screen,result,Factory,ModalFactory,filter,index})
@@ -108,7 +109,7 @@ export default function initScreens ({Factory,ModalFactory,useTheme,screens,resu
     return result;
 }
 
-export const handleContent = ({screens,hasGetStarted,state,Factory})=>{
+export const handleContent = ({screens,hasGetStarted,onGetStart,state,Factory})=>{
     const content = [];
     state = defaultObj(state);
     screens = defaultObj(screens);

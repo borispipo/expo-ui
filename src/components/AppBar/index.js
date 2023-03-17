@@ -27,7 +27,6 @@ export const GO_BACK_EVENT = "STACK_NAVIGATOR_GO_BACK";
 *       @param menuProps : les props à passer au menu au cas où les actions de l'appBar son segmentés avec certaines qui sont découpées dans un menu more 
 
  */
-const isNullOrE = x => x === null || x === false;
 
 const AppBarComponent = React.forwardRef((props,ref)=> {
     let { bindResizeEvent,elevation,isMainDrawer,
@@ -91,7 +90,6 @@ const AppBarComponent = React.forwardRef((props,ref)=> {
           children = {backAction}
         /> 
     }
-    console.log(backAction," is back actions");
     const [context] = React.useState({});
     actions = typeof actions =='function'? actions(getCallAgs()) : actions;
     const dimensions = Dimensions.get("window");

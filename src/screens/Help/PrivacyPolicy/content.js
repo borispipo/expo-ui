@@ -6,7 +6,7 @@ import Label from "$components/Label";
 
 export default function ContentPrivacy (){
     return <Label primary style={{fontSize:15,fontWeight:'bold',padding:10}}>
-    Pour modifier le contenu de la police de sécurité, il suffit de déclarer dans les alias, l'alias 
+    Pour modifier le contenu de la politique de confidentialité, il suffit de déclarer dans les alias, l'alias 
     $PrivacyPolicy prointant vers un fichier javascript dans lequel on exporte par défaut, soit un composant React
     où encore un élément react valide dont le rendu remplacera ledit contenu.
 </Label>

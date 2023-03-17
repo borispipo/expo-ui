@@ -33,7 +33,12 @@ const resetExitCounter = ()=>{
 
 const NAVIGATION_PERSISTENCE_KEY = 'NAVIGATION_STATE';
 
-function App({init:initApp}) {
+/****
+ *  init {function}: ()=>Promise<{}> est la fonction d'initialisation de l'application
+ *  initialRouteName : la route initiale par défaut
+ *  getStartedRouteName : la route par défaut de getStarted lorsque l'application est en mode getStarted, c'est à dire lorsque la fonction init renvoie une erreur (reject)
+ */
+function App({init:initApp,initialRouteName:appInitialRouteName,getStartedRouteName}) {
   AppStateService.init();
   const [initialState, setInitialState] = React.useState(undefined);
   const appReadyRef = React.useRef(true);
@@ -156,16 +161,16 @@ function App({init:initApp}) {
       console.log(e," is net info heinn")
     });
     loadResources().finally(()=>{
-      (typeof initApp =='function'?initApp : init)().then(()=>{
+      (typeof initApp =='function'?initApp : init)().then((args)=>{
         if(Auth.isLoggedIn()){
            Auth.loginUser(false);
         }
         setState({
-          ...state,isInitialized:true,isLoading : false,
+          ...state,hasGetStarted:true,...defaultObj(args && args?.state),isInitialized:true,isLoading : false,
         });  
       }).catch((e)=>{
           console.error(e," initializing app")
-          setState({...state,isInitialized:true,isLoading : false});
+          setState({...state,isInitialized:true,isLoading : false,hasGetStarted:false});
       })
     });
 
@@ -197,7 +202,6 @@ function App({init:initApp}) {
     }   
   }, []);
   const {isInitialized} = state;
-  const hasGetStarted = true;
   const isLoading = state.isLoading || !isInitialized || !appReadyRef.current? true : false;
     React.useEffect(()=>{
       if(isInitialized){
@@ -205,7 +209,7 @@ function App({init:initApp}) {
           trackIDLE(true);
       }
   },[isInitialized]);
-  const initialRouteName = "Home";
+  const hasGetStarted = state.hasGetStarted !== false? true : false;
   return (<SplashScreen isLoaded={!isLoading}>
       <NavigationContainer 
           ref={navigationRef}
@@ -216,9 +220,12 @@ function App({init:initApp}) {
         }
       >
           <Navigation
-            initialRouteName = {initialRouteName}
+            initialRouteName = {defaultStr(hasGetStarted ? appInitialRouteName : getStartedRouteName,"Home")}
             state = {state}
             hasGetStarted = {hasGetStarted}
+            onGetStart = {(e)=>{
+              setState({...state,hasGetStarted:true})
+            }}
           />
       </NavigationContainer> 
   </SplashScreen>);

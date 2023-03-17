@@ -1,6 +1,6 @@
 import FormDataScreen from "$elayouts/Screen/FormData";
 import {defaultStr,defaultObj,isObjOrArray,isObj} from "$utils";
-import Auth from "$auth";
+import Auth from "$cauth";
 import {navigate} from "$cnavigation";
 import SelectTheme from "$themeSelectorComponent";
 import Preloader from "$epreloader";

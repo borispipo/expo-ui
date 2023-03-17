@@ -40,7 +40,7 @@ Object.map(Utils,(v,i)=>{
      window[i] = v;
   }
 });
-export default function getIndex({onMount,onUnmount,onRender,preferences:appPreferences,...rest}){
+export default function getIndex({onMount,onUnmount,swrConfig,onRender,preferences:appPreferences,...rest}){
   const isScreenFocusedRef = React.useRef(true);
     ///garde pour chaque écran sa date de dernière activité
     const screensRef = React.useRef({});//la liste des écrans actifs
@@ -49,6 +49,7 @@ export default function getIndex({onMount,onUnmount,onRender,preferences:appPref
     const appStateRef = React.useRef({});
     const isKeyboardOpenRef = React.useRef(false);
     React.useOnRender(onRender);
+    swrConfig = defaultObj(swrConfig);
     React.useEffect(()=>{
         ///la fonction de rappel lorsque le composant est monté
         let cb = typeof onMount =='function'? onMount() : null;
@@ -120,6 +121,7 @@ export default function getIndex({onMount,onUnmount,onRender,preferences:appPref
     return (
       <SWRConfig 
         value={{
+          ...swrConfig,
           provider: () => new Map(),
           isOnline() {
             /* Customize the network state detector */

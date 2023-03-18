@@ -56,6 +56,7 @@ export default function showConfirm (p,cb){
     if(isNonNullString(yes)){
         yes = {text:yes}
     }
+    testID = defaultStr(testID,"RN_AlertDialogComponent");
     buttons = defaultVal(buttons,actions);
     if(buttons !== false && buttons !== null){
         if(!isArray(buttons)){
@@ -67,6 +68,7 @@ export default function showConfirm (p,cb){
         if(!alert && no !== false){
             no.text  = defaultStr(no.text,'Non');
             const {onPress} = no;
+            no.testID = testID+"_NoCancelButton";
             no.style = [{color:theme.colors.errorText,backgroundColor:theme.colors.error},no.style];
             no.onPress = (args)=>{
                 args = React.getOnPressArgs(args);
@@ -80,6 +82,7 @@ export default function showConfirm (p,cb){
         if(yes !== false){
             yes = defaultObj(yes,ok)
             yes.text = defaultStr(yes.text,alert?'OK':'Oui');
+            yes.testID = testID+"_YesOkButton";
             yes.style = [{color:theme.colors.primaryText,backgroundColor:theme.colors.primary},yes.style]
             const {onPress} = yes;
             yes.onPress = (args)=>{
@@ -98,7 +101,6 @@ export default function showConfirm (p,cb){
     if(confirm){
         alert = true;
     }
-    testID = defaultStr(testID,"RN_AlertDialogComponent");
     const messageContent = React.isValidElement(message,true)?<Label testID={testID+"_Message"} {...messageProps} style={[theme.styles.fs15,theme.styles.pb1,messageProps.style]} >{message}</Label> :null;
     if(alert){
         return Alert.alert({

@@ -6,6 +6,7 @@ import {defaultObj,defaultDecimal,defaultStr,isDecimal,defaultBool} from "$utils
 import View from "$ecomponents/View";
 import PropTypes from "prop-types";
 import {getContentHeight} from "./utils";
+import Dimensions from "$dimensions";
 
 const BottomSheetMenuComponent = React.forwardRef((props,ref)=>{
     let {anchor,anchorProps,screenIndent,height:customHeight,bindResizeEvent,onDismiss,testID,visible:customVisible,controlled,mobile,animateOnClose,renderMenuContent,sheet,children,...rest} = props;
@@ -15,24 +16,22 @@ const BottomSheetMenuComponent = React.forwardRef((props,ref)=>{
         visible : false,
         height : undefined,
     });
+    const [key,setKey] = React.useState(false);
     const visible = isControlled ? customVisible : state.visible;
     let height = state.height;
     const isMounted = React.useIsMounted();
     const anchorRef = React.useRef(null);
-    const isMobile = x=> mobile || sheet === true || renderMenuContent === false || isMob ? true : false;
-    let isMob = isMobile();
+    const isMob = mobile || sheet === true || renderMenuContent === false || Dimensions.isMobileOrTabletMedia() ? true : false;
     testID = defaultStr(testID,'RN_BottomSheetMenuComponent');
     const innerRef = React.useRef(null);
     const open = (event)=>{
-        if(!isMobile()) return;
         React.stopEventPropagation(event);
-        if(!isMounted() || visible) return;
+        if(!isMounted()) return;
         getContentHeight(anchorRef,({height})=>{
             setState({...state,visible:true,height});
         },screenIndent);
-    }, close = (force)=>{
-        if(force !== true && !isMobile()) return;
-        if(!isMounted() || (force !== true && !visible)) return;
+    }, close = ()=>{
+        if(!isMounted()) return;
         if(isControlled){
             if(onDismiss){
                 onDismiss({});
@@ -79,7 +78,7 @@ const BottomSheetMenuComponent = React.forwardRef((props,ref)=>{
     React.useEffect(()=>{
         const closeModal = ()=>{
             if(!isMounted()) return;
-            close(true);
+            setKey(!key);
         }
         if(bindResizeEvent !== false){
             APP.on(APP.EVENTS.RESIZE_PAGE,closeModal);
@@ -98,7 +97,7 @@ const BottomSheetMenuComponent = React.forwardRef((props,ref)=>{
         {isMob && React.isValidElement(anchor)? anchor : null}
         <Component
             {...rest}
-            bindResizeEvent = {false}
+            key = {isMob?"mobile":"desktop"}
             testID = {testID}
             height = {controlled?customHeight:height}
             ref = {React.useMergeRefs(innerRef,ref)}
@@ -107,7 +106,6 @@ const BottomSheetMenuComponent = React.forwardRef((props,ref)=>{
             children = {visible && (React.isValidElement(children) || Array.isArray(children))?children:undefined}
         />
     </>
-
 })
 
 BottomSheetMenuComponent.propTypes = {

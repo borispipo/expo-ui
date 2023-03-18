@@ -6,6 +6,7 @@ import {MORE_ICON} from "$ecomponents/Icon/utils";
 import {renderActions} from "./utils";
 import View from "$ecomponents/View";
 import { StyleSheet } from "react-native";
+import DialogActions from "./RNPDialogActions";
 
 const DialogActionsComponent = React.forwardRef(({actions,isAlert,onAlertRequestClose,testID,containerProps,actionMutator,actionProps,cancelButton,responsive,isFullScreen,fullScreen,actionsProps,menuProps,...rest},ref)=>{
     const forceRender = React.useForceRender();
@@ -35,7 +36,7 @@ const DialogActionsComponent = React.forwardRef(({actions,isAlert,onAlertRequest
     testID = testID||'DialogComponent_Actions';
     if(menuActions && (menuActions.actions.length || menuActions.menus.length)){
         return <View testID={testID} {...containerProps} style={[styles.container,containerProps.style]} ref={ref}>
-            <Dialog.Actions testID={testID+"_ActionsContainer"} {...rest} style={[styles.actions,rest.style]}>
+            <DialogActions testID={testID+"_ActionsContainer"} {...rest} style={[styles.actions,rest.style]}>
                 {menuActions.actions}
                 {menuActions.menus.length ? <Menu
                     testID = {testID+"_MenuWrapper"}
@@ -47,7 +48,7 @@ const DialogActionsComponent = React.forwardRef(({actions,isAlert,onAlertRequest
                     }}
                     items = {menuActions.menus}
                 />: null}
-            </Dialog.Actions> 
+            </DialogActions> 
         </View>
     }
     return null;

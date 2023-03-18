@@ -26,6 +26,7 @@ const renderAction = ({action,isAlert,actionProps,opts,isAppBarAction,isAppBarAc
     rest = Object.assign({},rest);
     rest.accessibilityLabel = defaultStr(rest.accessibilityLabel,rest.title,rest.text,rest.label,rest.children);
     const color = theme.colors.primaryText;
+    
     rest.style = {...defaultObj(StyleSheet.flatten(actionProps.style)),elevation:0,...defaultObj(StyleSheet.flatten(rest.style))};
     if(isAppBarActionStyle !== false && (isAppBarAction || opts.isAppBarAction)){
         rest.color = defaultVal(color);

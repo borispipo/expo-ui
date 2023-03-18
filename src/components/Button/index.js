@@ -14,53 +14,54 @@ import Label from "$ecomponents/Label";
 import {defaultObj,defaultVal,defaultDecimal,defaultStr} from "$utils";
 
 import PropTypes from "prop-types";
-const white = "white",black = "black";
+const white = "white";
 
-const ButtonComponent = React.forwardRef(({
-  disabled:customDisabled,
-  compact,
-  mode = 'text',
-  dark,
-  loading,
-  icon,
-  color: buttonColor,
-  children,
-  text,
-  label,
-  isCancelButton,
-  error,
-  upperCase = true,
-  accessibilityLabel,
-  onPress,
-  iconPosition,
-  iconBefore,
-  onLongPress,
-  style,
-  contentStyle,
-  contentProps,
-  labelStyle,
-  labelProps,
-  testID,
-  iconSize,
-  iconProps,
-  left,
-  elevation : customElevation,
-  right,
-  accessible,
-  backgroundColor,
-  borderColor,
-  accessibilityRole,
-  contentContainerProps,
-  loadingProps,
-  rounded,
-  containerProps,
-  disableRipple,
-  noPadding,
-  noMargin,
-  isAlert,
-  borderRadius,
-  ...rest
-},ref) => {
+const ButtonComponent = React.forwardRef((prs,ref) => {
+  let {
+    disabled:customDisabled,
+    compact,
+    mode = 'text',
+    dark,
+    loading,
+    icon,
+    color: buttonColor,
+    children,
+    text,
+    label,
+    isCancelButton,
+    error,
+    upperCase = true,
+    accessibilityLabel,
+    onPress,
+    iconPosition,
+    iconBefore,
+    onLongPress,
+    style:customStyle,
+    contentStyle,
+    contentProps,
+    labelStyle,
+    labelProps,
+    testID,
+    iconSize,
+    iconProps,
+    left,
+    elevation : customElevation,
+    right,
+    accessible,
+    backgroundColor,
+    borderColor,
+    accessibilityRole,
+    contentContainerProps,
+    loadingProps,
+    rounded,
+    containerProps,
+    disableRipple,
+    noPadding,
+    noMargin,
+    isAlert,
+    borderRadius,
+    ...rest
+  } = prs;
   isCancelButton = isCancelButton || error && true || false;
   children = defaultVal(children,label,text);
   testID = defaultStr(testID,'RN_ButtonComponent');
@@ -140,25 +141,22 @@ const ButtonComponent = React.forwardRef(({
   };
   contentContainerProps = defaultObj(contentContainerProps);
   containerProps = defaultObj(containerProps);
-  style = Object.assign(StyleSheet.flatten(style) || {});
+  const style = StyleSheet.flatten(customStyle) || {};
+
   labelStyle = StyleSheet.flatten([labelStyle]);
   const disabled = isDisabled || isLoading;
-  let textColor = Colors.isValid(buttonColor)?buttonColor : Colors.isValid(rest.buttonColor)? rest.buttonColor : Colors.isValid(labelStyle.color) ? labelStyle.color : Colors.isValid(style.color)? style.color : isCancelButton? theme.colors.errorText  : theme.colors.primary,
+  let textColor = Colors.isValid(style.color)? style.color : Colors.isValid(buttonColor)?buttonColor : isCancelButton? theme.colors.errorText   : Colors.isValid(labelStyle.color) ? labelStyle.color : theme.colors.primary,
     borderWidth;
     const restButtonStyle = {
       opacity : disabled ? DISABLED_OPACITY : undefined
-    };
-  
+  };
+
   iconProps = defaultObj(iconProps);
   labelProps = defaultObj(labelProps);
   contentProps = defaultObj(contentProps);
-  if(isCancelButton){
-    style.backgroundColor = theme.colors.error;
-    style.color = theme.styles.errorText ;
-  }
   if (!disabled && hasElevation) {
-    backgroundColor = Colors.isValid(backgroundColor)? backgroundColor : Colors.isValid(style.backgroundColor)?style.backgroundColor  : undefined;
-    borderColor = Colors.isValid(borderColor)? borderColor : Colors.isValid(style.borderColor)? style.borderColor : isCancelButton ? theme.styles.errorText : undefined;
+    backgroundColor = Colors.isValid(style.backgroundColor)?style.backgroundColor : Colors.isValid(backgroundColor)? backgroundColor : isCancelButton ? style.backgroundColor = theme.colors.error : undefined;
+    borderColor = Colors.isValid(style.borderColor)? style.borderColor : isCancelButton ? theme.styles.errorText : Colors.isValid(borderColor)? borderColor : undefined;
   }
   if(theme.isDark() && !hasElevation){
     textColor = white;

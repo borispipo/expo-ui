@@ -124,9 +124,11 @@ class _Menu extends AppComponent {
   };
 
   handleDismiss = () => {
-    if (this.props.visible) {
-      this.props.onDismiss();
-    }
+    this.hide(()=>{
+      if (this.props.visible) {
+        this.props.onDismiss();
+      }
+    });
     return true;
   };
 
@@ -225,7 +227,7 @@ class _Menu extends AppComponent {
     );
   };
 
-  hide = () => {
+  hide = (cb) => {
     this.removeListeners();
     if(!this._isMounted()) return;
     const animation = theme.animation;
@@ -236,7 +238,7 @@ class _Menu extends AppComponent {
       useNativeDriver: true,
     }).start(({ finished }) => {
       if (finished) {
-        this.setState({ menuLayout: { width: 0, height: 0 }});
+        this.setState({ menuLayout: { width: 0, height: 0 }},(e)=>{if(typeof cb ==='function') cb();});
         this.state.scaleAnimation.setValue({ x: 0, y: 0 });
         this.focusFirstDOMNode(this.anchor);
       }

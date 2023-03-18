@@ -24,6 +24,7 @@ const IconButtonComponent = ({
   containerProps,
   style,
   testID,
+  color,
   ...rest
 }) => {
   const IconComponent = animated ? CrossFadeIcon : IconButton;
@@ -31,11 +32,11 @@ const IconButtonComponent = ({
   containerProps = defaultObj(containerProps);
   const containerStyle = StyleSheet.flatten(containerProps.style) || {};
   const backgroundColor = Colors.isValid(containerColor)? containerColor : Colors.isValid(containerStyle.color) ? containerStyle.color : undefined;
-  const iconColor = Colors.isValid(customIconColor)? customIconColor : theme.colors.text;
+  const iconColor = Colors.isValid(customIconColor)? customIconColor : Colors.isValid(color)? color : theme.colors.text;
   const borderColor = theme.colors.outline || theme.colors.divider;
   const rippleColor = Colors.setAlpha(iconColor,0.32);
   const buttonSize =  size * 1.5;
-
+  console.log(iconColor, " is conndddd ",color,rest);
   const borderStyles = {
     borderWidth: 0,
     borderRadius: buttonSize / 2,

@@ -13,7 +13,6 @@ export const positions = {top:"top",right:"right",bottom:"bottom",left:"left"}
 
 const TooltipComponent = React.forwardRef((props,ref)=>{
     let {tooltipProps,position,Component,children,strictPosition,...rest} = props;
-    rest = defaultObj(rest);
     tooltipProps = defaultObj(tooltipProps);
     Component = React.isComponent(tooltipProps.Component) ? tooltipProps.Component : React.isComponent(Component) ? Component : Label;
     delete tooltipProps.position;

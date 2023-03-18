@@ -143,7 +143,7 @@ const ButtonComponent = React.forwardRef(({
   style = Object.assign(StyleSheet.flatten(style) || {});
   labelStyle = StyleSheet.flatten([labelStyle]);
   const disabled = isDisabled || isLoading;
-  let textColor = Colors.isValid(buttonColor)?buttonColor : Colors.isValid(labelStyle.color) ? labelStyle.color : Colors.isValid(style.color)? style.color : isCancelButton? theme.colors.errorText  : theme.colors.primary,
+  let textColor = Colors.isValid(buttonColor)?buttonColor : Colors.isValid(rest.buttonColor)? rest.buttonColor : Colors.isValid(labelStyle.color) ? labelStyle.color : Colors.isValid(style.color)? style.color : isCancelButton? theme.colors.errorText  : theme.colors.primary,
     borderWidth;
     const restButtonStyle = {
       opacity : disabled ? DISABLED_OPACITY : undefined

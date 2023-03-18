@@ -31,8 +31,8 @@ module.exports = ({
             "package" : "npx expo-ui electron package",
             "compile2package" : "npx expo-ui electron package compile"
         }
+        projectRootPackage.name = projectRootPackage.name.trim().toUpperCase();
         projectRootPackage.realAppName = typeof projectRootPackage.realAppName =="string" && projectRootPackage.realAppName || projectRootPackage.name;
-        projectRootPackage.name = projectRootPackage.name.trim();
         if(!projectRootPackage.name.endsWith(appSuffix)){
             projectRootPackage.name +=appSuffix;
         }

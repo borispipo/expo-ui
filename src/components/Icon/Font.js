@@ -32,11 +32,11 @@ import Zocial from "@expo/vector-icons/Zocial";
  *      simple-line - pour l'iconSet SimpleLinesIcons
  *      zocial - pour l'iconSet Zocial
  */
-const FontIcon = React.forwardRef(({icon,name,testID,color,iconStyle,backgroundColor,style,...props},ref)=>{
+const FontIcon = React.forwardRef(({icon,name,testID,color,iconColor,iconStyle,backgroundColor,style,...props},ref)=>{
     icon = defaultStr(icon,name).trim();
     testID = defaultStr(testID,"RN_FontIconComponent");
     const fStyle = StyleSheet.flatten(style) || {};
-    color = theme.Colors.isValid(color)? color : fStyle.color || theme.colors.text;
+    color = theme.Colors.isValid(color)? color : Colors.isValid(iconColor)?iconColor : fStyle.color || theme.colors.text;
     backgroundColor = theme.Colors.isValid(backgroundColor)? backgroundColor : fStyle.backgroundColor || 'transparent';
     const isMaterial = isIcon(name,"material");
     const isFa = isIcon(name,"fa");
@@ -65,11 +65,11 @@ const FontIcon = React.forwardRef(({icon,name,testID,color,iconStyle,backgroundC
                     .ltrim("fa-").ltrim("ant-").ltrim("fontisto-")
                     .ltrim("foundation-").ltrim("ionic-").ltrim("octicons-")
                     .ltrim("simple-line-").ltrim("zocial-").trim();
-
     return <Icon {...props} 
         ref = {ref}
         testID = {testID}
         color={color}
+        iconColor = {iconColor}
         name = {iconName}
         backgroundColor = {backgroundColor}
     />

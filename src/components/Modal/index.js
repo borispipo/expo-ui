@@ -4,7 +4,6 @@ import {
   StyleSheet,
   View,
   TouchableWithoutFeedback,
-  Animated,
 } from 'react-native';
 import PropTypes from "prop-types";
 import theme,{StyleProp} from "$theme";

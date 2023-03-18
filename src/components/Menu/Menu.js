@@ -47,18 +47,9 @@ class _Menu extends AppComponent {
     statusBarHeight: APPROX_STATUSBAR_HEIGHT,
     overlayAccessibilityLabel: 'Close menu',
   };
-
-  static getDerivedStateFromProps1(nextProps, prevState) {
-    if (nextProps.visible && !prevState.rendered) {
-      return { rendered: true };
-    }
-
-    return null;
-  }
   constructor(props){
     super(props);
     extendObj(this.state,{
-      rendered: this.props.visible,
       top: 0,
       left: 0,
       menuLayout: { width: 0, height: 0 },
@@ -78,16 +69,12 @@ class _Menu extends AppComponent {
   componentWillUnmount() {
     super.componentWillUnmount();
     this.removeListeners();
+    this.menu = null;
+    this.anchor = null;
   }
 
   anchor = null;
-  menu = null;
   backHandlerSubscription;
-
-  isCoordinate = (anchor) =>
-    !React.isValidElement(anchor) &&
-    typeof anchor?.x === 'number' &&
-    typeof anchor?.y === 'number';
 
   measureMenuLayout = () =>
     new Promise((resolve) => {
@@ -100,12 +87,6 @@ class _Menu extends AppComponent {
 
   measureAnchorLayout = () =>
     new Promise((resolve) => {
-      const { anchor } = this.props;
-      if (this.isCoordinate(anchor)) {
-        resolve({ x: anchor.x, y: anchor.y, width: 0, height: 0 });
-        return;
-      }
-
       if (this.anchor) {
         this.anchor.measureInWindow((x, y, width, height) => {
           resolve({ x, y, width, height });
@@ -198,8 +179,8 @@ class _Menu extends AppComponent {
       !windowLayout.height ||
       !menuLayout.width ||
       !menuLayout.height ||
-      (!anchorLayout.width && !this.isCoordinate(this.props.anchor)) ||
-      (!anchorLayout.height && !this.isCoordinate(this.props.anchor))
+      (!anchorLayout.width) ||
+      (!anchorLayout.height)
     ) {
       requestAnimationFrame(this.show);
       return;
@@ -255,7 +236,7 @@ class _Menu extends AppComponent {
       useNativeDriver: true,
     }).start(({ finished }) => {
       if (finished) {
-        this.setState({ menuLayout: { width: 0, height: 0 }, rendered: false });
+        this.setState({ menuLayout: { width: 0, height: 0 }});
         this.state.scaleAnimation.setValue({ x: 0, y: 0 });
         this.focusFirstDOMNode(this.anchor);
       }
@@ -283,8 +264,8 @@ class _Menu extends AppComponent {
       opacityAnimation,
       scaleAnimation,
     } = this.state;
-    const rendered = visible;
     const minWidth = defaultDecimal(customMinWidth);
+    const rendered = this.props.visible;
     let { left, top } = this.state;
 
     // I don't know why but on Android measure function is wrong by 24
@@ -458,7 +439,7 @@ class _Menu extends AppComponent {
     
     //- (sameWidth ? anchorLayout.height  : 0)
     const positionStyle = {
-      top: this.isCoordinate(anchor) ? top : top + additionalVerticalValue,
+      top: top + additionalVerticalValue,
       ...(I18nManager.isRTL ? { right: left } : { left }),
     };
     if(sameWidth){
@@ -474,8 +455,9 @@ class _Menu extends AppComponent {
       positionStyle.top = SCREEN_INDENT;
     }
     const maxMenuHeight = windowLayout.height - top - SCREEN_INDENT;
-    const maxHeight = maxMenuHeight >=0 ? Math.max(Math.min(maxMenuHeight,menuLayout.height),150)  : windowLayout.height - SCREEN_INDENT*2;
+    const maxHeight = maxMenuHeight >=0 ? Math.max(Math.max(maxMenuHeight,menuLayout.height),150)  : windowLayout.height - SCREEN_INDENT*2;
     const contentContainerStyle = maxMenuHeight > SCREEN_INDENT ? {maxHeight} : undefined;
+    const hiddenStyle = !rendered ? {display:'none',width:0,opacity:0} : null;
     return (
       <View
         testID = {testID}
@@ -485,17 +467,18 @@ class _Menu extends AppComponent {
         collapsable={false}
         style = {{backgroundColor:'transparent'}}
       >
-        {this.isCoordinate(anchor) ? null : anchor}
-        {rendered ? (
+        {anchor}
+        {true ? (
           <Portal>
-            <TouchableWithoutFeedback
+            {rendered ? <TouchableWithoutFeedback
               testID={testID+"_TouchableWithoutFeedBack"}
               accessibilityLabel={overlayAccessibilityLabel}
               accessibilityRole="button"
               onPress={onDismiss}
+              style = {[hiddenStyle]}
             >
               <View style={[StyleSheet.absoluteFill,{flex:1,backgroundColor:'transparent'}]} testID={testID+"_Backdrop"} />
-            </TouchableWithoutFeedback>
+            </TouchableWithoutFeedback>:null}
             <View
               testID = {testID+"_ContentContainer"}
               ref={(ref) => {
@@ -503,11 +486,11 @@ class _Menu extends AppComponent {
               }}
               collapsable={false}
               accessibilityViewIsModal={visible}
-              style={[styles.wrapper, positionStyle, style]}
+              style={[styles.wrapper, positionStyle, style,hiddenStyle]}
               pointerEvents={visible ? 'box-none' : 'none'}
               onAccessibilityEscape={onDismiss}
             >
-              <Animated.View style={{ transform: positionTransforms }} testID={testID+"_Animated"}>
+              {rendered?<Animated.View style={{ transform: positionTransforms }} testID={testID+"_Animated"}>
                 <Surface
                   elevation = {5}
                   testID= {testID+"_Content"}
@@ -525,7 +508,7 @@ class _Menu extends AppComponent {
                   {((scrollableMenuHeight|| contentContainerStyle) && (<ScrollView contentContainerStyle={contentContainerStyle} testID={testID+"_ScrollView"}>{children}</ScrollView>
                   )) || children}
                 </Surface>
-              </Animated.View>
+              </Animated.View> : null}
             </View>
           </Portal>
         ) : null}

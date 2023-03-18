@@ -7,7 +7,7 @@ import Expandable from "$ecomponents/Expandable";
 import {cursorPointer} from "$theme";
 import Item from "./Item";
 
-export const MIN_WIDTH = 160;
+export const MIN_WIDTH = 180;
 
 export const renderItems = (props)=>{
     let _items = [];

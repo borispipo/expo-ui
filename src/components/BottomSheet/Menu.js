@@ -11,17 +11,15 @@ const BottomSheetMenuComponent = React.forwardRef((props,ref)=>{
     let {anchor,anchorProps,screenIndent,height:customHeight,bindResizeEvent,onDismiss,testID,visible:customVisible,controlled,mobile,animateOnClose,renderMenuContent,sheet,children,...rest} = props;
     rest = defaultObj(rest);
     const isControlled = controlled ? true : false;
-    const visibleRef = React.useRef(null);
     const [state,setState] = React.useState({
         visible : false,
         height : undefined,
     });
-    const visible = typeof visibleRef.current =='boolean'? visibleRef.current : isControlled ? customVisible : state.visible;
-    visibleRef.current = null;
+    const visible = isControlled ? customVisible : state.visible;
     let height = state.height;
     const isMounted = React.useIsMounted();
     const anchorRef = React.useRef(null);
-    const isMobile = x=> mobile || sheet === true || renderMenuContent === false || isMobileMedia() ? true : false;
+    const isMobile = x=> mobile || sheet === true || renderMenuContent === false || isMob ? true : false;
     let isMob = isMobile();
     testID = defaultStr(testID,'RN_BottomSheetMenuComponent');
     const innerRef = React.useRef(null);
@@ -32,9 +30,9 @@ const BottomSheetMenuComponent = React.forwardRef((props,ref)=>{
         getContentHeight(anchorRef,({height})=>{
             setState({...state,visible:true,height});
         },screenIndent);
-    }, close = ()=>{
-        if(!isMobile()) return;
-        if(!isMounted() || !visible) return;
+    }, close = (force)=>{
+        if(force !== true && !isMobile()) return;
+        if(!isMounted() || (force !== true && !visible)) return;
         if(isControlled){
             if(onDismiss){
                 onDismiss({});
@@ -43,6 +41,7 @@ const BottomSheetMenuComponent = React.forwardRef((props,ref)=>{
         }
         setState({...state,visible:false})
     }
+    const prevIsMob = React.usePrevious(isMob);
     const Component = isMob ? BottomSheet : Menu;
     anchorProps = defaultObj(anchorProps);
     if(isMob){
@@ -67,6 +66,9 @@ const BottomSheetMenuComponent = React.forwardRef((props,ref)=>{
         delete rest.visible;
         height = undefined;
     }
+    if(prevIsMob !== isMob){
+        rest.visible = visible;
+    }
     if(!isControlled){
         rest.onAnchorPress = ()=>{
             open();
@@ -77,8 +79,7 @@ const BottomSheetMenuComponent = React.forwardRef((props,ref)=>{
     React.useEffect(()=>{
         const closeModal = ()=>{
             if(!isMounted()) return;
-            visibleRef.current = false;
-            setState({...state});
+            close(true);
         }
         if(bindResizeEvent !== false){
             APP.on(APP.EVENTS.RESIZE_PAGE,closeModal);

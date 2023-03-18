@@ -73,7 +73,7 @@ const MenuComponent = React.forwardRef((props,ref)=>{
         console.error("unable to render menu, anchor not spécified for props",props);
     }
     const context = {openMenu,closeMenu,open:openMenu,close:closeMenu};
-    React.setRef(ref,context);
+    //React.setRef(ref,context);
     if(typeof children =='function'){
         children = children({openMenu,closeMenu,context});
     }
@@ -81,8 +81,17 @@ const MenuComponent = React.forwardRef((props,ref)=>{
         return ()=>{
             React.setRef(ref,null);
         }
-    },[])
-    return  <Menu {...menuProps} testID={testID} visible={visible} onDismiss={closeMenu} anchor={anchor}>
+    },[]);
+    return  <Menu {...menuProps} ref={(el)=>{
+        if(el){
+            for(let i in context){
+                if(!(i in el)){
+                    el[i] = context[i];
+                }
+            }
+        }
+        React.setRef(ref,el);
+    }} testID={testID} visible={visible} onDismiss={closeMenu} anchor={anchor}>
         {renderItems({...props,onPressItem,renderItem,openMenu,closeMenu})}
         {React.isValidElement(children)? children: null}
     </Menu>

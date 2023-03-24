@@ -5,7 +5,7 @@ import APP from "$capp";
 import {AppStateService,trackIDLE,stop as stopIDLE} from "$capp/idle";
 import { NavigationContainer} from '@react-navigation/native';
 import {navigationRef} from "$cnavigation"
-import NetInfo from '$utils/NetInfo';
+import NetInfo from '$cutils/NetInfo';
 import Auth from "$cauth";
 import {isNativeMobile,isElectron} from "$cplatform";
 import Navigation from "./navigation";
@@ -14,7 +14,7 @@ import { showConfirm } from "$ecomponents/Dialog";
 import {close as closePreloader, isVisible as isPreloaderVisible} from "$epreloader";
 import SplashScreen from "$ecomponents/SplashScreen";
 import {notify} from "$ecomponents/Dialog";
-import {decycle} from "$utils/json";
+import {decycle} from "$cutils/json";
 import init from "$capp/init";
 import { setIsInitialized} from "$capp/utils";
 import {isObj,isNonNullString,isPromise,defaultObj,defaultStr} from "$cutils";

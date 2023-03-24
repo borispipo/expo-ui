@@ -1,6 +1,6 @@
 import { isValidUrl, isNonNullString,uniqid,defaultObj,defaultStr} from "$utils";
 import getCallbackUrl from "./getUrlCallback";
-import { getQueryParams,setQueryParams} from "$utils/uri";
+import { getQueryParams,setQueryParams} from "$cutils/uri";
 const BROWSERS_EVENTS = {};
 const callbackURIID = "callbackURIIDDD";
 

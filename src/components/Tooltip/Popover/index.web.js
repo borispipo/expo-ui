@@ -1,11 +1,11 @@
 import tippy from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 import React from "$react";
-import {getMaxZindex} from "$utils/dom";
+import {getMaxZindex} from "$cutils/dom";
 import PropTypes from "prop-types";
 import Label from "$ecomponents/Label";
 import { TIPPY_THEME } from '$theme/updateNative/utils';
-import {isDOMElement} from "$utils/dom";
+import {isDOMElement} from "$cutils/dom";
 import {uniqid,defaultStr,defaultObj} from "$utils";
 
 const TippyTooltipComponent  = React.forwardRef((props,ref)=>{

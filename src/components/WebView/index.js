@@ -6,7 +6,7 @@ import WebView from "./Component";
 import {defaultStr} from "$utils";
 import React from "$react";
 import PropTypes from "prop-types";
-import {isValidUrl} from "$utils/uri";
+import {isValidUrl} from "$cutils/uri";
 import FileSystem from "$file-system";
 
 const  WebViewComponent = React.forwardRef(({children,source,style,testID,...props},ref)=>{

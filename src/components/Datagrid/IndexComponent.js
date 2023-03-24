@@ -40,7 +40,4 @@ DatagridMainComponent.displayName = "DatagridMainComponent";
 DatagridMainComponent.propTypes = {
     ...DatagridTableData.propTypes
 }
-
-DatagridMainComponent.getDBName = DatagridTableData.getDBName;
-
 DatagridMainComponent.LinesProgressBar = DatagridMainComponent.LineProgressBar = DatagridTableData.LineProgressBar;

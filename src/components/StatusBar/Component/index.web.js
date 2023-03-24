@@ -2,7 +2,7 @@ import React from "$react";
 //import { StatusBar } from 'expo-status-bar';
 import theme,{getStatusBarStyle,Colors} from "$theme"
 import {isTouchDevice,uniqid} from "$utils";
-import {isDOMElement,removeClassName,addClassName} from "$utils/dom";
+import {isDOMElement,removeClassName,addClassName} from "$cutils/dom";
 import { StyleSheet } from "react-native";
 
 const styleId = uniqid("dynamic-css-style-id");

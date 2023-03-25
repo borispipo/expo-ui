@@ -8,6 +8,7 @@ import numberType from './numberType.json'; // eslint-disable-line @typescript-e
 const phoneUtil = libPhoneNumber.PhoneNumberUtil.getInstance();
 const asYouTypeFormatter = libPhoneNumber.AsYouTypeFormatter;
 
+export {phoneUtil};
 
 export const parse = (number,iso2)=>{
     try {

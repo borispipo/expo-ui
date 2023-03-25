@@ -9,6 +9,7 @@ import Icon from "$ecomponents/Icon";
 import PhoneNumber from "./PhoneNumber";
 import SelectCountry from "$ecomponents/Countries/SelectCountry";
 import {getFlag} from "$ecomponents/Countries";
+import appConfig from "$capp/config";
 
 export {PhoneNumber};
 export * from "./PhoneNumber";
@@ -33,7 +34,7 @@ export const format = (number, iso2) => {
 }
 const prepareState = ({defaultValue,country})=>{
     defaultValue = defaultStr(defaultValue);
-    country = defaultStr(country);
+    country = defaultStr(country,appConfig.countryCode);
     if (defaultValue) {
         if (defaultValue[0] !== '+') {
             defaultValue = `+${defaultValue}`;

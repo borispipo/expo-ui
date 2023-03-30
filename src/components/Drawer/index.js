@@ -8,7 +8,7 @@ import theme,{Colors,flattenStyle} from "$theme";
 import DrawerItems from './DrawerItems';
 import Dimensions,{isDesktopMedia,getCurrentMedia} from "$cplatform/dimensions";
 import {open,close} from "$epreloader";
-import {DRAWER_POSITIONS,DRAWER_TYPES,MINIMIZED_WIDTH,getDrawerWidth,MINIMIZED_ICON_SIZE,ICON_SIZE} from './utils';
+import {DRAWER_POSITIONS,DRAWER_TYPES,MINIMIZED_WIDTH,getDrawerWidth} from './utils';
 import Icon,{MENU_ICON} from "$ecomponents/Icon";
 import apiSession from "./session";
 import View from "$ecomponents/View";

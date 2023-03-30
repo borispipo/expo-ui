@@ -163,7 +163,8 @@ export default function PhoneInputComponent(props){
                             onPress={onPressFlag}
                         >
                             <>
-                                {flagImageSource && <Image testID={testID+"_FlagImage"} source={flagImageSource} height={20} width={30} style={[styles.flagImage]} />}
+                                {flagImageSource ? <Image testID={testID+"_FlagImage"} source={flagImageSource} height={20} width={30} style={[styles.flagImage]} />
+                                : null}
                                 <Icon testID={testID+"_FlagChevronIcon"} name="chevron-down" size={16} style={[styles.flagIcon]} onPress={onPressFlag} />
                             </>
                         </TouchableOpacity>

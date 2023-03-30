@@ -117,7 +117,7 @@ export default function MainScreenScreenWithOrWithoutAuthContainer(props) {
   const child = <>
       {withStatusBar !== false ? <StatusBar/> : null}
       <ErrorBoundary testID={testID+"_ScreenLayoutErrorBoundary"}>
-        <View testID={testID} {...containerProps}  style={[styles.container,{backgroundColor},modal && styles.modal]}>
+        <View testID={testID} {...containerProps}  style={[styles.container,{backgroundColor},modal && styles.modal,containerProps.style]}>
           {appBar === false ? null : React.isValidElement(appBar)? state.AppBar :  <AppBar 
               testID={testID+'_AppBar'} {...appBarProps} 
               backAction = {defaultVal(appBarProps.backAction,backAction)} 

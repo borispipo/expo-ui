@@ -266,10 +266,13 @@ export default class TableDataScreenComponent extends FormDataScreen{
                 });
                 if(isUpdated){
                     //la props readOnlyOnEditing permet de rendre le champ readOnly en cas de mise à jour de la tableData
-                    if((currentField.readOnlyOnEditing === true)){
+                    const cArgs = {...this.state,data:this.getCurrentData()};
+                    const readOnlyOnEditing = typeof currentField.readOnlyOnEditing =='function'? currentField.readOnlyOnEditing(cArgs) : currentField.readOnlyOnEditing;
+                    if((readOnlyOnEditing === true)){
                         currentField.readOnly = true;
                     }
-                    if((currentField.disabledOnEditing === true)){
+                    const disabledOnEditing = typeof currentField.disabledOnEditing =='function'? currentField.disabledOnEditing(cArgs) : currentField.disabledOnEditing;
+                    if((disabledOnEditing === true)){
                         currentField.disabled = true;
                     }
                 }

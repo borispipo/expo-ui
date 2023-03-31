@@ -4,38 +4,49 @@ import Fields from "../Fields";
 import i18n from "$i18n";
 import React from "$react";
 
-const componentTypes =  {
-    ...Fields,
-    id : Fields.IdField,
-    selecttabledata : Fields.SelectTableData,
-    idfield : Fields.IdField,
-    piecefield : Fields.PieceField,
-    piece : Fields.PieceField,
-    select : Fields.SelectField,
-    switch : Fields.Switch,
-    selectcountry : Fields.SelectCountry,
-    selectdateformat : Fields.SelectDateFormat,
-    selectcurrency : Fields.SelectCurrency,
-    currencyformat : Fields.CurrencyFormat,
-    dateformat : Fields.SelectDateFormat,
-    date : Fields.Date,
-    time : Fields.Time,
-    datetime  : Fields.DateTime,
-    date2time : Fields.DateTime,
-    checkbox : Fields.Checkbox,
-    slider : Fields.Slider,
-    color : Fields.ColorPicker,
-    tel : Fields.Tel,
-    html : Fields.Html,
-    datafile : Fields.DataFile,
-    image : Fields.Image,
-    schedule : Fields.Scheduler,
-    scheduler : Fields.Scheduler,
-    default : Fields.TextField,
+
+export const getComponentTypes = ()=>{
+    return {
+        id : Fields.IDField,
+        ...Fields,
+        selecttabledata : Fields.SelectTableData,
+        idfield : Fields.IdField,
+        select : Fields.SelectField,
+        switch : Fields.Switch,
+        selectcountry : Fields.SelectCountry,
+        selectdateformat : Fields.SelectDateFormat,
+        selectcurrency : Fields.SelectCurrency,
+        currencyformat : Fields.CurrencyFormat,
+        dateformat : Fields.SelectDateFormat,
+        date : Fields.Date,
+        time : Fields.Time,
+        datetime  : Fields.DateTime,
+        date2time : Fields.DateTime,
+        checkbox : Fields.Checkbox,
+        slider : Fields.Slider,
+        color : Fields.ColorPicker,
+        tel : Fields.Tel,
+        html : Fields.Html,
+        datafile : Fields.DataFile,
+        image : Fields.Image,
+        schedule : Fields.Scheduler,
+        scheduler : Fields.Scheduler,
+        default : Fields.TextField,
+    };
+}
+export function getComponentFromType(type){
+    const types = getComponentTypes();
+    if(!isNonNullString(type)){
+        return types.default;
+    }
+    type = type.trim().toLowerCase().replaceAll(" ","").replaceAll("-","").replaceAll("_","");
+    return React.isComponent(types[type]) && types[type] || types.default;
 };
 
-export default componentTypes;
+export default getComponentFromType;
 
+
+/**** pour interdire qu'on composant FormField soit utilisé en cas de filtre, il suffit de passer au composant FormField, la props filter à false */
 
 export const getFilterComponentProps = (_props)=>{
     let {
@@ -67,6 +78,7 @@ export const getFilterComponentProps = (_props)=>{
         ...props
     } = _props;
     props = defaultObj(props);
+    const componentTypes = getComponentTypes();
     let component = Fields.TextField;
     type = defaultStr(jsType,type,'text').toLowerCase().replaceAll("_","").replaceAll("-","").trim();
     const sanitizedType = type.replaceAll("_","").toLowerCase().trim();
@@ -101,7 +113,7 @@ export const getFilterComponentProps = (_props)=>{
         component = Fields.ColorPicker;
     } else if(type == 'dateformat' || type =='select_dateformat' || type =='select_date_format') {
         component = Fields.SelectDateFormat;
-    } else if(React.isComponent(componentTypes[type])) {
+    } else if(React.isComponent(componentTypes[type]) && componentTypes[type] !== false) {
         component = componentTypes[type];
     } else if(isNonNullString(props.foreignKeyColumn) && isNonNullString(props.foreignKeyTable)) {
         component = Fields.SelectTableData;
@@ -112,7 +124,7 @@ export const getFilterComponentProps = (_props)=>{
         } 
         delete props.dbName;
         delete props.tableName;
-       delete props.fieldName;
+        delete props.fieldName;
     }
     type = type || "text"
     if(type =='select'){

@@ -10,7 +10,7 @@ import PropTypes from "prop-types";
 import {renderActions} from "$ecomponents/Dialog/utils";
 //import {isDocUpdate} from "$database/utils";
 import {handleBeforeSaveCallback} from "./utils";
-import componentsTypes from "./componentsTypes";
+import getComponentFromType from "./componentsTypes";
 import { keyboardShortcuts } from "../utils";
 import appConfig from "$capp/config";
 
@@ -191,9 +191,9 @@ export default class FormDataComponent extends AppComponent{
                 content.push(<Divider key = {index} style={theme.styles.w100}/>)
             } else if(isObj(field) && field.form !== false) {
                 const name = defaultStr(field.name,field.field,index);
-                const type = defaultStr(field.jsType,field.type,"text").trim().toLowerCase().replaceAll("_","");
+                const type = defaultStr(field.jsType,field.type,"text").trim().toLowerCase().replaceAll(" ","").replaceAll("-","").replaceAll("_","");
                 const isDate = (type.contains('date') || type.contains('time'));
-                const Component = componentsTypes[type] || componentsTypes.default;
+                const Component = getComponentFromType(defaultStr(field.jsType,field.type,"text"));
                 let {defaultValue,useDefaultValueFromData,primaryKey,hidden,renderFormDataField,getMediaQueryStyle,printLabels,queryLimit,selected,value,dataFilesInterest,perm,ignore,form,responsiveProps:customResponsiveProps,...rest} = field;
                 rest = Object.assign({},rest);
                 delete rest.import;

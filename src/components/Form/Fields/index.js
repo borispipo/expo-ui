@@ -6,7 +6,7 @@ import Checkbox from "./Checkbox";
 import SelectTableData from "./SelectTableData";
 import SelectCurrency from "./SelectCurrency";
 //import IdField from "./IdField";
-//import PieceField from "./PieceField";
+import IDField from "./IDField";
 import Slider from "./Slider";
 import ColorPicker from "./Color";
 import Date from "./Date";
@@ -34,7 +34,7 @@ const defFormFields = {
     ,Switch
     ,Checkbox
     //,IdField
-    //,PieceField
+    ,IDField
     ,Slider
     ,ColorPicker
     ,Date
@@ -66,7 +66,7 @@ export {
     ,Switch
     ,Checkbox
     //,IdField
-    //,PieceField
+    ,IDField
     ,Slider
     ,ColorPicker
     ,ColorPicker as Color
@@ -77,3 +77,13 @@ export {
     ,SelectDateFormat
     ,Html
 }
+
+export const extendFields = (fields)=>{
+    Object.map(fields,(f,i)=>{
+        if(React.isComponent(f)){
+            defFormFields[i] = f;
+        }
+    })
+}
+
+export const extendFormFields = extendFields;

@@ -2,6 +2,8 @@ const path = require("path");
 const fs = require("fs");
 const writeFile = require("./electron/utils/writeFile");
 module.exports = (opts)=>{
+    console.log(process.env.EXPO_UI_PATH," is process envvvvv");
+    console.log(JSON.stringify(process.env)," is stringityffff");
     const dir = path.resolve(__dirname);
     const base = opts.base || process.cwd();
     const assets = path.resolve(dir,"assets");

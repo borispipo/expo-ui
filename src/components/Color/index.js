@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 import React from "$react";
 import Dialog from "$ecomponents/Dialog";
 import {isMobileOrTabletMedia} from "$cplatform/dimensions";
-import {defaultStr,defaultObj} from "$utils";
+import {defaultStr,defaultObj} from "$cutils";
 
 const ColorPickerComponent = React.forwardRef ((props,ref)=>{
     let {defaultValue,label,rippleColor,onChange,text,containerProp,editable,disabled,readOnly,...rest} = props;

@@ -1,4 +1,4 @@
-import {isPlainObj,defaultFunc,defaultStr,isObjOrArray,isObj,defaultObj} from "$utils";
+import {isPlainObj,defaultFunc,defaultStr,isObjOrArray,isObj,defaultObj} from "$cutils";
 import {getWindowSizes,isMobileOrTabletMedia,isMobileMedia} from "$cdimensions";
 import { StyleSheet } from "react-native";
 import Button from "$ecomponents/Button";

@@ -1,7 +1,7 @@
 // Copyright 2022 @fto-consult/Boris Fouomene. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
-import {defaultStr,base64toBlob,dataURLToBlob,getTypeFromDataURL,isNonNullString,getFileName,getFileExtension,defaultNumber,defaultBool,dataURLToBase64,isBlob,isBase64,isDataURL} from "$utils";
+import {defaultStr,base64toBlob,dataURLToBlob,getTypeFromDataURL,isNonNullString,getFileName,getFileExtension,defaultNumber,defaultBool,dataURLToBase64,isBlob,isBase64,isDataURL} from "$cutils";
 const FileSaver = require('file-saver');
 const mime = require('react-native-mime-types')
 const XLSX = require("xlsx");

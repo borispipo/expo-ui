@@ -12,7 +12,7 @@ import colorFn from 'color';
 import PropTypes from "prop-types";
 import Action from "$ecomponents/Form/Action";
 import theme,{ disabledStyle,StylePropTypes,cursorPointer,Colors,cursorNotAllowed } from '$theme';
-import {defaultStr} from "$utils";
+import {defaultStr} from "$cutils";
 
 
 

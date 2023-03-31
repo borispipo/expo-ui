@@ -1,7 +1,7 @@
 
-import {defaultStr,isObj} from "$utils";
+import {defaultStr,isObj} from "$cutils";
 import {Dialog} from "react-native-paper";
-import {isNonNullString,defaultVal,defaultNumber,defaultObj,defaultBool } from "$utils";
+import {isNonNullString,defaultVal,defaultNumber,defaultObj,defaultBool } from "$cutils";
 import {StyleSheet,ScrollView} from "react-native";
 //import ScrollView  from "$ecomponents/ScrollView";
 import Modal from "$ecomponents/Modal";

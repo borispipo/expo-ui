@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 import React from "$react";
 import TextField from "$ecomponents/Form/Fields/TextField";
-import {defaultObj} from "$utils";
+import {defaultObj} from "$cutils";
 
 const FilterBetweenComponent = React.forwardRef(({inputProps,contentContainerProps,...props},ref)=>{
     contentContainerProps = defaultObj(contentContainerProps);

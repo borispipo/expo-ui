@@ -1,6 +1,6 @@
 import { PropTypes } from 'prop-types';
 import React from '$react';
-import {defaultObj} from "$utils";
+import {defaultObj} from "$cutils";
 import View from "$ecomponents/View";
 
 import {

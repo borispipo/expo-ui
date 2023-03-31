@@ -1,5 +1,5 @@
 import appConfig from "$capp/config";
-import {defaultObj, extendObj} from "$utils";
+import {defaultObj, extendObj} from "$cutils";
 /*** par défaut, il est possible de spécifier les devices props personnalisés pour l'application.
  * Il suffit de les définir dans la props deviceProps du fichier de configuration de l'application
  */

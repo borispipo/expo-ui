@@ -1,7 +1,7 @@
 import Field from "./Field";
 import Image from "$ecomponents/Image";
 import PropTypes from "prop-types";
-import {defaultVal} from "$utils";
+import {defaultVal} from "$cutils";
 export default class FormFieldImage extends Field {
     constructor(props){
         super(props)

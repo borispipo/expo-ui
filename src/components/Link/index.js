@@ -1,7 +1,7 @@
 import { Pressable } from "react-native";
 import { navigate } from "$cnavigation";
 import PropTypes from "prop-types";
-import {defaultStr,defaultNumber} from "$utils";
+import {defaultStr,defaultNumber} from "$cutils";
 import React from "$react";
 
 const LinkComponent= React.forwardRef((props,ref)=>{

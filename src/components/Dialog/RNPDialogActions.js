@@ -2,7 +2,7 @@ import * as React from 'react';
 import { StyleSheet, View,} from 'react-native';
 import PropTypes from "prop-types";
 import { StyleProp } from '$theme';
-import {defaultStr} from "$utils";
+import {defaultStr} from "$cutils";
 
 const DialogActions = ({testID,...props}) => {
   testID = defaultStr(testID,"RNP_DialogActionsComponent")

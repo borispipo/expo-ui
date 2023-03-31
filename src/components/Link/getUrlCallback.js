@@ -1,4 +1,4 @@
-import { defaultStr } from "$utils";
+import { defaultStr } from "$cutils";
 import { getCurrentURI,getNativeMobileAppURI } from "$cutils/uri";
 export default function getCallbackUrl (url){
     let cUrl = undefined;

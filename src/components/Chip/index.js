@@ -11,7 +11,7 @@ import {Text,TouchableRipple } from 'react-native-paper';
 import theme,{ black,Colors, white,StyleProps} from '$theme';
 import PropTypes from "prop-types";
 import {flatMode } from '$ecomponents/TextField/utils';
-import {defaultStr} from "$utils";
+import {defaultStr} from "$cutils";
 import Surface from "$ecomponents/Surface";
 
 const ChipComponent = React.forwardRef(({

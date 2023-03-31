@@ -5,7 +5,7 @@ import {StyleSheet,ScrollView,TouchableWithoutFeedback} from 'react-native';
 //import ScrollView from "$ecomponents/ScrollView";
 import Label from "$ecomponents/Label";
 import Icon from "$ecomponents/Icon"
-import {defaultObj,isNonNullString,defaultStr} from "$utils";
+import {defaultObj,isNonNullString,defaultStr} from "$cutils";
 import PropTypes from "prop-types";
 import Item from "./Item";
 import Surface from "$ecomponents/Surface";

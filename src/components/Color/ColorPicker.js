@@ -1,6 +1,6 @@
 import React, { Component } from "$react";
 import {normalize,RGB_MAX,HUE_MAX,SV_MAX,hexToRgb} from "$theme/colors";
-import {extendObj} from "$utils";
+import {extendObj} from "$cutils";
 import View from "$ecomponents/View";
 import {
 	Animated,

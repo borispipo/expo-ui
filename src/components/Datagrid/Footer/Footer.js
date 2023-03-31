@@ -2,7 +2,7 @@ import Menu from "$ecomponents/BottomSheet/Menu";
 import View from "$ecomponents/View";
 import {Pressable,StyleSheet} from "react-native";
 import Label from "$ecomponents/Label";
-import {defaultVal,defaultObj,isNonNullString,isObj} from "$utils";
+import {defaultVal,defaultObj,isNonNullString,isObj} from "$cutils";
 import React from "$react";
 import theme from "$theme"
 import appConfig from "$capp/config";

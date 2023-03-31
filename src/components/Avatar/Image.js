@@ -2,7 +2,7 @@ import React from '$react';
 import {Image,StyleSheet,TouchableOpacity} from 'react-native';
 import PropTypes from "prop-types";
 import { StyleProp } from '$theme';
-import {defaultStr,isNumber,defaultNumber} from "$utils";
+import {defaultStr,isNumber,defaultNumber} from "$cutils";
 import AutoHeightImage from "./AutoHeightImage";
 
 export const SIZE = 64;

@@ -1,7 +1,7 @@
 import React from "$react";
 import Image from "$components/Image";
 import { getCountry,styles} from "./utils";
-import {isNonNullString,defaultStr,isNumber} from "$utils";
+import {isNonNullString,defaultStr,isNumber} from "$cutils";
 import View from "$ecomponents/View"
 import theme from "$theme";
 import Label from "$components/Label";

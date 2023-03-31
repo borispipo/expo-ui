@@ -4,7 +4,7 @@
 
 import { ScrollView,StyleSheet,View,useWindowDimensions,Dimensions} from "react-native";
 import React from "$react";
-import {defaultStr,defaultObj,isObj,isNumber} from "$utils";
+import {defaultStr,defaultObj,isObj,isNumber} from "$cutils";
 import Portal from "$ecomponents/Portal";
 import {isMobileNative,isTouchDevice} from "$platform";
 

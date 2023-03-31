@@ -1,6 +1,6 @@
 import showConfirm from "$components/Dialog/confirm";
 import notify from "$components/Dialog/notify";
-import {defaultArray,arrayValueExists,defaultStr,uniqid} from "$utils";
+import {defaultArray,arrayValueExists,defaultStr,uniqid} from "$cutils";
 import userDbName from "$database/data/tables/users/dbName";
 import Auth from "$auth";
 import getData from "$database/getData";

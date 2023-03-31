@@ -1,7 +1,7 @@
 const htmlTemplate = require("./index.html");
 import React from "$react";
 import WebView from "$ecomponents/WebView";
-import {defaultStr,defaultObj,uniqid} from "$utils";
+import {defaultStr,defaultObj,uniqid} from "$cutils";
 import View from "$ecomponents/View";
 import { methodsNames } from "./utils";
 

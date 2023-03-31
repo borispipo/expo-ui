@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import PropTypes from "prop-types";
 import View from "$ecomponents/View";
-import {defaultStr} from "$utils";
+import {defaultStr} from "$cutils";
 import theme,{Colors} from "$theme";
 import {isMobileMedia} from "$cplatform/dimensions";
 import Preloader from "$epreloader";

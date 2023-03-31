@@ -25,7 +25,7 @@ import List from "$ecomponents/Table/List";
 import theme,{Colors} from "$theme";
 import {getRowStyle,styles as rStyles} from "../utils";
 import Avatar from "$ecomponents/Avatar";
-import {defaultObj,isOb,isNonNullString} from "$utils";
+import {defaultObj,isOb,isNonNullString} from "$cutils";
 import PropTypes from "prop-types";
 
 const DatagridFactory = (Factory)=>{

@@ -2,7 +2,7 @@ import { Switch,TouchableRipple } from 'react-native-paper';
 import {Pressable} from "react-native";
 import View from "$ecomponents/View";
 import React from "$react";
-import {isUndefined,defaultObj,defaultVal,defaultStr,defaultBool} from "$utils";
+import {isUndefined,defaultObj,defaultVal,defaultStr,defaultBool} from "$cutils";
 import theme,{Colors,DISABLED_OPACITY} from "$theme";
 import {StyleSheet} from "react-native";
 import PropTypes from "prop-types";

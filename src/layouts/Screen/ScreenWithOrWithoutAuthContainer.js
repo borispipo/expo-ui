@@ -2,7 +2,7 @@ import React from '$react';
 import {StyleSheet} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import PropTypes from "prop-types";
-import {defaultObj,defaultStr,defaultNumber,defaultBool} from "$utils";
+import {defaultObj,defaultStr,defaultNumber,defaultBool} from "$cutils";
 import View from "$ecomponents/View";
 import { useNavigation} from '$cnavigation';
 import Fab from "$elayouts/Fab";

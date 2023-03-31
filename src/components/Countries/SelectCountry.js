@@ -3,9 +3,9 @@ import SimpleSelect from "$ecomponents/SimpleSelect";
 import { countries,styles} from "./utils";
 import View from "$ecomponents/View";
 import {StyleSheet,Image} from "react-native";
-import {defaultObj} from "$utils";
+import {defaultObj} from "$cutils";
 import PropTypes from "prop-types";
-import {isNonNullString,isNumber,defaultStr} from "$utils";
+import {isNonNullString,isNumber,defaultStr} from "$cutils";
 import Label from "$ecomponents/Label";
 import appConfig from "$capp/config";
 

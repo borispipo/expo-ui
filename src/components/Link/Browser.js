@@ -1,4 +1,4 @@
-import { isValidUrl, isNonNullString,uniqid,defaultObj,defaultStr} from "$utils";
+import { isValidUrl, isNonNullString,uniqid,defaultObj,defaultStr} from "$cutils";
 import getCallbackUrl from "./getUrlCallback";
 import { getQueryParams,setQueryParams} from "$cutils/uri";
 const BROWSERS_EVENTS = {};

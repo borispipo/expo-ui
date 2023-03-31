@@ -1,6 +1,6 @@
 import CommonDatagrid from "./Common/Common";
 import TableDatagrid from "./Common/TableData"
-import {defaultStr} from "$utils";
+import {defaultStr} from "$cutils";
 
 
 export default function Factory(type) {

@@ -4,7 +4,7 @@ import {
   Animated,
   PanResponder
 } from 'react-native';
-import {defaultStr} from "$utils";
+import {defaultStr} from "$cutils";
 import {isNativeMobile} from "$cplatform";
 
 const useNativeDriver = isNativeMobile();

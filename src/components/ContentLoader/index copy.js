@@ -1,5 +1,5 @@
 /**** see : https://github.com/danilowoz/react-content-loader */
-import {defaultObj} from "$utils";
+import {defaultObj} from "$cutils";
 import View from "$ecomponents/View";
 import {StyleSheet,Dimensions,useWindowDimensions} from "react-native";
 import React from "react";

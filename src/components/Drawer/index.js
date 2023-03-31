@@ -3,7 +3,7 @@ import DrawerLayout from './DrawerLayout';
 import {isIos} from "$cplatform";
 import React from "$react";
 import PropTypes from "prop-types";
-import {defaultObj,isObj,isNonNullString} from "$utils";
+import {defaultObj,isObj,isNonNullString} from "$cutils";
 import theme,{Colors,flattenStyle} from "$theme";
 import DrawerItems from './DrawerItems';
 import Dimensions,{isDesktopMedia,getCurrentMedia} from "$cplatform/dimensions";

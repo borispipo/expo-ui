@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 import React from "react";
 import { View } from "react-native";
-import {defaultObj} from "$utils";
+import {defaultObj} from "$cutils";
 import Label from "$ecomponents/Label";
 
 function TableCellComponent({cellArgs,rowArgs,children,renderCell,rowIndex,style,...rest}){

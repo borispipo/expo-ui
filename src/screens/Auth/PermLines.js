@@ -1,6 +1,6 @@
 import React from "$react";
 import { StyleSheet } from "react-native";
-import {defaultObj,extendObj} from "$utils";
+import {defaultObj,extendObj} from "$cutils";
 import Auth from "$cauth";
 import Expandable from "$ecomponents/Expandable";
 import PropTypes from "prop-types";

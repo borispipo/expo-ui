@@ -1,4 +1,4 @@
-import {defaultStr,defaultVal,isNonNullString,defaultNumber,defaultObj} from "$utils";
+import {defaultStr,defaultVal,isNonNullString,defaultNumber,defaultObj} from "$cutils";
 import React from "$react";
 import CountUp from "$ecomponents/CountUp";
 import Avatar from "$ecomponents/Avatar";

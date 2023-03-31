@@ -1,6 +1,6 @@
 import { Avatar } from "react-native-paper";
 import {Colors} from "$theme"; 
-import {defaultDecimal,isNumber,defaultVal,isValid,defaultStr,defaultObj} from "$utils";
+import {defaultDecimal,isNumber,defaultVal,isValid,defaultStr,defaultObj} from "$cutils";
 import {StyleSheet} from "react-native";
 import React from "react";
 import Text from "./Text";

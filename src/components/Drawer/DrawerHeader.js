@@ -3,7 +3,7 @@ import Divider from "$ecomponents/Divider";
 import { StyleSheet } from "react-native";
 import View from "$ecomponents/View";
 import {flattenStyle} from "$theme";
-import {defaultStr} from "$utils";
+import {defaultStr} from "$cutils";
 
 const DrawerHeader = React.forwardRef(({minimized,testID,withMinimizedIcon,drawerWidth,containerProps,isLeftPosition,divider,dividerProps,toggleButton,children,...rest},ref)=>{
     rest = Object.assign({},rest);

@@ -1,4 +1,4 @@
-import {defaultObj} from "$utils";
+import {defaultObj} from "$cutils";
 import i18n from "$i18n"
 import Auth from "$cauth";
 import Menu from "$ecomponents/Menu";
@@ -15,7 +15,7 @@ import theme from "$theme";
 import {isMobileNative} from "$cplatform";
 import appConfig from "$capp/config";
 import Preloader from "$preloader";
-import {defaultNumber} from "$utils";
+import {defaultNumber} from "$cutils";
 import Tooltip from "$ecomponents/Tooltip";
 const UserProfileAvatarComponent = React.forwardRef(({drawerRef,chevronIconProps:customChevronIconProps,size,withLabel,...props},ref)=>{
     let u = defaultObj(Auth.getLoggedUser());

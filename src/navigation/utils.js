@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 import {navigate,sanitizeName} from "$cnavigation";
-import {isNonNullString,defaultStr,defaultObj,isObj} from "$utils";
+import {isNonNullString,defaultStr,defaultObj,isObj} from "$cutils";
 
 
 export const tableDataRouteName = 'TableData';

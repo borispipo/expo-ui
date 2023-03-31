@@ -1,4 +1,4 @@
-import {isObj} from "$utils";
+import {isObj} from "$cutils";
 import {notify} from "$components/Dialog";
 import Camera from "./camera";
 import {isMobileNative} from "$platform";

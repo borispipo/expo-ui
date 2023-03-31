@@ -16,7 +16,7 @@ import PropTypes from "prop-types";
 import { withTheme,Surface,Portal} from 'react-native-paper';
 //import Surface from "$components/Surface";
 import { NativeModules} from 'react-native';
-import {defaultDecimal,extendObj} from "$utils";
+import {defaultDecimal,extendObj} from "$cutils";
 import theme,{StylePropTypes} from "$theme";
 import APP from "$app/instance";
 import MenuItem from "./Item";

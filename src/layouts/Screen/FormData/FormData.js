@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import FormDataActions from "$ecomponents/Form/FormData/FormDataActions";
 import React from "$react";
-import {defaultObj,isObj,defaultStr} from "$utils";
+import {defaultObj,isObj,defaultStr} from "$cutils";
 import ScreenContainer from "../Screen";
 import {useRoute} from "$cnavigation";
 import {Form as FormLoader} from "$ecomponents/ContentLoader";

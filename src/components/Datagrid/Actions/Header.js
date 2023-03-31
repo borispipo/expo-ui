@@ -1,6 +1,6 @@
 import React from "$react";
 import {StyleSheet} from "react-native";
-import {defaultStr} from "$utils";
+import {defaultStr} from "$cutils";
 import Label from "$ecomponents/Label";
 import View from "$ecomponents/View";
 import theme from "$theme";

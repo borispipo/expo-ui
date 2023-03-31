@@ -3,7 +3,7 @@ import {PRIVACY_POLICY} from "./routes";
 import theme from "$theme";
 import {StyleSheet} from "react-native";
 import title from "./title";
-import {defaultObj} from "$utils";
+import {defaultObj} from "$cutils";
 import Label from "$ecomponents/Label";
 export default function(props){
     const {style,...rest} = props;

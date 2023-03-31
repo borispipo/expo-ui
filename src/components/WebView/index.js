@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 import WebView from "./Component";
-import {defaultStr} from "$utils";
+import {defaultStr} from "$cutils";
 import React from "$react";
 import PropTypes from "prop-types";
 import {isValidUrl} from "$cutils/uri";

@@ -1,7 +1,7 @@
 
 import Header from "./Header";
 import PropTypes from "prop-types";
-import {isFunction,defaultObj} from "$utils";
+import {isFunction,defaultObj} from "$cutils";
 import React from "$react";
 import {splitActions,renderSplitedActions} from "$ecomponents/AppBar/utils";
 import {MORE_ICON} from "$ecomponents/Icon/utils";

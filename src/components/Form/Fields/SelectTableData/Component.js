@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 import Dropdown from "$ecomponents/Dropdown";
-import {defaultStr,isFunction,defaultVal,isObjOrArray,defaultObj} from "$utils";
+import {defaultStr,isFunction,defaultVal,isObjOrArray,defaultObj} from "$cutils";
 import PropTypes from "prop-types";
 import actions from "$cactions";
 import {navigateToTableData} from "$enavigation/utils";

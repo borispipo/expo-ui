@@ -4,7 +4,7 @@
 
 import * as Linking from 'expo-linking';
 import { Pressable } from 'react-native';
-import {isValidUrl,isValidEmail,defaultStr,isSms} from "$utils";
+import {isValidUrl,isValidEmail,defaultStr,isSms} from "$cutils";
 import PropTypes from "prop-types";
 import Browser from "$ecomponents/Browser";
 

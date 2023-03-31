@@ -1,7 +1,7 @@
 import Field from "./Field";
 import Dropdown from "$ecomponents/Dropdown";
 import PropTypes from "prop-types";
-import {isObj} from "$utils";
+import {isObj} from "$cutils";
 
 export default class FormSelectField extends Field{
     constructor(props) {

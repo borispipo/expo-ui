@@ -1,7 +1,7 @@
 // Copyright 2023 @fto-consult/Boris Fouomene. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
-import {isNonNullString,isArray,isObjOrArray,defaultStr,defaultArray,defaultObj,isObj} from "$utils";
+import {isNonNullString,isArray,isObjOrArray,defaultStr,defaultArray,defaultObj,isObj} from "$cutils";
 import Hashtag from "$ecomponents/Hashtag";
 import DateLib from "$date";
 import Image from "$ecomponents/Image";

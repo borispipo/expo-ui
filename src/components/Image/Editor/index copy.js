@@ -3,7 +3,7 @@ import { Button, Image, StyleSheet} from 'react-native';
 import View from "$ecomponents/View";
 import { Asset } from 'expo-asset';
 import { manipulateAsync, FlipType, SaveFormat } from 'expo-image-manipulator';
-import {defaultObj} from "$utils";
+import {defaultObj} from "$cutils";
 import Dialog from "$ecomponents/Dialog";
 
 const ImageEditorComponent = React.forwardRef((props,ref)=>{

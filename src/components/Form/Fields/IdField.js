@@ -1,6 +1,6 @@
 import TextField from "./TextField";
 import PropTypes from "prop-types";
-import {isNonNullString,defaultStr} from "$utils";
+import {isNonNullString,defaultStr} from "$cutils";
 import { UPPER_CASE } from "$src/lib/validator";
 //import {isDocUpdate} from "$database/utils";
 

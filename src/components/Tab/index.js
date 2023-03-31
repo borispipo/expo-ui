@@ -6,7 +6,7 @@ import TabItem from "./TabItem";
 import TabContent from "./TabContent";
 import PropTypes from "prop-types";
 import Session from "$session";
-import {isNonNullString,defaultStr,defaultObj,defaultNumber,isObj,isNumber} from "$utils";
+import {isNonNullString,defaultStr,defaultObj,defaultNumber,isObj,isNumber} from "$cutils";
 
 let SessionObj = {};
 

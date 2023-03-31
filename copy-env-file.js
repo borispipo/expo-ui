@@ -1,4 +1,5 @@
 const fs = require("fs");
+const fsExtra = require("fs-extra");
 const path = require("path");
 const writeFile = require("./electron/utils/writeFile");
 /*** create and copy environment path to this directory
@@ -11,7 +12,7 @@ module.exports = (projectRoot,forceCreate)=>{
     if(environmentPath && fs.existsSync(environmentPath)){
         // File ".env" will be created or overwritten by default.
         try {
-          fs.copyFileSync(environmentPath, localEnv,fs.constants.COPYFILE_FICLONE_FORCE);
+          fsExtra.copySync(environmentPath, localEnv,{overwrite:true});
         }
         catch (e){}
     } 

@@ -1,7 +1,7 @@
 import '$session';
 import React from 'react';
 import {SWRConfig} from "$swr";
-import {defaultObj} from "$utils";
+import {defaultObj} from "$cutils";
 import  {updateTheme,defaultTheme} from "$theme";
 import {Provider as PaperProvider } from 'react-native-paper';
 import Index from './index';
@@ -30,11 +30,11 @@ import appConfig from "$capp/config";
 import {showPrompt} from "$components/Dialog/confirm";
 import { AppState } from 'react-native'
 import {canFetchOffline} from "$capi/utils";
-import {defaultNumber} from "$utils";
+import {defaultNumber} from "$cutils";
 import { timeout as SWR_REFRESH_TIMEOUT} from '$ecomponents/Datagrid/SWRDatagrid';
 import { Dimensions,Keyboard } from 'react-native';
 import {isTouchDevice} from "$platform";
-import * as Utils from "$utils";
+import * as Utils from "$cutils";
 Object.map(Utils,(v,i)=>{
   if(typeof v =='function' && typeof window !='undefined' && window && !window[i]){
      window[i] = v;

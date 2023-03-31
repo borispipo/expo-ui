@@ -1,5 +1,5 @@
 import View from "$ecomponents/View";
-import {defaultObj,defaultStr,debounce,defaultNumber,defaultVal} from "$utils";
+import {defaultObj,defaultStr,debounce,defaultNumber,defaultVal} from "$cutils";
 import PropTypes from "prop-types";
 export const DEFAULT_COLUMN_WIDTH = 60;
 import React from "$react";

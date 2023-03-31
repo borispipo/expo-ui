@@ -1,4 +1,4 @@
-import {isDecimal,defaultObj,defaultStr,defaultVal} from "$utils";
+import {isDecimal,defaultObj,defaultStr,defaultVal} from "$cutils";
 import Alert from "./Alert"
 import theme from "$theme";
 import Label from "$ecomponents/Label";

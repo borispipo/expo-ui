@@ -5,7 +5,7 @@ import {MINIMIZED_ICON_SIZE,ICON_SIZE, canBeMinimizedOrPermanent} from './utils'
 import DrawerHeader from "./DrawerHeader";
 import Icon from "$ecomponents/Icon";
 import theme,{flattenStyle} from "$theme";
-import {defaultObj} from "$utils";
+import {defaultObj} from "$cutils";
 import {isMobileNative} from "$cplatform";
 
 const DrawerNavigationViewComponent = React.forwardRef((props,ref)=>{

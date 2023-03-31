@@ -1,5 +1,5 @@
 import { Asset} from 'expo-asset';
-import {isObj,isNonNullString} from "$utils";
+import {isObj,isNonNullString} from "$cutils";
 
 export const loadAsset = async (asset)=>{
     if(isObj(asset) && isAssets(asset)){

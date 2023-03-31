@@ -1,5 +1,5 @@
 import React, {Component} from '$react';
-import {isObj,defaultStr} from "$utils";
+import {isObj,defaultStr} from "$cutils";
 import View from "$ecomponents/View";
 import Portal from "$ecomponents/Portal";
 import theme,{Colors} from "$theme";

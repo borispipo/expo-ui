@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { ActivityIndicator } from 'react-native-paper';
 import theme from "$theme";
 import View from "$ecomponents/View";
-import {defaultStr} from "$utils";
+import {defaultStr} from "$cutils";
 
 import { getImageSizeFitWidth, getImageSizeFitWidthFromCache } from './cache';
 import { NOOP, DEFAULT_HEIGHT } from './helpers';

@@ -7,7 +7,7 @@ import React from "$react";
 import View from "$ecomponents/View";
 import PropTypes from "prop-types";
 import Label from "$ecomponents/Label";
-import {defaultStr,isPromise,defaultObj} from "$utils";
+import {defaultStr,isPromise,defaultObj} from "$cutils";
 import {open as openPreloader,close as closePreloader} from "$preloader";
 import {styles as _styles} from "$theme";
 import Tooltip from "$ecomponents/Tooltip";

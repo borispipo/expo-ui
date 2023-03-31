@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 import Label from "$ecomponents/Label";
 import { TIPPY_THEME } from '$theme/updateNative/utils';
 import {isDOMElement} from "$cutils/dom";
-import {uniqid,defaultStr,defaultObj} from "$utils";
+import {uniqid,defaultStr,defaultObj} from "$cutils";
 
 const TippyTooltipComponent  = React.forwardRef((props,ref)=>{
     let {children,content,...rest} = props;

@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import PropTypes from "prop-types";
 import {StyleProp} from "$theme";
-import {defaultStr,defaultObj} from "$utils";
+import {defaultStr,defaultObj} from "$cutils";
 
 /** We offer a special kind of ListItem which is swipeable from both ends and allows users select an event. */
 export const SwipeableComponent = React.forwardRef(({

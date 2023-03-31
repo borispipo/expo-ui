@@ -1,5 +1,5 @@
 import Checkbox from "$ecomponents/Checkbox";
-import {defaultObj,isNonNullString} from "$utils";
+import {defaultObj,isNonNullString} from "$cutils";
 import Field  from"./Field";
 import React from "react";
 export default class FormCheckboxField extends Field{

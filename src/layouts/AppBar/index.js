@@ -2,7 +2,7 @@ import AppBar from "$ecomponents/AppBar";
 import { Appbar } from "react-native-paper";
 import React from "$react";
 import {MENU_ICON} from "$ecomponents/Icon";
-import {defaultObj} from "$utils";
+import {defaultObj} from "$cutils";
 import {useDrawer} from "$ecomponents/Drawer";
 import Icon from "$ecomponents/Icon";
 

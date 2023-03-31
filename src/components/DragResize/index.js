@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 /***Fork of https://github.com/CaptainOmega/react-native-drag-resize components */
-import {defaultNumber} from "$utils";
+import {defaultNumber} from "$cutils";
 import React from "$react";
   export default function DragResizeComponent ({x,y,width,height,onResize,...props}){
      x = defaultNumber(x); y = defaultNumber(y);

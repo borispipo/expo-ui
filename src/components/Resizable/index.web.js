@@ -4,7 +4,7 @@
 
 import { Resizable } from 'react-resizable';
 import React from "$react";
-import {defaultObj} from "$utils";
+import {defaultObj} from "$cutils";
 import PropTypes from "prop-types";
 
 const ResizableComponent = React.forwardRef(({width,onResize,height,...props},ref)=>{

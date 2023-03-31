@@ -1,6 +1,6 @@
 import {View } from "react-native";
 import React from "$react";
-import {defaultObj,isArray,isDecimal} from "$utils";
+import {defaultObj,isArray,isDecimal} from "$cutils";
 import theme,{Colors,DISABLED_OPACITY} from "$theme";
 import {StyleSheet} from "react-native";
 import PropTypes from "prop-types";

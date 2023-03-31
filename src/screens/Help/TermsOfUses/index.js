@@ -3,7 +3,7 @@ import title from "./title";
 import Screen from "$screen";
 import Link from "./Link";
 import Content from "$TermsOfUses";
-import {extendObj} from "$utils";
+import {extendObj} from "$cutils";
 import React from "$react";
 
 export default function TermsOfUses(props){

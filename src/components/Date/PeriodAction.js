@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 import React from "$react";
 import TextField from "$components/TextField";
-import {isNonNullString} from "$utils";
+import {isNonNullString} from "$cutils";
 import DateLib from "$date";
 
 const PeriodActionComponent = React.forwardRef(({defaultValue,label,isDateTime,...props},ref)=>{

@@ -1,7 +1,7 @@
 import Table from "./Table";
 import Accordion,{ TableDatagrid as TableDataAccordion} from "./Accordion";
 import {get} from "./Common/session";
-import {defaultStr} from "$utils";
+import {defaultStr} from "$cutils";
 let Virtual = null;
 let Datatable = Table;
 let FixedTable = null;

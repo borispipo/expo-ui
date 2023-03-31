@@ -1,4 +1,4 @@
-import {uniqid} from "$utils";
+import {uniqid} from "$cutils";
 
 export const RENDERED_ID = uniqid("RENDERED-NAME");
 

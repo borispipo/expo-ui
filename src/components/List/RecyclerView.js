@@ -1,7 +1,7 @@
 import { RecyclerListView, DataProvider, LayoutProvider } from "recyclerlistview";
 //import PropTypes from "prop-types";
 import CommonListComponent from "./Common";
-import {defaultObj,defaultDecimal} from "$utils";
+import {defaultObj,defaultDecimal} from "$cutils";
 import React from "$react";
 import Label from "$ecomponents/Label";
 import {ActivityIndicator} from "react-native-paper";

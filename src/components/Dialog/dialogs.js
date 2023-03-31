@@ -1,4 +1,4 @@
-import {isFunction,defaultArray,isNonNullString} from "$utils";
+import {isFunction,defaultArray,isNonNullString} from "$cutils";
 
 const isDialog = dialog => dialog && typeof dialog !='boolean' && dialog.getId && dialog.getId() ? true : false;
 const dialogs = {

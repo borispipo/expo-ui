@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 import theme from "$theme";
 import React from "react";
-import {defaultStr,isNonNullString} from "$utils";
+import {defaultStr,isNonNullString} from "$cutils";
 import PropTypes from "prop-types";
 import { StyleSheet } from "react-native";
 import * as FontAsset from 'expo-font';

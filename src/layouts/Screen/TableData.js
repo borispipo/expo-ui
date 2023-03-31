@@ -1,4 +1,4 @@
-import {defaultStr,isNumber,isPromise,defaultVal,extendObj,defaultObj,uniqid,isObj,isObjOrArray} from "$utils";
+import {defaultStr,isNumber,isPromise,defaultVal,extendObj,defaultObj,uniqid,isObj,isObjOrArray} from "$cutils";
 import {FormData} from "$ecomponents/Form";
 import FormDataScreen from "./FormData";
 import ScreenContainer from "./Screen";

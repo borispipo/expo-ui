@@ -5,7 +5,7 @@
 import {Virtuoso} from "react-virtuoso/dist/index.mjs";
 import React from "$react";
 import PropTypes from "prop-types";
-import {defaultObj,defaultNumber,isDOMElement,isNumber,uniqid,isNonNullString,defaultStr} from "$utils";
+import {defaultObj,defaultNumber,isDOMElement,isNumber,uniqid,isNonNullString,defaultStr} from "$cutils";
 import { View } from "react-native";
 
 const propTypes = {

@@ -4,7 +4,7 @@ import {useInputFormat,compareTwoDates,locale as defaultLocale,toDateObj} from "
 import TextInputWithMask from './TextInputMask'
 import {useTheme } from 'react-native-paper'
 import i18n from "$i18n";
-import {defaultStr} from "$utils";
+import {defaultStr} from "$cutils";
 import DateLib from "$lib/date";
 import PropTypes from "prop-types";
 import TextField from "$ecomponents/TextField";

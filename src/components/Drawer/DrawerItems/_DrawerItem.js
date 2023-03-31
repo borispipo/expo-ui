@@ -3,7 +3,7 @@ import { StyleSheet,} from 'react-native';
 import View from "$ecomponents/View";
 import theme,{Colors,ALPHA} from "$theme";
 import Icon from "$ecomponents/Icon"
-import {defaultStr,defaultObj} from "$utils";
+import {defaultStr,defaultObj} from "$cutils";
 import {TouchableRipple} from 'react-native-paper';
 import Divider from "$ecomponents/Divider";
 import Label from "$ecomponents/Label";

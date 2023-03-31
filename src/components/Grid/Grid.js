@@ -1,7 +1,7 @@
 import React from  '$react';
 import {TouchableOpacity,StyleSheet} from 'react-native';
 import {grid} from "$theme";
-import {defaultStr} from "$utils";
+import {defaultStr} from "$cutils";
 import PropTypes from "prop-types";
 import { StyleProp } from '$theme';
 import View from "$ecomponents/View";

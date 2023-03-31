@@ -1,5 +1,5 @@
 import React from '$react';
-import {isObj,isNonNullString} from "$utils";
+import {isObj,isNonNullString} from "$cutils";
 import ExpandableItem from './ExpandableItem';
 import DrawerItem from './DrawerItem';
 import DrawerSection from "./DrawerSection"

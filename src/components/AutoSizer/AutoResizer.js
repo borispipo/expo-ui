@@ -7,7 +7,7 @@ import { Platform, StyleSheet, View} from "react-native";
 import { findDOMNode } from "react-dom";
 import PropTypes from "prop-types";
 import stableHash from "stable-hash";
-import {defaultNumber,isNumber} from "$utils";
+import {defaultNumber,isNumber} from "$cutils";
 
 const styles = StyleSheet.create({container: { flex: 1 }});
 

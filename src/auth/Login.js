@@ -1,5 +1,5 @@
 import React from "$react";
-import {isNonNullString,isObj,defaultNumber,defaultStr,uniqid,extendObj,isFunction} from "$utils";
+import {isNonNullString,isObj,defaultNumber,defaultStr,uniqid,extendObj,isFunction} from "$cutils";
 import {navigate} from "$cnavigation";
 import FormData from "$ecomponents/Form/FormData/FormData";
 import {getForm} from "$ecomponents/Form/utils";

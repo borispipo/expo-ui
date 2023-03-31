@@ -6,7 +6,7 @@ import {
 import View from "$ecomponents/View";
 import theme,{ StyleProps,Colors} from '$theme';
 import PropTypes from "prop-types";
-import {defaultVal,defaultNumber,defaultObj} from "$utils";
+import {defaultVal,defaultNumber,defaultObj} from "$cutils";
 import Label from "$ecomponents/Label";
 
 const defaultSize = 18;

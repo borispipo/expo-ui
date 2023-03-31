@@ -1,6 +1,6 @@
 import {Checkbox} from "$ecomponents/Icon";
 import React from "$react";
-import {defaultObj,isObj} from "$utils";
+import {defaultObj,isObj} from "$cutils";
 import PropTypes from "prop-types";
 import theme from "$theme";
 

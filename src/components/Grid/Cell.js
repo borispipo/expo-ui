@@ -4,7 +4,7 @@ import React from '$react';
 import {TouchableOpacity, StyleSheet} from 'react-native';
 import Dimensions from "$cplatform/dimensions";
 import View from "$ecomponents/View";
-import {defaultStr} from "$utils";
+import {defaultStr} from "$cutils";
 import PropTypes from "prop-types";
 import {medias} from "$theme/grid";
 import theme from "$theme";

@@ -2,7 +2,7 @@ import {get,set} from "./Common/session";
 import Icon from "$ecomponents/Icon";
 import {notify} from "$ecomponents/Dialog";
 import {isDesktopMedia} from "$cplatform/dimensions";
-import {defaultStr} from "$utils";
+import {defaultStr} from "$cutils";
 import {Menu} from "$ecomponents/BottomSheet";
 import {accordionIcon,tableIcon,typeKey} from "./RenderTypes/utils";
 import rendersTypes from "./RenderTypes";;

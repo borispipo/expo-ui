@@ -1,7 +1,7 @@
 import React from "$react";
 import PropTypes from "prop-types";
 import Label from "$ecomponents/Label";
-import {defaultNumber,defaultStr} from "$utils";
+import {defaultNumber,defaultStr} from "$cutils";
 
 export const getDefaultStep = (count)=>{
     count = Math.abs(parseInt(count)||0);

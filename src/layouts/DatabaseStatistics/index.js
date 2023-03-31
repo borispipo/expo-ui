@@ -1,6 +1,6 @@
 import Screen from "$screen";
 import Grid,{Cell} from "$components/Grid";
-import {defaultStr,defaultNumber,defaultVal} from "$utils";
+import {defaultStr,defaultNumber,defaultVal} from "$cutils";
 import React from "$react";
 import DatabaseStatistic from "./DatabaseStatistic";
 import theme from "$theme";

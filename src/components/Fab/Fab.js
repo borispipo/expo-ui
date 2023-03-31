@@ -1,5 +1,5 @@
 import { FAB } from 'react-native-paper';
-import {defaultObj} from "$utils";
+import {defaultObj} from "$cutils";
 import React from "$react";
 import { StyleSheet } from 'react-native';
 import PropTypes from "prop-types";

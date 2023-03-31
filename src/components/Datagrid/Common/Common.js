@@ -11,7 +11,7 @@ import {showConfirm} from "$ecomponents/Dialog";
 import Label from "$ecomponents/Label";
 import Icon,{COPY_ICON,CHECKED_ICON,UNCHECKED_ICON} from "$ecomponents/Icon";
 import filterUtils from "$cfilters";
-import {sortBy,isDecimal,defaultVal,sanitizeSheetName,extendObj,isObjOrArray,isObj,defaultNumber,defaultStr,isFunction,defaultBool,defaultArray,defaultObj,isNonNullString,defaultDecimal} from "$utils";
+import {sortBy,isDecimal,defaultVal,sanitizeSheetName,extendObj,isObjOrArray,isObj,defaultNumber,defaultStr,isFunction,defaultBool,defaultArray,defaultObj,isNonNullString,defaultDecimal} from "$cutils";
 import {Datagrid as DatagridContentLoader} from "$ecomponents/ContentLoader";
 import React from "$react";
 import DateLib from "$lib/date";

@@ -1,6 +1,6 @@
 import {getAppBarActionsProps} from "./utils";
 import React, {Component as AppComponent} from "$react";
-import {isNonNullString,defaultStr,defaultObj,extendObj,isObj,isFunction,defaultFunc,uniqid} from "$utils";
+import {isNonNullString,defaultStr,defaultObj,extendObj,isObj,isFunction,defaultFunc,uniqid} from "$cutils";
 import {getForm,getFormField,Forms} from "../utils";
 import Divider from "$ecomponents/Divider";
 import Surface from "$ecomponents/Surface";

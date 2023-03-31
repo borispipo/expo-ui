@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import {defaultVal,defaultStr,defaultBool,isDecimal,isObj,defaultObj,isNonNullString} from "$utils";
+import {defaultVal,defaultStr,defaultBool,isDecimal,isObj,defaultObj,isNonNullString} from "$cutils";
 import View from "$ecomponents/View";
 import {Text} from "react-native-paper";
 import { StyleSheet } from "react-native";

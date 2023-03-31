@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 import React from "$react";
-import {defaultBool} from "$utils";
+import {defaultBool} from "$cutils";
 
 const DatagridProgressBar = React.forwardRef(({isLoading:customIsLoading,onChange,children},ref)=>{
     const [isLoading,_setIsLoading] = React.useState(defaultBool(customIsLoading));

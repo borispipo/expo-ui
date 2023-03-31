@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 /***Fork of https://github.com/CaptainOmega/react-native-drag-resize components */
-import {defaultStr,defaultObj,isObj} from "$utils";
+import {defaultStr,defaultObj,isObj} from "$cutils";
 import React, {Component} from 'react';
 import {
   Dimensions,

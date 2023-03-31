@@ -3,7 +3,7 @@ import Dialog from "./Dialog";
 import { createProviderRef } from "$ecomponents/Dialog/Provider";
 import {isMobileOrTabletMedia} from "$cplatform/dimensions";
 import {MAX_WIDTH} from "$ecomponents/Dialog/utils";
-import {extendObj,defaultObj,isObj,defaultBool,defaultStr} from "$utils";
+import {extendObj,defaultObj,isObj,defaultBool,defaultStr} from "$cutils";
 import grid from "$theme/grid";
 import {isDesktopMedia} from "$cdimensions";
 

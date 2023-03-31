@@ -1,7 +1,7 @@
 // Copyright 2022 @fto-consult/Boris Fouomene. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
-import {isObj,defaultNumber} from "$utils";
+import {isObj,defaultNumber} from "$cutils";
 import appConfig from "$app/config";
 
 /*** retourne le nombre maximal de courbes pouvant s'afficher sur un même graphe

@@ -1,9 +1,9 @@
 import Panel from './Panel';
-import {defaultBool} from "$utils";
+import {defaultBool} from "$cutils";
 import Dialog from "$ecomponents/Dialog";
 import React from '$react';
 import PropTypes from "prop-types";
-import {defaultObj} from "$utils";
+import {defaultObj} from "$cutils";
 export default function PanelComponent(props){
     let  {autoClear,trim,dialogProps,visible,descriptionText,description,text,onComplete,...rest} = props;
     dialogProps = defaultObj(dialogProps);

@@ -2,7 +2,7 @@ import {View} from "react-native";
 import PropTypes from "prop-types";
 import React from "$react";
 import {isMobileNative} from "$cplatform";
-import {debounce,isNumber} from "$utils";
+import {debounce,isNumber} from "$cutils";
 
 
 const ViewComponent = React.forwardRef(({mediaQueryUpdateNativeProps,onRender,onLayoutTimeout,onLayout,autoHeight,autoWidth,elevation,...props},ref)=>{

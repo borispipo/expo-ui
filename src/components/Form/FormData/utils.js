@@ -1,4 +1,4 @@
-import {isNonNullString,isObj,defaultObj,isPromise,isFunction,defaultStr,isObjOrArray,defaultFunc} from "$utils";
+import {isNonNullString,isObj,defaultObj,isPromise,isFunction,defaultStr,isObjOrArray,defaultFunc} from "$cutils";
 import notify from "$notify";
 import { getFormData } from "../utils/FormsManager";
 import {isMobileBrowser,isMobileNative} from "$cplatform";

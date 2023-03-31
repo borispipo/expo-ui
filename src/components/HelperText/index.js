@@ -1,7 +1,7 @@
 import { HelperText} from 'react-native-paper';
 import { StyleSheet } from 'react-native';
 import PropTypes from "prop-types";
-import {defaultBool,defaultObj,isNonNullString} from "$utils";
+import {defaultBool,defaultObj,isNonNullString} from "$cutils";
 import React from "$react";
 export const TYPES = {info:'info',error:'error'};
 import theme,{DISABLED_OPACITY} from "$theme";

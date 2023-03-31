@@ -1,6 +1,6 @@
 import Dialog from "./Dialog";
 import React from "$react";
-import {defaultObj,defaultBool} from "$utils";
+import {defaultObj,defaultBool} from "$cutils";
 
 let dialogRef = null;
 

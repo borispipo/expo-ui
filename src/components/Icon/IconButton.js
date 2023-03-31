@@ -8,7 +8,7 @@ import Surface from '$ecomponents/Surface';
 import { IconButton } from 'react-native-paper';
 import PropTypes from "prop-types";
 import theme,{StyleProp,Colors} from "$theme";
-import {defaultStr} from "$utils";
+import {defaultStr} from "$cutils";
 
 const IconButtonComponent = ({
   icon,

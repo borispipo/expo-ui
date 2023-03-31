@@ -5,7 +5,7 @@ import Button from "$components/Button";
 import Menu from "$components/Menu";
 import theme from "$theme";
 import React from "$react";
-import {isObj,defaultStr,defaultObj} from "$utils";
+import {isObj,defaultStr,defaultObj} from "$cutils";
 import PropTypes from "prop-types";
 import View from "$components/View";
 

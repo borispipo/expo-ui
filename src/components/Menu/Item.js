@@ -9,7 +9,7 @@ import theme,{black,white,Colors,StylePropTypes,DISABLED_OPACITY} from "$theme";
 import PropTypes from "prop-types";
 import { Dimensions } from 'react-native';
 import View from "$ecomponents/View";
-import {defaultVal,isNonNullString,defaultStr,defaultObj} from "$utils";
+import {defaultVal,isNonNullString,defaultStr,defaultObj} from "$cutils";
 import Tooltip from "$ecomponents/Tooltip";
 import Label from "$ecomponents/Label";
 

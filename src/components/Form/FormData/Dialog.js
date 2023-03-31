@@ -1,6 +1,6 @@
 import Dialog from "$ecomponents/Dialog/Dialog";
 import FormDataActions from "./FormDataActions";
-import {defaultObj} from "$utils";
+import {defaultObj} from "$cutils";
 import React from "$react";
 import PropTypes from "prop-types";
 

@@ -1,5 +1,5 @@
 import selectors from "./sprintfSelectors";
-import {isNonNullString,defaultFunc,isObj,isPromise} from "$utils";
+import {isNonNullString,defaultFunc,isObj,isPromise} from "$cutils";
 
 export default  ({value,val,formatter,cb,success})=>{
     val = defaultStr(value,val)

@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 import DateLib from "$date";
 import React from "$react";
-import {defaultObj,isNonNullString} from "$utils";
+import {defaultObj,isNonNullString} from "$cutils";
 import SimpleSelect from "$ecomponents/SimpleSelect";
 import Provider from "$ecomponents/Dialog/Provider";
 import TextField from "$ecomponents/TextField";

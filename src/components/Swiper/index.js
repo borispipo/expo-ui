@@ -5,7 +5,7 @@ import { Animated, I18nManager,Dimensions, PanResponder, StyleSheet, View } from
 import ScrollView  from "$ecomponents/ScrollView";
 import theme from "$theme";
 import DefaultControls from './Controls';
-import {defaultObj,defaultDecimal} from "$utils";
+import {defaultObj,defaultDecimal} from "$cutils";
 import {isNativeMobile} from "$cplatform";
 const isNative = isNativeMobile();
 import { ActivityIndicator } from 'react-native-paper';

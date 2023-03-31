@@ -1,7 +1,7 @@
 import {Image,View} from "react-native";
 import Menu from "$ecomponents/Menu";
 import Avatar from "$ecomponents/Avatar";
-import {isDecimal,setQueryParams,isValidURL,defaultDecimal,defaultStr as defaultString,isDataURL,isPromise,defaultBool,isObj,isNonNullString} from "$utils";
+import {isDecimal,setQueryParams,isValidURL,defaultDecimal,defaultStr as defaultString,isDataURL,isPromise,defaultBool,isObj,isNonNullString} from "$cutils";
 import {notify} from "$ecomponents/Dialog";
 let maxWidthDiff = 150, maxHeightDiff = 150;
 import {StyleSheet} from "react-native";

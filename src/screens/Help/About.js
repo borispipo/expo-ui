@@ -11,7 +11,7 @@ import Screen from "$screen";
 import getDevicesInfos from "./getDevicesInfos";
 import View from "$ecomponents/View";
 import Label from "$ecomponents/Label";
-import {defaultStr} from "$utils";
+import {defaultStr} from "$cutils";
 import theme from "$theme";
 import APP from "$app";
 import AutoLink from "$ecomponents/AutoLink";

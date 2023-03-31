@@ -1,13 +1,9 @@
 import TextField from "./TextField";
 import PropTypes from "prop-types";
 import { UPPER_CASE } from "$src/lib/validator";
-import {isNonNullString,defaultStr} from "$utils";
-//mport {isDocUpdate} from "$database/utils";
+import {isNonNullString,defaultStr,isPromise} from "$cutils";
 import React from "$react";
-import {copyTextToClipboard} from "$capp/clipboard/utils";
-import Icon,{COPY_ICON} from "$ecomponents/Icon";
 import { ActivityIndicator } from "react-native-paper";
-import dbUniqid from "$database/plugins/uniqid";
 
 export default class FormPieceField extends TextField {
     constructor(props){
@@ -20,9 +16,7 @@ export default class FormPieceField extends TextField {
     }
     componentDidMount(){
         super.componentDidMount();
-        if(isNonNullString(this.piece) && isNonNullString(this.props.tableName)){  
-            this.fetchNewId(false);
-        }
+        this.fetchNewId(false);
     }
     handleCheckIdError(msg,errorCb){
         this.canCheckAgain = false;
@@ -35,32 +29,31 @@ export default class FormPieceField extends TextField {
 
     /*** met à jour la données du numéro de piece */
     fetchNewId(focus){
-        let data = defaultObj(this.props.data);
-        if(!isNonNullString(this.piece)) return undefined;
-        if(isDocUpdate(data) && isNonNullString(data[this.name])){
+        const data = defaultObj(this.props.data);
+        if(!isNonNullString(this.piece) && isNonNullString(this.name)) return undefined;
+        if(isNonNullString(data[this.name])){
             this.newFieldPieceId = data[this.name];
             return this.newFieldPieceId;
         }
         setTimeout(()=>{
-            let {id,pieceId} = dbUniqid({...this.getUniqidArgs()})
-            this.newFieldId = id;
-            this.newFieldPieceId = isNonNullString(pieceId)?pieceId:id;
-            const value = this.newFieldPieceId;
-            this.validate({value}); 
-            if(focus) this.focus();
+            const tableName = this.tableName = defaultStr(data.table,this.tableName,this.props.tableName,this.props.table);
+            const fId = typeof this.props.fetchNewId =='function'? this.props.fetchNewId({...this.props,tableName,table:tableName}) : null;
+            const cb = (value)=>{
+                if(isNonNullString(value)){
+                    this.newFieldPieceId = value;
+                    this.validate({value}); 
+                    if(focus) this.focus();
+                }
+            }
+            
         },0);
     }
     /*** retourne la valeur validée */
     getValidValue(data){
-        let validValue = super.getValidValue(data);
-        data.piece = this.piece;
+        const validValue = super.getValidValue(data);
+        data.piece = defaultStr(data.piece,this.piece);
         data._id = defaultStr(data._id,validValue,this.newFieldPieceId);
         return validValue;
-    }
-    setPiece(piece,tableName){
-        this.tableName = defaultStr(tableName,this.tableName).toUpperCase();
-        this.piece = piece;
-        this.fetchNewId();
     }
     getUniqidArgs (){
         return {context:this,table:this.tableName,dbName:this.dbName,piece:this.piece}

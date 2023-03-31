@@ -1,5 +1,5 @@
 import View from "$ecomponents/View";
-import {defaultObj,defaultBool} from "$utils";
+import {defaultObj,defaultBool} from "$cutils";
 import Divider from "$ecomponents/Divider";
 import Label from "$ecomponents/Label";
 import theme,{Colors,tinyColor,ALPHA_OPACITY} from "$theme";

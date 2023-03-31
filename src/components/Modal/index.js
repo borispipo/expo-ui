@@ -18,7 +18,7 @@ import {
   getBottomSpace,
 } from 'react-native-iphone-x-helper';
 
-import {defaultObj} from "$utils";
+import {defaultObj} from "$cutils";
 
 const TOP_INSET = getStatusBarHeight(true);
 const BOTTOM_INSET = getBottomSpace();

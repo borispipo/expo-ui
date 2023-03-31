@@ -1,6 +1,6 @@
 import {ActivityIndicator} from "react-native";
 import Dialog from "$ecomponents/Dialog";
-import {defaultVal,isObj,defaultBool,defaultObj,isObjOrArray,defaultStr,uniqid} from "$utils";
+import {defaultVal,isObj,defaultBool,defaultObj,isObjOrArray,defaultStr,uniqid} from "$cutils";
 import Label from "$ecomponents/Label";
 import {StyleSheet} from "react-native";
 import View from "$ecomponents/View";

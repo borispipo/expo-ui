@@ -1,5 +1,5 @@
 import {TableData} from "../Common";
-import {defaultObj,defaultArray,defaultStr,defaultDecimal,isNonNullString} from "$utils";
+import {defaultObj,defaultArray,defaultStr,defaultDecimal,isNonNullString} from "$cutils";
 import View from "$ecomponents/View";
 import { StyleSheet,Dimensions,Pressable } from "react-native";
 import Icon,{MENU_ICON} from "$ecomponents/Icon";

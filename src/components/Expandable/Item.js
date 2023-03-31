@@ -1,6 +1,6 @@
 import color from 'color';
 import * as React from 'react';
-import {defaultObj,defaultStr} from "$utils";
+import {defaultObj,defaultStr} from "$cutils";
 import Label from "$ecomponents/Label"
 import theme from "$theme";
 import View from "$ecomponents/View";

@@ -1,5 +1,5 @@
 import Fab from "$ecomponents/Fab";
-import {isObj,defaultStr,defaultVal,defaultObj} from "$utils";
+import {isObj,defaultStr,defaultVal,defaultObj} from "$cutils";
 import React from "$react";
 import PropTypes from "prop-types";
 import theme from "$theme";

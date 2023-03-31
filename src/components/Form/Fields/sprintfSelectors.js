@@ -1,5 +1,5 @@
 import Date from "$lib/date";
-import {defaultObj} from "$utils";
+import {defaultObj} from "$cutils";
 import appConfig from "$capp/config";
 const sprintfSelectors = defaultObj(appConfig.get("sprintfSelectors"));
 export default  {

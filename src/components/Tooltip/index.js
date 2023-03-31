@@ -1,5 +1,5 @@
 import Popover from "./Popover";
-import {defaultObj,defaultVal} from "$utils";
+import {defaultObj,defaultVal} from "$cutils";
 import View from "$ecomponents/View";
 import Label from "$ecomponents/Label";
 import React from "$react";

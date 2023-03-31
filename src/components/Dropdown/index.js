@@ -8,7 +8,7 @@ import theme,{Colors} from "$theme";
 import Dialog from "$ecomponents/Dialog";
 import {isMobileOrTabletMedia} from "$cplatform/dimensions";
 import {isIos} from "$cplatform";
-import {defaultVal,defaultStr,defaultObj,defaultBool,defaultFunc,debounce,isNonNullString,compare as NCompare} from "$utils";
+import {defaultVal,defaultStr,defaultObj,defaultBool,defaultFunc,debounce,isNonNullString,compare as NCompare} from "$cutils";
 import MenuComponent from "$ecomponents/Menu";
 import HelperText from "$ecomponents/HelperText";
 import TextField,{flatMode} from "$ecomponents/TextField";

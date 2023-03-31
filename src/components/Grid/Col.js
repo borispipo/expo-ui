@@ -2,7 +2,7 @@
 
 import React from '$react';
 import {TouchableOpacity, StyleSheet} from 'react-native';
-import {defaultStr} from "$utils";
+import {defaultStr} from "$cutils";
 import PropTypes from "prop-types";
 import View from "$ecomponents/View";
 

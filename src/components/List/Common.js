@@ -3,7 +3,7 @@ import React from "$react";
 import { prepareItems as customPrepareItems,getBToTopRef } from "./utils";
 import theme,{grid,StylePropTypes} from "$theme";
 import PropTypes from "prop-types";
-import {defaultObj,isObj,defaultDecimal,defaultArray,defaultFunc} from "$utils";
+import {defaultObj,isObj,defaultDecimal,defaultArray,defaultFunc} from "$cutils";
 import {isMobileMedia} from "$cplatform/dimensions";
 import BackToTop from "$ecomponents/BackToTop";
 import {FlatList,StyleSheet,View} from "react-native";

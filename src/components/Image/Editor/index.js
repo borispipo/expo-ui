@@ -2,7 +2,7 @@ import React from "$react";
 import { Button, Image, StyleSheet} from 'react-native';
 import View from "$ecomponents/View";
 import { ImageEditor } from "expo-image-editor";
-import {defaultObj} from "$utils";
+import {defaultObj} from "$cutils";
 
 const ImageEditorComponent = React.forwardRef((props,ref)=>{
     let {source,uri,onSuccess,imageUri,lockAspectRatio,dialogProps,onDismiss,visible,imageProps,...rest} = props;

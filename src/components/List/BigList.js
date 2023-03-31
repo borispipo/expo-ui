@@ -1,5 +1,5 @@
 import CommonListComponent from "./Common";
-import {defaultObj,defaultDecimal} from "$utils";
+import {defaultObj,defaultDecimal} from "$cutils";
 import React from "$react";
 import {ActivityIndicator} from "react-native-paper";
 import BigList from "react-native-big-list";

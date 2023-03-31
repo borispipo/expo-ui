@@ -1,5 +1,5 @@
 import React from "$react";
-import {defaultObj,isDecimal,defaultStr,debounce,extendObj,defaultVal,defaultFunc} from "$utils";
+import {defaultObj,isDecimal,defaultStr,debounce,extendObj,defaultVal,defaultFunc} from "$cutils";
 import TextField,{flatMode} from "$ecomponents/TextField";
 import {TouchableOpacity,Dimensions,StyleSheet} from "react-native";
 import { TouchableRipple} from "react-native-paper";

@@ -2,7 +2,7 @@ import SimpleSelect from "$ecomponents/SimpleSelect";
 import {flatMode} from "$ecomponents/TextField";
 import { StyleSheet } from "react-native";
 import React from "$react";
-import {defaultObj} from "$utils";
+import {defaultObj} from "$cutils";
 
 const InlineIndicatorSelectComponent = React.forwardRef((props,ref)=>{
     let {inputProps,style,...rest} = props;

@@ -1,4 +1,4 @@
-import {defaultStr,isObj} from "$utils";
+import {defaultStr,isObj} from "$cutils";
 import PropTypes from "prop-types";
 import {FadeIn,FadeInRight,FadeInLeft,FadeInUp,FadeInDown,SlideInRight,SlideInLeft,SlideInUp,SlideInDown} from "react-native-reanimated"; 
 import {FadeOut,FadeOutRight,FadeOutLeft,FadeOutUp,FadeOutDown,SlideOutRight,SlideOutLeft,SlideOutUp,SlideOutDown} from "react-native-reanimated";

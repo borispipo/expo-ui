@@ -6,7 +6,7 @@ import Accordion,{ TableData as TableDataAccordion} from "./Accordion";
 import Dashboard  from "./Dashboard";
 import Table,{TableData as DatagridTableData} from "./Table";
 import {isDesktopMedia,isMobileMedia} from "$cplatform/dimensions";
-import {isFunction,defaultVal} from "$utils";
+import {isFunction,defaultVal} from "$cutils";
 import React from "$react";
 import {getRenderType} from "./utils";
 

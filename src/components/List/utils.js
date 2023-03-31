@@ -1,4 +1,4 @@
-import {defaultStr} from "$utils";
+import {defaultStr} from "$cutils";
 
 export const MIN_HEIGHT = 50;
 

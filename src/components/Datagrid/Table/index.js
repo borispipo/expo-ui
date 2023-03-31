@@ -1,5 +1,5 @@
 import CommonDatagrid,{TableData as CommonDatagridTableData} from "../Common";
-import {defaultObj,defaultArray,defaultStr,defaultDecimal,isNonNullString} from "$utils";
+import {defaultObj,defaultArray,defaultStr,defaultDecimal,isNonNullString} from "$cutils";
 import View from "$ecomponents/View";
 import { StyleSheet,Dimensions,Pressable ,ScrollView} from "react-native";
 import {isMobileOrTabletMedia} from "$cplatform/dimensions";

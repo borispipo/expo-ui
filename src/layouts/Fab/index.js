@@ -1,6 +1,6 @@
 import Fab from "$ecomponents/Fab";
 import { StyleSheet } from "react-native";
-import {isObjOrArray,isObj,defaultStr,defaultObj} from "$utils";
+import {isObjOrArray,isObj,defaultStr,defaultObj} from "$cutils";
 import APP from "$capp";
 import React from "$react";
 import {navigateToTableData} from "$enavigation/utils";

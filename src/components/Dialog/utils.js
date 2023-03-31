@@ -1,4 +1,4 @@
-import {defaultObj} from "$utils";
+import {defaultObj} from "$cutils";
 import {flattenStyle} from "$theme";
 import {Dimensions} from "react-native";
 import {splitActions} from "$ecomponents/AppBar/utils";

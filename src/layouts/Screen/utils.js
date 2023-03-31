@@ -1,5 +1,5 @@
 import Tab from "$ecomponents/Tab";
-import {isObjOrArray,defaultStr,defaultObj,isNonNullString,defaultArray,defaultFunc} from "$utils";
+import {isObjOrArray,defaultStr,defaultObj,isNonNullString,defaultArray,defaultFunc} from "$cutils";
 import React from "$react";
 import {Colors} from "$theme";
 import { COPY_ICON,PRINT_ICON} from "$ecomponents/Icon";

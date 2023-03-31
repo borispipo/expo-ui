@@ -8,7 +8,7 @@ import {
 import PropTypes from "prop-types";
 import theme,{StylePropTypes,Colors} from "$theme";
 import {isMobileNative,isMobileBrowser} from "$cplatform"
-import {defaultStr} from "$utils";
+import {defaultStr} from "$cutils";
 import {Elevations} from "$ecomponents/Surface";
 import stableHash from "stable-hash";
 import ScrollView from '$ecomponents/ScrollView';

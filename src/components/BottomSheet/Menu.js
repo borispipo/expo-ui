@@ -2,7 +2,7 @@ import BottomSheet from "./Sheet";
 import {isMobileMedia} from "$cplatform/dimensions";
 import Menu,{renderItems} from "$ecomponents/Menu";
 import React from "$react";
-import {defaultObj,defaultDecimal,defaultStr,isDecimal,defaultBool} from "$utils";
+import {defaultObj,defaultDecimal,defaultStr,isDecimal,defaultBool} from "$cutils";
 import View from "$ecomponents/View";
 import PropTypes from "prop-types";
 import {getContentHeight} from "./utils";

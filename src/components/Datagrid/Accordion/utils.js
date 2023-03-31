@@ -1,5 +1,5 @@
 import { Dimensions } from "react-native";
-import {defaultObj,defaultNumber} from "$utils";
+import {defaultObj,defaultNumber} from "$cutils";
 
 export const MIN_ITEM_HEIGHT = 50;
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 import React from "$react";
-import {defaultStr} from "$utils";
+import {defaultStr} from "$cutils";
 import SimpleSelect from "$ecomponents/SimpleSelect";
 import {currencies} from "$ccurrency";
 import appConfig from "$app/config";

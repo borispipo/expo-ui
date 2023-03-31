@@ -1,5 +1,5 @@
 import CommonDatagrid from "./Common";
-import {defaultObj,extendObj,defaultStr,isNonNullString,isFunction,isPromise} from "$utils";
+import {defaultObj,extendObj,defaultStr,isNonNullString,isFunction,isPromise} from "$cutils";
 import PropTypes from "prop-types";
 import actions from "$actions";
 /**** 

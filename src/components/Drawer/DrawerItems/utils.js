@@ -1,5 +1,5 @@
 import {navigate} from "$cnavigation";
-import {defaultObj,isPromise,isObj,isNonNullString,isFunction} from "$utils";
+import {defaultObj,isPromise,isObj,isNonNullString,isFunction} from "$cutils";
 import {open as openPreloader,close as closePreloader} from "$epreloader";
 import React from "$react";
 import theme,{Colors} from "$theme";

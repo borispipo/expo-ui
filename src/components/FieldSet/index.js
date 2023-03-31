@@ -7,7 +7,7 @@ import View from "$components/View";
 import Label from "$components/Label";
 import PropTypes from 'prop-types';
 import { StyleSheet } from "react-native";
-import {defaultStr,defaultObj} from "$utils";
+import {defaultStr,defaultObj} from "$cutils";
 import theme from "$theme";
 
 const FieldSet = React.forwardRef(({testID,style,children,labelProps,containerProps,label,borderColor,...props},ref)=>{

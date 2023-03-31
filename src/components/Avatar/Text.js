@@ -3,7 +3,7 @@ import {Text,StyleSheet,Pressable} from 'react-native';
 import View from "$ecomponents/View";
 import PropTypes from 'prop-types';
 import {Colors,StylePropTypes} from "$theme";
-import {defaultStr,defaultNumber} from "$utils";
+import {defaultStr,defaultNumber} from "$cutils";
 
 const defaultSize = 64;
 

@@ -1,6 +1,6 @@
 import {Menu} from "$ecomponents/BottomSheet";
 import React from "$react";
-import {defaultObj} from "$utils";
+import {defaultObj} from "$cutils";
 
 let bottomSheetRef = null;
 

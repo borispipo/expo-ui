@@ -3,7 +3,7 @@
 import React from '$react';
 import {TouchableOpacity, StyleSheet} from 'react-native';
 import View from "$ecomponents/View";
-import {defaultStr} from "$utils";
+import {defaultStr} from "$cutils";
 import PropTypes from "prop-types";
 
 const GridRowComponent = React.forwardRef((p,ref)=>{

@@ -1,7 +1,7 @@
 import React from "$react";
 import {Dialog} from "react-native-paper";
 import Label from "$ecomponents/Label";
-import {isNonNullString,defaultObj} from "$utils";
+import {isNonNullString,defaultObj} from "$cutils";
 import View from "$ecomponents/View";
 import theme from "$theme";
 import { StyleSheet } from "react-native";

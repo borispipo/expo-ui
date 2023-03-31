@@ -1,7 +1,7 @@
 import React from "$react";
 import {Vertical as AutoSizeVertical} from "$ecomponents/AutoSizer";
 import List from "./List";
-import {defaultStr,isObj,defaultObj} from "$utils";
+import {defaultStr,isObj,defaultObj} from "$cutils";
 const normalize = (size)=>{
     if(isObj(size)){
         ["padding","paddingBottom","paddingTop","paddingLeft","paddingRight"].map(p=>{

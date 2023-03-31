@@ -1,4 +1,4 @@
-import {isNonNullString,defaultStr,uniqid} from "$utils";
+import {isNonNullString,defaultStr,uniqid} from "$cutils";
 import PropTypes from "prop-types"
 import _DrawerItem from "./_DrawerItem";
 import {navigate,setActiveRoute} from "$cnavigation";

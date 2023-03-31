@@ -3,7 +3,7 @@ import View from "$ecomponents/View";
 import React from "$react";
 import memoize from "$react/memoize";
 export {default as FooterItem} from "./Footer";
-import {parseDecimal,defaultObj,defaultStr,isNonNullString} from "$utils";
+import {parseDecimal,defaultObj,defaultStr,isNonNullString} from "$cutils";
 import { aggregatorFunctions as mAggregatorFunctions } from "./Footer";
 export * from "./Footer";
 

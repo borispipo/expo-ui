@@ -3,7 +3,7 @@ import {Platform,StyleSheet,TouchableWithoutFeedback,View} from 'react-native';
 import Label from "$ecomponents/Label";
 import theme,{Colors,StyleProp} from "$theme";
 import PropTypes from "prop-types";
-import {defaultObj,defaultStr} from "$utils";
+import {defaultObj,defaultStr} from "$cutils";
 import {isIos,isAndroid,isWeb} from "$cplatform";
 
 const AppbarContent = React.forwardRef(({

@@ -1,6 +1,6 @@
 import Field from "./Fields/Field";
 import React from "$react";
-import {classExtends,isFunction,isNonNullString,defaultStr,defaultObj,defaultVal,extendObj} from "$utils";
+import {classExtends,isFunction,isNonNullString,defaultStr,defaultObj,defaultVal,extendObj} from "$cutils";
 import {warning,Forms} from "./utils";
 import Action from "./Action";
 import View from "$ecomponents/View";

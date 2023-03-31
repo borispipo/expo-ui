@@ -1,5 +1,5 @@
 import { Dimensions } from "react-native";
-import {isDecimal} from "$utils";
+import {isDecimal} from "$cutils";
 
 export const getContentHeight = (innerRef,cb,screenIndent)=>{
     return new Promise ((resolve)=>{

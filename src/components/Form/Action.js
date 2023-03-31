@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import Button from "$components/Button";
 import notify from "$notify";
 import FormsManager from "./utils/FormsManager";
-import {uniqid} from "$utils";
+import {uniqid} from "$cutils";
 import { getFormInstance } from "./utils/FormsManager";
 import {flattenStyle} from "$theme";
 import APP from "$capp/instance";

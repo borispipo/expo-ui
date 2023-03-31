@@ -1,4 +1,4 @@
-import {isObj,isNonNullString,isFunction,defaultObj,extendObj,defaultBool} from "$utils";
+import {isObj,isNonNullString,isFunction,defaultObj,extendObj,defaultBool} from "$cutils";
 import APP from "$capp/instance";
 import {observable,addObserver,isObservable} from "$observable";
 

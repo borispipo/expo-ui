@@ -10,7 +10,7 @@ import {
   View,
 } from 'react-native';
 import theme from "$theme";
-import {defaultObj,isObj,defaultStr} from "$utils";
+import {defaultObj,isObj,defaultStr} from "$cutils";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useEventCallback from 'use-event-callback';
 import PropTypes from "prop-types";

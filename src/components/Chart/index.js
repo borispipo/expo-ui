@@ -1,6 +1,6 @@
 import React from '$react'
 import PropTypes from 'prop-types'
-import {defaultStr,defaultVal,defaultObj,uniqid} from "$utils";
+import {defaultStr,defaultVal,defaultObj,uniqid} from "$cutils";
 import Chart from "./appexChart";
 import theme from "$theme";
 import { destroyChart } from './appexChart/utils';

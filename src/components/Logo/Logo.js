@@ -3,7 +3,7 @@ import View from "$ecomponents/View";
 import React from "$react";
 import theme,{remToPixel,Colors,flattenStyle} from '$theme';
 import {StyleSheet} from "react-native";
-import {defaultStr,defaultObj,defaultNumber} from "$utils";
+import {defaultStr,defaultObj,defaultNumber} from "$cutils";
 import LogoComponent from "$logoComponent";
 
 export const height = 150;

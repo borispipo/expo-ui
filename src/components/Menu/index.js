@@ -1,5 +1,5 @@
 import Icon from "$ecomponents/Icon";
-import {defaultObj,isPlainObject,} from "$utils";
+import {defaultObj,isPlainObject,} from "$cutils";
 import React from "$react";
 import {Pressable,StyleSheet} from "react-native";
 import PropTypes from "prop-types";

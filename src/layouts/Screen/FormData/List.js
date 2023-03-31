@@ -1,5 +1,5 @@
 import FormData from "./FormData";
-import {defaultObj,isObj,isNonNullString} from "$utils";
+import {defaultObj,isObj,isNonNullString} from "$cutils";
 import PropTypes from "prop-types";
 
 export default class FormDataListScreen extends FormData{

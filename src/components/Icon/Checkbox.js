@@ -1,4 +1,4 @@
-import {defaultObj,defaultStr} from "$utils";
+import {defaultObj,defaultStr} from "$cutils";
 import PropTypes from "prop-types";
 import theme,{Colors} from "$theme";
 import React from "$react";

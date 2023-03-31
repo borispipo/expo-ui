@@ -3,7 +3,7 @@ import {useAfterInteractions }  from "./utils";
 import { Transition, Transitioning } from 'react-native-reanimated'
 import PropTypes from "prop-types";
 import { StylePropTypes } from '$theme';
-import {isNumber,defaultStr} from "$utils";
+import {isNumber,defaultStr} from "$cutils";
 
 const OptimizedHeavyScreen = React.forwardRef(({
   transition = (

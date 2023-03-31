@@ -1,6 +1,6 @@
 import Avatar from "$ecomponents/Avatar";
 import { StyleSheet,Pressable,Animated,View} from "react-native";
-import {defaultObj,isObj,defaultStr,isFunction,defaultBool} from "$utils";
+import {defaultObj,isObj,defaultStr,isFunction,defaultBool} from "$cutils";
 import {getContentHeight} from "$ecomponents/BottomSheet";
 import Label from "$ecomponents/Label";
 import PropTypes from "prop-types";

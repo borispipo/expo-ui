@@ -1,8 +1,8 @@
 import React from "$react";
-import {defaultObj} from "$utils";
+import {defaultObj} from "$cutils";
 import { Text } from "react-native-paper";
 import {DISABLED_OPACITY} from "$theme";
-import {defaultStr} from "$utils";
+import {defaultStr} from "$cutils";
 const PassWordTextComponent = React.forwardRef((props,ref)=>{
     const {children,label,text,...rest} = props;
     const l = defaultStr(children,label,text);

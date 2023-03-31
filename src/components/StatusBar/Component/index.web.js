@@ -1,7 +1,7 @@
 import React from "$react";
 //import { StatusBar } from 'expo-status-bar';
 import theme,{getStatusBarStyle,Colors} from "$theme"
-import {isTouchDevice,uniqid} from "$utils";
+import {isTouchDevice,uniqid} from "$cutils";
 import {isDOMElement,removeClassName,addClassName} from "$cutils/dom";
 import { StyleSheet } from "react-native";
 

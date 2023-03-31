@@ -11,7 +11,7 @@ import {TouchableRipple} from "react-native-paper";
 import ActivityIndicator from "$ecomponents/ActivityIndicator";
 import Surface from "$ecomponents/Surface";
 import Label from "$ecomponents/Label";
-import {defaultObj,defaultVal,defaultDecimal,defaultStr} from "$utils";
+import {defaultObj,defaultVal,defaultDecimal,defaultStr} from "$cutils";
 
 import PropTypes from "prop-types";
 const white = "white";

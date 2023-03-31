@@ -3,7 +3,7 @@ import { ScrollView,Dimensions } from 'react-native';
 import PropTypes from "prop-types";
 import View from "$ecomponents/View";
 import theme from "$theme";
-import {defaultStr,defaultObj} from "$utils";
+import {defaultStr,defaultObj} from "$cutils";
 import APP from "$capp/instance";
 import {isWeb as isw} from "$cplatform";
 const ScrollViewComponent = React.forwardRef(({containerProps,withAutoSizer,testID,...rest},ref) => {

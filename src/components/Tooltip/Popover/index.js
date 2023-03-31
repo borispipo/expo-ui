@@ -2,7 +2,7 @@
 import React, {useRef, useMemo, useState } from 'react';
 import PropTypes from "prop-types";
 import theme,{ StyleProps} from '$theme';
-import {defaultObj} from "$utils";
+import {defaultObj} from "$cutils";
 import Label from "$ecomponents/Label";
 import View from "$ecomponents/View";
 import {

@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet,View} from 'react-native';
 import theme,{ StylePropTypes,flattenStyle,Colors} from '$theme';
 import PropTypes from "prop-types";
-import {defaultStr,isNonNullString} from "$utils";
+import {defaultStr} from "$cutils";
 import { TouchableRipple } from "react-native-paper";
 import Icon from "$ecomponents/Icon";
 import Label from "$ecomponents/Label";

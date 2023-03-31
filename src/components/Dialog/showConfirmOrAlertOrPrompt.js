@@ -1,4 +1,4 @@
-import {isDecimal,isObj,defaultObj,extendObj,isNonNullString,isArray,defaultFunc,defaultStr,defaultVal} from "$utils";
+import {isDecimal,isObj,defaultObj,extendObj,isNonNullString,isArray,defaultFunc,defaultStr,defaultVal} from "$cutils";
 import {getTheme,flattenStyle} from "$theme";
 import React from "$react";
 import {NotificationManager} from 'react-notifications';

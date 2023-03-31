@@ -30,7 +30,7 @@ export default class FormIDField extends TextField {
     /*** met à jour la données du numéro de piece */
     fetchNewId(focus){
         const data = defaultObj(this.props.data);
-        if(isNonNullString(this.name)) return undefined;
+        if(!isNonNullString(this.name)) return undefined;
         const cb = (value)=>{
             if(isNonNullString(value)){
                 this.newFieldPieceId = value;
@@ -44,14 +44,13 @@ export default class FormIDField extends TextField {
         }
         setTimeout(()=>{
             const fId = typeof this.props.fetchNewId =='function'? this.props.fetchNewId({...this.props,data,columnField:this.name}) : null;
-            
             if(isPromise(fId)){
                 return fId.then(cb).catch(e=>{
                     console.log(e," fetching new piece id ",this.name);
                 });
             }
             return cb(fId);
-        },0);
+        },10);
     }
     /*** retourne la valeur validée */
     getValidValue(data){

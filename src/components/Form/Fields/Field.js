@@ -623,10 +623,8 @@ export default class Field extends AppComponent {
         if(!this.canValidate) return; 
         let {keyboardEvents,onKeyEvent} = this.props;
         const formInstance = this.getForm();
-        const arg = {key,event,formInstance,field:this.name,formName:this.getFormName(),value:this.getValidRule(),validValue:this.getValidValue(),context:this,isFormField:true,data:{},formInstance};
-        if(formInstance ){
-            arg.data = formInstance.getData();
-        }
+        const data = formInstance ? formInstance.getData() : {};
+        const arg = {key,event,formInstance,field:this.name,formName:this.getFormName(),value:this.getValidRule(),validValue:this.getValidValue(data),data,context:this,isFormField:true,formInstance};
         let handler = undefined;
         if(isObj(keyboardEvents)){
             handler = keyboardEvents[key];

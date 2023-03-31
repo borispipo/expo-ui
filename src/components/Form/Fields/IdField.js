@@ -11,7 +11,7 @@ export default class FormIDField extends TextField {
         this.autobind();
     }
     UNSAFE_componentWillReceiveProps(nextProps){
-        this.newFieldPieceId = undefined;
+        this.newFieldIdValue = undefined;
         return super.UNSAFE_componentWillReceiveProps(nextProps);
     }
     componentDidMount(){
@@ -33,7 +33,7 @@ export default class FormIDField extends TextField {
         if(!isNonNullString(this.name)) return undefined;
         const cb = (value)=>{
             if(isNonNullString(value)){
-                this.newFieldPieceId = value;
+                this.newFieldIdValue = value;
                 this.validate({value}); 
                 if(focus) this.focus();
             }
@@ -55,8 +55,9 @@ export default class FormIDField extends TextField {
     /*** retourne la valeur validée */
     getValidValue(data){
         const validValue = super.getValidValue(data);
+        console.log(data, " is valid value ",data);
         if(!isNonNullString(this.name)) return validValue;
-        data[this.name] = defaultStr(data[this.name],validValue,this.newFieldPieceId);
+        data[this.name] = defaultStr(data[this.name],validValue,this.newFieldIdValue);
         return validValue;
     }
     isValidRuleDynamic(){
@@ -66,12 +67,11 @@ export default class FormIDField extends TextField {
         return false;
     }
     componentDidUpdate(){
-        if(!isNonNullString(this.newFieldPieceId)){
+        if(!isNonNullString(this.newFieldIdValue)){
             this.fetchNewId();
         }
     }
     _render(props,setRef){
-        props.readOnly = true;
         delete props.validType;
         if(isNonNullString(this.name) && isObj(props.data) && isNonNullString(props.data[this.name])){
             props.disabled = true;         
@@ -83,23 +83,23 @@ export default class FormIDField extends TextField {
         if(typeof props.minLength !=='number'){
             props.minLength = 2;
         }
+        const defValue = props.defaultValue = isNonNullString(props.defaultValue)? props.defaultValue : isNonNullString(this.newFieldIdValue)? this.newFieldIdValue : undefined;
         props.validRule = props.validType;
-        if(props.disabled || props.readOnly || props.editable === false){
-            const {right} = props;
-            props.contentContainerProps = Object.assign({},props.contentContainerProps)
-            props.contentContainerProps.pointerEvents = defaultStr(props.contentContainerProps.pointerEvents,"auto");
-            ///props.enableCopy = props.defaultValue || this.newFieldPieceId ? true : false;
-            props.right = (props)=>{
-                const r = typeof right =='function'? right (props) : React.isValidElement(right)? right : null;
-                if(!props.defaultValue){
-                    return <>{r}<ActivityIndicator
-                        {...props}
-                        style = {[props.style,{marginRight:10}]}
-                    /></>
-                }
-                return r;
+        props.contentContainerProps = Object.assign({},props.contentContainerProps)
+        props.contentContainerProps.pointerEvents = defaultStr(props.contentContainerProps.pointerEvents,"auto");
+        props.enableCopy = typeof props.enableCopy ==='boolean'? props.enableCopy : (props.defaultValue || this.newFieldIdValue ? true : false);
+        const {right} = props;
+        props.editable = typeof props.editable =='boolean'? props.editable : typeof props.disabled ==='boolean' ? !!!props.disabled : typeof props.readOnly =="boolean"? !!!props.disabled : false;
+        props.right = (props)=>{
+            const r = typeof right =='function'? right (props) : React.isValidElement(right)? right : null;
+            if(!defValue){
+                return <>{r}<ActivityIndicator
+                    {...props}
+                    style = {[props.style,{marginRight:10}]}
+                /></>
             }
-        }   
+            return r;
+        }
         this.setValidRule(props.validType);
         return  super._render(props,setRef);
     }

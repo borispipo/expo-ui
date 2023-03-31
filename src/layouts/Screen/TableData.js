@@ -81,7 +81,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
                 const f = fields[i];
                 f.type = defaultStr(f.jsType,f.type).toLowerCase();
                 const name = f.field = defaultStr(f.field,i);
-                if((f.type =='id' || f.type =='piece' || f.unique === true) && f.unique !== false && f.disabled !== true && f.editable !== false && f.readOnly !== true){
+                if((f.type =='id' || f.type =='piece' || f.primaryKey || f.unique === true) && f.unique !== false && f.disabled !== true && f.editable !== false && f.readOnly !== true){
                     const {onBlur} = f;
                     f.onBlur = (args)=>{
                         args = {...f,...args,fetch,columnField:name,fieldName:name,id:args.value};

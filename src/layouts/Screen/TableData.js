@@ -104,6 +104,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
                                         }
                                     }).catch((e)=>{
                                         if(e && e.status?.toString() == '404') return;
+                                        console.log(e," fetching unique id on table data element id : ",args)
                                         const message = defaultStr(e?.message,e?.msg);
                                         if(message){
                                             context.onNoValidate({...args,msg:message,message,error:e,context,validRule:context.getValidRule()});

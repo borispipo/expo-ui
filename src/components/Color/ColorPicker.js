@@ -1,6 +1,6 @@
 import React, { Component } from "$react";
 import {normalize,RGB_MAX,HUE_MAX,SV_MAX,hexToRgb} from "$theme/colors";
-import {extendObj} from "$cutils";
+import {extendObj,defaultStr,isNonNullString,defaultObj,isObj} from "$cutils";
 import View from "$ecomponents/View";
 import {
 	Animated,
@@ -15,7 +15,7 @@ import srcWheel from './assets/color-wheel.png';
 import srcSlider from './assets/black-gradient.png';
 import srcSliderRotated from './assets/black-gradient-rotated.png';
 
-import {Colors} from "$theme";
+import theme,{Colors} from "$theme";
 import TextField from "$ecomponents/TextField";
 
 
@@ -398,7 +398,7 @@ export default class ColorPickerComponent extends Component {
 	}
 	renderSwatches () {
 		this.swatches = this.props.palette.map((c,i) => (
-			<View style={[styles.swatch,{backgroundColor:c}]} key={'S'+i} hitSlop={this.props.swatchesHitSlop}>
+			<View testID={"RN_ColorPicker_SWATCHES"} style={[styles.swatch,theme.styles.cursorPointer,{backgroundColor:c}]} key={'S'+i} hitSlop={this.props.swatchesHitSlop}>
 				<TouchableWithoutFeedback onPress={x=>this.onSwatchPress(c,i)} hitSlop={this.props.swatchesHitSlop}>
 					<Animated.View style={[styles.swatchTouch,{backgroundColor:c,transform:[{scale:this.swatchAnim[i].interpolate({inputRange:[0,0.5,1],outputRange:[0.666,1,0.666]})}]}]} />
 				</TouchableWithoutFeedback>
@@ -407,8 +407,8 @@ export default class ColorPickerComponent extends Component {
 	}
 	renderDiscs () {
 		this.disc = (`1`).repeat(this.props.discreteLength).split('').map((c,i) => (
-			<View style={[styles.swatch,{backgroundColor:this.state.hueSaturation}]} key={'D'+i} hitSlop={this.props.swatchesHitSlop}>
-				<TouchableWithoutFeedback onPress={x=>this.onDiscPress(c,i)} hitSlop={this.props.swatchesHitSlop}>
+			<View testID={"RN_ColorPicker_DISC"} style={[styles.swatch,{backgroundColor:this.state.hueSaturation}]} key={'D'+i} hitSlop={this.props.swatchesHitSlop}>
+				<TouchableWithoutFeedback style={[theme.styles.cursorPointer]} onPress={x=>this.onDiscPress(c,i)} hitSlop={this.props.swatchesHitSlop}>
 					<Animated.View style={[styles.swatchTouch,{backgroundColor:this.state.hueSaturation,transform:[{scale:this.discAnim[i].interpolate({inputRange:[0,0.5,1],outputRange:[0.666,1,0.666]})}]}]}>
 						<View style={[styles.wheelImg,{backgroundColor:'#000',opacity:1-(i>=9?1:(i*11/100))}]}></View>
 					</Animated.View>
@@ -430,6 +430,7 @@ export default class ColorPickerComponent extends Component {
             disabled,
             editable,
 			row,
+			testID : customTestId,
 		} = this.props
 		const swatches = !!(this.props.swatches || swatchesOnly)
 		const hsv = hsvToHex(this.color), hex = hsvToHex(this.color.h,this.color.s,100)
@@ -483,34 +484,47 @@ export default class ColorPickerComponent extends Component {
 			marginBottom:row?0:margin,
 		}
 		// console.log('RENDER >>',row,thumbSize,sliderSize)
+		const testID = defaultStr(customTestId,"RN_ColorPickerContainer");
+		const hasHex =  Colors.isValid(hex);
+		const contrastColor = hasHex ? Colors.getContrast(hex) : undefined;
+		const restProps = hasHex ? {
+			color : contrastColor,
+			backgroundColor : hex,
+			style : [{
+				color : contrastColor,
+				backgroundColor : hex,
+			}]
+		} : {};
 		return (
-			<View testID="RN_ColorPickerContainer">
-					<View style={[styles.root,row?{flexDirection:'row'}:{},style]}>
-					{ swatches && !swatchesLast && <View style={[styles.swatches,swatchStyle,swatchFirstStyle]} key={'SW'}>{ this.swatches }</View> }
-					{ !swatchesOnly && <View style={[styles.wheel]} key={'$1'} onLayout={this.onSquareLayout}>
+			<View testID={testID}>
+					<View testID={`${testID}_RowContainer`} style={[styles.root,row?{flexDirection:'row'}:{},style]}>
+					{ swatches && !swatchesLast && <View testID={`${testID}_SwatchestLast`} style={[styles.swatches,swatchStyle,swatchFirstStyle]} key={'SW'}>{ this.swatches }</View> }
+					{ !swatchesOnly && <View testID={`${testID}_SwatchesOnly`} style={[styles.wheel]} key={'$1'} onLayout={this.onSquareLayout}>
 						{ this.wheelWidth>0 && <View style={[{padding:thumbSize/2,width:this.wheelWidth,height:this.wheelWidth}]}>
-							<View style={[styles.wheelWrap]}>
-								<Image style={styles.wheelImg} source={srcWheel} />
-								<Animated.View style={[styles.wheelThumb,wheelThumbStyle,Elevations[4],{pointerEvents:'none'}]} />
-								<View style={[styles.cover]} onLayout={this.onWheelLayout} {...wheelPanHandlers} ref={r => { this.wheel = r }}></View>
+							<View style={[styles.wheelWrap,theme.styles.cursorPointer]} testID={`${testID}_WheelWrap`}>
+								<Image testID={testID+"_WheelImg"} style={styles.wheelImg} source={srcWheel} />
+								<Animated.View testID={testID+"WheelThumb"} style={[styles.wheelThumb,wheelThumbStyle,Elevations[4],{pointerEvents:'none'}]} />
+								<View testID={testID+"_WheelWrapLayout"} style={[styles.cover]} onLayout={this.onWheelLayout} {...wheelPanHandlers} ref={r => { this.wheel = r }}></View>
 							</View>
 						</View> }
 					</View> }
-					{ !swatchesOnly && !sliderHidden && (discrete ? <View style={[styles.swatches,swatchStyle]} key={'$2'}>{ this.disc }</View> : <View style={[styles.slider,sliderStyle]} key={'$2'}>
-						<View style={[styles.grad,{backgroundColor:hex}]}>
+					{ !swatchesOnly && !sliderHidden && (discrete ? <View testID={`${testID}_SwatchesDiscrete`} style={[styles.swatches,swatchStyle]} key={'$2'}>{ this.disc }</View> : <View style={[styles.slider,sliderStyle]} key={'$2'}>
+						<View testID={testID+"_WheelGrad"} sstyle={[styles.grad,{backgroundColor:hex}]}>
 							<Image style={styles.sliderImg} source={row?srcSliderRotated:srcSlider} resizeMode="stretch" />
 						</View>
 						<Animated.View style={[styles.sliderThumb,sliderThumbStyle,Elevations[4],{pointerEvents:'none'}]} />
 						<View style={[styles.cover]} onLayout={this.onSliderLayout} {...sliderPanHandlers} ref={r => { this.slider = r }}></View>
 					</View>) }
-					{ swatches && swatchesLast && <View style={[styles.swatches,swatchStyle]} key={'SW'}>{ this.swatches }</View> }
+					{ swatches && swatchesLast && <View testID={`${testID}_SwatchesList`} style={[styles.swatches,swatchStyle]} key={'SW'}>{ this.swatches }</View> }
 					<TextField
+						testID={`${testID}_ColorPickerInput`}
 						enableCopy
 						label = ''
 						editable = {editable}
 						disabled = {disabled}
 						defaultValue = {hex}
-						style = {styles.textInput}
+						{...restProps}
+						style = {[styles.textInput,restProps.style]}
 						onChangeText = {(value)=>{
 							if(Colors.isHex(value)){
 								this.update(value);

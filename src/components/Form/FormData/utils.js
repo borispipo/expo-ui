@@ -91,14 +91,7 @@ export const handleBeforeSaveCallback = (beforeSaveCallback,successCb,arg)=>{
             }
             successCb(arg);
         }).catch((e)=>{
-            if(isNonNullString(e)){
-                notify.error(e);
-            } else if(e){
-                let ms = defaultStr(e.msg,e.message);
-                if(isNonNullString(ms)){
-                    notify.error(ms);
-                }
-            }
+            notify.error(e);
         })
         return arg;
     } else if(isNonNullString(bF)){

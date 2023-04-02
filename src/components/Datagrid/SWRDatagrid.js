@@ -191,7 +191,8 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                 delete opts.page;
                 delete opts.offset;
             }
-            const fetchCB = ({data,total})=>{
+            const fetchCB = (fArgs)=>{
+                let {data,total} = (Array.isArray(fArgs) ? {data:fArgs,total:fArgs.length} : isObj(fArgs)? fArgs : {data:[],total:0});
                 totalRef.current = total;
                 dataRef.current = data;
                 const dd = Object.size(data);

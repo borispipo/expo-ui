@@ -41,7 +41,7 @@ const TableLinKComponent = React.forwardRef((props,ref)=>{
             const r2 = typeof fetchForeignData === 'function'? fetchForeignData({...args,...defaultObj(a)}) : undefined;
             if(isPromise(r2)){
                 return r2.then((data)=>{
-                    if(isObj(data) && data[foreignKeyColumn] !== undefined){
+                    if(isObj(data) && (isNonNullString(foreignKeyColumn) ? data[foreignKeyColumn] !== undefined:true)){
                         navigateToTableData({tableName:foreignKeyTable,data});
                     }
                 });

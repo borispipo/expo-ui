@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "5.7.1",
+  "version": "5.7.4",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "index.js",
   "scripts": {
@@ -61,7 +61,7 @@
     "@emotion/native": "^11.10.0",
     "@expo/html-elements": "^0.2.0",
     "@expo/vector-icons": "^13.0.0",
-    "@fto-consult/common": "^3.10.33",
+    "@fto-consult/common": "^3.10.39",
     "@gorhom/portal": "^1.0.14",
     "@react-native-async-storage/async-storage": "^1.17.11",
     "@react-native-community/datetimepicker": "^6.7.3",
@@ -70,6 +70,7 @@
     "@react-navigation/native": "^6.1.1",
     "@react-navigation/native-stack": "^6.9.7",
     "@shopify/flash-list": "^1.4.0",
+    "apexcharts": "^3.37.2",
     "expo": "^48.0.9",
     "expo-camera": "~13.2.1",
     "expo-clipboard": "~4.1.1",
@@ -87,7 +88,6 @@
     "process": "^0.11.10",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
-    "react-apexcharts": "^1.4.0",
     "react-content-loader": "^6.2.0",
     "react-dom": "^18.2.0",
     "react-native": "^0.71.3",

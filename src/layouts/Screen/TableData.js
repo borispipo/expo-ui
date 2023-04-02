@@ -250,10 +250,13 @@ export default class TableDataScreenComponent extends FormDataScreen{
         this.INITIAL_STATE.archived = archived;
         this.INITIAL_STATE.tableName = tableName;
         const fields = {};
-        Object.map(this.fields,(field,i,counterIndex)=>{
-            let currentField = isObj(field)?Object.clone(field):field;
+        const fieldsToPrepare = extendObj({},true,this.fields,customFields);
+        const prepareCb = typeof prepareField =='function'? prepareField : x=> x;
+        ///on effectue une mutator sur le champ en cours de modification
+        Object.map(fieldsToPrepare,(field,i,counterIndex)=>{
+            const currentField = isObj(field)?Object.clone(field):field;
             if(isObj(field)){
-                const type = currentField.type = defaultStr(currentField.jsType,currentField.type,"text").toLowerCase();
+                const columnField = defaultStr(currentField.field,i);
                 /**** lorsqu'un champ porte la propriété visibleOnlyOnEditing  à true alors ce champ sera disponible uniquement en cas de modification */
                 if(currentField.visibleOnlyOnEditing === true && !isUpdated){
                     currentField.form = false;
@@ -265,9 +268,9 @@ export default class TableDataScreenComponent extends FormDataScreen{
                         currentField.readOnly = true;
                     }
                 });
+                const cArgs = {field:currentField,columnField,columnDef:currentField,isUpdate:isUpdated,name:columnField,index:i,counterIndex,isPrimary,fields:fieldsToPrepare,contex:this,data:this.getCurrentData(),datas,currentIndex,isUpdated,tableName,table};
                 if(isUpdated){
                     //la props readOnlyOnEditing permet de rendre le champ readOnly en cas de mise à jour de la tableData
-                    const cArgs = {...this.state,data:this.getCurrentData()};
                     const readOnlyOnEditing = typeof currentField.readOnlyOnEditing =='function'? currentField.readOnlyOnEditing(cArgs) : currentField.readOnlyOnEditing;
                     if((readOnlyOnEditing === true)){
                         currentField.readOnly = true;
@@ -277,25 +280,16 @@ export default class TableDataScreenComponent extends FormDataScreen{
                         currentField.disabled = true;
                     }
                 }
+                const isPrimary = this.primaryKeyFields[columnField] && true || false;
+                const f = prepareCb(cArgs);  
+                if(f === false) {
+                    delete fields[i];
+                    return;
+                }
                 
             }
             fields[i] = currentField;
-        })
-        if(isObj(customFields)){
-            extendObj(true,fields,customFields);
-        }
-        ///on effectue une mutator sur le champ en cours de modification
-        if(typeof prepareField =='function'){
-            Object.map(fields,(field,i,counterIndex)=>{
-                if(!isObj(field)) return;
-                const name = defaultStr(field.field,i);
-                const isPrimary = this.primaryKeyFields[name] && true || false;
-                const f = prepareField({field,columnField:name,columnDef:field,isUpdate:isUpdated,name,index:i,counterIndex,isPrimary,fields,contex:this,data,datas,currentIndex,isUpdated,tableName,table});  
-                if(f === false) {
-                    delete fields[i];
-                }
-            });
-        }
+        });
         const context = this;
         const formProps = ({
             ...defaultObj(customFormProps),

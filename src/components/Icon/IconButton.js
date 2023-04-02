@@ -36,7 +36,6 @@ const IconButtonComponent = ({
   const borderColor = theme.colors.outline || theme.colors.divider;
   const rippleColor = Colors.setAlpha(iconColor,0.32);
   const buttonSize =  size * 1.5;
-  console.log(iconColor, " is conndddd ",color,rest);
   const borderStyles = {
     borderWidth: 0,
     borderRadius: buttonSize / 2,

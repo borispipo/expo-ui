@@ -93,6 +93,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         autoSort,
         fetchOptions:customFetchOptions,
         handleQueryLimit,
+        handlePagination,
         onFetchData,
         beforeFetchData,
         sort,
@@ -162,7 +163,8 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     const totalRef = React.useRef(0);
     const isFetchingRef = React.useRef(false);
     const pageRef = React.useRef(1);
-    const canHandleLimit = handleQueryLimit !== false ? true : false;
+    const canHandlePagination = handlePagination !== false ? true : false;
+    const canHandleLimit = handleQueryLimit !== false && canHandlePagination ? true : false;
     const limitRef = React.useRef(!canHandleLimit ?0 : defaultNumber(getSessionData("limit"),500));
     const isInitializedRef = React.useRef(false);
     testID = defaultStr(testID,"RNSWRDatagridComponent");
@@ -255,6 +257,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         refresh();
     }
     const canPaginate = ()=>{
+        if(!canHandlePagination) return false;
         if(canHandleLimit && typeof totalRef.current !=='number' || typeof pageRef.current !='number' || typeof limitRef.current !='number') return false;
         if(limitRef.current <= 0) return false;
         return true;
@@ -456,6 +459,7 @@ SWRDatagridComponent.displayName = "SWRDatagridComponent";
 
 SWRDatagridComponent.propTypes = {
     ...Datagrid.propTypes,
+    handlePagination : PropTypes.bool, //spécifie si le datagrid prendra en compte la pagination
     /*** le nom de la colonne de trie par défaut */
     defaultSortColumn : PropTypes.string,
     fetchPath : PropTypes.string,

@@ -9,6 +9,7 @@ import theme from "$theme"
 import {styles as rStyles} from "../utils";
 import {getSelectedBackgroundColor} from "../Actions/Header";
 import Swipeable from 'react-native-gesture-handler/Swipeable';
+import {isMobileNative} from "$platform";
 
 const DatagridAccordionRow = React.forwardRef((props,ref)=>{
     const {selectable,rowKey,
@@ -166,7 +167,7 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
                     _rP.style,rowProps.style,
                     styles.container,
                     numColumns > 1 && {width:'99%'},
-                    selected && styles.containerSelected,
+                    //selected && !hasAvatar && styles.containerSelected,
                     styles.bordered,
                     wrapperStyle,
                     style,
@@ -273,7 +274,7 @@ const styles = StyleSheet.create({
     container : {
         marginVertical : 10,
         paddingVertical : 5,
-        paddingHorizontal : 15,
+        paddingHorizontal : 10,// isMobileNative()? 15:10,
         marginHorizontal : 5,
         flexWrap : 'nowrap',
         justifyContent : 'center',

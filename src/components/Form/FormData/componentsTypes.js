@@ -8,7 +8,6 @@ import React from "$react";
 export const getComponentTypes = ()=>{
     return {
         id : Fields.IDField,
-        ...Fields,
         selecttabledata : Fields.SelectTableData,
         idfield : Fields.IdField,
         select : Fields.SelectField,
@@ -27,17 +26,20 @@ export const getComponentTypes = ()=>{
         color : Fields.ColorPicker,
         tel : Fields.Tel,
         html : Fields.Html,
-        datafile : Fields.DataFile,
         image : Fields.Image,
         schedule : Fields.Scheduler,
         scheduler : Fields.Scheduler,
         default : Fields.TextField,
+        ...Fields,
     };
 }
 export function getComponentFromType(type){
     const types = getComponentTypes();
     if(!isNonNullString(type)){
         return types.default;
+    }
+    if(React.isComponent(types[type])){
+        return types[type]; 
     }
     type = type.trim().toLowerCase().replaceAll(" ","").replaceAll("-","").replaceAll("_","");
     return React.isComponent(types[type]) && types[type] || types.default;

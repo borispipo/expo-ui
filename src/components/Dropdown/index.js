@@ -766,6 +766,9 @@ class DropdownComponent extends AppComponent {
         if(disabled || readOnly || editable === false){
             showAdd = false;
         }
+        if(typeof showAdd ==='function'){
+            showAdd = showAdd(props);
+        }
         showAdd = defaultBool(showAdd,false);
         if(addIcon ===false) {
             showAdd = false;
@@ -1314,7 +1317,10 @@ DropdownComponent.propTypes = {
     ]),
     /*** la liste des champs qu'on peut trier sur forme de clé/libelé */
     sortableFields : PropTypes.object,
-    showAdd : PropTypes.bool,
+    showAdd : PropTypes.oneOfType([
+        PropTypes.func,
+        PropTypes.bool,
+    ]),
     onAdd : PropTypes.func,
     getItemKey : PropTypes.func,///la fonction prenant en paramètre un item et retourne sa clé unique
 }

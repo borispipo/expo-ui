@@ -2686,11 +2686,12 @@ export default class CommonDatagridComponent extends AppComponent {
         return defaultNumber(this.sectionListDataSize.current)
     }
     prepareData(args,cb){
-        let {pagination,config,aggregatorFunction:customAggregatorFunction,displayOnlySectionListHeaders:cdisplayOnlySectionListHeaders,data,force,sectionListColumns,updateFooters} = defaultObj(args);
+        let {pagination,config,aggregatorFunction:customAggregatorFunction,displayOnlySectionListHeaders:cdisplayOnlySectionListHeaders,data,force,sectionListColumns,sectionListCollapsedStates,updateFooters} = defaultObj(args);
         cb = typeof cb ==='function'? cb : typeof args.cb == 'function'? args.cb : undefined;
         config = isObj(config) && Object.size(config,true)? config : this.getConfig();
         const aggregatorFunction = isNonNullString(customAggregatorFunction) && customAggregatorFunction in  this.aggregatorFunctions ? this.aggregatorFunctions[customAggregatorFunction] : this.getActiveAggregatorFunction();
         sectionListColumns = isObj(sectionListColumns) ? sectionListColumns : this.state.sectionListColumns;
+        sectionListCollapsedStates = isObj(sectionListCollapsedStates)? sectionListCollapsedStates: defaultObj(this.state.sectionListCollapsedStates);
         const displayOnlySectionListHeaders = typeof cdisplayOnlySectionListHeaders == 'boolean'?cdisplayOnlySectionListHeaders : this.state.displayOnlySectionListHeaders;
         let isArr = Array.isArray(data);
         //let push = (d,index) => isArr ? newData.push(d) : newData[index] = d;
@@ -2808,7 +2809,7 @@ export default class CommonDatagridComponent extends AppComponent {
         } else if(force){
             this.setSelectedRows();
         }
-        const state = {data,displayOnlySectionListHeaders,aggregatorFunction:aggregatorFunction.code};
+        const state = {data,displayOnlySectionListHeaders,sectionListCollapsedStates,aggregatorFunction:aggregatorFunction.code};
         if((cb)){
             cb(state);
         }
@@ -2821,7 +2822,7 @@ export default class CommonDatagridComponent extends AppComponent {
         const config = isObj(args.config) && Object.size(args.config,true)? args.config : this.getConfig();
         const displayGroupLabels = "displayGroupLabels" in config? config.displayGroupLabels : true;
         const displayGroupLabelsSeparator = typeof config.displayGroupLabelsSeparator =='string'? config.displayGroupLabelsSeparator : arrayValueSeparator;
-        const {fields,sectionListColumnsSize} = args;
+        const {fields} = args;
         const d = [];
         Object.map(fields,(field,i)=>{
             const txt = this.renderRowCell({
@@ -2846,6 +2847,22 @@ export default class CommonDatagridComponent extends AppComponent {
     */
     getFlashListItemType(item){
         return typeof item === "string" || isObj(item) && item.isSectionListHeader === true ? "sectionHeader" : "row";;
+    }
+    getSectionListCollapsedStates(){
+        return defaultObj(this.state.sectionListCollapsedStates)
+    }
+    isSectionListCollapsed(sectionListKey){
+        return isNonNullString(sectionListKey)? !!this.getSectionListCollapsedStates()[sectionListKey] : false;
+    }
+    toggleSectionListCollapsedState(sectionKey){
+        const s = getSectionListCollapsedStates;
+        if(!isNonNullString(sectionKey)) return;
+        s[sectionKey] = !!!s[sectionKey];
+        setTimeout(()=>{
+            this.setIsLoading(true,()=>{
+               this.setState({sectionListCollapsedStates:{...s}});
+            },true);
+        },TIMEOUT)
     }
     /****permet de faire le rendu flashlist */
     renderFlashListItem(args){
@@ -2905,7 +2922,19 @@ export default class CommonDatagridComponent extends AppComponent {
                 });
             }
         }
+        const isCollapsed = this.isSectionListCollapsed(key);
         return <View testID={testID+"_ContentContainer"}  style={[theme.styles.w100,isA && this.state.displayOnlySectionListHeaders && {borderTopColor:theme.colors.divider,borderTopWidth:1},isA ? [theme.styles.ph2,theme.styles.pt1] : [theme.styles.pt1,theme.styles.noPadding,theme.styles.noMargin],theme.styles.justifyContentCenter,theme.styles.alignItemsCenter,theme.styles.pb1,!cells && theme.styles.ml1,theme.styles.mr1,cStyle]}>
+            {false && <View testID={testID+"_LabelAndCollapsedContainer"} style={[theme.styles.w100,theme.styles.row,theme.styles.alignItemsCenter,theme.styles.justifyContentStart]}>
+                <Icon
+                    name = {isCollapsed?"chevron-up":"chevron-right"}
+                    color = {theme.colors.primaryOnSurface}
+                    style = {[theme.styles.noMargin,theme.styles.noPadding]}
+                    size = {25}
+                    onPress = {(e)=>{
+                        this.toggleSectionListCollapsedState(key);
+                    }}
+                />
+            </View>}
             <Label testID={testID+"_Label"} splitText numberOfLines={3} textBold style={[theme.styles.w100,{color:theme.colors.primaryOnSurface,fontSize:isA?15 :16},lStyle,theme.styles.ph1]}>{label}</Label>
             {cells ? <View testID={testID+"_TableRow"} style = {[theme.styles.w100,theme.styles.row,isA && theme.styles.pt1,theme.styles.alignItemsFlexStart,this.isAccordion() && theme.styles.rowWrap]}
             >{cells}</View> : null}

@@ -2832,10 +2832,11 @@ export default class CommonDatagridComponent extends AppComponent {
                 columnField : defaultStr(field.field,i),
             });
             if(!isNonNullString(txt) && typeof txt !=='number') return;
-            if(!displayGroupLabels){
+            const labelText = defaultStr(field.label,field.text);
+            if(!displayGroupLabels || !labelText){
                 d.push(txt);
             } else {
-                d.push("{0} : {1}".sprintf(defaultStr(field.label,field.txt),txt))
+                d.push("{0} : {1}".sprintf(labelText,txt))
             }
         });
         return d.length ? d.join(displayGroupLabelsSeparator) : undefined;

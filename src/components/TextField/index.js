@@ -143,7 +143,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
         touched: false,
     });
     const isFocused = inputState.focused;
-    const callOnChangeRef = React.useRef(false);
+    //const callOnChangeRef = React.useRef(false);
     const toCase = (t) =>  {
         if(isNumber(t)) t+="";
         if(t === emptyValue){
@@ -160,9 +160,9 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
     
 
     const callOnChange = (value,previousValue)=>{
-        const nV = value || text;
+        const nV = value !== undefined ? value : text;
         value = parseValueToDecimal(nV);
-        previousValue = parseValueToDecimal(previousValue || previousText);
+        previousValue = parseValueToDecimal(previousValue!==undefined? previousValue :  previousText);
         const arg = {value,previousValue,context:ref.current};
         if(typeof onChangeText =='function'){
             onChangeText(value);
@@ -170,16 +170,17 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
         if(typeof onChange =='function'){
             onChange(arg);
         }
-        callOnChangeRef.current = false;
+        //callOnChangeRef.current = false;
     }
     React.useEffect(()=>{
+        return;
         if(!callOnChangeRef.current || previousText === text) return;
         callOnChange();
     },[text])
     const setText = function(text1,force){
         text1 = toCase(text1);
         if(force!== true && text1 === text) return;
-        callOnChangeRef.current = true;
+        //callOnChangeRef.current = true;
         _setText(text1);
     }
     React.useEffect(()=>{
@@ -389,6 +390,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
             }
             if(toCase(text2) !== text){
                 setText(text2,true);
+                callOnChange(text2);
             }
         },
         selection,

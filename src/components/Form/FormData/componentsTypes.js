@@ -8,7 +8,6 @@ import React from "$react";
 export const getComponentTypes = ()=>{
     return {
         id : Fields.IDField,
-        selecttabledata : Fields.SelectTableData,
         idfield : Fields.IdField,
         select : Fields.SelectField,
         switch : Fields.Switch,
@@ -77,23 +76,24 @@ export const getFilterComponentProps = (_props)=>{
         width,
         type,
         jsType,
+        filterType,
         ...props
     } = _props;
     props = defaultObj(props);
     const componentTypes = getComponentTypes();
-    let component = Fields.TextField;
-    type = defaultStr(jsType,type,'text').toLowerCase().replaceAll("_","").replaceAll("-","").trim();
+    let component = componentTypes.TextField;
+    type = defaultStr(filterType,jsType,type,'text').toLowerCase().replaceAll("_","").replaceAll("-","").trim();
     const sanitizedType = type.replaceAll("_","").toLowerCase().trim();
     props = defaultObj(props);
     props.label = defaultStr(label,text);
     if(type.startsWith("select")){
         props.inputProps = Object.assign({},props.inputProps);
         props.inputProps.placeholder = defaultStr(props.inputProps.placeholder,i18n.lang("search.."))
-        component = Fields.SelectField;
+        component = componentTypes.SelectField;
         if(type =='select_country' || type =='selectcountry'){
-            component = Fields.SelectCountry;
+            component = componentTypes.SelectCountry;
         } else if(type =='select_tabledata' || type =='selecttabledata'){
-            component = Fields.SelectTableData;
+            component = componentTypes.SelectTableData;
         } else if(React.isComponent(componentTypes[type])){
             component = componentTypes[type];
         } else if(React.isComponent(componentTypes[sanitizedType])){
@@ -108,19 +108,19 @@ export const getFilterComponentProps = (_props)=>{
         checkedValue = defaultVal(checkedValue,1); uncheckedValue = defaultVal(uncheckedValue,0)
         props = pR;
         props.items = [{code:checkedValue,label:checkedLabel},{code:uncheckedValue,label:uncheckedLabel}];
-        component = Fields.SelectField;
+        component = componentTypes.SelectField;
     } else if(type == "date" || type =="time" || type =='datetime'){
-        component = type == 'datetime' ? Fields.DateTime : type === 'date'? Fields.Date : Fields.Time;
+        component = type == 'datetime' ? componentTypes.DateTime : type === 'date'? componentTypes.Date : componentTypes.Time;
     }  else if(type == 'color' || type =='colorpicker') {
-        component = Fields.ColorPicker;
+        component = componentTypes.ColorPicker;
     } else if(type == 'dateformat' || type =='select_dateformat' || type =='select_date_format') {
-        component = Fields.SelectDateFormat;
+        component = componentTypes.SelectDateFormat;
+    } else if(isNonNullString(props.foreignKeyColumn) && isNonNullString(props.foreignKeyTable)) {
+        component = componentTypes.SelectTableData;
+        type = "select";
     } else if(React.isComponent(componentTypes[type]) && componentTypes[type] !== false) {
         component = componentTypes[type];
-    } else if(isNonNullString(props.foreignKeyColumn) && isNonNullString(props.foreignKeyTable)) {
-        component = Fields.SelectTableData;
-        type = "select";
-    }else {
+    } else {
         if(React.isComponent(componentTypes[sanitizedType])){
             component = componentTypes[sanitizedType];
         } 

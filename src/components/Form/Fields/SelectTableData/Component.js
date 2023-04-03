@@ -19,7 +19,7 @@ import appConfig from "$appConfig";
  *  foreignKeyTable : la tableData dans laquelle effectuer les donées de la requêtes
  *  foreignKeyLabel : Le libélé dans la table étrangère
  */
-const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,convertFiltersToSQL,mutateFetchedItems,getForeignKeyTable,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchDataOpts,...props},ref)=>{
+const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,convertFiltersToSQL,mutateFetchedItems,getForeignKeyTable,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchOptions,...props},ref)=>{
     props.data = defaultObj(props.data);
     if(isNonNullString(foreignKeyColumn)){
         foreignKeyColumn = foreignKeyColumn.trim();
@@ -51,21 +51,12 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyTable
     const isMounted = React.useIsMounted();
     const showAdd = isFilter || !foreignKeyTable ? false : React.useRef(Auth.isTableDataAllowed({table:foreignKeyTable,action:'create'}) ? defaultVal(props.showAdd,props.showAddBtn,true) : false).current;
     const [state,setState] = React.useState({
-        items : [],isLoading : true,
+        items : [],
     });
-    fetchDataOpts = Object.clone(defaultObj(fetchDataOpts));
+    const [isLoading,setIsLoading] = React.useState(true);
+    fetchOptions = Object.clone(defaultObj(fetchOptions));
     const queryPath = fetchItemsPath || typeof fKeyTable.queryPath =='string' && fKeyTable.queryPath || typeof fKeyTable.fetchPath =='string' && fKeyTable.fetchPath || '';
-    const cFetch = typeof customFetchItem =='function' && customFetchItem;
-    const fetchItems = (opts)=>{
-        opts.showError = false;
-        if(sortColumn){
-            opts.sort = sort;
-        }
-        if(cFetch) return cFetch(queryPath,opts);
-        if(queryPath){
-            return fetch(queryPath,opts);
-        }
-    };
+    
     isUpdate = defaultBool(isUpdate,typeof isDocEditing ==='function' && isDocEditing({data:props.data,foreignKeyTable,foreignKeyColumn}));
     if(isFilter){
         isUpdate = false;
@@ -82,8 +73,8 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyTable
         foreignKeyLabel = foreignKeyLabel.trim();
         defaultFields.push(foreignKeyLabel);
     } 
-    if(fetchDataOpts.fields !== 'all' && (!Array.isArray(fetchDataOpts.fields) || !fetchDataOpts.fields.length)){
-        fetchDataOpts.fields = defaultFields;
+    if(fetchOptions.fields !== 'all' && (!Array.isArray(fetchOptions.fields) || !fetchOptions.fields.length)){
+        fetchOptions.fields = defaultFields;
     }
     const foreignKeyColumnValue = props.defaultValue;
     let isDisabled = defaultBool(props.disabled,props.readOnly,false);
@@ -91,11 +82,11 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyTable
         isDisabled = true;
     }
     if(isUpdate && isNonNullString(foreignKeyColumnValue) && (isDisabled)){
-        fetchDataOpts.selector = defaultObj(fetchDataOpts.selector);
-        fetchDataOpts.selector.$and = defaultArray(fetchDataOpts.selector.$and);
+        fetchOptions.selector = defaultObj(fetchOptions.selector);
+        fetchOptions.selector.$and = defaultArray(fetchOptions.selector.$and);
         let hasF = false;
-        for(let i in fetchDataOpts.selector.$and){
-            const cFilter = fetchDataOpts.selector.$and[i];
+        for(let i in fetchOptions.selector.$and){
+            const cFilter = fetchOptions.selector.$and[i];
             if(isObj(cFilter)) {
                 if(cFilter[foreignKeyColumn] === foreignKeyColumnValue){
                     hasF = true;
@@ -104,7 +95,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyTable
             }
         }
         if(!hasF){
-            fetchDataOpts.selector.$and.push({[foreignKeyColumn] : foreignKeyColumnValue})
+            fetchOptions.selector.$and.push({[foreignKeyColumn] : foreignKeyColumnValue})
         }
     }
     React.useEffect(()=>{
@@ -122,16 +113,27 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyTable
         [foreignKeyColumn]:foreignKeyColumnValue, 
         ...(isNonNullString(foreignKeyLabel) ? {[foreignKeyLabel]:foreignKeyColumnValue+", introuvable dans le système"}:{})
     } : null;
-    
+    const cFetch = typeof customFetchItem =='function' && customFetchItem;
+    const fetchItems = (opts)=>{
+        opts.showError = false;
+        if(sortColumn){
+            opts.sort = sort;
+        }
+        if(cFetch) return cFetch(queryPath,{...props,sort:{column:sortColumn,dir:sortDir},sortColumn,isUpdate,foreignKeyColumn,foreignKeyLabel,sortDir,foreignKeyTableObj:fKeyTable,foreignKeyTable,...opts});
+        if(queryPath){
+            return fetch(queryPath,opts);
+        }
+    };
     const context = {
         refresh : (force,cb)=>{
             if(!isMounted()) return;
-            if(typeof beforeFetchItems ==='function' && beforeFetchItems(fetchDataOpts) === false) return;
-            let opts = Object.clone(fetchDataOpts);
-            opts.selector = prepareFilters(fetchDataOpts.selector,{convertToSQL:convertFiltersToSQL});
+            if(typeof beforeFetchItems ==='function' && beforeFetchItems(fetchOptions) === false) return;
+            let opts = Object.clone(fetchOptions);
+            opts.selector = prepareFilters(fetchOptions.selector,{convertToSQL:convertFiltersToSQL});
             opts = getFetchOptions(opts);
             const r = fetchItems(opts);
             if(r === false) return;
+            setIsLoading(true);
             if(isPromise(r)){
                 r.then((args)=>{
                     if(Array.isArray(args)){
@@ -161,15 +163,17 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyTable
                             }
                         }
                     }
-                    setState({...state,items,isLoading:false})
+                    setState({...state,items});
                     if(onFetchItems){
                         onFetchItems({data:items,items,context,props});
                     }
                 }).catch((e)=>{
                     console.log(e," fetching list of data select table data ",foreignKeyColumn,foreignKeyTable)
+                }).finally((e)=>{
+                    setIsLoading(false);
                 })
             } else {
-                setState({...state, isLoading : false})
+                setIsLoading(false);
             }
         }
     }
@@ -231,6 +235,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyTable
         isFilter = {isFilter}
         showAdd = {!isFilter && showAdd}
         {...state}
+        isLoading = {isLoading}
         dialogProps = {dialogProps}
         ref = {ref}
         defaultValue = {foreignKeyColumnValue}
@@ -291,7 +296,7 @@ TableDataSelectField.propTypes = {
         PropTypes.func, //s'il s'agit d'une fonciton qui sera appelée
     ]),
     onFetchItems : PropTypes.func,
-    fetchDataOpts : PropTypes.shape({
+    fetchOptions : PropTypes.shape({
         fields : PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.bool,
@@ -301,7 +306,10 @@ TableDataSelectField.propTypes = {
     itemValue : PropTypes.func,
     renderItem : PropTypes.func,
     renderText : PropTypes.func,
-    convertFiltersToSQL : PropTypes.func,// si l'on doit convertir les selecteurs de filtres au format SQl
+    convertFiltersToSQL : PropTypes.oneOfType([
+        PropTypes.func,
+        PropTypes.bool,
+    ]),// si l'on doit convertir les selecteurs de filtres au format SQl
 }
 
 export default TableDataSelectField;

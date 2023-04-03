@@ -76,7 +76,7 @@ const FiltersAccordionComponent = React.forwardRef((props,ref)=>{
                         {...filter}
                         {...(isObj(valuesRefs.current[key]) ? valuesRefs.current[key] : {})}
                         dynamicRendered
-                        isLoading = {isLoading && filteredRef.current[key] ? true : false}
+                        //isLoading = {isLoading && filteredRef.current[key] ? true : false}
                         orOperator = {defaultBool(orOperator,filter.orOperator,true)}
                         andOperator = {defaultBool(andOperator,filter.andOperator,true)}
                         onChange = {(arg)=>{

@@ -15,7 +15,7 @@ import {View} from "react-native";
 import {Menu} from "$ecomponents/BottomSheet";
 import Dashboard from "$ecomponents/Datagrid/Dashboard";
 import fetch from "$capi/fetch";
-import Auth from "$auth";
+import Auth from "$cauth";
 import Icon from "$ecomponents/Icon";
 
 export default function DatabaseStatisticContainer ({dashboardProps,onRefreshAll,fetchDataProps,table,fetchCount,index,testID,title,icon,onPress:customOnPress,columns,fetchData,withDashboard,...props}){

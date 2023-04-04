@@ -279,7 +279,7 @@ const DatagridFactory = (Factory)=>{
                         if(ret !== null && ret !== ""){
                             let text = defaultStr(columnDef.text,columnDef.label,columnField);
                             return <React.Fragment key={rowKey+defaultStr(columnField,index)}>
-                                <View  style={styles.expandedItemRowCell}>
+                                <View  style={[styles.expandedItemRowCell,styles.expandedItemRowCellContainer]}>
                                     <Label style={[styles.expandedItemRowCellLabel,styles.bold]}>{text.rtrim(":")+"  :  "}</Label>
                                     <Label style={[styles.expandedItemRowCellLabel]}>{ret}</Label>
                                 </View>
@@ -678,6 +678,10 @@ const styles = StyleSheet.create({
     expandedItemContent : {
         margin : 0,
         paddingBottom : 30,
+    },
+    expandedItemRowCellContainer : {
+        paddingTop:5,
+        paddingBottom:5,
     },
     expandedItemRowCell : {
         paddingVertical : 7,

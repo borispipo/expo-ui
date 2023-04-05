@@ -324,7 +324,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
             const txt = defaultStr(text).trim();
             if((txt.length <=1 && !error)){
                 if(validType.contains("unique") || validType.contains("required")){
-                    callOnChange(txt);
+                    callOnChange(toCase(txt));
                 }
             }
             if(props.onBlur){
@@ -388,9 +388,10 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
                     }
                 }
             }
-            if(toCase(text2) !== text){
+            const tVal = toCase(text2);
+            if(tVal !== text){
                 setText(text2,true);
-                callOnChange(text2);
+                callOnChange(tVal);
             }
         },
         selection,

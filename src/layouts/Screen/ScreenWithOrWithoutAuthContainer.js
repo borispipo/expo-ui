@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import {defaultObj,defaultStr,defaultNumber,defaultBool} from "$cutils";
 import View from "$ecomponents/View";
 import { useNavigation} from '$cnavigation';
-import Fab from "$elayouts/Fab";
+import Fab from "$layouts/Fab";
 import APP from "$capp";
 import AppBar,{createAppBarRef} from "$elayouts/AppBar";
 import ErrorBoundary from "$ecomponents/ErrorBoundary";

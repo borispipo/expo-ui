@@ -774,12 +774,15 @@ export default class CommonDatagridComponent extends AppComponent {
         }
         const footers = this.getFootersFields(true);
         let isAccordion = this.isAccordion();
+        const rowKeysColumns = {};
         Object.mapToArray(columns,(headerCol1,headerIndex)=>{
             if(!isObj(headerCol1)) return;
-            const headerCol = Object.clone(headerCol1);
-            if(isAccordion && headerCol.accordion === false) return null;
-            let header = {...headerCol};
+            const header = Object.clone(headerCol1);
             header.field = defaultStr(header.field, headerIndex)
+            if(header.primaryKey){
+                rowKeysColumns[header.field] = true;
+            }
+            if(isAccordion && header.accordion === false) return null;
             header.type = defaultStr(header.jsType,header.type,"text").toLowerCase();
             if(header.type.contains("date")){
                 this.dateFields[header.field] = header;
@@ -799,7 +802,8 @@ export default class CommonDatagridComponent extends AppComponent {
             if(!this.hasColumnsHalreadyInitialized){
                 this.initColumnsCallback({...header,colIndex,columnField:header.field});
             }
-        })
+        });
+        this.rowKeysColumns = Object.keys(rowKeysColumns);
         return footers;
     }
     getFootersFields(init){
@@ -3436,16 +3440,30 @@ export default class CommonDatagridComponent extends AppComponent {
     isVirtual(){
         return false;
     }
-
     getRowKey(row,rowIndex){
         let k = rowIndex;
+        if(isFunction(this.props.getRowKey)){
+            k = this.props.getRowKey({row,rowData:row,data:row,rowIndex,item:row,index:rowIndex,context:this});
+            if(typeof k =='string' && k || typeof k =='number'){
+                return k;
+            }
+        } 
         const rowKey = this.props.rowKey;
+        const rKey = Array.isArray(this.rowKeysColumns) && this.rowKeysColumns.length ? this.rowKeysColumns : null;
+        if(rKey){
+            const rr = React.getKeyFromObj(row,rKey);
+            if(rr){
+                return rr;
+            }
+        }
+        const rkey = React.getKeyFromObj(row,rowIndex,rowKey);
+        if(rkey){
+            return rkey;
+        }
         if(isNonNullString(rowKey) && isObj(row) && (isNonNullString(row[rowKey]) || isDecimal(row[rowKey]))){
             return row[rowKey];
         } 
-        if(isFunction(this.props.getRowKey)){
-            k = this.props.getRowKey({row,rowData:row,data:row,rowIndex,item:row,index:rowIndex,context:this});
-        } else if(isObj(row)){
+        if(isObj(row)){
             return React.getKey(row,rowIndex);
         } else k = rowIndex;
         if(isObj(row) && isNonNullString(row.rowKey)){

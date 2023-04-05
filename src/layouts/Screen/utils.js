@@ -205,7 +205,7 @@ export  function renderActions({context,isUpdate,newElementLabel,makePhoneCallPr
             flat : true,
             onPress : createCallback({context:self,action:'makePhoneCall',force:true,callback:onPressToMakePhoneCall})
         }:null,
-        copyToClipboard : (isUpdate)?{
+        copyToClipboard : (false && isUpdate)?{
             text : 'Copier',
             icon : COPY_ICON,
             title : 'Copier',

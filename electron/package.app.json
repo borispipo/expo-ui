@@ -21,7 +21,9 @@
   "theme": {
     "light": {
       "primary": "#0073B1",
-      "secondary": "#EC008C"
+      "secondary": "#EC008C",
+      "primaryOnSurface": "#0073B1",
+      "secondaryOnSurface": "#EC008C"
     }
   },
   "scripts": {
@@ -49,7 +51,6 @@
     "babel-plugin-transform-inline-environment-variables": "^0.4.4"
   },
   "dependencies": {
-    "@fto-consult/common": "^2.21.5",
-    "@fto-consult/expo-ui": "^5.5.2"
+    "@fto-consult/expo-ui": "^5.7.4"
   }
 }

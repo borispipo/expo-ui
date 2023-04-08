@@ -19,7 +19,7 @@ import appConfig from "$appConfig";
  *  foreignKeyTable : la tableData dans laquelle effectuer les donées de la requêtes
  *  foreignKeyLabel : Le libélé dans la table étrangère
  */
-const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,convertFiltersToSQL,mutateFetchedItems,getForeignKeyTable,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchOptions,...props},ref)=>{
+const TableDataSelectField = React.forwardRef(({foreignKeyColumn,onAdd,showAdd:customShowAdd,canShowAdd,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,convertFiltersToSQL,mutateFetchedItems,getForeignKeyTable,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchOptions,...props},ref)=>{
     props.data = defaultObj(props.data);
     if(isNonNullString(foreignKeyColumn)){
         foreignKeyColumn = foreignKeyColumn.trim();
@@ -49,7 +49,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyTable
         }
     }
     const isMounted = React.useIsMounted();
-    const showAdd = isFilter || !foreignKeyTable ? false : React.useRef(Auth.isTableDataAllowed({table:foreignKeyTable,action:'create'}) ? defaultVal(props.showAdd,props.showAddBtn,true) : false).current;
+    
     const [state,setState] = React.useState({
         items : [],
     });
@@ -230,6 +230,16 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyTable
         ttitle = txt && tt ? "{0} [1]".sprintf(txt,tt) : tt || txt;
     }
     dialogProps.title = ttitle;
+    const showAdd = React.useMemo(()=>{
+        if(isFilter || !foreignKeyTable) return false;
+        if(typeof canShowAdd ==='function'){
+            return canShowAdd({...props,table:foreignKeyTable,foreignKeyColumn,foreignKeyLabel,sortDir,foreignKeyTableObj:fKeyTable,foreignKeyTable})
+        }
+        if(Auth.isTableDataAllowed({table:foreignKeyTable,action:'create'})){
+            return !!defaultVal(customShowAdd,true);
+        }
+        return false;
+    },[isFilter,foreignKeyTable,customShowAdd]);
     return <Dropdown
         {...props}
         isFilter = {isFilter}
@@ -266,15 +276,20 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyTable
             return rItem(p);
         }}
         hideOnAdd
-        onAdd = {({onGoBack})=>{
+        onAdd = {(...args)=>{
             onAddProps = defaultObj(isFunction(onAddProps)? onAddProps.call(context,{context,foreignKeyTable,dbName,props}) : onAddProps);
-            return navigateToTableData({...onAddProps,tableName : foreignKeyTable,onGoBack})
+            if(typeof onAdd =='function'){
+                return onAdd(args);
+            }
+            return navigateToTableData({...onAddProps,foreignKeyTable,table:foreignKeyTable,foreignKeyColumn,tableName : foreignKeyTable,...args})
         }}
     />
 });
 
 TableDataSelectField.propTypes = {
     ...Dropdown.propTypes,
+    onAdd : PropTypes.func, //({})=>, la fonction appelée lorsque l'on clique sur le bouton add
+    canShowAdd : PropTypes.func, //({foreignKeyTable,foreignKeyColumn})=><boolean> la fonction permettant de spécifier si l'on peut afficher le bouton showAdd
     mutateFetchedItems : PropTypes.func, //la fonction permettant d'effectuer une mutation sur l'ensemble des donnéees récupérées à distance
     fetchItems : PropTypes.func,//la fonction de rappel à utiliser pour faire une requête fetch permettant de selectionner les données à distance
     getForeignKeyTable : PropTypes.func, //la fonction permettant de récupérer la fKeyTable data dont fait référence le champ

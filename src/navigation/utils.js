@@ -7,7 +7,9 @@ import {isNonNullString,defaultStr,defaultObj,isObj} from "$cutils";
 
 export const tableDataRouteName = 'TableData';
 
-export const navigateToTableData = function(tableName,params,actionType){
+export const structDataRouteName = 'StructData';
+
+const navigateToTableOrStructData = function(tableName,params,actionType,tableRouteNameType){
     if(isNonNullString(tableName)){
         tableName = {tableName};
     }
@@ -19,11 +21,11 @@ export const navigateToTableData = function(tableName,params,actionType){
     if(!tableName) return;
     const {perm} = params;
     let isAllowed = true;
-    actionType = defaultStr(actionType,"tabledata").replaceAll(" ","").toLowerCase();
+    actionType = defaultStr(actionType,"tabledata").replaceAll("_","").replaceAll("-","").replaceAll(" ","").toLowerCase();
     const isTableData = actionType =='tabledata';
     if(isNonNullString(perm)){
         isAllowed = Auth.isAllowedFromStr(perm)
-    } else if(actionType =='struct_data') {
+    } else if(actionType =='structdata') {
         isAllowed = Auth.isStructDataAllowed({table:tableName})
     } else if(isTableData){
         isAllowed = Auth.isTableDataAllowed({table:tableName});
@@ -31,8 +33,17 @@ export const navigateToTableData = function(tableName,params,actionType){
     if(!isAllowed){
         return Auth.showError();
     }
-    params.routeName = buildScreenRoute(tableName,tableDataRouteName);
+    tableRouteNameType = defaultStr(tableRouteNameType,tableDataRouteName);
+    params.routeName = buildScreenRoute(tableName,tableRouteNameType);
     return navigate(params)
+}
+
+export const navigateToTableData = (tableName,params)=>{
+    return navigateToTableOrStructData(tableName,params,"tabledata");
+}
+
+export const navigateToStructData = (tableName,params)=>{
+    return navigateToTableOrStructData(tableName,params,"structdata");
 }
 
 export const buildScreenRoute = function(tableName,parent){
@@ -51,11 +62,20 @@ export const getTableDataRouteName = function(tableName){
     return buildScreenRoute(tableName,tableDataRouteName);
 }
 
+export const getStructDataRouteName = function(tableName){
+    return buildScreenRoute(tableName,structDataRouteName);
+}
+
+export const getStructDataScreenName = getStructDataRouteName;
 export const getTableDataScreenName = getTableDataRouteName;
 
 /*** permet d'obtenir le lien vers l'écran table data permettant de lister les données de la table data */
 export const getTableDataListRouteName = function(tableName){
     return buildScreenRoute(tableName,tableDataRouteName+"/LIST/");
+}
+
+export const getStructDataListRouteName = function(tableName){
+    return buildScreenRoute(tableName,structDataRouteName+"/LIST/");
 }
 
 export const getTableDataListScreenName = getTableDataListRouteName;

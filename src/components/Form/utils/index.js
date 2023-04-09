@@ -5,4 +5,6 @@ export {Forms};
 
 export {default as keyboardEvents} from "./keyboardEvents";
 
-export {default as keyboardShortcuts} from "./keyboardShortcuts";
+export {default as isDocEditing} from "./isDocEditing";
+
+export * from "./isDocEditing";

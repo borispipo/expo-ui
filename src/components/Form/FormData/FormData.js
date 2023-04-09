@@ -8,10 +8,10 @@ import Form from "../Form";
 import theme,{flattenStyle} from "$theme";
 import PropTypes from "prop-types";
 import {renderActions} from "$ecomponents/Dialog/utils";
-//import {isDocUpdate} from "$database/utils";
 import {handleBeforeSaveCallback} from "./utils";
+import isDbDocEditing,{checkPrimaryKey} from "../utils/isDocEditing";
 import getComponentFromType from "./componentsTypes";
-import { keyboardShortcuts } from "../utils";
+import keyboardShortcuts from "../utils/keyboardShortcuts";
 import appConfig from "$capp/config";
 
 export default class FormDataComponent extends AppComponent{
@@ -84,11 +84,10 @@ export default class FormDataComponent extends AppComponent{
                             return "Impossible d'enregister les données à cause l'erreur suivante : "+errorText;
                         }
                     }
-                    const isDocEditing = this.isDocEditing(args.data);
                     const isUpdated = this.isDocEditing(args.data);
                     const currentIndex = this.getCurrentIndex();
                     const action = typeof this.clickedAction =='string' ? this.clickedAction.toLowerCase() : '';
-                    const savedArgs = {...args,isDocEditing,context:this,action,currentIndex,index:currentIndex,isUpdate:isUpdated,isUpdated,props:this.props,context:this};
+                    const savedArgs = {...args,isUpdated,context:this,action,currentIndex,index:currentIndex,isUpdate:isUpdated,isUpdated,props:this.props,context:this};
                     if(beforeSaveArgumentsMutator){
                         savedArgs = beforeSaveArgumentsMutator(savedArgs);
                         if(!isObj(savedArgs)){
@@ -149,7 +148,9 @@ export default class FormDataComponent extends AppComponent{
         } else if(typeof this.props.isDocUpdate =='function'){
             return this.props.isDocUpdate(data,{context:this}) ? true : false;
         }
-        return false;
+        return isObj(this.formDataPrimaryKeyFields) && Object.size(this.formDataPrimaryKeyFields,true) ? isDbDocEditing(data,this.formDataPrimaryKeyFields,({index:field,data})=>{
+            return checkPrimaryKey(data,field);
+        }) : false;
     }
     canBindResizeEvents(){
         return false;
@@ -180,6 +181,7 @@ export default class FormDataComponent extends AppComponent{
         formProps = defaultObj(formProps);
         const fieldProps = defaultObj(formProps.fieldProps,this.props.fieldProps);
         formProps.style = flattenStyle(formProps.style);
+        this.formDataPrimaryKeyFields = {};
         const content = [];
         const fields = defaultObj(formProps.fields,this.props.fields);
         const data = isObj(formProps.data) ? formProps.data : typeof this.props.data =='object' && this.props.data ? this.props.data : {};
@@ -198,6 +200,9 @@ export default class FormDataComponent extends AppComponent{
                 rest = Object.assign({},rest);
                 delete rest.import;
                 delete rest.export;
+                if(primaryKey === true && name && !field.filter){
+                    this.formDataPrimaryKeyFields[name] = field;
+                }
                 if(form === false || ignore || (isNonNullString(perm) && !Auth.isAllowedFromStr(perm))){
                     return null;
                 }

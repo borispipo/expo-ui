@@ -21,6 +21,7 @@ import theme from "$theme";
 import cActions from "$cactions";
 import APP from "$capp/instance";
 import { generatedColumnsProperties } from "./utils";
+import {isDocEditing,checkPrimaryKey} from "$ecomponents/Form";
 import i18n from "$i18n";
 import fetch from "$capi/fetch";
 
@@ -31,42 +32,6 @@ const DEFAULT_TABS_KEYS = "main-tabs";
 
 const TIMEOUT = 50;
 
-const checkPrimary = (data,f)=>{
-    return !(!(f in data) || (data[f] == null) || (!data[f] && typeof data !=='number'));
-}
-/*** vérifie si le document passé en paramètre est éditable
- * @param {object} data la données à vérifier
- * @param {object| array} les champs sur lesquels se baser pour vérifier si la donénes est une mise à jour
- * @param {func} checkPrimaryKey la foncition permettant de vérifier s'il s'agit d'une clé primaire pour la données courante
- */
-export const isDocEditing = (data,fields,checkPrimaryKey)=>{
-    if(!isObj(data) || !isObjOrArray(fields)) return false;
-    
-            let hasPrimaryFields = false;
-            let hasValidated = true;
-            for(let i in fields){
-                const field = fields[i];
-                if(typeof checkPrimaryKey =='function') {
-                    hasPrimaryFields = true;
-                    if(checkPrimaryKey({field,i,index:i,data}) === false){
-                        return false;
-                    }
-                    continue;
-                }
-                if(!isObj(field)) continue;
-                hasPrimaryFields = true;
-                const f = defaultStr(field.field,i);
-                if(field.primaryKey === true){
-                    if(!checkPrimary(data,f)){
-                        hasValidated = false;
-                    }
-                }
-            }
-            if(hasPrimaryFields){
-                return hasValidated;
-            }
-    return false;
-}
 
 export default class TableDataScreenComponent extends FormDataScreen{
     constructor(props){
@@ -279,6 +244,9 @@ export default class TableDataScreenComponent extends FormDataScreen{
                     if((disabledOnEditing === true)){
                         currentField.disabled = true;
                     }
+                }
+                if(field.primaryKey ===true){
+                    this.primaryKeyFields[columnField] = true;
                 }
                 const isPrimary = this.primaryKeyFields[columnField] && true || false;
                 const f = prepareCb(cArgs);  
@@ -536,7 +504,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
         const isDocEditingCb = typeof this.props.isDocEditing =='function'? this.props.isDocEditing : typeof this.props.isDocUpdate =='function'? this.props.isDocUpdate : undefined;
         if(!isDocEditingCb){
             if(isDocEditing(data,this.primaryKeyFields,({index:field,data})=>{
-                return checkPrimary(data,field);
+                return checkPrimaryKey(data,field);
             })) return true;
         } else {
             return isDocEditingCb(data,{context:this});

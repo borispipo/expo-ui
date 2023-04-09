@@ -277,3 +277,4 @@ export const getScreenName = (screenName)=>{
     }
     return getTableDataRouteName(screenName);
 }
+

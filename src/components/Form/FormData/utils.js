@@ -2,7 +2,7 @@ import {isNonNullString,isObj,defaultObj,isPromise,isFunction,defaultStr,isObjOr
 import notify from "$notify";
 import { getFormData } from "../utils/FormsManager";
 import {isMobileBrowser,isMobileNative} from "$cplatform";
-import { keyboardShortcuts as KeyboardShorts } from "../utils";
+import KeyboardShorts from "../utils/keyboardShortcuts";
 
 export const keyboardShortcuts = {};
 Object.map(KeyboardShorts,(st,i)=>{
@@ -101,3 +101,4 @@ export const handleBeforeSaveCallback = (beforeSaveCallback,successCb,arg)=>{
     successCb(arg);
     return bF;
 } 
+

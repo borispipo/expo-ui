@@ -13,3 +13,5 @@ export {FormData};
 export default FormData;
 
 FormData.DialogProvider = Provider;
+
+export * from "./utils";

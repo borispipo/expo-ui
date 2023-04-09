@@ -152,6 +152,9 @@ Object.map(displayTypes,(c,k)=>{
 const dataSourceArgs = {};
 export const footerFieldName = "dgrid-fters-fields";
 
+const checkPerm = (perm,args)=>{
+    return typeof perm ==='function'? perm(args) : isNonNullString(perm) ? Auth.isAllowedFromStr(perm) : typeof perm =='boolean'? perm : true;
+}
 
 /*****
  * Pour spécifier qu'un champ du datagrid n'existe pas en bd il s'ufit de suffixer le nom du champ par le suffix : "FoundInDB" et de renseigner false comme valeur 
@@ -165,9 +168,10 @@ export default class CommonDatagridComponent extends AppComponent {
         let {
             data,
             selectedRows,
-            chartAllowedPerm,
-            exportToPDFAllowedPerm,
-            exportToExcelAllowedPerm,
+            renderChartIsAllowed,
+            exportToPDFIsAllowed,
+            exportToExcelIsAllowed,
+            renderSectionListIsAllowed,
             ...rest
         } = props;
         if(this.bindResizeEvents()){
@@ -198,9 +202,11 @@ export default class CommonDatagridComponent extends AppComponent {
         });
         const disTypes = {};
         let hasFoundDisplayTypes = false;
-        const perm = isNonNullString(chartAllowedPerm)? Auth.isAllowedFromStr(chartAllowedPerm) : true;
-        const ePDFIsAllowed = isNonNullString(exportToPDFAllowedPerm)? Auth.isAllowedFromStr(exportToPDFAllowedPerm) : true;
-        const eExcelISAllowed = isNonNullString(exportToExcelAllowedPerm)? Auth.isAllowedFromStr(exportToExcelAllowedPerm) : true;
+        const pArgs = {context:this,data,props:this.props}
+        const perm = checkPerm(renderChartIsAllowed,pArgs)
+        const ePDFIsAllowed = checkPerm(exportToPDFIsAllowed,pArgs);
+        const eExcelISAllowed = checkPerm(exportToExcelIsAllowed,pArgs);
+        const renderSectionListIsAllowedP = checkPerm(renderSectionListIsAllowed,pArgs);
         Object.map(this.props.displayTypes,(dType,v)=>{
             if(isNonNullString(dType)){
                 dType = dType.toLowerCase().trim();
@@ -247,6 +253,7 @@ export default class CommonDatagridComponent extends AppComponent {
             isChartAllowed : {value : perm},
             isExcellExportAllowed : {value:eExcelISAllowed},
             isPDFExportAllowed : {value: ePDFIsAllowed},
+            renderSectionListIsAllowed : {value:renderSectionListIsAllowedP},
             currentFilteringColumns : {value:{}},
             emptySectionListHeaderValue : {value : uniqid("empty-section-list-header-val").toUpperCase()},
             getSectionListHeaderProp : {value : typeof this.props.getSectionListHeader =='function'? this.props.getSectionListHeader : undefined},
@@ -2367,6 +2374,7 @@ export default class CommonDatagridComponent extends AppComponent {
    }
    /*** permet d'effectuer le rendu des colonnes groupable dans le menu item */
    renderSectionListMenu(){
+        if(!this.renderSectionListIsAllowed) return null;
         const m = Array.isArray(this.preparedColumns?.sectionListColumnsMenuItems)? this.preparedColumns?.sectionListColumnsMenuItems : [];
         const mm = [];
         Object.map(m,(_)=>{
@@ -2744,7 +2752,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 if(!isObj(d) || (hasLocalFilter && this.doLocalFilter({rowData:d,rowIndex:i}) === false)){
                     return;
                 }
-                if(hasSectionColumns){
+                if(hasSectionColumns  && this.renderSectionListIsAllowed){
                     let sHeader = this.getSectionListHeader({config,data:d,columnsLength : sectionListColumnsSize,fieldsSize:sectionListColumnsSize,sectionListColumnsLength:sectionListColumnsSize,sectionListColumnsSize,allData:data,rowData:d,index:i,rowIndex,context:this,columns,fields:columns});
                     if(sHeader === false) return;//on omet la donnée si la fonction de récupération de son header retourne false
                     if(!isNonNullString(sHeader) || sHeader.toLowerCase().trim() =="undefined"){
@@ -3995,11 +4003,28 @@ CommonDatagridComponent.propTypes = {
         sectionListHeadersSeries : PropTypes.arrayOf(PropTypes.string),
     }),
     /*** la permission autorisée pour l'export en pdf */
-    exportToPDFAllowedPerm : PropTypes.string,
+    exportToPDFIsAllowed : PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.func,
+        PropTypes.bool,
+    ]),
     /*** la permission autorisée pour l'export en excel*/
-    exportToExcelAllowedPerm : PropTypes.string,
+    exportToExcelIsAllowed : PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.func,
+        PropTypes.bool,
+    ]),
+    renderSectionListIsAllowed : PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.func,
+        PropTypes.bool,
+    ]),
     /*** la permission que doit avoir l'utilisateur pour pouvoir visualiser les graphes à partir du diagrame */
-    chartAllowedPerm : PropTypes.string,
+    renderChartIsAllowed : PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.func,
+        PropTypes.bool,
+    ]),
     displayType : chartDisplayType,
     /*** les types d'afichates supportés par l'application */
     displayTypes : PropTypes.arrayOf(chartDisplayType),

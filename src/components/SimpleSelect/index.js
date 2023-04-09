@@ -16,13 +16,15 @@ import { matchOperators,getSearchTimeout,canAutoFocusSearchField} from "$ecompon
 import Dialog from "$ecomponents/Dialog";
 
 const  SimpleSelect = React.forwardRef((props,ref)=>{
-    let {style : customStyle,onMount,mode,showSearch,anchorContainerProps,renderText,contentContainerProps,withCheckedIcon,testID,selectionColor,dialogProps,onShow,anchor,onUnmont,controlled,onDismiss,visible:controlledVisible,selectedColor,inputProps,itemProps,itemContainerProps,label,listProps,editable,readOnly,text,filter,renderItem,itemValue,getItemValue,defaultValue,items:menuItems,onPress,onChange,disabled,...rest} = props;
+    let {style : customStyle,onMount,mode,showSearch,anchorContainerProps,renderText,contentContainerProps,withCheckedIcon,testID,selectionColor,dialogProps,onShow,anchor,onUnmont,controlled:cr,onDismiss,visible:controlledVisible,selectedColor,inputProps,itemProps,itemContainerProps,label,listProps,editable,readOnly,text,filter,renderItem,itemValue,getItemValue,defaultValue,items:menuItems,onPress,onChange,disabled,...rest} = props;
     const flattenStyle = StyleSheet.flatten(customStyle) || {};
+    const controlledRef = React.useRef(typeof controlledVisible ==='boolean'? true : false);
+    const controlled = controlledRef.current;
     const [layout,setLayout] = React.useState({
         height: 0,
         width: 0,
     });
-    const [visible,setVisible] = React.useState(controlled?controlledVisible:false)
+    const [visible,setVisible] = controlled ? [controlledVisible] : React.useState(controlled?controlledVisible:false);
     const [value,setValue] = React.useState(defaultValue !== undefined? defaultValue:undefined);
     contentContainerProps = defaultObj(contentContainerProps);
     const prevLayout = React.usePrevious(layout);
@@ -94,13 +96,12 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
         if(update !== true && compare(value,node.value)) return;
         selectedRef.current = node;
         if(update === true){
+            setValue(node.value);
             if(controlled && onDismiss){
                 if(onDismiss({visible,value,items,defaultValue},defaultObj(selectedRef.current)) === false) return;
             }
-            setValue(node.value);
-            const vv = controlled?undefined:false;
-            if(typeof vv =='boolean' && vv !==visible){
-                setVisible(vv);
+            if(!controlled && visible){
+                setVisible(false);
             }
         }
     }

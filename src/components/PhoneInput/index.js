@@ -66,10 +66,10 @@ export default function PhoneInputComponent(props){
     contentContainerProps.style = [styles.inputContainer,contentContainerProps.style];
     const ref = React.useRef(null);
     const [state,setState] = React.useState({
-        visible : false,
         ...prepareState({defaultValue,country})
-    })
-    const prevVisible = React.usePrevious(state.visible);
+    });
+    const [visible,setVisible] = React.useState(false);
+    const prevVisible = React.usePrevious(visible);
     label = defaultVal(label,text);
     React.useEffect(()=>{
         React.setRef(ref,ref.current,setRef);
@@ -82,8 +82,8 @@ export default function PhoneInputComponent(props){
         }
     },[defaultValue,country])
     const onPressFlag = (e)=>{
-        if(!state.visible){
-            setState({...state,visible:true})
+        if(!visible){
+            setVisible(true);
         }
     }
     inputProps = defaultObj(inputProps);
@@ -131,12 +131,17 @@ export default function PhoneInputComponent(props){
     return <SelectCountry
         label = {label}
         controlled = {true}
-        visible = {state.visible}
+        visible = {visible}
         defaultValue = {state.country}
         testID = {testID+"_SelectCountry"}
         onDismiss = {({value},force) =>{
-            if(force !== true && value === state.country && state.visible == prevVisible) return;
-            setState({...state,...prepareState({country:value,defaultValue:state.country==value?state.defaultValue:""}),visible:false})
+            if(force !== true && value === state.country && visible == prevVisible) return;
+            if(visible){
+                setVisible(false);
+            }
+        }}
+        onChange = {({value})=>{
+            setState({...state,...prepareState({country:value,defaultValue:state.country==value?state.defaultValue:""})});
         }}
         anchor = {
             <>

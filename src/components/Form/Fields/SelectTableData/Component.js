@@ -184,12 +184,12 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,bindUpsert2Remo
     }
     const prevIsUpdate = React.usePrevious(isUpdate);
     const prevDefaultValue = React.usePrevious(foreignKeyColumnValue);
-    if(!isFilter){
+    /*if(!isFilter){
         React.useEffect(()=>{
             if(prevIsUpdate === isUpdate && JSON.stringify(prevDefaultValue) === JSON.stringify(foreignKeyColumnValue)) return;
             context.refresh();
         },[isUpdate,foreignKeyColumnValue])
-    }
+    }*/
     dropdownActions = isObj(dropdownActions)? {...dropdownActions} : isArray(dropdownActions)? [...dropdownActions] : []
     const isDropdonwsActionsArray = isArray(dropdownActions);
     const refreshItem = {

@@ -75,7 +75,7 @@ class DropdownComponent extends AppComponent {
                 }, override : false, writable : false
             },
             canHandleMultiple : {
-                value  : typeof multiple =='boolean'? multiple : false,
+                value  : !!multiple,
                 override : false, writable : false,
             },
             isBigList : {
@@ -112,7 +112,6 @@ class DropdownComponent extends AppComponent {
         const prevValueKey = this.getValueKey(previousSelected);
         const prevItem = prevValueKey ? this.state.valuesKeys[prevValueKey] : null;
         //if(this.countEee ===5) return
-        //console.log(previousSelected,nState,prevItem," is dhcdddddd comparing")
         return this.setState(nState,()=>{
             ///vérifie s'il y a eu changement call on change par exemple
             let selectedItem = null;
@@ -490,7 +489,6 @@ class DropdownComponent extends AppComponent {
         const prevH = Math.abs(prevLayout.height-layout.height), prevW = Math.abs(prevLayout.width,layout.width);
         if(prevIsMob === isMob && prevH <= 20 && prevW <= 50) return;
         this.updateVisibleState({
-            //visible: prevIsMob !== isMob? false : this.state.visible,
             isMobileMedia : isMobileOrTabletMedia(),
             layout,
         });
@@ -525,11 +523,11 @@ class DropdownComponent extends AppComponent {
 
     updateVisibleState(state,cb){
         state = defaultObj(state);
-        const visible = this.state;
+        const visible = this.state.visible;
         this.setState(state,()=>{
             const arg = {context:this,selected:this.state.selected,visible:this.state.visible};
             if(visible !== this.state.visible){
-                if(this.state.visible){
+                if(!this.state.visible){
                     if(typeof this.props.onDismiss =='function'){
                         this.props.onDismiss(arg);
                     }
@@ -862,32 +860,27 @@ class DropdownComponent extends AppComponent {
                 {...progressBarProps} 
             />
         </View>): null;
-        let tagsContent = null,hasTagContent = false;
-        if(renderTag){
-            tagsContent = <View style={[styles.tagsContent]}>
-                {state.selected.map((value,i)=>{
-                const nodeKey = this.getNodeFromValue(value);
-                if(!nodeKey.valueKey) return null;
-                const valueKey = nodeKey.valueKey;
-                const {text} = nodeKey.node;
-                const p = Colors.getAvatarStyleFromSuffix(i+1);
-                hasTagContent = true;
-                return <Chip 
-                    {...tagProps}
-                    style = {[p.style,{color:p.color,marginBottom:5,marginRight:5},tagProps.style]}
-                    textStyle = {[{color:p.color},tagProps.textStyle]}
-                    key = {i}
-                    onPress = {()=>{
-                        this.selectItem({value,valueKey,select:false});
-                    }}
-                    onClose = {()=>{
-                        this.selectItem({value,valueKey,select:false});
-                    }}
-                >{text} </Chip>;
-            })}
-            </View>
-        }
-        
+        const tagsContent = renderTag ? <View style={[styles.tagsContent]} testID={testID+"_TagsContainerWrapper"}>
+            {state.selected.map((value,i)=>{
+            const nodeKey = this.getNodeFromValue(value);
+            if(!nodeKey.valueKey) return null;
+            const valueKey = nodeKey.valueKey;
+            const {text} = nodeKey.node;
+            const p = Colors.getAvatarStyleFromSuffix(i+1);
+            return <Chip 
+                {...tagProps}
+                style = {[p.style,{color:p.color,marginBottom:5,marginRight:5},tagProps.style]}
+                textStyle = {[{color:p.color},tagProps.textStyle]}
+                key = {i}
+                onPress = {()=>{
+                    this.selectItem({value,valueKey,select:false});
+                }}
+                onClose = {()=>{
+                    this.selectItem({value,valueKey,select:false});
+                }}
+            >{text} </Chip>;
+        })}
+        </View> : null;
         const testID = defaultStr(dropdownProps.testID,"RN_DropdownComponent");
         const defRight = defaultVal(textInputProps.right,inputProps.right);
         const enableCopy = defaultBool(inputProps.enableCopy,textInputProps.enableCopy,(iconDisabled || (!multiple && !showAdd)) && !loadingElement ?true : false);
@@ -1004,7 +997,7 @@ class DropdownComponent extends AppComponent {
                     anchor={anchor}
                     {...dialogProps}
                     title = {defaultStr(dialogProps.title,label,text)+" [ "+self.state.data.length.formatNumber()+" ]"}
-                    subtitle = {selectedText}
+                    subtitle = {selectedText||'Aucun élément sélectionné'}
                     style = {[restProps.style]}
                     contentProps = {{style:{flex:1}}}
                 >
@@ -1052,7 +1045,7 @@ class DropdownComponent extends AppComponent {
                             left = {(props)=><Icon testID = {testID+"_Left"} icon={'magnify'} {...props} style={[styles.left,props.style]} />}
                             right = {(props)=>{
                                 return <>
-                                    {showAdd ? <Icon testID = {testID+"_ShowAddIcon"} {..._addIconProps} {...props} size={ICON_SIZE} style={[_addIconProps.style,styles.iconRight,props.style]}/> : null}
+                                    {showAdd && isMob ? <Icon testID = {testID+"_ShowAddIcon"} {..._addIconProps} {...props} size={ICON_SIZE} style={[_addIconProps.style,styles.iconRight,props.style]}/> : null}
                                         <MComponent 
                                             items = {menuActions}
                                             closeOnPress
@@ -1098,7 +1091,7 @@ class DropdownComponent extends AppComponent {
                             if(renderTag && (self.state.nodes[key].valueKey in self.state.selectedValuesKeys)){
                                 return null;
                             }
-                            let node = self.state.nodes[key];
+                            const node = self.state.nodes[key];
                             const {index,value,valueKey} = node;
                             const _isSelected = self.isSelected(value,valueKey);
                             if(dynamicContent){
@@ -1152,6 +1145,7 @@ const styles = StyleSheet.create({
     },
     inputContainerTag : {
         paddingTop:7,
+        minHeight : 50,
     },
     item : {
         fontSize:14,
@@ -1231,6 +1225,7 @@ const styles = StyleSheet.create({
         //paddingHorizontal: 12,
         marginBottom : 0,
         marginBottom : 0,
+        marginTop : 5,
     },
     tagLabel : {
         flexGrow : 0,

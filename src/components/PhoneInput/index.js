@@ -141,6 +141,7 @@ export default function PhoneInputComponent(props){
         anchor = {
             <>
                 <TextField
+                    affix = {false}
                     {...rest}
                     toCase = {(val)=>{
                         return (val.startsWith("+")?"+":"")+val.replace(/[^\s0-9]/g, '');

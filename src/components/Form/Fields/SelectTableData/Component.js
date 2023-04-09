@@ -19,7 +19,7 @@ import appConfig from "$appConfig";
  *  foreignKeyTable : la tableData dans laquelle effectuer les donées de la requêtes
  *  foreignKeyLabel : Le libélé dans la table étrangère
  */
-const TableDataSelectField = React.forwardRef(({foreignKeyColumn,onAdd,showAdd:customShowAdd,canShowAdd,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,convertFiltersToSQL,mutateFetchedItems,getForeignKeyTable,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchOptions,...props},ref)=>{
+const TableDataSelectField = React.forwardRef(({foreignKeyColumn,bindUpsert2RemoveEvents,onAdd,showAdd:customShowAdd,canShowAdd,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,convertFiltersToSQL,mutateFetchedItems,getForeignKeyTable,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchOptions,...props},ref)=>{
     props.data = defaultObj(props.data);
     if(isNonNullString(foreignKeyColumn)){
         foreignKeyColumn = foreignKeyColumn.trim();
@@ -99,14 +99,19 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,onAdd,showAdd:c
         }
     }
     React.useEffect(()=>{
-        const onUpsertData = ()=>{return isMounted()?context.refresh():undefined};
-        APP.on(actions.upsert(foreignKeyTable),onUpsertData);
-        APP.on(actions.onRemove(foreignKeyTable),onUpsertData);
         context.refresh();
+        if(bindUpsert2RemoveEvents !== false){
+            const onUpsertData = ()=>{return isMounted()?context.refresh():undefined};
+            APP.on(actions.upsert(foreignKeyTable),onUpsertData);
+            APP.on(actions.onRemove(foreignKeyTable),onUpsertData);
+            return ()=>{
+                APP.off(actions.upsert(foreignKeyTable),onUpsertData);
+                APP.off(actions.onRemove(foreignKeyTable),onUpsertData);
+            };
+        }
         return ()=>{
-            APP.off(actions.upsert(foreignKeyTable),onUpsertData);
-            APP.off(actions.onRemove(foreignKeyTable),onUpsertData);
-        };
+            
+        }
     },[]);
     
     let dat = isNonNullString(foreignKeyColumnValue)? {
@@ -227,7 +232,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,onAdd,showAdd:c
     if(!ttitle){
         const txt = defaultStr(props.label,props.text);
         const tt = defaultStr(fKeyTable.text,fKeyTable.label);
-        ttitle = txt && tt ? "{0} [1]".sprintf(txt,tt) : tt || txt;
+        ttitle = txt && tt ? "{0} [{1}]".sprintf(txt,tt) : tt || txt;
     }
     dialogProps.title = ttitle;
     const showAdd = React.useMemo(()=>{
@@ -243,7 +248,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,onAdd,showAdd:c
     return <Dropdown
         {...props}
         isFilter = {isFilter}
-        showAdd = {!isFilter && showAdd}
+        showAdd = {showAdd}
         {...state}
         isLoading = {isLoading}
         dialogProps = {dialogProps}
@@ -276,10 +281,10 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,onAdd,showAdd:c
             return rItem(p);
         }}
         hideOnAdd
-        onAdd = {(...args)=>{
+        onAdd = {(args)=>{
             onAddProps = defaultObj(isFunction(onAddProps)? onAddProps.call(context,{context,foreignKeyTable,dbName,props}) : onAddProps);
             if(typeof onAdd =='function'){
-                return onAdd(args);
+                return onAdd({...args,...onAddProps});
             }
             return navigateToTableData({...onAddProps,foreignKeyTable,table:foreignKeyTable,foreignKeyColumn,tableName : foreignKeyTable,...args})
         }}
@@ -288,6 +293,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,onAdd,showAdd:c
 
 TableDataSelectField.propTypes = {
     ...Dropdown.propTypes,
+    bindUpsert2RemoveEvents : PropTypes.bool,//si le composant écoutera l'évènement de rafraichissement des données
     onAdd : PropTypes.func, //({})=>, la fonction appelée lorsque l'on clique sur le bouton add
     canShowAdd : PropTypes.func, //({foreignKeyTable,foreignKeyColumn})=><boolean> la fonction permettant de spécifier si l'on peut afficher le bouton showAdd
     mutateFetchedItems : PropTypes.func, //la fonction permettant d'effectuer une mutation sur l'ensemble des donnéees récupérées à distance
@@ -296,10 +302,7 @@ TableDataSelectField.propTypes = {
     foreignKeyTable : PropTypes.string, //le nom de la fKeyTable data à laquelle se reporte le champ
     fetchItemsPath : PropTypes.string, //le chemin d'api pour récupérer les items des données étrangères en utilisant la fonction fetch
     beforeFetchItems : PropTypes.func, //appelée immédiatement avant l'exécution de la requête fetch
-    foreignKeyColumn : PropTypes.oneOfType([
-        PropTypes.string,
-        //PropTypes.arrayOf(PropTypes.string)
-    ]).isRequired,//le nom de la clé étrangère à laquelle fait référence la colone dans la fKeyTable
+    foreignKeyColumn : PropTypes.string,//le nom de la clé étrangère à laquelle fait référence la colone dans la fKeyTable
     foreignKeyLabel : PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.arrayOf(PropTypes.string), ///si c'est un tableau, il s'agit des colonnes qui seront utilisées pour le rendu du foreignKey

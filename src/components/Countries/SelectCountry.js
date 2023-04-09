@@ -12,8 +12,19 @@ import appConfig from "$capp/config";
 /**** retourne les props du champ de type countrie */
 export const getCountryFieldProps = (props)=>{
     props = defaultObj(props);
-    let {imageProps,...rest} = props;
+    let {imageProps,defaultValue,...rest} = props;
+    const countryStr = defaultStr(appConfig.countryCode).toUpperCase();
     imageProps = defaultObj(imageProps);
+    if(rest.multiple){
+        if(isNonNullString(defaultValue)){
+            defaultValue = defaultValue.split(",");
+        }
+        if(!defaultValue){
+            defaultValue = [countryStr];
+        }
+    } else {
+        defaultValue = defaultStr(defaultValue,countryStr);
+    }
     return {
         label : defaultStr(props.label,props.text,'Pays'),
         type : 'select',
@@ -32,8 +43,8 @@ export const getCountryFieldProps = (props)=>{
                 <Label>{item.label}</Label>
             </View>
         },
-        defaultValue : appConfig.countryCode,
         ...defaultObj(rest),
+        defaultValue,
     }
 }
 

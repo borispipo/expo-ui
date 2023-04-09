@@ -9,7 +9,7 @@ export const tableDataRouteName = 'TableData';
 
 export const structDataRouteName = 'StructData';
 
-const navigateToTableOrStructData = function(tableName,params,actionType,tableRouteNameType){
+const navigateToTableOrStructData = function(tableName,params,actionType){
     if(isNonNullString(tableName)){
         tableName = {tableName};
     }
@@ -33,8 +33,7 @@ const navigateToTableOrStructData = function(tableName,params,actionType,tableRo
     if(!isAllowed){
         return Auth.showError();
     }
-    tableRouteNameType = defaultStr(tableRouteNameType,tableDataRouteName);
-    params.routeName = buildScreenRoute(tableName,tableRouteNameType);
+    params.routeName = buildScreenRoute(tableName,actionType =='structdata'? structDataRouteName : tableDataRouteName);
     return navigate(params)
 }
 

@@ -22,15 +22,11 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
         height: 0,
         width: 0,
     });
-    const [state,setState] = React.useState({
-        value : defaultValue !== undefined? defaultValue:undefined,
-        visible : controlled?controlledVisible:false,
-        items : [],
-    });
+    const [visible,setVisible] = React.useState(controlled?controlledVisible:false)
+    const [value,setValue] = React.useState(defaultValue !== undefined? defaultValue:undefined);
     contentContainerProps = defaultObj(contentContainerProps);
     const prevLayout = React.usePrevious(layout);
     filter = defaultFunc(filter,x=>true);
-    const {value,visible} = state;
     compare = defaultFunc(compare,(a,b)=> a === b);
     const prevValue = React.usePrevious(value,compare);
     const selectedRef = React.useRef(undefined);
@@ -89,7 +85,6 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
             items.push(mItem);
         });
         return items;
-        //return ({...state,value:currentSelectedValue,items});
     },[menuItems])
     React.useEffect(()=>{
         if(compare(defaultValue == value)) return;
@@ -99,11 +94,14 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
         if(update !== true && compare(value,node.value)) return;
         selectedRef.current = node;
         if(update === true){
-            const nState = {...state,value:node.value,visible:controlled?undefined:false};
             if(controlled && onDismiss){
-                if(onDismiss(nState,defaultObj(selectedRef.current)) === false) return;
+                if(onDismiss({visible,value,items,defaultValue},defaultObj(selectedRef.current)) === false) return;
             }
-            setState(nState);
+            setValue(node.value);
+            const vv = controlled?undefined:false;
+            if(typeof vv =='boolean' && vv !==visible){
+                setVisible(vv);
+            }
         }
     }
     const context = {};
@@ -117,7 +115,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
             }
         }
         if(selectedRef.current !== undefined){
-            setState({...state,value:defaultValue});
+            setValue(defaultValue);
         }
     }
     context.getValue = ()=> value;
@@ -137,22 +135,22 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
         if(!isEditable) return;
         if(controlled){
             if(onShow){
-                onShow(state);
+                onShow({visible,value,items,defaultValue});
             }
             return;
         }
         if(!visible){
-            setState({...state,visible:true});
+            setVisible(true);
         }
     }
     const close = context.close = (args)=>{
         if(controlled){
             if(onDismiss){
-                onDismiss(state,defaultObj(selectedRef.current));
+                onDismiss({visible,value,items,defaultValue},defaultObj(selectedRef.current));
             }
             return false;
         }
-        setState({...state,visible:false,sk:!!!state.sk});
+       setVisible(false);
         return false;
     }
     context.disable = ()=>{
@@ -191,7 +189,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
         setLayout(layout);
         if(controlled && onDismiss){
             if(isDiff){
-                onDismiss(state,true);
+                onDismiss({visible,value,items,defaultValue},true);
             }
         } 
     };

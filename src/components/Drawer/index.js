@@ -35,8 +35,10 @@ const DrawerComponent = React.forwardRef((props,ref)=>{
       permanentToggleIcon,minimizedToggleIcon,temporaryToggleIcon,withMinimizedIcon,
       isItemActive,onPageResize,navigationViewRef,
       children,
+      testID,
       drawerType} = props;
     sessionName = defaultStr(sessionName);
+    testID = defaultStr(testID,"RN_DrawerComponent")
     const sessionRef = React.useRef({});
     const session = React.useMemo(()=>{
         if(sessionName){
@@ -251,8 +253,9 @@ const DrawerComponent = React.forwardRef((props,ref)=>{
             }
             return false;
           },getState:getDrawerState,getDrawerRef}}>
-          <View style={styles.container}>
+          <View style={styles.container} testID={`${testID}_Container`}>
               <DrawerLayout
+                  testID = {`${testID}_DrawerLayout`}
                   {...restP}
                   permanent = {isPermanent}
                   onDrawerSlide={onDrawerSlide}
@@ -339,7 +342,7 @@ const DrawerComponent = React.forwardRef((props,ref)=>{
                     {paddingBottom:30},
                     contentContainerStyle
                   ]
-                }>
+            }>  
               {children}
             </DrawerLayout>
         </View>

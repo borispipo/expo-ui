@@ -2459,6 +2459,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 render,
                 readOnly,
                 disabled,
+                editable,
                 visible,
                 defaultValue,
                 id,
@@ -2469,7 +2470,7 @@ export default class CommonDatagridComponent extends AppComponent {
             } = header;
             restCol = Object.clone(defaultObj(restCol));
             let colFilter = defaultVal(restCol.filter,true);
-            field = header.field = defaultStr(header.field,field,headerIndex);
+            field = header.field = restCol.field = defaultStr(header.field,field,headerIndex);
             delete restCol.filter;
             
             const type = defaultStr(header.jsType,header.type,"text").toLowerCase();
@@ -2617,14 +2618,14 @@ export default class CommonDatagridComponent extends AppComponent {
                     this.sectionListColumnsSize.current++;
                 }
                 const mItem = {
-                    ...header,
+                    ...restCol,
                     field,
                     type,
                     onPress : ()=>{
                         this.toggleColumnInSectionList(field);
                         return false;
                     },
-                    title : title,
+                    title,
                     icon : isInSectionListHeader?CHECKED_ICON_NAME : null,
                 };
                 if(this.isSectionListColumnConfigurable(mItem)){

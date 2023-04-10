@@ -2,14 +2,14 @@ import React from '$react';
 import {StyleSheet} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import PropTypes from "prop-types";
-import {defaultObj,defaultStr,defaultNumber,defaultBool} from "$cutils";
+import {defaultObj,defaultStr,defaultNumber,defaultBool,uniqid} from "$cutils";
 import View from "$ecomponents/View";
 import { useNavigation} from '$cnavigation';
 import Fab from "$layouts/Fab";
 import APP from "$capp";
 import AppBar,{createAppBarRef} from "$elayouts/AppBar";
-import ErrorBoundary from "$ecomponents/ErrorBoundary";
 import Portal from "$ecomponents/Portal";
+import { FullWindowOverlay } from 'react-native-screens';
 import theme,{StyleProp} from "$theme";
 import StatusBar from "$ecomponents/StatusBar";
 import ScrollView from "$ecomponents/ScrollView";
@@ -108,55 +108,58 @@ export default function MainScreenScreenWithOrWithoutAuthContainer(props) {
       });
     }
   }, [title,subtitle]);
-  const Wrapper =  modal ? Portal : React.Fragment;
+  const Wrapper =  modal ? PortalCP : React.Fragment;
+  const WrapperProps = modal? {screenName} : {};
   const fab = withFab ? <Fab 
       {...fabProps}
       screenName={screenName}
   />  : null;
   const profilAvatar = typeof renderProfilAvatar =='function'? renderProfilAvatar(profilAvatarProps) : null;
-  const child = <>
-      {withStatusBar !== false ? <StatusBar/> : null}
-      <ErrorBoundary testID={testID+"_ScreenLayoutErrorBoundary"}>
-        <View testID={testID} {...containerProps}  style={[styles.container,{backgroundColor},modal && styles.modal,containerProps.style]}>
-          {appBar === false ? null : React.isValidElement(appBar)? state.AppBar :  <AppBar 
-              testID={testID+'_AppBar'} {...appBarProps} 
-              backAction = {defaultVal(appBarProps.backAction,backAction)} 
-              elevation={defaultNumber(appBarProps.elevation,elevation)} 
-              withDrawer={withDrawer} options={options} 
-              ref={appBarRef} title={title} 
-              subtitle={subtitle}
-              right = {withProfilAvatarOnAppBar && <View testID={testID+"_ProfilAvatar_Container"}  {...profilAvatarContainerProps} style={[profilAvatarContainerProps.style,styles.profilAvatarContainer]} >
-                {React.isValidElement(profilAvatar) && profilAvatar || null}
-            </View> || null}
-          />}
-          {withScrollView !== false ? (
-            <ScrollView
-              testID = {testID+'_ScreenContentScrollView'}
-              {...rest}
-              contentContainerStyle={[contentContainerStyle]}
-              style={[containerStyle,styles.container, style]}
-            >
-              {children}
-              {fab}
-            </ScrollView>
-          ) : (
-            <View  testID={testID+'_ScreenContent'} {...rest} style={[containerStyle,styles.wrapper,styles.container, style]}>
-              {children}
-              {fab}
-            </View>
-          )}
-        </View>
-      </ErrorBoundary>
-  </>
-  return <Wrapper>
+  const portalId = uniqid("screeen-container-"+screenName);
+  return <Wrapper {...WrapperProps}>
           {renderChildren({
             containerProps : {
               ...authProps,
               required : authRequired,
             },
-            children : child,
+              children : <View testID={testID} nativeID={portalId} {...containerProps}   style={[styles.container,{backgroundColor},modal && styles.modal,containerProps.style]}>
+                  {withStatusBar !== false ? <StatusBar/> : null}
+                  {appBar === false ? null : React.isValidElement(appBar)? state.AppBar :  <AppBar 
+                      testID={testID+'_AppBar'} {...appBarProps} 
+                      backAction = {defaultVal(appBarProps.backAction,backAction)} 
+                      elevation={defaultNumber(appBarProps.elevation,elevation)} 
+                      withDrawer={withDrawer} options={options} 
+                      ref={appBarRef} title={title} 
+                      subtitle={subtitle}
+                      right = {withProfilAvatarOnAppBar && <View testID={testID+"_ProfilAvatar_Container"}  {...profilAvatarContainerProps} style={[profilAvatarContainerProps.style,styles.profilAvatarContainer]} >
+                        {React.isValidElement(profilAvatar) && profilAvatar || null}
+                    </View> || null}
+                  />}
+                  {withScrollView !== false ? (
+                    <ScrollView
+                      testID = {testID+'_ScreenContentScrollView'}
+                      {...rest}
+                      contentContainerStyle={[contentContainerStyle]}
+                      style={[containerStyle,styles.container, style]}
+                    >
+                      {children}
+                      {fab}
+                    </ScrollView>
+                  ) : (
+                    <View  testID={testID+'_ScreenContent'} {...rest} style={[containerStyle,styles.wrapper,styles.container, style]}>
+                      {children}
+                      {fab}
+                    </View>
+                  )}
+              </View>,
             })}
       </Wrapper>
+}
+
+const PortalCP = ({children,screenName})=>{
+  return <Portal>
+    {children}
+  </Portal>
 }
 
 const styles = StyleSheet.create({

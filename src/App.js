@@ -5,23 +5,13 @@ import {defaultObj} from "$cutils";
 import  {updateTheme,defaultTheme} from "$theme";
 import {Provider as PaperProvider } from 'react-native-paper';
 import Index from './index';
-import {Portal } from 'react-native-paper';
-import {PreloaderProvider} from "$epreloader";
-import DropdownAlert from '$ecomponents/Dialog/DropdownAlert';
-import notify, {notificationRef} from "$notify";
-import BottomSheetProvider from "$ecomponents/BottomSheet/Provider";
-import DialogProvider from "$ecomponents/Dialog/Provider";
-import { DialogProvider as FormDataDialogProvider } from '$eform/FormData';
+import notify  from "$notify";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { PreferencesContext } from './Preferences';
 import {AuthProvider} from '$cauth';
-import {PortalProvider } from '$ecomponents/Portal';
 import ErrorBoundary from "$ecomponents/ErrorBoundary";
-import ErrorBoundaryProvider from "$ecomponents/ErrorBoundary/Provider";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 import StatusBar from "$ecomponents/StatusBar";
-import SimpleSelect from '$ecomponents/SimpleSelect';
-import {Provider as AlertProvider} from '$ecomponents/Dialog/confirm/Alert';
 import APP from "$app";
 import FontIcon from "$ecomponents/Icon/Font"
 import {isMobileNative} from "$cplatform";
@@ -178,23 +168,12 @@ export default function getIndex({onMount,onUnmount,swrConfig,onRender,preferenc
             >
               <SafeAreaProvider>
                 <AuthProvider>
-                    <PortalProvider>
-                      <Portal.Host>
-                          <ErrorBoundary>
-                                <StatusBar/>
-                                <PreferencesContext.Provider value={preferences}>
-                                  <DropdownAlert ref={notificationRef}/> 
-                                  <PreloaderProvider/>   
-                                  <DialogProvider responsive/>
-                                  <AlertProvider SimpleSelect={SimpleSelect}/>
-                                  <FormDataDialogProvider/>  
-                                  {<Index {...rest} theme={theme}/>}
-                                  <ErrorBoundaryProvider/>
-                                  <BottomSheetProvider/>
-                                </PreferencesContext.Provider>  
-                          </ErrorBoundary>
-                      </Portal.Host>
-                    </PortalProvider>
+                    <ErrorBoundary>
+                      <StatusBar/>
+                      <PreferencesContext.Provider value={preferences}>
+                        {<Index {...rest} theme={theme}/>}
+                      </PreferencesContext.Provider>  
+                    </ErrorBoundary>
                   </AuthProvider>
               </SafeAreaProvider>
             </PaperProvider>

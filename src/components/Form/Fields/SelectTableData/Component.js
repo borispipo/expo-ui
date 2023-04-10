@@ -21,6 +21,9 @@ import appConfig from "$appConfig";
  */
 const TableDataSelectField = React.forwardRef(({foreignKeyColumn,bindUpsert2RemoveEvents,onAdd,showAdd:customShowAdd,canShowAdd,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,convertFiltersToSQL,mutateFetchedItems,getForeignKeyTable,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchOptions,...props},ref)=>{
     props.data = defaultObj(props.data);
+    if(!foreignKeyColumn && isNonNullString(props.field)){
+        foreignKeyColumn = props.field;
+    }
     if(isNonNullString(foreignKeyColumn)){
         foreignKeyColumn = foreignKeyColumn.trim();
     }
@@ -34,7 +37,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,bindUpsert2Remo
     fetchItemsPath = defaultStr(fetchItemsPath).trim();
     
     if(!fetchItemsPath && (!isObj(fKeyTable) || !(defaultStr(fKeyTable.tableName,fKeyTable.table)))){
-        console.error("type de données invalide pour la foreignKeyTable ",fKeyTable," composant SelectTableData",foreignKeyColumn,foreignKeyTable,props);
+        console.error("type de données invalide pour la foreignKeyTable ",foreignKeyTable," label : ",foreignKeyLabel,fKeyTable," composant SelectTableData",foreignKeyColumn,foreignKeyTable,props);
         return null;
     }
     fKeyTable = defaultObj(fKeyTable);
@@ -280,13 +283,12 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,bindUpsert2Remo
             }
             return rItem(p);
         }}
-        hideOnAdd
         onAdd = {(args)=>{
             onAddProps = defaultObj(isFunction(onAddProps)? onAddProps.call(context,{context,foreignKeyTable,dbName,props}) : onAddProps);
             if(typeof onAdd =='function'){
                 return onAdd({...args,...onAddProps});
             }
-            return navigateToTableData({...onAddProps,foreignKeyTable,table:foreignKeyTable,foreignKeyColumn,tableName : foreignKeyTable,...args})
+            return navigateToTableData(foreignKeyTable,{routeParams:{...onAddProps,foreignKeyTable,table:foreignKeyTable,foreignKeyColumn,tableName : foreignKeyTable}});
         }}
     />
 });

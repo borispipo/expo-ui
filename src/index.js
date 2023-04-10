@@ -13,7 +13,6 @@ import {set as setSession,get as getSession} from "$session";
 import { showConfirm } from "$ecomponents/Dialog";
 import {close as closePreloader, isVisible as isPreloaderVisible} from "$epreloader";
 import SplashScreen from "$ecomponents/SplashScreen";
-import {notify} from "$ecomponents/Dialog";
 import {decycle} from "$cutils/json";
 import init from "$capp/init";
 import { setIsInitialized} from "$capp/utils";
@@ -21,6 +20,17 @@ import {isObj,isNonNullString,isPromise,defaultObj,defaultStr} from "$cutils";
 import {loadFonts} from "$ecomponents/Icon/Font";
 import appConfig from "$capp/config";
 import Preloader from "$preloader";
+import {PreloaderProvider} from "$epreloader";
+import BottomSheetProvider from "$ecomponents/BottomSheet/Provider";
+import DialogProvider from "$ecomponents/Dialog/Provider";
+import SimpleSelect from '$ecomponents/SimpleSelect';
+import {Provider as AlertProvider} from '$ecomponents/Dialog/confirm/Alert';
+import { DialogProvider as FormDataDialogProvider } from '$eform/FormData';
+import {Portal } from 'react-native-paper';
+import {PortalProvider,PortalHost } from '$ecomponents/Portal';
+import ErrorBoundaryProvider from "$ecomponents/ErrorBoundary/Provider";
+import notify, {notificationRef} from "$notify";
+import DropdownAlert from '$ecomponents/Dialog/DropdownAlert';
 
 let MAX_BACK_COUNT = 1;
 let countBack = 0;
@@ -219,14 +229,25 @@ function App({init:initApp,initialRouteName:appInitialRouteName,getStartedRouteN
           }
         }
       >
-          <Navigation
-            initialRouteName = {defaultStr(hasGetStarted ? appInitialRouteName : getStartedRouteName,"Home")}
-            state = {state}
-            hasGetStarted = {hasGetStarted}
-            onGetStart = {(e)=>{
-              setState({...state,hasGetStarted:true})
-            }}
-          />
+          <PortalProvider>
+            <Portal.Host>
+              <PreloaderProvider/>   
+              <DialogProvider responsive/>
+              <AlertProvider SimpleSelect={SimpleSelect}/>
+              <FormDataDialogProvider/>  
+              <BottomSheetProvider/>
+              <DropdownAlert ref={notificationRef}/>
+              <ErrorBoundaryProvider/>  
+              <Navigation
+                initialRouteName = {defaultStr(hasGetStarted ? appInitialRouteName : getStartedRouteName,"Home")}
+                state = {state}
+                hasGetStarted = {hasGetStarted}
+                onGetStart = {(e)=>{
+                  setState({...state,hasGetStarted:true})
+                }}
+              />
+            </Portal.Host>
+          </PortalProvider>
       </NavigationContainer> 
   </SplashScreen>);
 }

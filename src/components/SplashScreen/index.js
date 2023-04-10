@@ -7,6 +7,7 @@ import View from "$ecomponents/View";
 import {isNativeMobile} from "$cplatform";
 import {defaultDecimal} from "$cutils";
 import {LogoProgress} from "$ecomponents/Logo";
+import {defaultStr} from "$cutils";
 import styles, {
   _solidBackground,
   _staticBackground,
@@ -72,9 +73,11 @@ class AnimatedSplash extends React.Component {
       backgroundColor,
       imageBackgroundSource,
       imageBackgroundResizeMode,
+      testID,
       disableAppScale,
       disableImageBackgroundAnimation,
     } = this.props
+    testID = defaultStr(testID,"RN_SplashscreenComponent")
     logoWidth = defaultDecimal(logoWidth,150);
     logoHeight = defaultDecimal(logoHeight,250);
     const opacityClearToVisible = {
@@ -127,12 +130,13 @@ class AnimatedSplash extends React.Component {
     }
     
     return (
-      <View style={[styles.container]}>
-        {!animationDone && <View style={StyleSheet.absoluteFill} />}
+      <View style={[styles.container]} testID={testID} nativeID={testID}>
+        {!animationDone && <View style={StyleSheet.absoluteFill} testID={testID+"_Animation"}/>}
         <View style={styles.containerGlue}>
           {!animationDone && (
             <Animated.View
               style={_staticBackground(logoOpacity, backgroundColor)}
+              testID={testID+"_AnimationDone"}
             />
           )}
           {(animationDone || isNative) && <Component style={[!disableAppScale && appScale, opacityClearToVisible, styles.flex]}>
@@ -140,6 +144,7 @@ class AnimatedSplash extends React.Component {
           </Component>}
           {!animationDone && (
             <Animated.Image
+              testID={testID+"AnimateImage"}
               resizeMode={imageBackgroundResizeMode || "cover"}
               source={imageBackgroundSource}
               style={[disableImageBackgroundAnimation && _staticBackground(
@@ -153,9 +158,10 @@ class AnimatedSplash extends React.Component {
             />
           )}
           {!animationDone && (
-            <View style={[StyleSheet.absoluteFill, styles.logoStyle]}>
+            <View testID={testID+"_LogoContainer"} style={[StyleSheet.absoluteFill, styles.logoStyle]}>
               {(
                 <Animated.View
+                  testID={testID+"_Logo"}
                   style={_dynamicCustomComponentStyle(
                         logoScale,
                         logoOpacity,

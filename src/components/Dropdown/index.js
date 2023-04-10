@@ -991,7 +991,7 @@ class DropdownComponent extends AppComponent {
                     {...restProps}
                     testID = {testID+"_ModalComponent"}
                     withScrollView = {false}
-                    visible={visible && canHandle ? true : false}
+                    visible={visible}
                     onDismiss={this.hide.bind(this)}
                     contentStyle = {[{paddingVertical:0},restProps.contentStyle]}
                     anchor={anchor}

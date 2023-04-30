@@ -12,7 +12,7 @@ import {
 import theme from "$theme";
 import {defaultObj,isObj,defaultStr} from "$cutils";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import useEventCallback from 'use-event-callback';
+import useEventCallback from '$react/useEventCallback';
 import PropTypes from "prop-types";
 import Surface from '$ecomponents/Surface';
 import Label from "$ecomponents/Label"

@@ -1,56 +1,47 @@
 {
-  "name": "salite",
-  "version": "7.0.0",
-  "description": "Logiciel de gestion commerciale pour PME",
-  "main": "index.js",
+  "name": "smart-eem",
+  "version": "1.0.0",
+  "id": "com.ftc.apps.device.smarteneo",
   "realeaseDateStr": "1er Juin 2021",
   "releaseDate": "2020-05-23",
-  "devMail": "saliteapp@gmail.com",
-  "devWebsite": "http://fto-consulting.com/salite/",
-  "copyRight": "firsto consulting@Jan 2020",
-  "id": "com.ftc.apps.salite7",
-  "pouchdbNamePrefix": "com.ftc.apps.slite-",
-  "feeds": {
-    "VIDEOS": {
-      "link": "http://fto-consulting.com/salite/feeds",
-      "label": "Bibliothèque vidéo",
-      "provider": "",
-      "icon": "file-video"
-    }
-  },
+  "devMail": "smart-eneo@gmail.com",
+  "devWebsite": "http://fto-consulting.com/smart-eneo/",
+  "copyRight": "FirsTo consulting@Août 2022",
+  "apiVersion": "1.0",
+  "includeCredentialsOnApiFetch": false,
   "theme": {
     "light": {
-      "primary": "#0073B1",
-      "secondary": "#EC008C",
-      "primaryOnSurface": "#0073B1",
-      "secondaryOnSurface": "#EC008C"
+      "primary": "#00AB55",
+      "secondary": "#354448"
     }
   },
+  "netInfoReachabilityShortTimeout": 30000,
+  "main": "index",
+  "description": "Suivi des équipements Eneo",
   "scripts": {
-    "test": "test",
-    "start": "npx expo start",
-    "build": "npx expo build"
+    "start": "npx expo start --localhost",
+    "android": "npx expo start --android",
+    "ios": "npx expo start --ios",
+    "web": "npx expo start --web",
+    "build-web": "npx expo export:web",
+    "build-cloudflare": "npm install && npx expo export:web"
   },
-  "keywords": [
-    "SALITE",
-    "gestion",
-    "commerciale",
-    "ventes",
-    "achats",
-    "stocks"
-  ],
-  "author": "@fto-consulting",
-  "license": "ISC",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/borispipo/smart-eneo.git"
+  },
+  "dependencies": {
+    "@fto-consult/expo-ui": "^5.8.0",
+    "socket.io-client": "^4.6.1"
+  },
   "devDependencies": {
     "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
     "@babel/preset-react": "^7.18.6",
     "@expo/metro-config": "^0.7.1",
-    "@expo/webpack-config": "^18.0.1",
+    "@expo/webpack-config": "^18.0.4",
     "babel-plugin-inline-dotenv": "^1.7.0",
     "babel-plugin-module-resolver": "^5.0.0",
     "babel-plugin-transform-inline-environment-variables": "^0.4.4"
-  },
-  "dependencies": {
-    "@fto-consult/expo-ui": "^5.7.4"
   }
 }

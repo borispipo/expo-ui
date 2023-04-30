@@ -10,11 +10,11 @@ const GridComponent = React.forwardRef((p,ref)=>{
     const {onPress,responsive,activeOpacity,onLongPress,flexGrow =1,flex:customFlex,style,onPressIn,col,onPressOut,...props} = p;
     const testID = defaultStr(props.testID,"RN_GridComponent");
     const flattenedStyle = StyleSheet.flatten(style);
-    const flex = customFlex !== undefined ? customFlex :   (flattenedStyle && (col && flattenedStyle.width || !col && flattenedStyle.height)) ? 0 : 0;
+    const flex = customFlex !== undefined ? customFlex :   (flattenedStyle && (col && flattenedStyle.width || !col && flattenedStyle.height)) ? undefined : undefined;
     const C = onPress || onLongPress || onPressIn || onPressOut ? TouchableOpacity : View;
     return <C {...props} activeOpacity={activeOpacity} onLongPress={onLongPress} onPressIn={onPressIn} onPressOut={onPressOut}
         testID={testID+"_Container"} onPress={onPress}
-        style={[styles.container,{flexGrow},col && {flexDirection:'column'},responsive!== false && !col && grid.row(false),style,{flex}]} ref={ref}
+        style={[styles.container,{flexGrow},col && {flexDirection:'column'},responsive!== false && !col && grid.row(false),style,flex !== undefined && {flex}]} ref={ref}
     />
 });
 

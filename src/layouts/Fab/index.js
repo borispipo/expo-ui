@@ -89,6 +89,6 @@ const styles = StyleSheet.create({
     tables : PropTypes.oneOfType([
         PropTypes.objectOf(PropTypes.object),
         PropTypes.arrayOf(PropTypes.object)
-    ]).isRequired,
+    ]),
     screenName : PropTypes.string,
   }

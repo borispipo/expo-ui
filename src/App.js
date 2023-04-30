@@ -31,8 +31,6 @@ Object.map(Utils,(v,i)=>{
   }
 });
 export default function getIndex({onMount,onUnmount,swrConfig,render,onRender,preferences:appPreferences,...rest}){
-  const child = <Index {...rest} theme={theme}/>;
-  const content = typeof render == 'function'? render({children:child}) : child;
   const isScreenFocusedRef = React.useRef(true);
     ///garde pour chaque écran sa date de dernière activité
     const screensRef = React.useRef({});//la liste des écrans actifs
@@ -110,6 +108,8 @@ export default function getIndex({onMount,onUnmount,swrConfig,render,onRender,pr
         theme,
         ...defaultObj(pref),
     }),[theme,pref]);
+    const child = <Index {...rest} theme={theme}/>;
+    const content = typeof render == 'function'? render({children:child,appConfig,config:appConfig}) : child;  
     return (
       <SWRConfig 
         value={{

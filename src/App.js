@@ -30,7 +30,9 @@ Object.map(Utils,(v,i)=>{
      window[i] = v;
   }
 });
-export default function getIndex({onMount,onUnmount,swrConfig,onRender,preferences:appPreferences,...rest}){
+export default function getIndex({onMount,onUnmount,swrConfig,render,onRender,preferences:appPreferences,...rest}){
+  const child = <Index {...rest} theme={theme}/>;
+  const content = typeof render == 'function'? render({children:child}) : child;
   const isScreenFocusedRef = React.useRef(true);
     ///garde pour chaque écran sa date de dernière activité
     const screensRef = React.useRef({});//la liste des écrans actifs
@@ -171,7 +173,7 @@ export default function getIndex({onMount,onUnmount,swrConfig,onRender,preferenc
                     <ErrorBoundary>
                       <StatusBar/>
                       <PreferencesContext.Provider value={preferences}>
-                        {<Index {...rest} theme={theme}/>}
+                        {React.isValidElement(content) && content || child}
                       </PreferencesContext.Provider>  
                     </ErrorBoundary>
                   </AuthProvider>

@@ -130,7 +130,7 @@ PermLines.propTypes = {
             perms : PropTypes.object,
         })
     ).isRequired,
-    perms : PropTypes.object,
+    perms : PropTypes.object,//la liste des permissions qui peuvent associer au compte d'un utilisaters
     /*** si les élements de permissions seront modifiable où non */
     disabled : PropTypes.bool,
     tablePermPrefix : PropTypes.string,/*** le prefixe de permission à jouter à chaque permissions de table de donénes, exemple : 'table/', pour le prefix des permissions de type table de données */

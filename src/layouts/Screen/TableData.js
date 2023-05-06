@@ -244,6 +244,13 @@ export default class TableDataScreenComponent extends FormDataScreen{
                     if((disabledOnEditing === true)){
                         currentField.disabled = true;
                     }
+                    const visibleOnlyOnCreate = typeof currentField.visibleOnlyOnCreate =='function'? currentField.visibleOnlyOnCreate(cArgs) : currentField.visibleOnlyOnCreate;
+                    if((visibleOnlyOnCreate === false)){
+                        currentField.form = false;
+                    }
+                    if(currentField.primaryKey === true){
+                        currentField.readOnly = true;
+                    }
                 }
                 if(field.primaryKey ===true){
                     this.primaryKeyFields[columnField] = true;

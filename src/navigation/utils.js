@@ -9,6 +9,8 @@ export const tableDataRouteName = 'TableData';
 
 export const structDataRouteName = 'StructData';
 
+const canCheckNavPerms = ()=> appConfig.get("checkNavigationPermsOnTableOrStructData")
+
 const navigateToTableOrStructData = function(tableName,params,actionType){
     if(isNonNullString(tableName)){
         tableName = {tableName};
@@ -25,7 +27,7 @@ const navigateToTableOrStructData = function(tableName,params,actionType){
     const isTableData = actionType =='tabledata';
     if(isNonNullString(perm)){
         isAllowed = Auth.isAllowedFromStr(perm)
-    } else if(appConfig.checkNavigationPermsOnTableOrStructData !== false){
+    } else if(canCheckNavPerms() !== false){
         if(actionType =='structdata') {
             isAllowed = Auth.isStructDataAllowed({table:tableName})
         } else if(isTableData){
@@ -84,9 +86,9 @@ export const getTableDataListScreenName = getTableDataListRouteName;
 export const navigateToTableDataList = function (tableName,params){
     const route = getTableDataListRouteName(tableName);
     if(isNonNullString(route)){
-        if(!Auth.isTableDataAllowed({table:tableName,action:'read'})){
+        if(canCheckNavPerms() !== false && !Auth.isTableDataAllowed({table:tableName,action:'read'})){
             return Auth.showError() 
-       }
+        }
         return navigate({routeName:route,params});
     }
     return false;

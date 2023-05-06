@@ -33,7 +33,7 @@
     "url": "git+https://github.com/borispipo/smart-eneo.git"
   },
   "dependencies": {
-    "@fto-consult/expo-ui": "^5.8.2",
+    "@fto-consult/expo-ui": "^5.8.3",
     "socket.io-client": "^4.6.1"
   },
   "devDependencies": {

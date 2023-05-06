@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 import {navigate,sanitizeName} from "$cnavigation";
 import {isNonNullString,defaultStr,defaultObj,isObj} from "$cutils";
-
+import appConfig from "$capp/config";
 
 export const tableDataRouteName = 'TableData';
 
@@ -25,10 +25,12 @@ const navigateToTableOrStructData = function(tableName,params,actionType){
     const isTableData = actionType =='tabledata';
     if(isNonNullString(perm)){
         isAllowed = Auth.isAllowedFromStr(perm)
-    } else if(actionType =='structdata') {
-        isAllowed = Auth.isStructDataAllowed({table:tableName})
-    } else if(isTableData){
-        isAllowed = Auth.isTableDataAllowed({table:tableName});
+    } else if(appConfig.checkNavigationPermsOnTableOrStructData !== false){
+        if(actionType =='structdata') {
+            isAllowed = Auth.isStructDataAllowed({table:tableName})
+        } else if(isTableData){
+            isAllowed = Auth.isTableDataAllowed({table:tableName});
+        }
     }
     if(!isAllowed){
         return Auth.showError();

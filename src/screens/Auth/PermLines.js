@@ -22,7 +22,7 @@ const PermLines = React.forwardRef(({user,gridProps,defaultActions:cDefaultActio
     const defaultActions = React.useRef(extendObj(true,{},mDefaultAction,defaultActions)).current;
     const data = dataRef.current;
     disabled = !!disabled || isUserMasterAdmin;
-    tablePermPrefix = defaultStr(tablePermPrefix,"table/").toLowerCase();
+    tablePermPrefix = tablePermPrefix === false ? "" : typeof tablePermPrefix =="string" ? tablePermPrefix.trim() : defaultStr("table/").toLowerCase();
     const  onChange = disabled ? undefined : (arg)=>{
         let {data,resource} = arg;
         if(!isNonNullString(resource)) return;
@@ -133,7 +133,10 @@ PermLines.propTypes = {
     perms : PropTypes.object,//la liste des permissions qui peuvent associer au compte d'un utilisaters
     /*** si les élements de permissions seront modifiable où non */
     disabled : PropTypes.bool,
-    tablePermPrefix : PropTypes.string,/*** le prefixe de permission à jouter à chaque permissions de table de donénes, exemple : 'table/', pour le prefix des permissions de type table de données */
+    tablePermPrefix : PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.bool,
+    ]),/*** le prefixe de permission à jouter à chaque permissions de table de donénes, exemple : 'table/', pour le prefix des permissions de type table de données */
     title : PropTypes.oneOfType([
         PropTypes.node,
         PropTypes.element,

@@ -5,7 +5,7 @@ import {defaultObj,defaultVal} from "$cutils";
 import {isMobileMedia} from "$cplatform/dimensions";
 import TextFieldComponent from "$ecomponents/TextField";
 import { StyleSheet } from "react-native";
-
+import {METRICS_UNITS,WEIGHTS_UNITS} from "./utils";
 
 export {Select};
 
@@ -45,7 +45,7 @@ export const MetricUnit = React.forwardRef((props,ref)=>{
     inputProps.style = [styles.metricUnit,inputProps.style];
     rest = defaultObj(rest);
     return <Select
-        items = {PRODUCTS_CONSTANTS.METRICS_UNITS}
+        items = {METRICS_UNITS}
         withCheckedIcon = {isMob}
         {...rest}
         inputProps = {inputProps}
@@ -67,7 +67,7 @@ export const WeightUnit = React.forwardRef((props,ref)=>{
     inputProps.style = [styles.weightUnit,inputProps.style];
     rest = defaultObj(rest);
     return <Select
-        items = {PRODUCTS_CONSTANTS.WEIGHTS_UNITS}
+        items = {WEIGHTS_UNITS}
         renderItem = {({item,index})=>index}
         withCheckedIcon = {isMob}
         {...rest}
@@ -102,7 +102,7 @@ export const TextField = TextInput;
 WeightUnit.displayName = "WeightUnitInlineIndicatorComponent";
 
 export const Text = React.forwardRef((props,ref)=>{
-    return <LabelComponent.withRef ref={ref} {...props} {...state} style={[styles.text,props.style]}/>
+    return <LabelComponent.withRef ref={ref} {...props} style={[styles.text,props.style]}/>
 });
 
 export const Label = Text;

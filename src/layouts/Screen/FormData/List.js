@@ -34,9 +34,7 @@ export default class FormDataListScreen extends FormData{
             show({...this.props,index:undefined,data:{}});
         }
     }
-    doSave(args){
-
-    }
+    doSave(args){}
     doSave2New(args){
         if(!this.__canSaveListData) return;
         const {show} = this.props;

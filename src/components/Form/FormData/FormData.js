@@ -94,6 +94,9 @@ export default class FormDataComponent extends AppComponent{
                             savedArgs = {...savedArgs,data}
                         }
                     }
+                    if(typeof saveDataMutator =='function'){
+                        saveDataMutator(savedArgs);
+                    }
                     return handleBeforeSaveCallback(this.beforeSave.bind(this),()=>{
                         return handleBeforeSaveCallback(beforeSave,()=>{
                             return handleBeforeSaveCallback(this.onSave.bind(this),()=>{

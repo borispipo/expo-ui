@@ -14,7 +14,6 @@ export default function DatabaseStatisticScreen ({withScreen,fetchDataProps,tabl
         containerProps = defaultObj(containerProps);
         const title = containerProps.title = defaultStr(containerProps.title,DatabaseStatisticScreen.title);
         contentProps = defaultObj(contentProps);
-        const forceRender = React.useForceRender();
         if(Component == Cell){
             containerProps.desktopSize = defaultNumber(containerProps.desktopSize,12);
             containerProps.tabletSize = defaultNumber(containerProps.tabletSize,8);
@@ -58,7 +57,7 @@ export default function DatabaseStatisticScreen ({withScreen,fetchDataProps,tabl
         content = <Component  {...containerProps} style={[containerProps.style,theme.styles.mr1,theme.styles.ml1]}>
             {content}
         </Component>;
-        return  withScreen !== false ? <Screen withScrollView title={defaultVal(customTitle,title)} {...props}>{content}</Screen> : content;
+        return  withScreen !== false ? <Screen containerProps={{style:[{flexGrow:0,flex:0}]}} withScrollView title={defaultVal(customTitle,title)} {...props}>{content}</Screen> : content;
 }   
 
 export const screenName = DatabaseStatisticScreen.screenName = "DatabaseStatistics";

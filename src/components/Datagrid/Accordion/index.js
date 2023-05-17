@@ -57,12 +57,12 @@ const DatagridFactory = (Factory)=>{
             if(arg.renderRowCell === false || arg.isSectionListHeader === true) return super.renderRowCell(arg);
             const {columnDef,columnField} = arg;
             if(!columnDef.visible || columnDef.accordion === false || this.isSelectableColumn(columnDef,columnField)) return null;
-            let {render,key,style} = super.renderRowCell(arg);
+            arg.isAccordion = true;
+            const {render,key,style} = super.renderRowCell(arg);
             if(render===null || !React.isValidElement(render)) return null;
-            return <Label style={style} key={key}>
+            return <Label style={[style,{paddingTop:10,paddingBottom:10}]} key={key}>
                     {render}
-                </Label>
-            
+            </Label>
         }
         rangeChanged(state){
             if(this.startEndIndexCounterElt && this.startEndIndexCounterElt.update){

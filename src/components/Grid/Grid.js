@@ -6,10 +6,10 @@ import PropTypes from "prop-types";
 import { StyleProp } from '$theme';
 import View from "$ecomponents/View";
 
-const GridComponent = React.forwardRef((p,ref)=>{
-    const {onPress,responsive,activeOpacity,onLongPress,flexGrow =1,flex:customFlex,style,onPressIn,col,onPressOut,...props} = p;
+const GridComponent = React.forwardRef(({onPress,responsive,activeOpacity,onLongPress,flexGrow,flex:customFlex,style,onPressIn,col,onPressOut,...props},ref)=>{
     const testID = defaultStr(props.testID,"RN_GridComponent");
     const flattenedStyle = StyleSheet.flatten(style);
+    flexGrow = typeof flexGrow =='number'? flexGrow : 0;
     const flex = customFlex !== undefined ? customFlex :   (flattenedStyle && (col && flattenedStyle.width || !col && flattenedStyle.height)) ? undefined : undefined;
     const C = onPress || onLongPress || onPressIn || onPressOut ? TouchableOpacity : View;
     return <C {...props} activeOpacity={activeOpacity} onLongPress={onLongPress} onPressIn={onPressIn} onPressOut={onPressOut}

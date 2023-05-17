@@ -101,7 +101,7 @@ const PermLines = React.forwardRef(({user,gridProps,defaultActions:cDefaultActio
         })
         return content;
     },[tables,allPerms,isUserMasterAdmin,disabled,tablePermPrefix])
-    return <Expandable {...props} testID={testID} style={[theme.styles.w100,style]} containerProps={containerProps} titleProps = {{style:[styles.expandable,theme.styles.w100]}} title={title}>
+    return <Expandable withScrollView={false} {...props} testID={testID} style={[theme.styles.w100,style]} containerProps={containerProps} titleProps = {{style:[styles.expandable,theme.styles.w100]}} title={title}>
         <Grid testID={testID+"_Grid"} {...gridProps}>
             {content }
         </Grid>

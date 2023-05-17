@@ -87,7 +87,7 @@ const GridCellComponent = React.forwardRef((p,ref)=>{
             return getSizeStyle(p);
         }}
         ref={ref} 
-        style = {[styles.container,getSizeStyle(p).style,style]}
+        style = {[styles.container,customFlex !== undefined && {flex:customFlex},getSizeStyle(p).style,style]}
     >
         <C testID={testID+"_Content"}  activeOpacity={activeOpacity}  {...contentProps}
              

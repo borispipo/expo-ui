@@ -26,6 +26,7 @@ export const isValidNumber = (number,iso2)=>{
     }
     return false;
 }
+export const isValidPhoneNumber = isValidNumber;
 
 class PhoneNumber {
     // eslint-disable-next-line class-methods-use-this

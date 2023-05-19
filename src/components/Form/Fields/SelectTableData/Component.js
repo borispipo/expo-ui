@@ -33,7 +33,8 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,bindUpsert2Remo
     }
     convertFiltersToSQL = defaultVal(convertFiltersToSQL,willConvertFiltersToSQL());
     getForeignKeyTable = getForeignKeyTable || appConfig.getTableData;
-    let fKeyTable = typeof getForeignKeyTable =='function' ? getForeignKeyTable(foreignKeyTable,props) : undefined;
+    const foreignKeyTableStr = defaultStr(foreignKeyTable,props.table,props.tableName);
+    let fKeyTable = typeof getForeignKeyTable =='function' ? getForeignKeyTable(foreignKeyTableStr,props) : undefined;
     fetchItemsPath = defaultStr(fetchItemsPath).trim();
     
     if(!fetchItemsPath && (!isObj(fKeyTable) || !(defaultStr(fKeyTable.tableName,fKeyTable.table)))){
@@ -67,8 +68,8 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,bindUpsert2Remo
     const defaultFields = Array.isArray(foreignKeyColumn)? foreignKeyColumn : [foreignKeyColumn];
     if(Array.isArray(foreignKeyLabel)){
         foreignKeyLabel.map(f=>{
-            if(isNonNullString(f)){
-                defaultFields.push(f);
+            if(isNonNullString(f) && !defaultFields.includes(f.trim())){
+                defaultFields.push(f.trim());
             }
         })
     }

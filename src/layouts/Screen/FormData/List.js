@@ -34,26 +34,14 @@ export default class FormDataListScreen extends FormData{
             show({...this.props,index:undefined,data:{}});
         }
     }
-    doSave(args){}
     doSave2New(args){
-        if(!this.__canSaveListData) return;
         const {show} = this.props;
         if(typeof show =='function'){
             show({...args,index:undefined,data:{}});
         }
     }
     doSave2Close(args){
-        if(!this.__canSaveListData) return;
         return this.close();
-    }
-    onSave(args){
-        let {formDataProps} = this.props;
-        this.__canSaveListData = true;
-        formDataProps = defaultObj(formDataProps);
-        if(typeof formDataProps.onSave =='function' && formDataProps.onSave(args) === false){
-            this.__canSaveListData = false;
-            return;
-        }
     }
     _render(content){
         let {isAllowed} = this.props;

@@ -322,7 +322,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
                         paddingHorizontal : 10,
                         paddingVertical:0,
                         height : !isMob?contentContainerHeight:'90%',
-                        //width : !isMob ? layout.width : undefined,
+                        width : !isMob ? Math.max(layout.width,150) : undefined,
                     },
                     isMob && {flex:1},
                     !isMob && {paddingRight : 0},

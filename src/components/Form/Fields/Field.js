@@ -3,9 +3,10 @@ import KeyboardEventHandler from "../KeyboardEventHandler";
 const {getActions,getFormFields,Forms} = require("../utils")
 import TextField,{parseDecimal} from "$ecomponents/TextField";
 import Icon from "$ecomponents/Icon";
-import {extendObj,isBool,isUndefined,uniqid,isValidDataFileName,defaultObj,isObj,defaultFunc,isFunction,isNumber,arrayValueExists,defaultVal,defaultStr,isNonNullString,defaultBool,defaultDecimal} from "$cutils";
+import {extendObj,isBool,isUndefined,uniqid,isValidDataFileName,isValidEmail,defaultObj,isObj,defaultFunc,isFunction,isNumber,arrayValueExists,defaultVal,defaultStr,isNonNullString,defaultBool,defaultDecimal} from "$cutils";
 import {Component as AppComponent} from "$react";
 import {observable,addObserver} from "$observable";
+import {isValidPhoneNumber} from "$ecomponents/PhoneInput";
 import {Validator} from "$validator";
 import theme,{grid} from "$theme";
 import React from "$react";
@@ -285,11 +286,23 @@ export default class Field extends AppComponent {
         });
     }
     onValidatorValid(args){
-        if(!this.isFilter() && ((this.props.allowWhiteSpaces === false) || ((this.type ==='id' || this.type =='piece') && this.props.allowWhiteSpaces !== true))){
-            const value = isNonNullString(args.value) && args.value.replaceAll("/","").replaceAll("\\",'') || undefined;
-        
-            if(value && this.type !=='email' && !defaultStr(this.getValidRule()).toLowerCase().contains('email') && (value.contains(" ") || !isValidDataFileName(value.replaceAll("@","")))){
-                return "Veuillez renseigner une valeur ne contenant pas d'espace ou de caractère accentués";
+        if(!this.isFilter()){
+            const vRule  =defaultStr(this.getValidRule()).toLowerCase();
+            const value = typeof args.value == "undefined" || args.value == null ? "" : String(args.value).replaceAll("/","").replaceAll("\\",'').trim();
+            if(value){
+                if(this.type ==='email' || vRule.contains('email')){
+                    if(!isValidEmail(value)){
+                        return "Veuillez saisir une addresse email valide";
+                    }
+                } else if(this.type ==="tel" || this.type =="phone"){
+                    if(!isValidPhoneNumber(value)){
+                        return "Merci d'entrer un numéro de téléphone valide";
+                    }
+                }  else if(((this.props.allowWhiteSpaces === false) || ((this.type ==='id' || this.type =='piece') && this.props.allowWhiteSpaces !== true))){
+                    if((value.contains(" ") || !isValidDataFileName(value.replaceAll("@","").replaceAll(".","")))){
+                        return "Veuillez renseigner une valeur ne contenant pas d'espace ou de caractère accentués";
+                    }
+                }
             }
         }
         if(isFunction(this.props.onValidatorValid)){

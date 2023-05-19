@@ -934,19 +934,22 @@ export default class CommonDatagridComponent extends AppComponent {
         })
         if(size === 1 && canMakePhoneCall === true && canMakeCall()){
             const rowKey = Object.keys(this.selectedRows)[0], rowData = defaultObj(this.selectedRows[rowKey]);
-            let callProps = typeof makePhoneCallProps == 'function'? makePhoneCallProps(rowData,rowKey) : makePhoneCallProps;
-            callProps = defaultObj(callProps);
-            r.push({
-                text : defaultStr(callProps.text,callProps.label,'Appeler'),
-                icon : defaultStr(callProps.icon,'phone'),
-                flat : true,
-                onPress : ()=>{
-                    return makePhoneCall(
-                        rowData,
-                        callProps
-                    );
-                }
-            })
+            const table = defaultStr(this.props.table,this.props.tableName).trim();
+            let callProps = typeof makePhoneCallProps == 'function'? makePhoneCallProps({rowData,rowKey,table,tableName:table,data:rowData,key:rowKey,context:this,props:this.props}) : makePhoneCallProps;
+            if(callProps !== false){
+                callProps = defaultObj(callProps);
+                r.push({
+                    text : defaultStr(callProps.text,callProps.label,'Appeler'),
+                    icon : defaultStr(callProps.icon,'phone'),
+                    flat : true,
+                    onPress : ()=>{
+                        return makePhoneCall(
+                            rowData,
+                            callProps
+                        );
+                    }
+                })   
+            }
         }
         if(isObj(this.props.columns) && size ===1){
             r.push({

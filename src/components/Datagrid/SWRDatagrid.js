@@ -65,7 +65,7 @@ export const getSWROptions = ()=>{
     }
 }
 
-
+const isValidMakePhoneCallProps = p=> isObj(p) && Object.size(p,true) || typeof p ==='function';
 /****la fonction fetcher doit toujours retourner : 
  *  1. la liste des éléments fetchés dans la props data
  *  2. le nombre total d'éléments de la liste obtenue en escluant les clause limit et offset correspondant à la même requête
@@ -118,7 +118,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         delete sort.column;
     }
     canMakePhoneCall = defaultBool(canMakePhoneCall,table.canMakePhoneCall);
-    makePhoneCallProps = defaultObj(makePhoneCallProps,rest.makePhoneCallProps,table.makePhoneCallProps);
+    makePhoneCallProps = isValidMakePhoneCallProps(makePhoneCallProps) && makePhoneCallProps || isValidMakePhoneCallProps(rest.makePhoneCallProps) && rest.makePhoneCallProps ||  isValidMakePhoneCallProps(table.makePhoneCallProps) && table.makePhoneCallProps || {};
     const isExportable = !!Auth.isTableDataAllowed({table:tableName,action:'export'});
     rest.exportable = isExportable;
     rowKey = defaultStr(rowKey,table.rowKey,table.primaryKeyColumnName);

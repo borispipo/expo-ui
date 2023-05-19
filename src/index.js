@@ -54,7 +54,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,getStartedRouteN
   const appReadyRef = React.useRef(true);
   const [state,setState] = React.useState({
      isLoading : true,
-     isInitialized:true,
+     isInitialized:false,
   });
   React.useEffect(() => {
     const loadResources = ()=>{
@@ -219,6 +219,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,getStartedRouteN
           trackIDLE(true);
       }
   },[isInitialized]);
+  console.log(isInitialized, isLoading," is initialized and is loading",Auth.isLoggedIn(),Auth.getLoggedUser());
   const hasGetStarted = state.hasGetStarted !== false? true : false;
   return (<SplashScreen isLoaded={!isLoading}>
       <NavigationContainer 
@@ -242,6 +243,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,getStartedRouteN
                 initialRouteName = {defaultStr(hasGetStarted ? appInitialRouteName : getStartedRouteName,"Home")}
                 state = {state}
                 hasGetStarted = {hasGetStarted}
+                isInitialized = {!isLoading}
                 onGetStart = {(e)=>{
                   setState({...state,hasGetStarted:true})
                 }}

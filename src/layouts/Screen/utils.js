@@ -103,8 +103,11 @@ export  function renderActions({context,isUpdate,newElementLabel,makePhoneCallPr
     rest = defaultObj(rest);
     newElementLabel = defaultStr(newElementLabel,"Nouveau");
     let permsObj = checkPermsActions.call(self,{...defaultObj(perms),isUpdate})
-    makePhoneCallProps = defaultObj(makePhoneCallProps);
+    makePhoneCallProps = typeof makePhoneCallProps ==='function'? makePhoneCallProps({data,rowData:data,context:{},isTableDataActions:true,table,tableName:table}): makePhoneCallProps;
     self.permsObj = permsObj;
+    if(makePhoneCallProps !== false){
+        makePhoneCallProps = defaultObj(makePhoneCallProps);
+    }
     let save = (!readOnly && !permsObj.canSave || (saveAction === false))? null: {
         text :hasManyData? 'Modifier': textSave,
         title :hasManyData? 'Modifier': textSave,
@@ -197,7 +200,7 @@ export  function renderActions({context,isUpdate,newElementLabel,makePhoneCallPr
             flat : true,
             onPress : createCallback({context:self,action:'new',callback:onPressToCreateNew})
         } : null,
-        makePhoneCall : (canMakePhoneCall && isUpdate)?{
+        makePhoneCall : (canMakePhoneCall && isUpdate && isObj(makePhoneCallProps))?{
             text : defaultStr(makePhoneCallProps.text,makePhoneCallProps.label,'Appeler'),
             isAction : true,
             icon : defaultStr(makePhoneCallProps.icon,'phone'),

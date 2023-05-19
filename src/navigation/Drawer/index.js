@@ -9,7 +9,7 @@ import {navigate} from "$cnavigation";
 import theme from "$theme";
 import Logo  from "$ecomponents/Logo";
 
-const DrawerNavigator = React.forwardRef(({content,children,state,...props},ref)=>{
+const DrawerNavigator = React.forwardRef(({content,children,state,isInitialized,...props},ref)=>{
     const drawerRef = React.useRef(null);
     const mergedRefs = React.useMergeRefs(drawerRef,ref);
     const headerCB = ({isMinimized})=>{
@@ -52,7 +52,7 @@ const DrawerNavigator = React.forwardRef(({content,children,state,...props},ref)
         if(prevIsLoggedIn === isLoggedIn) return;
         navigate("Home");
     },[isLoggedIn]);
-    if(!isLoggedIn) {
+    if(!isLoggedIn && isInitialized) {
         return <Login withPortal
             onSuccess = {(data)=>{
                 setIsLoggedIn(true);

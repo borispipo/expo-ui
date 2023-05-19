@@ -755,11 +755,14 @@ export default class TableDataScreenComponent extends FormDataScreen{
     getMakePhoneCallProps (){
         const table = this.table;
         const makePhoneCallProps = defaultVal(this.makePhoneCallProps,table.makePhoneCallProps);
-        return defaultObj(typeof makePhoneCallProps === 'function' ? makePhoneCallProps(this.getCurrentData()) : makePhoneCallProps);
+        const rowData = this.getCurrentData();
+        const mP = typeof makePhoneCallProps === 'function' ? makePhoneCallProps({rowData,data:rowData,isTableData:true,props:this.props,context:this,table,tableName:this.table}) : makePhoneCallProps;
+        return mP !== false ? defaultObj(mP) : null;
     }
     makePhoneCall(data){
-        if(!this.canMakePhoneCall() || !canMakePhoneCall()) return false;
-        makePCall(defaultObj(data || this.getCurrentData()),this.getMakePhoneCallProps());
+        const mP = this.getMakePhoneCallProps();
+        if(!this.canMakePhoneCall() || !canMakePhoneCall() || !isObj(mP)) return false;
+        makePCall(defaultObj(data || this.getCurrentData()),mP);
         return false;
     }
    

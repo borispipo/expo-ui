@@ -1,7 +1,7 @@
 /* @flow */
 /*** fork of https://www.npmjs.com/package/react-native-animated-splash-screen */
 import PropTypes from "prop-types"
-import * as React from "react"
+import React from "$react"
 import {Animated, StyleSheet } from "react-native";
 import View from "$ecomponents/View";
 import {isNativeMobile} from "$cplatform";
@@ -19,167 +19,137 @@ import styles, {
 const isNative = isNativeMobile();
 const Component = isNative? Animated.View : View;
 
-class AnimatedSplash extends React.Component {
-  static defaultProps = {
-    isLoaded: false,
-  }
-
-  state = {
+const SplashScreenComponent = ({isLoaded,children , duration, delay,logoWidth,logoHeight,backgroundColor,imageBackgroundSource,imageBackgroundResizeMode,
+  testID,
+  disableAppScale,
+  disableImageBackgroundAnimation,preload})=>{
+  const [state,setState] = React.useState({
     animationDone: false,
     loadingProgress: new Animated.Value(0)
-  }
-
-  componentDidUpdate(prevProps) {
-    const { isLoaded , duration, delay } = this.props
-    const { loadingProgress } = this.state
-
-    if (isLoaded && !prevProps.isLoaded) {
-      if(!isNativeMobile()){
-          this.setState({animationDone:true});
-      } else {
-        Animated.timing(loadingProgress, {
-            toValue: 100,
-            duration: duration || 1000,
-            delay: delay || 0,
-            useNativeDriver: true,
-        }).start(() => {
-            this.setState({
-              animationDone: true,
-            })
-        })
-      }
-    }
-  }
-
-  renderChildren() {
-    const { children, preload, isLoaded } = this.props
-    if (preload || preload == null) {
-      return children
+  });
+  const { loadingProgress, animationDone } = state;
+  const prevIsLoaded = React.usePrevious(isLoaded);
+  React.useEffect(()=>{
+    if(prevIsLoaded == isLoaded || !isLoaded) return;
+    if(!isNativeMobile()){
+      setState({...state,animationDone:true});
     } else {
-      if (isLoaded) {
-        return children
-      }
+      Animated.timing(loadingProgress, {
+          toValue: 100,
+          duration: duration || 1000,
+          delay: delay || 0,
+          useNativeDriver: true,
+      }).start(() => {
+          setState({
+            ...state,
+            animationDone: true,
+          })
+      })
     }
-
-    return null
+  },[isLoaded]);
+  testID = defaultStr(testID,"RN_SplashscreenComponent")
+  logoWidth = defaultDecimal(logoWidth,150);
+  logoHeight = defaultDecimal(logoHeight,250);
+  const opacityClearToVisible = {
+    opacity: loadingProgress.interpolate({
+      inputRange: [0, 15, 30],
+      outputRange: [0, 0, 1],
+      extrapolate: "clamp",
+    }),
+  }
+  const imageScale = {
+    transform: [
+      {
+        scale: loadingProgress.interpolate({
+          inputRange: [0, 10, 100],
+          outputRange: [1, 1, 65],
+        }),
+      },
+    ],
   }
 
-  render() {
-    const { loadingProgress, animationDone } = this.state
-    let {
-      logoImage,
-      logoWidth,
-      logoHeight,
-      backgroundColor,
-      imageBackgroundSource,
-      imageBackgroundResizeMode,
-      testID,
-      disableAppScale,
-      disableImageBackgroundAnimation,
-    } = this.props
-    testID = defaultStr(testID,"RN_SplashscreenComponent")
-    logoWidth = defaultDecimal(logoWidth,150);
-    logoHeight = defaultDecimal(logoHeight,250);
-    const opacityClearToVisible = {
-      opacity: loadingProgress.interpolate({
-        inputRange: [0, 15, 30],
-        outputRange: [0, 0, 1],
-        extrapolate: "clamp",
-      }),
-    }
+  const logoScale = {
+    transform: [
+      {
+        scale: loadingProgress.interpolate({
+          inputRange: [0, 10, 100],
+          outputRange: [1, 0.8, 10],
+        }),
+      },
+    ],
+  }
 
-    const imageScale = {
-      transform: [
-        {
-          scale: loadingProgress.interpolate({
-            inputRange: [0, 10, 100],
-            outputRange: [1, 1, 65],
-          }),
-        },
-      ],
-    }
+  const logoOpacity = {
+    opacity: loadingProgress.interpolate({
+      inputRange: [0, 20, 100],
+      outputRange: [1, 0, 0],
+      extrapolate: "clamp",
+    }),
+  }
 
-    const logoScale = {
-      transform: [
-        {
-          scale: loadingProgress.interpolate({
-            inputRange: [0, 10, 100],
-            outputRange: [1, 0.8, 10],
-          }),
-        },
-      ],
-    }
-
-    const logoOpacity = {
-      opacity: loadingProgress.interpolate({
-        inputRange: [0, 20, 100],
-        outputRange: [1, 0, 0],
-        extrapolate: "clamp",
-      }),
-    }
-
-    const appScale = {
-      transform: [
-        {
-          scale: loadingProgress.interpolate({
-            inputRange: [0, 7, 100],
-            outputRange: [1.1, 1.05, 1],
-          }),
-        },
-      ],
-    }
-    
-    return (
-      <View style={[styles.container]} testID={testID} nativeID={testID}>
-        {!animationDone && <View style={StyleSheet.absoluteFill} testID={testID+"_Animation"}/>}
-        <View style={styles.containerGlue}>
-          {!animationDone && (
-            <Animated.View
-              style={_staticBackground(logoOpacity, backgroundColor)}
-              testID={testID+"_AnimationDone"}
-            />
-          )}
-          {(animationDone || isNative) && <Component style={[!disableAppScale && appScale, opacityClearToVisible, styles.flex]}>
-            {this.renderChildren()}
-          </Component>}
-          {!animationDone && (
-            <Animated.Image
-              testID={testID+"AnimateImage"}
-              resizeMode={imageBackgroundResizeMode || "cover"}
-              source={imageBackgroundSource}
-              style={[disableImageBackgroundAnimation && _staticBackground(
-                logoOpacity,
-                backgroundColor
-              ), disableImageBackgroundAnimation && _dynamicImageBackground(
-                imageScale,
-                logoOpacity,
-                backgroundColor
-              )]}
-            />
-          )}
-          {!animationDone && (
-            <View testID={testID+"_LogoContainer"} style={[StyleSheet.absoluteFill, styles.logoStyle]}>
-              {(
-                <Animated.View
-                  testID={testID+"_Logo"}
-                  style={_dynamicCustomComponentStyle(
-                        logoScale,
-                        logoOpacity,
-                        logoWidth,
-                        logoHeight
-                    )}>
-                  {<LogoProgress/>}
-                </Animated.View>
-              )}
-            </View>
-          )}
-        </View>
+  const appScale = {
+    transform: [
+      {
+        scale: loadingProgress.interpolate({
+          inputRange: [0, 7, 100],
+          outputRange: [1.1, 1.05, 1],
+        }),
+      },
+    ],
+  }
+  const child = (animationDone && isLoaded)? React.isValidElement(children) && children : null;
+  console.log(animationDone," is anim done ",isLoaded,child);
+  return (
+    <View style={[styles.container]} testID={testID} nativeID={testID}>
+      {!animationDone && <View style={StyleSheet.absoluteFill} testID={testID+"_Animation"}/>}
+      <View style={styles.containerGlue}>
+        {!animationDone && (
+          <Animated.View
+            style={_staticBackground(logoOpacity, backgroundColor)}
+            testID={testID+"_AnimationDone"}
+          />
+        )}
+        {(animationDone || isNative) && <Component style={[!disableAppScale && appScale, opacityClearToVisible, styles.flex]}>
+          {child}
+        </Component>}
+        {!animationDone && (
+          <Animated.Image
+            testID={testID+"AnimateImage"}
+            resizeMode={imageBackgroundResizeMode || "cover"}
+            source={imageBackgroundSource}
+            style={[disableImageBackgroundAnimation && _staticBackground(
+              logoOpacity,
+              backgroundColor
+            ), disableImageBackgroundAnimation && _dynamicImageBackground(
+              imageScale,
+              logoOpacity,
+              backgroundColor
+            )]}
+          />
+        )}
+        {!animationDone && (
+          <View testID={testID+"_LogoContainer"} style={[StyleSheet.absoluteFill, styles.logoStyle]}>
+            {(
+              <Animated.View
+                testID={testID+"_Logo"}
+                style={_dynamicCustomComponentStyle(
+                      logoScale,
+                      logoOpacity,
+                      logoWidth,
+                      logoHeight
+                  )}>
+                {<LogoProgress/>}
+              </Animated.View>
+            )}
+          </View>
+        )}
       </View>
-    )
-  }
+    </View>
+  )
 }
 
-AnimatedSplash.propTypes = {
+
+SplashScreenComponent.propTypes = {
   preload: PropTypes.bool,
   logoWidth: PropTypes.number,
   children: PropTypes.element,
@@ -197,4 +167,5 @@ AnimatedSplash.propTypes = {
   delay: PropTypes.number,
 }
 
-export default AnimatedSplash
+SplashScreenComponent.displayName = "SplashScreenComponent";
+export default SplashScreenComponent;

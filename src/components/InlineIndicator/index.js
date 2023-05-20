@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
         textAlign : 'right'
     },
     priceType : {
-        width:32
+        width:32,
     },
     weightUnit : {
         width : 30,

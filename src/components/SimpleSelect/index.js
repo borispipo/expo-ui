@@ -312,7 +312,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
             style = {[{marginTop}]}
             anchor = {anchor}
             contentProps = {{style:{flex:1}}}
-            minWidth = {150}
+            minWidth = {180}
             contentStyle = {[{paddingVertical:0},rProps.contentStyle]}
         >
             <View 
@@ -322,7 +322,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
                         paddingHorizontal : 10,
                         paddingVertical:0,
                         height : !isMob?contentContainerHeight:'90%',
-                        width : !isMob ? Math.max(layout.width,150) : undefined,
+                        width : !isMob ? Math.max(layout.width,180) : undefined,
                     },
                     isMob && {flex:1},
                     !isMob && {paddingRight : 0},

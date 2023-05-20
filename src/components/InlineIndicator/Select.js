@@ -43,6 +43,7 @@ const styles = StyleSheet.create({
     inputContainer : {
         paddingVertical : 0,
         marginVertical : 0,
+        paddingHorizontal : 10,
         backgroundColor : 'transparent',
     },
     contentContainer : {

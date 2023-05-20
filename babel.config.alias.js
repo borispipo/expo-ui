@@ -16,6 +16,29 @@ module.exports = (opts)=>{
     const cpath = fs.existsSync(euCommon)? path.resolve(euCommon,"babel.config.alias") : "@fto-consult/common/babel.config.alias";
     const r = require(`${cpath}`)(opts);
     const expo = path.resolve(expoUI,"src");
+    
+    /**** package json */
+    const packagePath = path.resolve(base,"package.json");
+    const configPath = path.resolve(expo,"app.config.json");
+    if(fs.existsSync(packagePath)){
+        try {
+            const packageObj = require(`${packagePath}`);
+            if(typeof packageObj.name =="string"){
+                packageObj.name = packageObj.name.toUpperCase();
+            }
+            if(packageObj){
+                ["scripts","private","main","repository","keywords","bugs","dependencies","devDependencies"].map(v=>{
+                    delete packageObj[v];
+                })
+                fs.writeFileSync(configPath,JSON.stringify(packageObj,null,"\t"));
+            }
+        } catch (e){
+            console.log(e," writing file sync on package JSON, file : $common/babel.config.alias")
+        }
+    }
+    if(fs.existsSync(configPath)){
+        r["$package.json"] = r["$packageJSON"] = configPath;
+    }
     r["$eauth"] = path.resolve(expo,"auth");
     r["$ecomponents"] = r["$expo-components"] = path.resolve(expo,"components");
     r["$etableLink"] = r["$eTableLink"] = path.resolve(r["$ecomponents"],"TableLink");

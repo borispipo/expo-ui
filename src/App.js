@@ -2,18 +2,11 @@ import '$session';
 import React from 'react';
 import {SWRConfig} from "$swr";
 import {defaultObj} from "$cutils";
-import  {updateTheme,defaultTheme} from "$theme";
-import {Provider as PaperProvider } from 'react-native-paper';
 import Index from './index';
 import notify  from "$notify";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { PreferencesContext } from './Preferences';
-import {AuthProvider} from '$cauth';
-import ErrorBoundary from "$ecomponents/ErrorBoundary";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
-import StatusBar from "$ecomponents/StatusBar";
 import APP from "$app";
-import FontIcon from "$ecomponents/Icon/Font"
 import {isMobileNative} from "$cplatform";
 import {setDeviceIdRef} from "$capp";
 import appConfig from "$capp/config";
@@ -30,7 +23,7 @@ Object.map(Utils,(v,i)=>{
      window[i] = v;
   }
 });
-export default function getIndex({onMount,onUnmount,swrConfig,render,onRender,preferences:appPreferences,...rest}){
+export default function getIndex({onMount,onUnmount,swrConfig,onRender,...rest}){
   const isScreenFocusedRef = React.useRef(true);
     ///garde pour chaque écran sa date de dernière activité
     const screensRef = React.useRef({});//la liste des écrans actifs
@@ -97,19 +90,7 @@ export default function getIndex({onMount,onUnmount,swrConfig,render,onRender,pr
           }
         }
     },[])
-    const [theme,setTheme] = React.useState(updateTheme(defaultTheme));
-    const updatePreferenceTheme = (customTheme,persist)=>{
-      setTheme(updateTheme(customTheme));
-    };
-    const forceRender = React.useForceRender();
-    const pref = typeof appPreferences =='function'? appPreferences({setTheme,forceRender,updateTheme:updatePreferenceTheme}) : appPreferences;
-    const preferences = React.useMemo(()=>({
-        updateTheme:updatePreferenceTheme,
-        theme,
-        ...defaultObj(pref),
-    }),[theme,pref]);
-    const child = <Index {...rest} theme={theme}/>;
-    const content = typeof render == 'function'? render({children:child,appConfig,config:appConfig}) : child;  
+      
     return (
       <SWRConfig 
         value={{
@@ -160,25 +141,9 @@ export default function getIndex({onMount,onUnmount,swrConfig,render,onRender,pr
         }}
       >
           <GestureHandlerRootView style={{ flex: 1 }}>
-            <PaperProvider 
-                theme={theme}
-                settings={{
-                  icon: (props) => {
-                    return <FontIcon {...props}/>
-                  },
-                }}
-            >
-              <SafeAreaProvider>
-                <AuthProvider>
-                    <ErrorBoundary>
-                      <StatusBar/>
-                      <PreferencesContext.Provider value={preferences}>
-                        {React.isValidElement(content) && content || child}
-                      </PreferencesContext.Provider>  
-                    </ErrorBoundary>
-                  </AuthProvider>
-              </SafeAreaProvider>
-            </PaperProvider>
+          <SafeAreaProvider>
+            <Index {...rest}/>
+          </SafeAreaProvider>
         </GestureHandlerRootView>
       </SWRConfig>
     );

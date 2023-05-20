@@ -54,7 +54,7 @@ export default function DatabaseStatisticScreen ({withScreen,fetchDataProps,tabl
         if(!content.length) {
             return null;
         }
-        content = <Component  {...containerProps} style={[containerProps.style,theme.styles.mr1,theme.styles.ml1]}>
+        content = <Component  {...containerProps} style={[containerProps.style,theme.styles.mr1,theme.styles.pv1,theme.styles.ml1]}>
             {content}
         </Component>;
         return  withScreen !== false ? <Screen containerProps={{style:[{flexGrow:0,flex:0}]}} withScrollView title={defaultVal(customTitle,title)} {...props}>{content}</Screen> : content;

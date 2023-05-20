@@ -31,6 +31,13 @@ import {PortalProvider,PortalHost } from '$ecomponents/Portal';
 import ErrorBoundaryProvider from "$ecomponents/ErrorBoundary/Provider";
 import notify, {notificationRef} from "$notify";
 import DropdownAlert from '$ecomponents/Dialog/DropdownAlert';
+import {AuthProvider} from '$cauth';
+import { PreferencesContext } from './Preferences';
+import ErrorBoundary from "$ecomponents/ErrorBoundary";
+import  {updateTheme,defaultTheme} from "$theme";
+import StatusBar from "$ecomponents/StatusBar";
+import {Provider as PaperProvider } from 'react-native-paper';
+import FontIcon from "$ecomponents/Icon/Font";
 
 let MAX_BACK_COUNT = 1;
 let countBack = 0;
@@ -48,7 +55,7 @@ const NAVIGATION_PERSISTENCE_KEY = 'NAVIGATION_STATE';
  *  initialRouteName : la route initiale par défaut
  *  getStartedRouteName : la route par défaut de getStarted lorsque l'application est en mode getStarted, c'est à dire lorsque la fonction init renvoie une erreur (reject)
  */
-function App({init:initApp,initialRouteName:appInitialRouteName,getStartedRouteName}) {
+function App({init:initApp,initialRouteName:appInitialRouteName,render,preferences:appPreferences,getStartedRouteName}) {
   AppStateService.init();
   const [initialState, setInitialState] = React.useState(undefined);
   const appReadyRef = React.useRef(true);
@@ -219,38 +226,68 @@ function App({init:initApp,initialRouteName:appInitialRouteName,getStartedRouteN
           trackIDLE(true);
       }
   },[isInitialized]);
-  console.log(isInitialized, isLoading," is initialized and is loading",Auth.isLoggedIn(),Auth.getLoggedUser());
   const hasGetStarted = state.hasGetStarted !== false? true : false;
+  
+  const [theme,setTheme] = React.useState(updateTheme(defaultTheme));
+    const updatePreferenceTheme = (customTheme,persist)=>{
+      setTheme(updateTheme(customTheme));
+    };
+    const forceRender = React.useForceRender();
+    const pref = typeof appPreferences =='function'? appPreferences({setTheme,forceRender,updateTheme:updatePreferenceTheme}) : appPreferences;
+    const preferences = React.useMemo(()=>({
+        updateTheme:updatePreferenceTheme,
+        theme,
+        ...defaultObj(pref),
+    }),[theme,pref]);
+  const isLoaded = !isLoading;
+  const child = isLoaded ? <NavigationContainer 
+    ref={navigationRef}
+    initialState={initialState}
+    onStateChange={(state) =>{
+        setSession(NAVIGATION_PERSISTENCE_KEY,decycle(state),false);
+    }
+  }
+  >
+    <PortalProvider>
+      <Portal.Host>
+        <PreloaderProvider/>   
+        <DialogProvider responsive/>
+        <AlertProvider SimpleSelect={SimpleSelect}/>
+        <FormDataDialogProvider/>  
+        <BottomSheetProvider/>
+        <DropdownAlert ref={notificationRef}/>
+        <ErrorBoundaryProvider/>  
+        <Navigation
+          initialRouteName = {defaultStr(hasGetStarted ? appInitialRouteName : getStartedRouteName,"Home")}
+          state = {state}
+          hasGetStarted = {hasGetStarted}
+          isInitialized = {!isLoading}
+          onGetStart = {(e)=>{
+            setState({...state,hasGetStarted:true})
+          }}
+        />
+      </Portal.Host>
+    </PortalProvider>
+  </NavigationContainer>  : null;
+  const content = isLoaded ? typeof render == 'function'? render({children:child,appConfig,config:appConfig}) : child : null;
   return (<SplashScreen isLoaded={!isLoading}>
-      <NavigationContainer 
-          ref={navigationRef}
-          initialState={initialState}
-          onStateChange={(state) =>{
-              setSession(NAVIGATION_PERSISTENCE_KEY,decycle(state),false);
-          }
-        }
-      >
-          <PortalProvider>
-            <Portal.Host>
-              <PreloaderProvider/>   
-              <DialogProvider responsive/>
-              <AlertProvider SimpleSelect={SimpleSelect}/>
-              <FormDataDialogProvider/>  
-              <BottomSheetProvider/>
-              <DropdownAlert ref={notificationRef}/>
-              <ErrorBoundaryProvider/>  
-              <Navigation
-                initialRouteName = {defaultStr(hasGetStarted ? appInitialRouteName : getStartedRouteName,"Home")}
-                state = {state}
-                hasGetStarted = {hasGetStarted}
-                isInitialized = {!isLoading}
-                onGetStart = {(e)=>{
-                  setState({...state,hasGetStarted:true})
-                }}
-              />
-            </Portal.Host>
-          </PortalProvider>
-      </NavigationContainer> 
+      <AuthProvider>
+        <PaperProvider 
+          theme={theme}
+          settings={{
+            icon: (props) => {
+              return <FontIcon {...props}/>
+            },
+          }}
+        >
+          <ErrorBoundary>
+          <StatusBar/>
+          <PreferencesContext.Provider value={preferences}>
+            {React.isValidElement(content) && content || child}
+          </PreferencesContext.Provider>  
+        </ErrorBoundary>
+      </PaperProvider>
+      </AuthProvider>
   </SplashScreen>);
 }
 

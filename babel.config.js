@@ -14,7 +14,6 @@ module.exports = function(api,opts) {
       inlineDovOptions.path ='./.env';
     }
     /*** par défaut, les variables d'environnements sont stockés dans le fichier .env situé à la racine du projet, référencée par la prop base  */
-    
     const alias =  require("./babel.config.alias")(options);
     return {
       presets: [

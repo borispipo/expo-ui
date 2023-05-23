@@ -55,7 +55,6 @@ export default class FormIDField extends TextField {
     /*** retourne la valeur validée */
     getValidValue(data){
         const validValue = super.getValidValue(data);
-        console.log(data, " is valid value ",data);
         if(!isNonNullString(this.name)) return validValue;
         data[this.name] = defaultStr(data[this.name],validValue,this.newFieldIdValue);
         return validValue;

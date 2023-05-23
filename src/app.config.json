@@ -1,0 +1,31 @@
+{
+	"name": "SALITE",
+	"version": "7.0.0",
+	"description": "Logiciel de gestion commerciale pour PME",
+	"realeaseDateStr": "1er Juin 2021",
+	"releaseDate": "2020-05-23",
+	"devMail": "saliteapp@gmail.com",
+	"devWebsite": "http://fto-consulting.com/salite/",
+	"copyRight": "firsto consulting@Jan 2020",
+	"id": "com.ftc.apps.salite7",
+	"pouchdbNamePrefix": "com.ftc.apps.slite-",
+	"includeFieldsInDatagridFetchOptions": false,
+	"feeds": {
+		"VIDEOS": {
+			"link": "http://fto-consulting.com/salite/feeds",
+			"label": "Bibliothèque vidéo",
+			"provider": "",
+			"icon": "file-video"
+		}
+	},
+	"theme": {
+		"light": {
+			"primary": "#0073B1",
+			"secondary": "#EC008C",
+			"primaryOnSurface": "#0073B1",
+			"secondaryOnSurface": "#EC008C"
+		}
+	},
+	"author": "@fto-consulting",
+	"license": "ISC"
+}

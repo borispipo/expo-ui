@@ -71,11 +71,10 @@ export const renderTabsContent = ({tabs,context,data,sessionName,tabsPropsMutato
     }
     return null;
 }
-
-
-export  function renderActions({context,isUpdate,newElementLabel,makePhoneCallProps,hasManyData,onPressCopyToClipboard,archived,archivedPermsFilter,canMakePhoneCall,onPressToMakePhoneCall,saveAction,save2newAction,save2closeAction,cloneAction,readOnly,printable,archivable,data,table,perm,tableName,saveButton,datas,rows,currentData,currentDataIndex,onPressToSave,onPressToCreateNew,onPressToPrint,onPressToPrevious,onPressToNext,onPressToArchive,...rest}){
+export const readablePerms = ["read","print"];
+export const defaultArchivedPermsFilter = ({perm})=>!readablePerms.includes(perm) && !readablePerms.includes(perm.toLowerCase());
+export  function renderActions({context,isUpdate,newElementLabel,readablePerms:cReadablePerms,makePhoneCallProps,hasManyData,onPressCopyToClipboard,archived,archivedPermsFilter,canMakePhoneCall,onPressToMakePhoneCall,saveAction,save2newAction,save2closeAction,cloneAction,readOnly,printable,archivable,data,table,perm,tableName,saveButton,datas,rows,currentData,currentDataIndex,onPressToSave,onPressToCreateNew,onPressToPrint,onPressToPrevious,onPressToNext,onPressToArchive,...rest}){
     let textSave = defaultStr(saveButton)
-    archivedPermsFilter = defaultFunc(archivedPermsFilter,x=>true);
     table = defaultStr(tableName,table);
     datas = defaultArray(datas,rows);
     const self = context || {}
@@ -83,9 +82,10 @@ export  function renderActions({context,isUpdate,newElementLabel,makePhoneCallPr
     const getActionsPerms = isFunction(self.getActionsPerms) ? self.getActionsPerms.bind(self) : undefined;
     let perms = {};
     readOnly = defaultBool(readOnly,false);
+    const callArgs = {readOnly,perm,archived,isUpdate,currentData,action,data,tableName:table,table,context,datas};
     if(getActionsPerms){
         /**** getAction perms est la fonction appelée parl'objet TableData, pour retourner les permission des actions de la tableData */
-        perms = getActionsPerms.call(self,{readOnly,perm,isUpdate,currentData,action,data,tableName:table,table,context,datas})
+        perms = getActionsPerms.call(self,callArgs)
     } else {
         perms = (isNonNullString(perm)? Auth.isAllowed({resource:perm.split(':')[0],action}):Auth.isTableDataAllowed({table,action}));
     }
@@ -97,8 +97,11 @@ export  function renderActions({context,isUpdate,newElementLabel,makePhoneCallPr
         delete perms.archive;
         delete perms.archivable;
     }
-    if(isUpdate && isObj(data) && (data.wasTransferred || (data.approved && !perms.updateapproved))){
-        archived = true;
+    if(archived){     
+        archivedPermsFilter = defaultFunc(archivedPermsFilter,defaultArchivedPermsFilter);
+        Object.map(perms,(p,perm)=>{
+            if(archivedPermsFilter({perm,perms,data,tableName,readOnly,currentData,context,tableName,isUpdate})) delete perms[i];
+        });
     }
     rest = defaultObj(rest);
     newElementLabel = defaultStr(newElementLabel,"Nouveau");

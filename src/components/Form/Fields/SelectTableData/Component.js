@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 import Dropdown from "$ecomponents/Dropdown";
-import {defaultStr,isFunction,defaultVal,isObjOrArray,defaultObj} from "$cutils";
+import {defaultStr,extendObj,isFunction,defaultVal,isObjOrArray,defaultObj} from "$cutils";
 import PropTypes from "prop-types";
 import actions from "$cactions";
 import {navigateToTableData} from "$enavigation/utils";
@@ -19,7 +19,7 @@ import appConfig from "$appConfig";
  *  foreignKeyTable : la tableData dans laquelle effectuer les donées de la requêtes
  *  foreignKeyLabel : Le libélé dans la table étrangère
  */
-const TableDataSelectField = React.forwardRef(({foreignKeyColumn,bindUpsert2RemoveEvents,onAdd,showAdd:customShowAdd,canShowAdd,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,convertFiltersToSQL,mutateFetchedItems,getForeignKeyTable,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchOptions,...props},ref)=>{
+const TableDataSelectField = React.forwardRef(({foreignKeyColumn,prepareFilters:cPrepareFilters,bindUpsert2RemoveEvents,onAdd,showAdd:customShowAdd,canShowAdd,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,convertFiltersToSQL,mutateFetchedItems,getForeignKeyTable,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchOptions,...props},ref)=>{
     props.data = defaultObj(props.data);
     if(!foreignKeyColumn && isNonNullString(props.field)){
         foreignKeyColumn = props.field;
@@ -138,8 +138,12 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,bindUpsert2Remo
             if(!isMounted()) return;
             if(typeof beforeFetchItems ==='function' && beforeFetchItems(fetchOptions) === false) return;
             let opts = Object.clone(fetchOptions);
-            opts.selector = prepareFilters(fetchOptions.selector,{convertToSQL:convertFiltersToSQL});
-            opts = getFetchOptions(opts);
+            if(cPrepareFilters !== false){
+                opts.selector = prepareFilters(fetchOptions.selector,{convertToSQL:convertFiltersToSQL});
+                opts = getFetchOptions(opts);
+            } else {
+                opts = {fetchOptions};
+            }
             const r = fetchItems(opts);
             if(r === false) return;
             setIsLoading(true);
@@ -296,6 +300,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,bindUpsert2Remo
 
 TableDataSelectField.propTypes = {
     ...Dropdown.propTypes,
+    prepareFilters : PropTypes.bool,//si les filtres seront customisé
     bindUpsert2RemoveEvents : PropTypes.bool,//si le composant écoutera l'évènement de rafraichissement des données
     onAdd : PropTypes.func, //({})=>, la fonction appelée lorsque l'on clique sur le bouton add
     canShowAdd : PropTypes.func, //({foreignKeyTable,foreignKeyColumn})=><boolean> la fonction permettant de spécifier si l'on peut afficher le bouton showAdd

@@ -89,3 +89,4 @@ DrawerNavigator.propTypes = {
 export default DrawerNavigator;
 
 export * from "./utils";
+export * from "./items";

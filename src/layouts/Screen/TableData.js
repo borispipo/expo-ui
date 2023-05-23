@@ -20,7 +20,7 @@ import {renderTabsContent,renderActions} from "./utils";
 import theme from "$theme";
 import cActions from "$cactions";
 import APP from "$capp/instance";
-import { generatedColumnsProperties } from "./utils";
+import { generatedColumnsProperties,defaultArchivedPermsFilter } from "./utils";
 import {isDocEditing,checkPrimaryKey} from "$ecomponents/Form";
 import i18n from "$i18n";
 import fetch from "$capi/fetch";
@@ -55,7 +55,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
                         if(r === false || (!args.value && typeof args.value != 'number')) return r;
                         //on applique la validation seulement en cas de non mise à jour
                         if(!this.isCurrentDocEditingUpdate() && context && typeof context.onNoValidate =='function'){
-                            const cb = typeof field.fetchUniqueId =='function'? field.fetchUniqueId : typeof this.fetchUniqueId =='function'? this.fetchUniqueId : undefined;
+                            const cb = typeof field.fetchUniqueId =='function'? field.fetchUniqueId : typeof this.props.fetchUniqueId =='function'? this.props.fetchUniqueId : undefined;
                             if(cb){
                                 const r2 = cb(args);
                                 if(isPromise(r2)){
@@ -93,21 +93,11 @@ export default class TableDataScreenComponent extends FormDataScreen{
             tableName : { value : defaultStr(table.table,table.tableName)},
             fields : {value : fields},
             table : {value : table},
+            archivedPermsFilterFunc : {value : typeof mainProps.archivedPermsFilter =='function'? mainProps.archivedPermsFilter:defaultArchivedPermsFilter},
             isDocEditingRef : {value : {current:false}},
-            validateDataBeforeSave : {value : mainProps.validateData},
-            upsertDataToDB : {value : mainProps.upsertToDB},
-            makePhoneCallProps : {value : mainProps.makePhoneCallProps},
-            onSaveProp : {value : mainProps.onSave},
-            titleProp : {value : mainProps.title},
             closeOnSaveProp : {value : mainProps.closeOnSave || mainProps.closeAfterSave },
-            newActionProp : {value : mainProps.newAction},
-            fetchUniqueId : {value : mainProps.fetchUniqueId},
             //la liste des champ de type clé primaire associés à la table
             primaryKeyFields : {value : primaryKeyFields},
-            cloneProp : {value : typeof mainProps.clone =='function' && mainProps.clone || undefined},
-            printProp : {value : typeof mainProps.print =='function' && mainProps.print || undefined},
-            archiveProp : {value : typeof mainProps.archive =='function' && mainProps.archive || undefined },
-            testIDProp : {value : defaultStr(mainProps.testID)},
             showPreloaderOnUpsert : {value : mainProps.showPreloaderOnUpsert},
         });
         this.hidePreloader = this.hidePreloader.bind(this);
@@ -145,7 +135,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
         return defaultObj(this.state.data);
     }
     /**** retourne les props en cours d'édition */
-    getCurrentEditingProps (){
+    getCurrentRenderingProps (){
         return defaultObj(this.currentRenderingProps);
     }
     /* Attention, cette méthode est appélée dans la méthode getComponentProps de la classe parente. 
@@ -165,15 +155,44 @@ export default class TableDataScreenComponent extends FormDataScreen{
     *      datas: la liste des données passées à la TableData
     *  }
     */
-    getActionsPerms({perm,action,tableName}){
-        return (isNonNullString(perm)? Auth.isAllowed({resource:perm.split(':')[0],action}):Auth.isTableDataAllowed({table:tableName,action}));
+    getActionsPerms(args){
+        const eProps = this.getCurrentRenderingProps();
+        const gPA = typeof eProps.getActionsPerms =='function'? eProps.getActionsPerms : typeof this.props.getActionsPerms =='function'? this.props.getActionsPerms : undefined;
+        const permsR = gPA ? gPA.call(this,args) : null;
+        const {perm,action,tableName} = args;
+        const ePerms = (isNonNullString(perm)? Auth.isAllowed({resource:perm.split(':')[0],action}):Auth.isTableDataAllowed({table:tableName,action}));
+        return isObj(permsR) ? extendObj({},ePerms,permsR) : ePerms;
     }
     getRenderedActionPrefix (){}
     renderActions(){
         return null;
     }
+    isLoading(){
+        return !!(this.getCurrentRenderingProps().isLoading) || !!this.props.isLoading;
+    }
+    /**** permet de preparer les composant props
+        si la fonction retourne un élément react, alors l'élément react est rendu comme résultat du composant
+    */
+    prepareComponentProps(props){
+        const obj = typeof this.props.prepareComponentProps =='function'? this.props.prepareComponentProps(props) : null;
+        if(isObj(obj)){
+            return extendObj({},props,obj);
+        }
+        return props;
+    }
     getComponentProps(props){
         this.resetState();
+        const table = this.table;
+        const {datas,currentIndex,data} = this.state; 
+        const tableName = this.tableName;
+        const isUpdated = this.isDocEditing(data);
+        this.isDocEditingRef.current = !!isUpdated;
+        const isMobOrTab = isMobileOrTabletMedia();
+        let archived = this.isArchived(); 
+        this.INITIAL_STATE.archived = archived;
+        this.INITIAL_STATE.tableName = tableName;
+        const fields = {};
+        const fieldsToPrepare = extendObj({},true,this.fields,customFields);
         const {
             actions,
             fields:customFields,
@@ -202,20 +221,10 @@ export default class TableDataScreenComponent extends FormDataScreen{
             formProps : customFormProps,
             newElementLabel,
             prepareField,
+            prepareComponentProps,
             ...rest
-        } = props;
-        const table = this.table;
-        const {datas,currentIndex,data} = this.state; 
-        const tableName = this.tableName;
+        } = this.prepareComponentProps({...props,tableName,fields:fieldsToPrepare,isUpdated,isUpdate:isUpdated,data,datas,currentIndex});
         const sessionName = this.INITIAL_STATE.sessionName = defaultStr(customSessionName,"table-form-data"+tableName);
-        const isUpdated = this.isDocEditing(data);
-        this.isDocEditingRef.current = !!isUpdated;
-        const isMobOrTab = isMobileOrTabletMedia();
-        let archived = this.isArchived(); 
-        this.INITIAL_STATE.archived = archived;
-        this.INITIAL_STATE.tableName = tableName;
-        const fields = {};
-        const fieldsToPrepare = extendObj({},true,this.fields,customFields);
         const prepareCb = typeof prepareField =='function'? prepareField : x=> x;
         ///on effectue une mutator sur le champ en cours de modification
         Object.map(fieldsToPrepare,(field,i,counterIndex)=>{
@@ -287,11 +296,11 @@ export default class TableDataScreenComponent extends FormDataScreen{
             sessionName,
             table,
             newElementLabel : this.getNewElementLabel(),
-            printable : this.isPrintable(),///si la table data est imprimable,
+            printable : (typeof rest.printable ==='boolean' ? rest.printable : true) && this.isPrintable(),///si la table data est imprimable,
             canMakePhoneCall : this.canMakePhoneCall(),
             makePhoneCallProps:this.getMakePhoneCallProps(),
             onPressToMakePhoneCall : this.makePhoneCall.bind(this),
-            archivable : this.isArchivable(),
+            archivable : (typeof rest.archivable ==='boolean' ? rest.archivable : true) && this.isArchivable(),
             saveButton : isUpdated?'Modifier':'Enregistrer',
             currentData:data,
             hasManyData : this.hasManyData(),
@@ -355,10 +364,10 @@ export default class TableDataScreenComponent extends FormDataScreen{
         return rActionsArg;
     }
     _render ({header,content,context}){
-        const restProps = this.getCurrentEditingProps();
+        const restProps = this.getCurrentRenderingProps();
         delete restProps.tabs;
         let {tabProps,firstTabProps,tabsProps,withScrollView} = restProps;
-        let testID = this.testIDProp;
+        let testID = this.props.testID;
         tabsProps = defaultObj(tabsProps);
         tabsProps.tabContentProps = defaultObj(tabsProps.tabContentProps);
         tabsProps.tabContentProps.stopChildrenEventPropagation = typeof tabsProps.tabContentProps.stopChildrenEventPropagation =="function" ? tabsProps.tabContentProps.stopChildrenEventPropagation : false;
@@ -438,7 +447,9 @@ export default class TableDataScreenComponent extends FormDataScreen{
         return this.state.currentIndex;
     }
     isArchivable(){
-        return false;
+        const editingProps = this.getCurrentRenderingProps();
+        if(typeof editingProps.archivable =='boolean') return editingProps.archivable;
+        return !!this.props.archivable;
     }
     isArchived(data){
         data = defaultObj(data,this.state.data);
@@ -491,7 +502,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
         return true;    
     }
     isPrintable(){
-        return false;
+        return !!(this.props.printable);
     }
     /*** retourne la liste des valeurs de clé primarire associés à la table data pour la données en cours de modification 
      * Elle permet d'afficher dans la barre de titre, les identifiants de la table de données en cours de modification
@@ -519,17 +530,17 @@ export default class TableDataScreenComponent extends FormDataScreen{
         return super.isDocEditing(data);
     }
     print(data){   
-        if(!this.isPrintable() && typeof this.printProp!=='function') return;
+        if(!this.isPrintable() && typeof this.props.print !=='function') return;
         data = this.isDocEditing(data)? data : isObj(data) && this.isDocEditing(data.data)? data.data : {};
-        return this.printProp(data,this);
+        return this.props.print(data,this);
     }
     isClonable(){
-        return true;
+        return !!(this.props.clonable !==false);
     }
     clone (data){
         if(!this._isMounted() || !this.isClonable())return data;
         data = {...this.getCurrentEditingData(data)};
-        if(this.cloneProp && this.cloneProp(data,this) === false) return data;
+        if(typeof this.props.clone ==='function' && this.props.clone(data,this) === false) return data;
         this.showPreloader();
         delete data.approved;
         Object.map(['_rev',...generatedColumnsProperties,...Object.keys(this.primaryKeyFields),'_id','code','updateBy','updatedDate','createBy','updatedHour','createdHour','createdDate'],(idx)=>{
@@ -580,8 +591,8 @@ export default class TableDataScreenComponent extends FormDataScreen{
         return true;
     }
     upsertToDB(args){
-        if(typeof this.upsertDataToDB ==='function'){
-            return this.upsertDataToDB(args);
+        if(typeof this.props.upsertToDB ==='function'){
+            return this.props.upsertToDB(args);
         }
         return Promise.resolve({});
     }
@@ -596,15 +607,19 @@ export default class TableDataScreenComponent extends FormDataScreen{
         return this.doSave(args);
     }
     canCreateNew(){
-        return this.newActionProp !== false ? true : false;
+        const editingProps = this.getCurrentRenderingProps();
+        if("newAction" in editingProps){
+            return !!editingProps.newAction;
+        }
+        return this.props.newAction !== false ? true : false;
     }
     createNew(){
         return this.reset();
     }
     archive(){}
     validateData(args){
-        if(typeof this.validateDataBeforeSave =='function'){
-            return this.validateDataBeforeSave(args);
+        if(typeof this.props.validateData =='function'){
+            return this.props.validateData(args);
         }
         return true;
     }
@@ -659,7 +674,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
                     let savedData = this.isDocEditing(upserted)? upserted : data;
                     const newArgs = {tableName,actionName:action,action,table:this.table,data:savedData,result:upserted,context};
                     APP.trigger(cActions.upsert(tableName),newArgs);
-                    if(this.onSaveTableData(newArgs) === false || (isFunction(this.onSaveProp)&& this.onSaveProp(newArgs) === false)){
+                    if(this.onSaveTableData(newArgs) === false || (isFunction(this.props.onSave)&& this.props.onSave(newArgs) === false)){
                         closePreloader();
                         return;
                     }
@@ -754,7 +769,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
     }
     getMakePhoneCallProps (){
         const table = this.table;
-        const makePhoneCallProps = defaultVal(this.makePhoneCallProps,table.makePhoneCallProps);
+        const makePhoneCallProps = defaultVal(this.props.makePhoneCallProps,table.makePhoneCallProps);
         const rowData = this.getCurrentData();
         const mP = typeof makePhoneCallProps === 'function' ? makePhoneCallProps({rowData,data:rowData,isTableData:true,props:this.props,context:this,table,tableName:this.table}) : makePhoneCallProps;
         return mP !== false ? defaultObj(mP) : null;
@@ -769,8 +784,8 @@ export default class TableDataScreenComponent extends FormDataScreen{
     /*** archivedPermsFilter est la fonction permettant de filtres les permissions qui par défaut ne figurent pas parmis les permissions en readOnly
      * si archivedPermFilter retourne true pour une permission données alors cette permission sera ignorée
     */
-    archivedPermsFilter (perm,perms){
-        return true;
+    archivedPermsFilter (...args){
+        return !!this.archivedPermsFilterFunc(...args);
     };
     copyToClipboard(){
         return copyToClipboard({
@@ -794,7 +809,8 @@ export default class TableDataScreenComponent extends FormDataScreen{
          return ret;
     }
     getAppBarTitle (){
-        return defaultStr(this.titleProp,this.table.text,this.table.label);
+        const editingProps = this.getCurrentRenderingProps();
+        return React.isValidElement(editingProps.title,true) && editingProps.title || React.isValidElement(this.props.title,true) && this.props.title || this.table.text || this.table.label || null;
     }
     getAppBarProps(a){
         const r = super.getAppBarProps(a);
@@ -811,6 +827,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
 
 TableDataScreenComponent.propTypes = {
     ...defaultObj(FormData.propTypes),
+    prepareComponentProps : PropTypes.func, //permet d'appreter les components props à utiliser pour le rendu des données
     prepareField : PropTypes.func,//La fonction permettant de faire des mutations sur le champ field à passer au formulaire form. si elle retourne false alors la field ne sera pas pris een compte
     table : PropTypes.shape({
         tableName : PropTypes.string,
@@ -820,7 +837,7 @@ TableDataScreenComponent.propTypes = {
     unique : PropTypes.bool,//si la validation de type unique sur le champ sera effective
     fetchUniqueId : PropTypes.func,//la fonction permettant de fetch un élément unique pour la validation de type uniqueID, liée aux champs de type piece et id
     validateData : PropTypes.func,// la fonction permettant de valider les données à enregistrer
-    archivedPermsFilter : PropTypes.func,///le filtre des permissions archivées
+    archivedPermsFilter : PropTypes.func,///le filtre des permissions archivées, elle permet de laisser uniquement les permissions de faire un filtre sur les permission et ne laisser que celle qui sont considérées comme disposible en cas de document archivé
     newElementLabel : PropTypes.string,//le titre du bouton nouveau pour l'ajout d'un nouvel élément
     customActionKeyPrefix : PropTypes.oneOfType([
         PropTypes.string,

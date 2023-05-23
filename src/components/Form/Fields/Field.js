@@ -397,7 +397,7 @@ export default class Field extends AppComponent {
     getValidValue (data){
         let v = this.state.validValue;
         if(isFunction(this.props.getValidValue)){
-            let v1 = this.props.getValidValue.call(this,{data,context:this,props:this.props});
+            let v1 = this.props.getValidValue.call(this,{data,context:this,value:v,validValue:v,state:this.state,props:this.props});
             if(v1 !== undefined){
                 v = v1;
             }

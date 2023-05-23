@@ -40,6 +40,7 @@ import Button from "$ecomponents/Button";
 import stableHash from "stable-hash";
 import * as XLSX from "xlsx";
 import {convertToSQL} from "$ecomponents/Filter";
+import appConfig from "$capp/config";
 
 export const TIMEOUT = 100;
 
@@ -3368,17 +3369,20 @@ export default class CommonDatagridComponent extends AppComponent {
         fetchOptions.dataSources = this.currentDataSources;
         fetchOptions.selector = fetchFilters;
         fetchOptions.sort = this.getSort();
-        const ff = this.getFilterableColumnsNames();
-        let fields = ff;
-        if(this.isFetchOnlyVisibleColumnsEnabled()){
-            fields = [];
-            Object.map(ff,(field)=>{
-                if(isNonNullString(field) && isObj(this.state.columns[field]) && this.state.columns[field].visible !== false){
-                    fields.push(field);
-                }
-            });
+        const canIncludeField = typeof this.props.includeFieldsInFetchOptions =='boolean'? this.props.includeFieldsInFetchOptions : defaultBool(appConfig.get("includeFieldsInDatagridFetchOptions"),appConfig.includeFieldsInDatagridFetchOptions) !== false;
+        if(canIncludeField){
+            const ff = this.getFilterableColumnsNames();
+            let fields = ff;
+            if(this.isFetchOnlyVisibleColumnsEnabled()){
+                fields = [];
+                Object.map(ff,(field)=>{
+                    if(isNonNullString(field) && isObj(this.state.columns[field]) && this.state.columns[field].visible !== false){
+                        fields.push(field);
+                    }
+                });
+            }
+            fetchOptions.fields = fields;
         }
-        fetchOptions.fields = fields;
         let limit = this.getQueryLimit();
         if(limit > 0 && !this.isPivotDatagrid()){
             fetchOptions.limit = limit;
@@ -3812,6 +3816,7 @@ CommonDatagridComponent.propTypes = {
         PropTypes.node,
         PropTypes.element,
     ]),
+    includeFieldsInFetchOptions : PropTypes.bool,//si les champs de colonnes seront inclus dans les fetchOptions du datagrid
     canMakePhoneCall : PropTypes.bool,//si l'on peut faire un appel sur la données sélectionnées
     makePhoneCallProps : PropTypes.oneOfType([
         PropTypes.object,

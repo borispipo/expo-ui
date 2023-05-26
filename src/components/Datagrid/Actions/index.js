@@ -9,7 +9,6 @@ import theme from "$theme"
 import Button from "$ecomponents/Button";
 import { StyleSheet } from "react-native";
 import Label from "$ecomponents/Label";
-import APP from "$capp/instance";
 import { useWindowDimensions } from "react-native";
 
 export default function DatagridActions (_props){

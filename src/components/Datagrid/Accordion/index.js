@@ -315,8 +315,7 @@ const DatagridFactory = (Factory)=>{
                 isLoading:customIsLoading,
                 cacheHeight,
                 toggleFilters,
-                dbSelector,
-                dbSelectorProps,
+                dataSourceSelector,
                 progressBarProps,
                 accordion,
                 preloaderProps,
@@ -363,26 +362,6 @@ const DatagridFactory = (Factory)=>{
                 color: titleColor,
                 style : [styles.title,rStyles.lineHeight,titleProps.style]
             }
-            
-            let showDBSelector = false;
-            if(dbSelector === true){
-                showDBSelector = true;
-            } 
-            dbSelectorProps = defaultObj(dbSelectorProps);
-            let title = this.props.title;
-            let _dbSelector = undefined;/* showDBSelector ? <div>
-                <DBSelector 
-                    {...dbSelectorProps}
-                    onChange = {this.onChangeDatabases.bind(this)}
-                />
-            </div> : null;*/
-            if(!title){
-                title = _dbSelector;
-                _dbSelector = null;
-            }
-            exportable = defaultBool(exportable,true);
-            let exportTableProps = this.getExportableProps();
-    
             filter = defaultFunc(filter,x=>true);
             const showFooters = this.canShowFooters();
             let restItems = [];
@@ -422,7 +401,7 @@ const DatagridFactory = (Factory)=>{
             const datagridHeader = <View testID={testID+"_HeaderContainer"} pointerEvents={pointerEvents} style={[styles.datagridHeader]}>
                 <ScrollView testID={testID+"_HeaderScrollView"} horizontal  contentContainerStyle={StyleSheet.flatten([styles.contentContainerStyle,styles.minW100])}>
                     <View testID={testID+"_HeaderContentCntainer"} style={[styles.table,styles.pullRight]}>
-                        {dbSelector}
+                        {/*this.renderDataSourceSelector()*/}
                         <View testID={testID+"_HeaderQueryLimit"} style={[styles.paginationItem]}>
                             {this.renderQueryLimit(this.getStateDataSize().formatNumber())}
                         </View>
@@ -528,7 +507,7 @@ const DatagridFactory = (Factory)=>{
                         {this.props.showActions !== false ? <DatagridActions 
                             testID={testID+"_Actions"}
                             pointerEvents = {pointerEvents}
-                            title = {title}
+                            title = {this.renderDataSourceSelector()}
                             context = {this}
                             selectedRows = {Object.assign({},this.selectedRows)}
                             selectedRowsActions = {this.renderSelectedRowsActions.bind(this)}

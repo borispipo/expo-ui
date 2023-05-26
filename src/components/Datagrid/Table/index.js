@@ -115,7 +115,8 @@ const DatagridFactory = (Factory)=>{
                 autoSort,
                 exportable,
                 selectable,pagin,showPagination,
-                sessionName,onMount,onUnmount,onFetchData,dataSourceSelector,dataSourceSelectorProps,queryLimit,
+                sessionName,onMount,onUnmount,onFetchData,dataSourceSelector,
+                queryLimit,
                 filters,
                 chartContainerProps,
                 accordion, //pour le rendu du header en accordion
@@ -125,22 +126,6 @@ const DatagridFactory = (Factory)=>{
             chartContainerProps = defaultObj(chartContainerProps);
             testID = this.getTestID();
             rest = defaultObj(rest);
-            if(dataSourceSelector === true){
-                showDataSourceSelector = true;
-            }  else if(dataSourceSelector ===false){
-                showDataSourceSelector = false;
-            }
-            dataSourceSelectorProps = defaultObj(dataSourceSelectorProps);
-            let _dataSourceSelector = undefined;/* showDataSourceSelector ? <div>
-                <DBSelector 
-                    {...dataSourceSelectorProps}
-                    onChange = {this.onChangeDatabases.bind(this)}
-                />
-            </div> : null;*/
-            if(!title){
-                title = _dataSourceSelector;
-                _dataSourceSelector = null;
-            }
             exportable = defaultBool(exportable,true);
             let isMobile = isMobileOrTabletMedia();
             selectable = defaultVal(selectable,true);
@@ -295,7 +280,7 @@ const DatagridFactory = (Factory)=>{
                 <View ref={this.layoutRef} testID={testID+"_LayoutContainer"}>
                     {this.props.showActions !== false ? <DatagridActions 
                         pointerEvents = {pointerEvents}
-                        title = {title}
+                        title = {this.renderDataSourceSelector()}
                         context = {this}
                         selectedRows = {Object.assign({},this.selectedRows)}
                         selectedRowsActions = {this.renderSelectedRowsActions.bind(this)}

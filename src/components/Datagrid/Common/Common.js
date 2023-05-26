@@ -340,39 +340,8 @@ export default class CommonDatagridComponent extends AppComponent {
             windowHeight,
         }
         this.selectableColumnRef = React.createRef(null);
-        let isPv = this.isPivotDatagrid();
-        if(isPv){
-            isPv = this.props.dataSourceSelector !== false;
-        } else isPv = this.props.dataSourceSelector === true ? true : false;
-        if(isPv){
-            let dataSourceSelectorProps = defaultObj(this.props.dataSourceSelectorProps);
-            ['table','tableName'].map((tb,idx)=>{
-                dataSourceSelectorProps[tb] = defaultStr(this.props[tb],dataSourceSelectorProps[tb]);
-            });
-            let cDB = []//DBSelector.getDefaultSelected(dataSourceSelectorProps,this.currentDataSources,this.props);
-            let sDB = this.getSessionData().selectedDataSources;
-            cDB = Object.toArray(cDB);
-            if(cDB.length){
-                this.currentDataSources = cDB
-            } else {
-                this.currentDataSources = sDB;
-            }   
-            this.setSessionData({selectedDataSources:this.currentDataSources});
-        } else {
-            this.currentDataSources = Object.toArray(this.currentDataSources);
-        }
-        if(isPv){
-            isPv = this.props.dataSourceSelector !== false;
-        } else isPv = this.props.dataSourceSelector === true ? true : false;
-        if(isPv){
-            let dataSourceSelectorProps = defaultObj(this.props.dataSourceSelectorProps);
-            ['table','tableName'].map((tb)=>{
-                dataSourceSelectorProps[tb] = defaultStr(this.props[tb],this[tb],dataSourceSelectorProps[tb]);
-            });
-            this.setSessionData({selectedDataSources:this.currentDataSources});
-        } else {
-            this.currentDataSources = Object.toArray(this.currentDataSources);
-        }
+        this.currentDataSources = Object.toArray(this.getSessionData().selectedDataSources);
+        this.setSessionData({selectedDataSources:this.currentDataSources});
         this.persistDisplayType(this.state.displayType);
     }
     /*** si l'on peut récuperer à distance, les colonnes seulement visibles */
@@ -622,13 +591,13 @@ export default class CommonDatagridComponent extends AppComponent {
         return this.selectedRowsCount <= 1 ? true : false;
     }
     /**** fonction appelée lorsque l'on clique sur la checkbox permettant de sélectionner la ligne */
-    handleRowToggle ({row,rowIndex,rowData,rowKey,index, selected,cb,callback},cb2){
-        if(!this.canSelectRow(row)) return false;
-        if(typeof rowKey !=='string' && typeof rowKey !=='number') return false;
+    handleRowToggle ({rowIndex,rowKey,index, selected,cb,callback},cb2){
+        if((typeof rowKey !=='string' && typeof rowKey !=='number')) return false;
+        const row = this.getRowByKey(rowKey);
+        if(!isObj(row) || !this.canSelectRow(row)) return false;
         let selectableMultiple = this.isSelectableMultiple();
         rowIndex = defaultNumber(rowIndex,index);
         cb = defaultFunc(cb,callback,cb2)
-        row = rowData = defaultObj(row,rowData);
         const size = this.selectedRowsCount;
         if(selected && !this.canSelectCheckedRow()){
             notify.warning("Vous ne pouvez sélectionner plus d'un élément");
@@ -656,14 +625,13 @@ export default class CommonDatagridComponent extends AppComponent {
             this.selectedRowsCount = Math.max(this.selectedRowsCount-1,0);
             delete selectedRows[rowKey];
         }
-        
         this.toggleSelectableColumnCheckbox();
         if(isObj(this.datagridActionsContext) && isFunction(this.datagridActionsContext.setSelectedRows)){
             this.datagridActionsContext.setSelectedRows(selectedRows,x =>{
                 this.callSRowCallback({selected,row,rowIndex,rowKey,cb})
             });
         } else {
-            this.callSRowCallback({selected,rowData,row,rowIndex,rowKey,cb});
+            this.callSRowCallback({selected,rowData:row,row,rowIndex,rowKey,cb});
         }
         return true;
     }
@@ -1054,6 +1022,25 @@ export default class CommonDatagridComponent extends AppComponent {
             return React.isValidElement(r)? r : null;
         }
         return null;
+    }
+    renderDataSourceSelector(){
+        const t = isNonNullString(this.props.title)? <Label testID={"RN_DatagridTitleProp"}>{this.props.title}</Label> : React.isValidElement(this.props.title)? this.props.title : null;
+        const table = defaultStr(this.props.table,this.props.tableName);
+        const dS = dS === false ? null : typeof this.props.dataSourceSelector ==='function'? this.props.dataSourceSelector({
+            defaultValue : this.currentDataSources,
+            onChange : this.onChangeDataSources.bind(this),
+            tableName:table,
+            table,
+            isAccordion : this.isAccordion,
+            context : this,
+        }) : null;
+        if(React.isValidElement(dS)){
+            return <View testID={'RN_Datagrid_DataSourceSelectorContainer'} style={[theme.styles.flex,theme.styles.flexRow,theme.styles.justifyContentFlexStart,theme.styles.alignItemsCenter]}>
+                {dS}
+                {t}
+            </View>
+        }
+        return t;
     }
     /*** permet de faire le rendu de certaines entête personalisés 
      * utile lorsque l'on veut par exemple afficher d'autres information au niveau de l'entête du tableau
@@ -2717,7 +2704,9 @@ export default class CommonDatagridComponent extends AppComponent {
         const canUpdateFooters = !!(updateFooters !== false && hasFootersFields);
         this.hasFoundSectionData.current = false;
         this.sectionListDataSize.current = 0;
+        this.rowsByKeys = {};
         const isSList = this.isSectionList(sectionListColumns);
+        this.rowsByKeys = {};
         const sortingField = isNonNullString(this.sortRef.current.column) && isObj(this.state.columns) && this.state.columns[this.sortRef.current.column] || {};
         const hasSortField = Object.size(sortingField,true);
         if(this.canAutoSort() && isNonNullString(this.sortRef.current.column) && hasSortField){
@@ -2941,7 +2930,7 @@ export default class CommonDatagridComponent extends AppComponent {
         }
         const isCollapsed = this.isSectionListCollapsed(key);
         return <View testID={testID+"_ContentContainer"}  style={[theme.styles.w100,isA && this.state.displayOnlySectionListHeaders && {borderTopColor:theme.colors.divider,borderTopWidth:1},isA ? [theme.styles.ph2,theme.styles.pt1] : [theme.styles.pt1,theme.styles.noPadding,theme.styles.noMargin],theme.styles.justifyContentCenter,theme.styles.alignItemsCenter,theme.styles.pb1,!cells && theme.styles.ml1,theme.styles.mr1,cStyle]}>
-            {false && <View testID={testID+"_LabelAndCollapsedContainer"} style={[theme.styles.w100,theme.styles.row,theme.styles.alignItemsCenter,theme.styles.justifyContentStart]}>
+            {false && <View testID={testID+"_LabelAndCollapsedContainer"} style={[theme.styles.w100,theme.styles.row,theme.styles.alignItemsCenter,theme.styles.justifyContentFlexStart]}>
                 <Icon
                     name = {isCollapsed?"chevron-up":"chevron-right"}
                     color = {theme.colors.primaryOnSurface}
@@ -2961,9 +2950,9 @@ export default class CommonDatagridComponent extends AppComponent {
         if(isObj(rowKey)){
             rowKey = this.getRowKey(rowKey,rowIndex);
         }
-        if(isObj(this.selectedRows[rowKey])) return true;
-        if(typeof rowKey !=='string' && typeof rowKey !=='number' || !isObj(this.selectedRowsRefs[rowKey])) return false;
-        return !!this.selectedRowsRefs[rowKey].checked;
+        if(typeof rowKey !=='string' && typeof rowKey !=='number') return false;
+        if(!isObj(this.selectedRowsRefs[rowKey])) return false;
+        return !!(isObj(this.selectedRows[rowKey]) && this.selectedRowsRefs[rowKey].checked);
     }
    /*** permet de définir les lignes sélectionnées du datagrid */
    setSelectedRows (rows){
@@ -3153,20 +3142,18 @@ export default class CommonDatagridComponent extends AppComponent {
         }
         return anchor(toggleItem)
     }
+    /**** cette fonction est appeléee lorsque la source de données change
+        le composant dataSourceSelector doit retourner un table dataSelector, qui prendra en paramètre l'objet onChange, qui systématiquement doit être appelé lorsque la source de données change
+    */
     onChangeDataSources(args){
-        let {dataSources,server} = args;
+        let {dataSources} = defaultObj(args);
+        if(!Array.isArray(dataSources)) return;//la fonction onChangeDataSource doit retourner un dataSource de type array
         if(this.props.onChangeDataSources =='function' && this.props.onChangeDataSources({dataSources,prev:this.currentDataSources}) === false) return;
+        if(React.isEquals(this.previousDataSources,dataSources)) return;
         this.currentDataSources = dataSources;
         this.setSessionData({selectedDatabases:dataSources}) 
-        if(JSON.stringify({dataSources:this.previousDataSources}) != JSON.stringify({dataSources})){
-            if(isObj(this.props.dataSourceSelectorProps) && isFunction(this.props.dataSourceSelectorProps.onChange)){
-                args.datagridContext = this;
-                this.props.dataSourceSelectorProps.onChange(args);
-            }
-            this.refresh(true);
-        } 
+        this.refresh(true);
         this.previousDataSources = dataSources;
-        this.previousServer = server;
     }
     prepareFetchData(fetchData){
         this.INITIAL_STATE.fetchData = defaultVal(fetchData,this.props.fetchData);
@@ -3746,6 +3733,9 @@ export default class CommonDatagridComponent extends AppComponent {
     renderSelectFieldCell(args){
         return this.renderSelectFieldCell(args);
     }
+    getRowByKey(rowKey){
+        return this.rowsByKeys[rowKey] || null;
+    }
     /*** retourne le rendu d'une cellule de la ligne du tableau 
     @parm, rowData, object, la ligne à afficher le rendu du contenu
     @param , rowInidex, l'indice de la ligne dont on affiche le rendu en cours
@@ -3763,10 +3753,11 @@ export default class CommonDatagridComponent extends AppComponent {
         const renderText = isSectionListHeader === true || customRenderRowCell === false ? true : false;
         if(!isObj(rowData)) return renderText ? null : {render:null,extra:{}};
         rowIndex = isDecimal(rowIndex)? rowIndex : isDecimal(index)? index : undefined;
+        rowKey = rowKey || typeof rowKey =='number' ? rowKey : this.getRowKey(rowData,rowIndex);
+        this.rowsByKeys[rowKey] = rowData;
         rowCounterIndex = isDecimal(rowCounterIndex) ? rowCounterIndex : isDecimal(rowIndex)? rowIndex+1 : defaultDecimal(rowCounterIndex);
         if(this.isSelectableColumn(columnDef,columnField)){
             if(renderText) return null;
-            rowKey = rowKey ? rowKey : this.getRowKey(rowData,rowIndex);
             return {render :handleSelectableColumn === false ? null : this.renderSelectableCheckboxCell({
             ...arg,
             rowKey,
@@ -3774,7 +3765,7 @@ export default class CommonDatagridComponent extends AppComponent {
             checked : this.isRowSelected(rowKey,rowIndex),
             rowsRefs : this.selectedRowsRefs,
             onPress : ({checked})=>{
-                return this.handleRowToggle({row:rowData,rowData,rowIndex,rowKey,selected:!checked})
+                return this.handleRowToggle({rowIndex,rowKey,selected:!checked});
             }
             }),style:{},extra:{style:{}}};
         } else if((columnField == this.getIndexColumnName())){

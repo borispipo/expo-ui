@@ -13,7 +13,7 @@ const selectedTitle ='#f50057';
 export const getSelectedBackgroundColor = x=> theme.isDark()?theme.colors.surface : selectedBackgroundColor;
 
 export default function DatagridActionsHeaderComponent({title,selected,testID,children,style,pointerEvents,...props}) {
-  title = defaultStr(title);
+  title = React.isValidElement(title,true)? title : "";
   const bStyle = selected && theme.isDark()? {
     borderBottomColor : theme.colors.divider,
     borderTopColor : theme.colors.divider,

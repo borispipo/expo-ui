@@ -27,7 +27,7 @@ import SimpleSelect from '$ecomponents/SimpleSelect';
 import {Provider as AlertProvider} from '$ecomponents/Dialog/confirm/Alert';
 import { DialogProvider as FormDataDialogProvider } from '$eform/FormData';
 import {Portal } from 'react-native-paper';
-import {PortalProvider,PortalHost } from '$ecomponents/Portal';
+import {PortalProvider} from '$ecomponents/Portal';
 import ErrorBoundaryProvider from "$ecomponents/ErrorBoundary/Provider";
 import notify, {notificationRef} from "$notify";
 import DropdownAlert from '$ecomponents/Dialog/DropdownAlert';
@@ -55,7 +55,7 @@ const NAVIGATION_PERSISTENCE_KEY = 'NAVIGATION_STATE';
  *  initialRouteName : la route initiale par défaut
  *  getStartedRouteName : la route par défaut de getStarted lorsque l'application est en mode getStarted, c'est à dire lorsque la fonction init renvoie une erreur (reject)
  */
-function App({init:initApp,initialRouteName:appInitialRouteName,render,preferences:appPreferences,getStartedRouteName}) {
+function App({init:initApp,initialRouteName:appInitialRouteName,render,onMount,preferences:appPreferences,getStartedRouteName}) {
   AppStateService.init();
   const [initialState, setInitialState] = React.useState(undefined);
   const appReadyRef = React.useRef(true);
@@ -240,6 +240,15 @@ function App({init:initApp,initialRouteName:appInitialRouteName,render,preferenc
         ...defaultObj(pref),
     }),[theme,pref]);
   const isLoaded = !isLoading;
+  const prevIsLoaded = React.usePrevious(isLoaded);
+  const onMountRef = React.useRef(false);
+  React.useEffect(()=>{
+    if(prevIsLoaded == isLoaded || !isLoaded || onMountRef.current) return;
+    if(typeof onMount ==='function'){
+      onMount({appConfig});
+      onMountRef.current = true;
+    }
+  },[isLoaded])
   const child = isLoaded ? <NavigationContainer 
     ref={navigationRef}
     initialState={initialState}

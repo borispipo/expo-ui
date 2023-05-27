@@ -35,7 +35,6 @@ export default function getIndex({onMount,onUnmount,swrConfig,onRender,...rest})
     swrConfig = defaultObj(swrConfig);
     React.useEffect(()=>{
         ///la fonction de rappel lorsque le composant est monté
-        let cb = typeof onMount =='function'? onMount() : null;
         const onScreenFocus = ({sanitizedName})=>{
             prevActiveScreenRef.current = activeScreenRef.current;
             if(activeScreenRef.current){
@@ -84,9 +83,6 @@ export default function getIndex({onMount,onUnmount,swrConfig,onRender,...rest})
           }
           if(typeof onUnmount =='function'){
              onUnmount();
-          }
-          if(typeof cb =='function'){
-             cb();
           }
         }
     },[])
@@ -142,7 +138,7 @@ export default function getIndex({onMount,onUnmount,swrConfig,onRender,...rest})
       >
           <GestureHandlerRootView style={{ flex: 1 }}>
           <SafeAreaProvider>
-            <Index {...rest}/>
+            <Index {...rest} onMount={onMount}/>
           </SafeAreaProvider>
         </GestureHandlerRootView>
       </SWRConfig>

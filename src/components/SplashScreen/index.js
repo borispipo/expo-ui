@@ -7,6 +7,8 @@ import View from "$ecomponents/View";
 import {isNativeMobile} from "$cplatform";
 import {defaultDecimal} from "$cutils";
 import {LogoProgress} from "$ecomponents/Logo";
+import { Provider as PaperProvider,Portal as PaperPortal} from "react-native-paper";
+import {PortalProvider } from '$ecomponents/Portal';
 import {defaultStr} from "$cutils";
 import styles, {
   _solidBackground,
@@ -127,20 +129,26 @@ const SplashScreenComponent = ({isLoaded,children , duration, delay,logoWidth,lo
           />
         )}
         {!animationDone && (
-          <View testID={testID+"_LogoContainer"} style={[StyleSheet.absoluteFill, styles.logoStyle]}>
-            {(
-              <Animated.View
-                testID={testID+"_Logo"}
-                style={_dynamicCustomComponentStyle(
-                      logoScale,
-                      logoOpacity,
-                      logoWidth,
-                      logoHeight
-                  )}>
-                {<LogoProgress/>}
-              </Animated.View>
-            )}
-          </View>
+          <PortalProvider>
+            <PaperProvider>
+              <PaperPortal.Host>
+                  <View testID={testID+"_LogoContainer"} style={[StyleSheet.absoluteFill, styles.logoStyle]}>
+                  {(
+                    <Animated.View
+                      testID={testID+"_Logo"}
+                      style={_dynamicCustomComponentStyle(
+                            logoScale,
+                            logoOpacity,
+                            logoWidth,
+                            logoHeight
+                        )}>
+                      {<LogoProgress/>}
+                    </Animated.View>
+                  )}
+                </View>
+              </PaperPortal.Host>
+            </PaperProvider>
+          </PortalProvider>
         )}
       </View>
     </View>

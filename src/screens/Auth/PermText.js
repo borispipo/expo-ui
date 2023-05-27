@@ -54,8 +54,8 @@ const styles = StyleSheet.create({
         paddingLeft : 20,
     },
     checkbox : {
-        width : 20,
-        height : 20,
+        //width : 20,
+        //height : 20,
         margin : 0,
         padding: 0,
     }

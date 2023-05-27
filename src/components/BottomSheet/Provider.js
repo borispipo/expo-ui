@@ -27,28 +27,26 @@ export const close = (props)=>{
 }
 
 const Provider = React.forwardRef((props,innerRef)=>{
-    const {onDismiss} = props;
     const ref = innerRef || createProviderRef();
-    const [state,setState] = React.useState({
-        visible : false,
-    });
+    const [visible,setVisible] = React.useState(false);
+    const [state,setState] = React.useState({});
     const context = {
         open : (props)=>{
-            return setState({onDismiss:undefined,...defaultObj(props),visible:true})
+            if(!visible){  
+                setVisible(true);
+            }
+            setState(defaultObj(props));
         },
-        close : (props)=>{
-            return setState({...state,...defaultObj(props),visible:false})
+        close : ()=>{
+            if(visible) return;
+            setVisible(false);
         }
     };
     React.setRef(ref,context);        
-    return <Menu {...props} {...state} sheet controlled onDismiss = {(e)=>{
-        setState({...state,visible:false});
-        if(typeof state.onDismiss =='function'){
-            state.onDismiss({context,state})
-        } else if(onDismiss){
-            onDismiss({context,state});
+    return <Menu {...props} {...state} visible={visible} sheet controlled onDismiss = {(e)=>{
+        if(visible){
+            setVisible(false);
         }
-
     }}/>
 });
 

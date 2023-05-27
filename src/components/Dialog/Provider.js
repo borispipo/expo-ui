@@ -41,32 +41,28 @@ export const close = (props,innerProviderRef)=>{
 }
 
 const Provider = React.forwardRef((props,innerRef)=>{
-    const {onDismiss,beforeOpen} = props;
     const ref = innerRef || createProviderRef();
-    const [state,setState] = React.useState({
-        visible : defaultBool(props.visible,false),
-    });
+    const [visible,setVisible] = React.useState(defaultBool(props.visible,false));
+    const [state,setState] = React.useState({});
     const context = {
         open : (props)=>{
-            if(state.visible) return;
-            let bfOpen = typeof state.beforeOpen == 'function'? state.beforeOpen : typeof beforeOpen =='function'? beforeOpen : x=>true;
-            if(bfOpen(state) === false) return;
-            return setState({onDismiss:undefined,...defaultObj(props),visible:true})
+            if(visible) {
+                return;
+            }
+            if(!visible){
+                setVisible(true);
+            }
+            setState(defaultObj(props));
         },
-        close : (props)=>{
-            if(!state.visible) return;
-           return setState({...state,...defaultObj(props),visible:false});
+        close : ()=>{
+            if(!visible) return;
+            setVisible(false);
         },
     };
     React.setRef(ref,context);        
-    return <Dialog {...props} {...state} controlled onDismiss = {(e)=>{
-        if(state.visible){
-            setState({...state,visible:false});
-        }
-        if(typeof state.onDismiss =='function'){
-            state.onDismiss({context,state});
-        } else if(onDismiss){
-            onDismiss({context,state});
+    return <Dialog {...props} {...state} visible={visible} controlled onDismiss = {(e)=>{
+        if(visible){
+            setVisible(false);
         }
     }}/>
 });

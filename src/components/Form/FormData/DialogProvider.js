@@ -14,24 +14,25 @@ const FormDataDialogProvider = React.forwardRef((props,innerRef)=>{
     innerRef = innerRef || createProviderRef((eRef)=>{
         dialogProviderRef = eRef;
     });
-    const [state,setState] = React.useState({
-        visible : false,
-    });
+    const [visible,setVisible] = React.useState(false);
+    const [state,setState] = React.useState({});
     const isMobile = isMobileOrTabletMedia();
     const formRef = React.useRef(null);
-    const {closeAction,onDismiss} = props;
+    const {closeAction} = props;
     const context = {
         open : (props)=>{
-            if(state.visible) return;
             let sData = {};
             if(formRef.current && formRef.current.formDataContext && formRef.current.formDataContext.getData){
                 sData.data = formRef.current.formDataContext.getData();
             }
-            return setState({...sData,onDismiss:undefined,...defaultObj(props),visible:true})
+            if(!visible){
+                setVisible(true);
+            }
+            setState({...sData,...defaultObj(props)});
         },
-        close : (props)=>{
-            if(!state.visible) return;
-            setState({...state,...defaultObj(props),visible:false});
+        close : ()=>{
+            if(!visible) return;
+            setVisible(false);
         },
     };
     React.setRef(innerRef,context);       
@@ -52,6 +53,7 @@ const FormDataDialogProvider = React.forwardRef((props,innerRef)=>{
         subtitle ={false}
         {...props} 
         {...state} 
+        visible = {visible}
         formProps = {formProps}
         isProvider
         ref={formRef}  
@@ -82,13 +84,8 @@ const FormDataDialogProvider = React.forwardRef((props,innerRef)=>{
         dialogProps = {dialogProps}
         controlled={false} 
         onDismiss = {(e)=>{
-            if(state.visible){
-                setState({...state,visible:false});
-            }
-            if(typeof state.onDismiss =='function'){
-                state.onDismiss({context,state});
-            } else if(onDismiss){
-                onDismiss({context,state});
+            if(visible){
+                setVisible(false);
             }
         }}
         open = {context.open}

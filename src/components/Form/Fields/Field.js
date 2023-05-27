@@ -258,7 +258,13 @@ export default class Field extends AppComponent {
                 let fields = getFormFields(this.formName);
                 let canEnable = true;
                 for(var k in fields){
-                    if(!fields[k].isValid()){
+                    if(k === this.getName()) continue;
+                    const fK = fields[k];
+                    const matchF = fK.getMatchField();
+                    if(matchF && matchF.getName() === this.getName()){
+                        fK.validate({value:fK.getValue()});
+                    }
+                    if(!fK.isValid()){
                         canEnable = false;
                         break;
                     }
@@ -285,7 +291,27 @@ export default class Field extends AppComponent {
             });
         });
     }
+    getMatchField (){
+        const matchField = defaultStr(this.props.matchField).trim();
+        return matchField && this.getField(matchField) || null;
+    }
+    validateMatchField (value){
+        if(this.isFilter()) return true;
+        const matchedField = this.getMatchField();
+        if(matchedField){
+            value = value !== undefined ? value : this.getValue();
+            const matchedValue = matchedField.getValue();
+            if(!React.isEquals(matchedValue,value)){
+                return `le champ [${matchedField?.getLabel()}] doit avoir la même valeur que celle du champ [${this.getLabel()}].`;
+            }
+        }
+        return true;
+    }
     onValidatorValid(args){
+        const valMatchField = this.validateMatchField();
+        if(isNonNullString(valMatchField)){
+            return valMatchField;
+        }
         if(!this.isFilter()){
             const vRule  =defaultStr(this.getValidRule()).toLowerCase();
             const value = typeof args.value == "undefined" || args.value == null ? "" : String(args.value).replaceAll("/","").replaceAll("\\",'').trim();
@@ -747,7 +773,7 @@ export default class Field extends AppComponent {
             return;
         }
         if(this.isFilter()) return
-        const value = this.getValue();
+        if(this.getMatchField())
         if(isNonNullString(this.props.fieldToPopulateOnBlur) && isNonNullString(value)){
             const context = this.getField(this.props.fieldToPopulateOnBlur.trim());
             if(context && context.getValue){
@@ -1122,6 +1148,7 @@ Field.propTypes = {
      *   Lorsqu'elle est définie alors le rendu lors du composant doit être de type filter 
      */
     renderfilter : PropTypes.string, 
+    matchField : PropTypes.string,//si cette valeur est définie, alors le champ figurant dans la valeur doit avoir la même valeur que le champ courant
     /**** il s'agit d'un champ du même formulaire que la formField actuel, qui sera populated avec la valeur par défaut
      * de la formField cournat loreque la valeur du champ en question a une longueur très inférieure à celle de la valeur de la form courante.
      */

@@ -592,7 +592,7 @@ export default class CommonDatagridComponent extends AppComponent {
     }
     /**** fonction appelée lorsque l'on clique sur la checkbox permettant de sélectionner la ligne */
     handleRowToggle ({rowIndex,rowKey,index, selected,cb,callback},cb2){
-        if((typeof rowKey !=='string' && typeof rowKey !=='number')) return false;
+        if(!this.isValidRowKey(rowKey)) return false;
         const row = this.getRowByKey(rowKey);
         if(!isObj(row) || !this.canSelectRow(row)) return false;
         let selectableMultiple = this.isSelectableMultiple();
@@ -796,6 +796,7 @@ export default class CommonDatagridComponent extends AppComponent {
         const r = isObj(selected)? selected : {};
         const ret = {
             ...dataSourceArgs,
+            rowsByKeys : this.rowsByKeys,
             showConfirm,
             Preloader,
             notify,
@@ -2689,6 +2690,9 @@ export default class CommonDatagridComponent extends AppComponent {
     getSectionListDataSize(){
         return defaultNumber(this.sectionListDataSize.current)
     }
+    isValidRowKey(rowKey){
+        return !!(isNonNullString(rowKey) || typeof rowKey =='number');
+    }
     prepareData(args,cb){
         let {pagination,config,aggregatorFunction:customAggregatorFunction,displayOnlySectionListHeaders:cdisplayOnlySectionListHeaders,data,force,sectionListColumns,sectionListCollapsedStates,updateFooters} = defaultObj(args);
         cb = typeof cb ==='function'? cb : typeof args.cb == 'function'? args.cb : undefined;
@@ -2706,7 +2710,6 @@ export default class CommonDatagridComponent extends AppComponent {
         this.sectionListDataSize.current = 0;
         this.rowsByKeys = {};
         const isSList = this.isSectionList(sectionListColumns);
-        this.rowsByKeys = {};
         const sortingField = isNonNullString(this.sortRef.current.column) && isObj(this.state.columns) && this.state.columns[this.sortRef.current.column] || {};
         const hasSortField = Object.size(sortingField,true);
         if(this.canAutoSort() && isNonNullString(this.sortRef.current.column) && hasSortField){
@@ -2746,6 +2749,9 @@ export default class CommonDatagridComponent extends AppComponent {
                 if(!isObj(d) || (hasLocalFilter && this.doLocalFilter({rowData:d,rowIndex:i}) === false)){
                     return;
                 }
+                const rKey = this.getRowKey(d,i);
+                if(!this.isValidRowKey(rKey)) return;
+                this.rowsByKeys[rKey] = d;
                 if(hasSectionColumns  && this.renderSectionListIsAllowed){
                     let sHeader = this.getSectionListHeader({config,data:d,columnsLength : sectionListColumnsSize,fieldsSize:sectionListColumnsSize,sectionListColumnsLength:sectionListColumnsSize,sectionListColumnsSize,allData:data,rowData:d,index:i,rowIndex,context:this,columns,fields:columns});
                     if(sHeader === false) return;//on omet la donnée si la fonction de récupération de son header retourne false
@@ -2791,7 +2797,17 @@ export default class CommonDatagridComponent extends AppComponent {
                 })
             }
             data = newData;
-        } 
+        } else {
+            const newData = [];
+            Object.map(data,(d,i,rowIndex)=>{
+                if(!isObj(d)) return;
+                const rowKey = this.getRowKey(d,i,rowIndex);
+                if(!this.isValidRowKey(rowKey)) return;
+                this.rowsByKeys[rowKey] = d;
+                newData.push(d);
+            });
+            data = newData;
+        }
         this.INITIAL_STATE.data = data;
         if(this.hasFoundSectionData.current){
             data = [];
@@ -2950,8 +2966,7 @@ export default class CommonDatagridComponent extends AppComponent {
         if(isObj(rowKey)){
             rowKey = this.getRowKey(rowKey,rowIndex);
         }
-        if(typeof rowKey !=='string' && typeof rowKey !=='number') return false;
-        if(!isObj(this.selectedRowsRefs[rowKey])) return false;
+        if(!this.isValidRowKey(rowKey) || !isObj(this.selectedRowsRefs[rowKey])) return false;
         return !!(isObj(this.selectedRows[rowKey]) && this.selectedRowsRefs[rowKey].checked);
     }
    /*** permet de définir les lignes sélectionnées du datagrid */
@@ -2968,6 +2983,7 @@ export default class CommonDatagridComponent extends AppComponent {
        Object.map(rows,(row,i)=>{
             if(this.canSelectRow(row)) {
                 const rowKey = this.getRowKey(row,i);
+                this.rowsByKeys[rowKey] = row;
                 this.selectedRowsCount++;
                 this.selectedRows[rowKey] = row;
                 const sRowRef = this.selectedRowsRefs[rowKey];
@@ -3734,7 +3750,7 @@ export default class CommonDatagridComponent extends AppComponent {
         return this.renderSelectFieldCell(args);
     }
     getRowByKey(rowKey){
-        return this.rowsByKeys[rowKey] || null;
+        return (this.isValidRowKey(rowKey))  && isObj(this.rowsByKeys[rowKey]) && this.rowsByKeys[rowKey] || null;
     }
     /*** retourne le rendu d'une cellule de la ligne du tableau 
     @parm, rowData, object, la ligne à afficher le rendu du contenu
@@ -3753,8 +3769,7 @@ export default class CommonDatagridComponent extends AppComponent {
         const renderText = isSectionListHeader === true || customRenderRowCell === false ? true : false;
         if(!isObj(rowData)) return renderText ? null : {render:null,extra:{}};
         rowIndex = isDecimal(rowIndex)? rowIndex : isDecimal(index)? index : undefined;
-        rowKey = rowKey || typeof rowKey =='number' ? rowKey : this.getRowKey(rowData,rowIndex);
-        this.rowsByKeys[rowKey] = rowData;
+        rowKey = this.isValidRowKey(rowKey) ? rowKey : this.getRowKey(rowData,rowIndex);
         rowCounterIndex = isDecimal(rowCounterIndex) ? rowCounterIndex : isDecimal(rowIndex)? rowIndex+1 : defaultDecimal(rowCounterIndex);
         if(this.isSelectableColumn(columnDef,columnField)){
             if(renderText) return null;

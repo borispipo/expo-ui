@@ -1,6 +1,6 @@
 import {getAppBarActionsProps} from "./utils";
 import React, {Component as AppComponent} from "$react";
-import {isNonNullString,defaultStr,defaultObj,extendObj,isObj,isFunction,defaultFunc,uniqid} from "$cutils";
+import {isNonNullString,defaultStr,defaultNumber,defaultObj,extendObj,isObj,isFunction,defaultFunc,uniqid} from "$cutils";
 import {getForm,getFormField,Forms} from "../utils";
 import Divider from "$ecomponents/Divider";
 import Surface from "$ecomponents/Surface";
@@ -191,6 +191,7 @@ export default class FormDataComponent extends AppComponent{
         const archived = data.archived ? true : false;
         const responsive = typeof formProps.responsive =='boolean' ? formProps.responsive : this.props.responsive !== false ? true : false;
         const responsiveProps = extendObj({},this.props.responsiveProps,formProps.responsiveProps);
+        const windowWidth = defaultNumber(formProps.windowWidth,this.props.windowWidth) || undefined;
         Object.map(fields,(field,index,i)=>{//on ignore tous les champs supposés être à ignorer
             if(field === 'divider'){
                 content.push(<Divider key = {index} style={theme.styles.w100}/>)
@@ -240,6 +241,7 @@ export default class FormDataComponent extends AppComponent{
                 customResponsiveProps = defaultObj(customResponsiveProps);
                 content.push(<Component 
                         data = {data} 
+                        windowWidth = {windowWidth}
                         //withBottomSheet = {this.props.withBottomSheet}
                         index = {index} 
                         disabled = {this.props.disabled || archived} 
@@ -363,6 +365,7 @@ export default class FormDataComponent extends AppComponent{
         const cStyle = flattenStyle([styles.container,{backgroundColor:theme.surfaceBackgroundColor},containerProps.style]);
         formProps.style = flattenStyle([{backgroundColor:cStyle.backgroundColor},formProps.style]);
         formProps.fields = defaultObj(formProps.fields,fields);
+        formProps.windowWidth = defaultNumber(formProps.windowWidth,windowWidth) || undefined;
         const content = <Form 
             {...formProps} 
             name={this.getFormName()}

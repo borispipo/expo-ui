@@ -1,21 +1,31 @@
 {
-	"name": "SMART-EEM",
-	"version": "1.0.0",
-	"id": "com.ftc.apps.device.smarteneo",
+	"name": "SALITE",
+	"version": "7.0.0",
+	"description": "Logiciel de gestion commerciale pour PME",
 	"realeaseDateStr": "1er Juin 2021",
 	"releaseDate": "2020-05-23",
-	"devMail": "smart-eneo@gmail.com",
-	"devWebsite": "http://fto-consulting.com/smart-eneo/",
-	"copyRight": "FirsTo consulting@Août 2022",
-	"apiVersion": "1.0",
-	"includeCredentialsOnApiFetch": false,
-	"checkNavigationPermsOnTableOrStructData": false,
-	"theme": {
-		"light": {
-			"primary": "#00AB55",
-			"secondary": "#354448"
+	"devMail": "saliteapp@gmail.com",
+	"devWebsite": "http://fto-consulting.com/salite/",
+	"copyRight": "firsto consulting@Jan 2020",
+	"id": "com.ftc.apps.salite7",
+	"pouchdbNamePrefix": "com.ftc.apps.slite-",
+	"includeFieldsInDatagridFetchOptions": false,
+	"feeds": {
+		"VIDEOS": {
+			"link": "http://fto-consulting.com/salite/feeds",
+			"label": "Bibliothèque vidéo",
+			"provider": "",
+			"icon": "file-video"
 		}
 	},
-	"netInfoReachabilityShortTimeout": 30000,
-	"description": "Suivi des équipements Eneo"
+	"theme": {
+		"light": {
+			"primary": "#0073B1",
+			"secondary": "#EC008C",
+			"primaryOnSurface": "#0073B1",
+			"secondaryOnSurface": "#EC008C"
+		}
+	},
+	"author": "@fto-consulting",
+	"license": "ISC"
 }

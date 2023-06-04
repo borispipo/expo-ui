@@ -1590,7 +1590,7 @@ export default class CommonDatagridComponent extends AppComponent {
                         checkedTooltip : "Les étiquettes de valeurs seront affichées sur le graphe",
                         checkedValue : true,
                         uncheckedValue : false,
-                        defaultValue : this.isDashboard()? true : false,
+                        defaultValue : false,
                     },
                     abreviateValues : {
                         type : "switch",
@@ -2227,7 +2227,7 @@ export default class CommonDatagridComponent extends AppComponent {
         const dataLabelFormatter = typeof chartProps.dataLabels?.formatter =="function"? chartProps.dataLabels.formatter : undefined;
         const chartOptions = {
             ...chartProps,
-            dataLabels : extendObj(true,{enabled:!this.isDashboard()},chartProps.dataLabels,{
+            dataLabels : extendObj(true,{enabled:false},chartProps.dataLabels,{
                 formatter : (value, { seriesIndex, dataPointIndex, w })=> {
                     const serie = w.config.series[seriesIndex];
                     const serieName = serie.name;

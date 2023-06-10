@@ -213,7 +213,7 @@ export default function LoginComponent(props){
     return <Wrapper testID = {testID+"_Wrapper" }{...wrapperProps}>
         <DialogProvider ref={dialogProviderRef}/>
         {sH}
-        <Surface style={[styles.container,{backgroundColor}]} {...containerProps} testID={testID}>
+        <Surface {...containerProps} {...defaultObj(loginProps?.containerProps)} style={[styles.container,{backgroundColor},containerProps.style,loginProps?.containerProps?.style]}  testID={testID}>
             <Surface elevation = {0} {...contentProps} mediaQueryUpdateNativeProps = {mQueryUpdateProps} {...contentProps} testID={testID+"_Content"} style={[styles.content,updateMediaQueryStyle(),{backgroundColor},contentProps.style]}>
                 <FormData 
                     formName = {formName}
@@ -346,4 +346,11 @@ LoginComponent.propTypes = {
         PropTypes.node,
         PropTypes.element,
     ]),
+}
+
+/*** les loginProps sont les porps à passer au composant FormData
+*/
+const loginPropTypes = {
+    containerProps : PropTypes.object, //les props à passer au container
+    ...FormData.propTypes, //les props type du composant form data
 }

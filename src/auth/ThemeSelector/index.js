@@ -4,7 +4,7 @@
 ///permet de sélectionner un theme utilisateur
 import React from "$react";
 import Label from "$ecomponents/Label";
-import Auth,{login} from "$cauth";
+import Auth,{login,getLoginId} from "$cauth";
 import View from "$ecomponents/View";
 import { StyleSheet } from "react-native";
 import defaultTheme,{getColors} from "$theme/defaultTheme";
@@ -38,8 +38,10 @@ export const getThemeFieldProps = (props,ref)=>{
     props = defaultObj(props);
     let {user,showAdd,onValidate,onChange,onUpsert,...rest} = props;
     const loggedUser = defaultObj(Auth.getLoggedUser());
-    user = defaultObj(user,loggedUser);
-    const isUserActive = loggedUser.code == user.code && user.code ? true : false;
+    user = defaultObj(user,loggedUser); 
+    const loginId = getLoginId(user);
+    const hasLoginId = isNonNullString(loginId) || typeof loginId =='number';
+    const isUserActive = getLoginId(loggedUser) == loginId && hasLoginId ? true : false;
     const userTheme = defaultObj(user.theme);
     const userThemeName = defaultStr(userTheme.name,defaultTheme.name);
     const isDark = theme.isDark() || theme.isDarkUI();
@@ -48,7 +50,7 @@ export const getThemeFieldProps = (props,ref)=>{
     const showThemeExplorer = (data)=>{
         data = defaultObj(data,defTheme);
         fields.name.disabled = ({data})=> data && isNonNullString(data.name);
-        const title = data && data.name ? ("Modifier ["+data.name+"]") : ('Nouv theme['+user.code+"]");
+        const title = data && data.name ? ("Modifier ["+data.name+"]") : ('Nouv theme['+loginId+"]");
         const isEditing = isDocEditing(data);
         fields.textFieldMode.defaultValue = theme.textFieldMode;
         fields.profilAvatarPosition.defaultValue = theme.profilAvatarPosition;
@@ -86,7 +88,7 @@ export const getThemeFieldProps = (props,ref)=>{
                     user.customThemes = customThemes;
                     open((isEditing?"Modification ":"Enregistrement ")+"du thème...");
                     Auth.upsertUser(user,false).then(()=>{
-                        if(Auth.getLoggedUserCode() == user.code){
+                        if(Auth.getLoginId(Auth.getLoggedUser()) == getLoginId(user)){
                             login(user,false);
                         }
                         if(ref && ref.current && ref.current.refresh){

@@ -10,7 +10,7 @@
   "apiVersion": "1.0",
   "includeCredentialsOnApiFetch": false,
   "checkNavigationPermsOnTableOrStructData": false,
-  "authLoginIdField": "email",
+  "authLoginIdField": "_id",
   "theme": {
     "light": {
       "primary": "#00AB55",
@@ -34,7 +34,7 @@
     "url": "git+https://github.com/borispipo/smart-eneo.git"
   },
   "dependencies": {
-    "@fto-consult/expo-ui": "^5.11.6",
+    "@fto-consult/expo-ui": "^5.11.7",
     "socket.io-client": "^4.6.1"
   },
   "devDependencies": {

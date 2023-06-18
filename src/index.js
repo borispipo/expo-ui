@@ -227,8 +227,9 @@ function App({init:initApp,initialRouteName:appInitialRouteName,render,onMount,p
       }
   },[isInitialized]);
   const hasGetStarted = state.hasGetStarted !== false? true : false;
-  
-  const [theme,setTheme] = React.useState(updateTheme(defaultTheme));
+  const themeRef = React.useRef(null);
+  const [theme,setTheme] = React.useState(themeRef.current || updateTheme(defaultTheme));
+  themeRef.current = theme;
     const updatePreferenceTheme = (customTheme,persist)=>{
       setTheme(updateTheme(customTheme));
     };

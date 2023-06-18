@@ -136,7 +136,7 @@ const PermProfile = React.forwardRef((props,ref)=>{
         profiles.push(<View key={index} style={[theme.styles.row,{justifyContent:'space-between'}]}>  
             <Label>{profile.code}</Label>
             <View style={[theme.styles.row]}>
-                <Icon primary title={isAssigned?'Profil de permission ['+profile.code+'] assigné à l\'utilisateur':'Profil de permission ['+profile.code+'] non assigné à l\'utilisateur '+defaultStr(user.code)} name={isAssigned?'checkbox-marked':'checkbox-blank-outline'} 
+                <Icon primary title={isAssigned?'Profil de permission ['+profile.code+'] assigné à l\'utilisateur':'Profil de permission ['+profile.code+'] non assigné à l\'utilisateur '+String(Auth.getLoginId(user))} name={isAssigned?'checkbox-marked':'checkbox-blank-outline'} 
                     onPress={()=>{
                         assignProfile(profile,isAssigned?false:true)
                     }}

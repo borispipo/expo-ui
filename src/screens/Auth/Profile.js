@@ -77,7 +77,7 @@ export default function UserProfileScreen(props){
     }
     
     return <FormDataScreen
-        title = {(user.label?(user.label+" ["+user.code+"]  | "):"")+"Profil : Modifier"}
+        title = {(user.label?(user.label+" ["+Auth.getLoginId(user)+"]  | "):"")+"Profil : Modifier"}
         {...props}
         modal
         withScrollView

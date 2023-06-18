@@ -43,6 +43,7 @@ export default function showConfirm (p,cb){
     const setArgsValue = (args)=>{
         args.value = inputValueRef.current;
         args.inputRef = inputRef;
+        args.close = Alert.close;
     }
     inputValueRef.current = defaultValue;
     if(isDecimal(text)){
@@ -62,10 +63,10 @@ export default function showConfirm (p,cb){
         if(!isArray(buttons)){
             buttons = [];
         }    
-        no = defaultObj(no)
         onSuccess = defaultFunc(onSuccess,cb);
         onCancel = defaultFunc(onCancel,cb);
         if(!alert && no !== false){
+            no = defaultObj(no)
             no.text  = defaultStr(no.text,'Non');
             const {onPress} = no;
             no.testID = testID+"_NoCancelButton";
@@ -74,7 +75,6 @@ export default function showConfirm (p,cb){
                 args = React.getOnPressArgs(args);
                 setArgsValue(args);
                 if(onCancel(args) === false || (onPress && onPress(args) === false)) return true;
-                args.close = Alert.close;
                 Alert.close(args);
             }
             buttons.push(no);

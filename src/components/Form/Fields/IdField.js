@@ -72,12 +72,13 @@ export default class FormIDField extends TextField {
     }
     _render(props,setRef){
         delete props.validType;
+        const upper = props.upper !== false ? UPPER_CASE : "";
         if(isNonNullString(this.name) && isObj(props.data) && isNonNullString(props.data[this.name])){
             props.disabled = true;         
-            props.validType = UPPER_CASE;
+            props.validType = upper;
             props.defaultValue = props.data[this.name];
         } else {
-            props.validType = 'required|'+UPPER_CASE;
+            props.validType = 'required|'+upper;
         }
         if(typeof props.minLength !=='number'){
             props.minLength = 2;

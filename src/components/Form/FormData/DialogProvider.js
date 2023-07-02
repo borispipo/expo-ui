@@ -5,6 +5,7 @@ import {isMobileOrTabletMedia} from "$cplatform/dimensions";
 import {MAX_WIDTH} from "$ecomponents/Dialog/utils";
 import {extendObj,defaultObj,isObj,defaultBool,defaultStr} from "$cutils";
 import grid from "$theme/grid";
+import theme from "$theme";
 import {isDesktopMedia} from "$cdimensions";
 
 let dialogProviderRef = null;
@@ -72,6 +73,7 @@ const FormDataDialogProvider = React.forwardRef((props,innerRef)=>{
                     text : 'Annuler',
                     icon : 'close',
                     isCancelButton : true,
+                    error : true,
                     ...defaultObj(closeAction),
                     onPress : context.close,
                     isAction : false,

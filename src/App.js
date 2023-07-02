@@ -18,11 +18,10 @@ import { timeout as SWR_REFRESH_TIMEOUT} from '$ecomponents/Datagrid/SWRDatagrid
 import { Dimensions,Keyboard } from 'react-native';
 import {isTouchDevice} from "$platform";
 import * as Utils from "$cutils";
-import {extendObj} from "$utils";
-import {fontConfig} from "$theme/fonts";
 import {MD3LightTheme,MD3DarkTheme} from "react-native-paper";
 import { useMaterial3Theme } from '@pchmn/expo-material3-theme';
 import { useColorScheme } from 'react-native';
+import {colorsAlias,Colors} from "$theme";
 
 import { configureFonts} from 'react-native-paper';
 Object.map(Utils,(v,i)=>{
@@ -30,10 +29,11 @@ Object.map(Utils,(v,i)=>{
      window[i] = v;
   }
 });
+const themeAttributes = ["primary","secondary","background",""]
 export default function getIndex({onMount,onUnmount,swrConfig,onRender,...rest}){
   const {extendAppTheme} = appConfig;
   const { theme : pTheme } = useMaterial3Theme();
-  const colorScheme = useColorScheme();
+  //const colorScheme = useColorScheme();
   appConfig.extendAppTheme = (theme)=>{
       if(!isObj(theme)) return;
       const newTheme = theme.dark || theme.isDark ? { ...MD3DarkTheme, colors: pTheme.dark } : { ...MD3LightTheme, colors: pTheme.light };
@@ -43,6 +43,16 @@ export default function getIndex({onMount,onUnmount,swrConfig,onRender,...rest})
         }
       }
       if(isObj(theme.colors)){
+        colorsAlias.map((color)=>{
+          color = color.trim();
+          const cUpper = color.ucFirst();
+          //math theme colors to material desgin V3
+          const textA = `${color}Text`,onColor=`on${cUpper}`//,containerA = `${color}Container`,onColorContainer=`on${cUpper}Container`;
+          const c = Colors.isValid(theme.colors[onColor])? theme.colors[onColor] : (theme.colors[textA]) || undefined;
+          if(c){
+            theme.colors[onColor] = c;
+          }
+        });
         for(let i in newTheme.colors){
           if(!(i in theme.colors)){
             theme.colors[i] = newTheme.colors[i];

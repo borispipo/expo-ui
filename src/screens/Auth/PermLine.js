@@ -7,6 +7,7 @@ import {hasResource} from "./utils";
 import { StyleSheet } from "react-native";
 import View from "$ecomponents/View";
 import {Cell} from "$ecomponents/Grid";
+import theme from "$theme";
 
 const PermLine = ({text,cellProps,isUserMasterAdmin,withGrid,defaultActions,resource,perms:cPerms,disabled,allPerms,table,index,onChange,keyname,actions,testID,...rest})=>{
     const [state,setState] = React.useState({
@@ -134,7 +135,7 @@ const PermLine = ({text,cellProps,isUserMasterAdmin,withGrid,defaultActions,reso
             pContent.push(<PermText labelStyle ={hasS? styles.permChildren : undefined} isUserMasterAdmin={isUserMasterAdmin}  key={j} table={table} onToggle={onToggleSingle} tooltip={defaultStr(p.tooltip,p.title,p.desc)} text = {p.text} checked ={checked} actions={perm.actions} resource={i} action ={j}/>)
         });
         if(pContent.length){
-            content.push(<View key={i} testID={testID+"_Content_"+i}>
+            content.push(<View key={i} style={{backgroundColor:theme.colors.surface}} testID={testID+"_Content_"+i}>
                 {hasS ? <Label testID={testID+'_Label'}>{pText}</Label> : null}
                 {pContent}
             </View>)

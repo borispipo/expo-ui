@@ -20,6 +20,9 @@ import {isTouchDevice} from "$platform";
 import * as Utils from "$cutils";
 import {extendObj} from "$utils";
 import {fontConfig} from "$theme/fonts";
+import {MD3LightTheme,MD3DarkTheme} from "react-native-paper";
+import { useMaterial3Theme } from '@pchmn/expo-material3-theme';
+import { useColorScheme } from 'react-native';
 
 import { configureFonts} from 'react-native-paper';
 Object.map(Utils,(v,i)=>{
@@ -29,8 +32,24 @@ Object.map(Utils,(v,i)=>{
 });
 export default function getIndex({onMount,onUnmount,swrConfig,onRender,...rest}){
   const {extendAppTheme} = appConfig;
+  const { theme : pTheme } = useMaterial3Theme();
+  const colorScheme = useColorScheme();
   appConfig.extendAppTheme = (theme)=>{
-      extendObj(theme,{fonts:configureFonts({config:fontConfig,isV3:true})});
+      if(!isObj(theme)) return;
+      const newTheme = theme.dark || theme.isDark ? { ...MD3DarkTheme, colors: pTheme.dark } : { ...MD3LightTheme, colors: pTheme.light };
+      for(let i in newTheme){
+        if(i !== 'colors' && !(i in theme)){
+          theme[i] = newTheme[i];
+        }
+      }
+      if(isObj(theme.colors)){
+        for(let i in newTheme.colors){
+          if(!(i in theme.colors)){
+            theme.colors[i] = newTheme.colors[i];
+          }
+        }
+      }
+      theme.fonts = newTheme.fonts;
       return typeof extendAppTheme == 'function'? extendAppTheme(theme)  : theme;
   }
   const isScreenFocusedRef = React.useRef(true);

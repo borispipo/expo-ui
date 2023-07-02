@@ -6,12 +6,10 @@ import { StylePropTypes } from '$theme';
 import {isNumber,defaultStr} from "$cutils";
 
 const OptimizedHeavyScreen = React.forwardRef(({
-  transition = (
-    <Transition.Together>
+  transition = (<Transition.Together>
       <Transition.Change interpolation="easeInOut" />
       <Transition.In type="fade" />
-    </Transition.Together>
-  ),
+    </Transition.Together>),
   style,
   children:cChildren,
   isLoading,
@@ -19,11 +17,13 @@ const OptimizedHeavyScreen = React.forwardRef(({
   testID,
   transitionTimeout,
   placeholder,
+  enabled,
 },ref) => {
   timeout = isNumber(timeout)? timeout : isNumber(transitionTimeout)? transitionTimeout : undefined;
   const { transitionRef, areInteractionsComplete } = useAfterInteractions(timeout);
   let Placeholder = placeholder;
-  const children = React.useStableMemo(()=>cChildren,[cChildren])
+  const children = React.useStableMemo(()=>cChildren,[cChildren]);
+  if(enabled === false) return children;
   placeholder = React.isComponent(Placeholder)? <Placeholder /> : React.isValidElement(Placeholder)? Placeholder :  null;
   return (
     <Transitioning.View
@@ -42,6 +42,7 @@ export default OptimizedHeavyScreen;
 OptimizedHeavyScreen.propTypes = {
     transition: PropTypes.any,
     children : PropTypes.node,
+    enabled : PropTypes.bool,//if heavry screen will be enabled
     style: StylePropTypes,
     timeout : PropTypes.number,
     transitionTimeout : PropTypes.number,

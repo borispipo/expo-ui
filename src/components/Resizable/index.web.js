@@ -17,9 +17,7 @@ const ResizableComponent = React.forwardRef(({width,onResize,height,...props},re
         if(onResize){
             onResize({...size,element,handle,event});
         }
-      }}>
-
-    </Resizable>
+      }}/>
 });
 
 ResizableComponent.displayName ="ResizableComponent";

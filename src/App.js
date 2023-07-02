@@ -18,12 +18,21 @@ import { timeout as SWR_REFRESH_TIMEOUT} from '$ecomponents/Datagrid/SWRDatagrid
 import { Dimensions,Keyboard } from 'react-native';
 import {isTouchDevice} from "$platform";
 import * as Utils from "$cutils";
+import {extendObj} from "$utils";
+import {fontConfig} from "$theme/fonts";
+
+import { configureFonts} from 'react-native-paper';
 Object.map(Utils,(v,i)=>{
   if(typeof v =='function' && typeof window !='undefined' && window && !window[i]){
      window[i] = v;
   }
 });
 export default function getIndex({onMount,onUnmount,swrConfig,onRender,...rest}){
+  const {extendAppTheme} = appConfig;
+  appConfig.extendAppTheme = (theme)=>{
+      extendObj(theme,{fonts:configureFonts({config:fontConfig,isV3:true})});
+      return typeof extendAppTheme == 'function'? extendAppTheme(theme)  : theme;
+  }
   const isScreenFocusedRef = React.useRef(true);
     ///garde pour chaque écran sa date de dernière activité
     const screensRef = React.useRef({});//la liste des écrans actifs

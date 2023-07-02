@@ -57,22 +57,20 @@ export default class FormDataLayout extends FormDataActions {
         return !!(this.props.isLoading)
     }
     wrapRenderingContent(content,wProps){
-        let {
+        const {
             withHeavyScreen,
             preloader,
             preloaderProps,
-            testID,
         } = this.props;
         const isLoading = this.isLoading();
         wProps = defaultObj(wProps);
-        const useHeavyScreen = withHeavyScreen !== false || isLoading == true? true : false;
-        const Wrapper = useHeavyScreen ? HeavyScreen : React.Fragment;
-        testID = defaultStr(wProps.testID,testID,"RN_FormDataScren");
-        const placeholder = React.isValidElement(preloader)? preloader : <FormLoader {...defaultObj(preloaderProps)}/>;
-        const wrapperProps = useHeavyScreen ? {...wProps,isLoading,placeholder,testID:testID+"_HeavyScreen"} : {}
-        return <Wrapper {...wrapperProps}>
-            {content}
-        </Wrapper>
+        const testID = defaultStr(wProps.testID,this.props.testID,"RN_FormDataScren");
+        return <HeavyScreen {...wProps} 
+            testID={testID+"_HeavyScreen"} 
+            placeholder={React.isValidElement(preloader)? preloader : <FormLoader {...defaultObj(preloaderProps)}/>} 
+            enabled={(withHeavyScreen === false)?false:isLoading} 
+            isLoading={isLoading}
+        >{content}</HeavyScreen>
     }
     _render (content){
         const {testID,...props} = this.props;

@@ -6,7 +6,6 @@ import theme from "$theme";
 import {defaultStr,defaultObj,defaultNumber} from "$cutils";
 import APP from "$capp/instance";
 import ActivityIndicator from "$ecomponents/ActivityIndicator";
-import {isWeb} from "$cplatform";
 
 /***
  * ce composant a pour but de définir la taille d'un contenu en se basant sur sa positin top, de manière à ce que, le contentu du composant fit
@@ -37,20 +36,22 @@ const AutoSizerVerticalComponent = React.forwardRef(({onLayout,isScrollView,scre
       })
   }
   React.setRef(ref,{
-    updateLayout,
-    layoutRef,
-    ref : layoutRef
-});
+      updateLayout,
+      layoutRef,
+      ref : layoutRef
+  });
   React.useEffect(()=>{
     const onResizePage = ()=>{
       setTimeout(()=>{
          updateLayout();
-      },300);
+      },500);
     }
-    APP.on(APP.EVENTS.RESIZE_PAGE,onResizePage);
+    const dim = Dimensions.addEventListener("change",onResizePage);
+    //APP.on(APP.EVENTS.RESIZE_PAGE,onResizePage);
     return ()=>{
-      APP.off(APP.EVENTS.RESIZE_PAGE,onResizePage);
+      //APP.off(APP.EVENTS.RESIZE_PAGE,onResizePage);
       React.setRef(ref,null);
+      dim?.remove();
     }
   },[]);
   const hasUpdateLayout = hasUpdateLayoutRef.current;

@@ -89,7 +89,6 @@ export default class TableDataScreenComponent extends FormDataScreen{
             }
         });
         Object.defineProperties(this,{
-            INITIAL_STATE : {value : {}},
             tableName : { value : defaultStr(table.table,table.tableName)},
             fields : {value : fields},
             table : {value : table},
@@ -120,11 +119,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
     isCurrentDocEditingUpdate(){
         return this.isDocEditingRef.current === true ? true : false;
     }
-    resetState(){
-        Object.map(this.INITIAL_STATE,(s,k)=>{
-            delete this.INITIAL_STATE[k];
-        })
-    }
+
     getDatas(){
         return this.state.datas;
     }
@@ -175,13 +170,15 @@ export default class TableDataScreenComponent extends FormDataScreen{
     */
     prepareComponentProps(props){
         const obj = typeof this.props.prepareComponentProps =='function'? this.props.prepareComponentProps(props) : null;
-        if(isObj(obj)){
+        if(isObj(obj) && Object.size(obj,true)){
             return extendObj({},props,obj);
         }
         return props;
     }
+    getSessionName (){
+        return defaultStr(this.props.sessionName,"table-form-data"+this.getTableName())
+    }
     getComponentProps(props){
-        this.resetState();
         const table = this.table;
         const {datas,currentIndex,data} = this.state; 
         const tableName = this.tableName;
@@ -189,8 +186,6 @@ export default class TableDataScreenComponent extends FormDataScreen{
         this.isDocEditingRef.current = !!isUpdated;
         const isMobOrTab = isMobileOrTabletMedia();
         let archived = this.isArchived(); 
-        this.INITIAL_STATE.archived = archived;
-        this.INITIAL_STATE.tableName = tableName;
         const fields = {};
         const fieldsToPrepare = extendObj({},true,this.fields,customFields);
         const {
@@ -224,7 +219,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
             prepareComponentProps,
             ...rest
         } = this.prepareComponentProps({...props,tableName,fields:fieldsToPrepare,isUpdated,isUpdate:isUpdated,data,datas,currentIndex});
-        const sessionName = this.INITIAL_STATE.sessionName = defaultStr(customSessionName,"table-form-data"+tableName);
+        const sessionName = this.getSessionName();
         const prepareCb = typeof prepareField =='function'? prepareField : x=> x;
         ///on effectue une mutator sur le champ en cours de modification
         Object.map(fieldsToPrepare,(field,i,counterIndex)=>{
@@ -386,7 +381,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
             if(!isMobileOrTabletMedia()){
                 tabsProps.withScrollView = false;
             }
-        },isMobile,sessionName:this.INITIAL_STATE.sessionName,props:restProps,tabProps,tabsProps,context,tabKey};
+        },isMobile,sessionName:this.getSessionName(),props:restProps,tabProps,tabsProps,context,tabKey};
         const hasTabs = Object.size(tabs,true);
         let mainContent = undefined;
         testID = defaultStr(testID,"RN_TableDataScreenItem_"+restProps.tableName);
@@ -453,7 +448,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
     }
     isArchived(data){
         data = defaultObj(data,this.state.data);
-        return this.isArchivable() && this.isDocEditing(data) && (!!data.archived || !!data.wasTransferred)? true : !!this.INITIAL_STATE.archived || false;
+        return this.isArchivable() && this.isDocEditing(data) && (!!data.archived || !!data.wasTransferred)? true : !!this.props.archived || false;
     }
     goToPreviousData(){
         const currentIndex = this.getCurrentIndex(),datas = this.state.datas;
@@ -790,9 +785,9 @@ export default class TableDataScreenComponent extends FormDataScreen{
     copyToClipboard(){
         return copyToClipboard({
             data : this.getCurrentData(),
-            fields : this.INITIAL_STATE.fields,
-            sessionName : this.INITIAL_STATE.sessionName,
-        })
+            fields : this.getCurrentRenderingProps()?.fields,
+            sessionName : this.getSessionName(),
+        });
     }
     renderDatagridActions(args){
         args = defaultObj(args);

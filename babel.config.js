@@ -15,10 +15,41 @@ module.exports = function(api,opts) {
     }
     /*** par défaut, les variables d'environnements sont stockés dans le fichier .env situé à la racine du projet, référencée par la prop base  */
     const alias =  require("./babel.config.alias")(options);
+    const $ecomponents = alias.$ecomponents|| null;
+    const eAppex  = $ecomponents && path.resolve($ecomponents,"Chart","appexChart");
+    if(eAppex && fs.existsSync(eAppex)){
+        const appexPathHtml = path.resolve(eAppex,"index.html");
+        const $eelectron = alias.$eelectron || null;
+        const expoRoot = alias["$expo-ui-root-path"] || null;
+        const expoRootModulesP = expoRoot && fs.existsSync(path.resolve(expoRoot,"node_modules")) && path.resolve(expoRoot,"node_modules") || null;
+        const aDistPath = path.join("apexcharts","dist","apexcharts.min.js");
+        const nodeModulesPath = expoRootModulesP && fs.existsSync(path.resolve(expoRootModulesP,aDistPath)) ? expoRootModulesP :   alias.$enodeModulesPath;
+        if(nodeModulesPath && fs.existsSync(nodeModulesPath) && $eelectron && fs.existsSync($eelectron)){
+          const writeFilePath = path.resolve($eelectron,"utils","writeFile.js");
+          const appexDistPath = path.resolve(nodeModulesPath,"apexcharts","dist","apexcharts.min.js");
+          if(fs.existsSync(writeFilePath) && fs.existsSync(appexDistPath)){
+						 const jsContent = fs.readFileSync(appexDistPath, 'utf8')
+             const writeFile = require(`${writeFilePath}`);
+             //overite appex chart html file
+             writeFile(appexPathHtml,`
+							 <html>
+							 <head>
+								 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+								 <script>${jsContent}</script>
+								 </head>
+								 <body>
+								 </body>
+							 </html>
+             `);
+             console.log("appexchart file overwrited*******************")
+          }
+        }
+    }
+    
     return {
       presets: [
-        ['babel-preset-expo'],
-        ["@babel/preset-react", {"runtime": "automatic"}],
+        ['babel-preset-expo']/*,
+        ["@babel/preset-react", {"runtime": "automatic"}],*/
       ],
       plugins : [
         ["inline-dotenv",inlineDovOptions],

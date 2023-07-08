@@ -111,10 +111,13 @@ module.exports = (opts)=>{
     }
     ///on génère les librairies open sources utilisées par l'application
     const root = path.resolve(r.$src,"..");
+    const nModulePath = fs.existsSync(path.resolve(root,"node_modules")) && path.resolve(root,"node_modules") || fs.existsSync(path.resolve(r.$src,"node_modules")) && path.resolve(r.$src,"node_modules") || path.resolve(base,"node_modules");
+    const nodeModulesPath = fs.existsSync(nModulePath) ? nModulePath : path.resolve(process.cwd(),"node_modules");
     const outputPath = path.resolve(HelpScreen,"openLibraries.js");
+    r.$nodeModulesPath = r.$enodeModulesPath= nodeModulesPath;
     require("./find-licenses")({
         paths : [root,r["$expo-ui-root-path"]],
-        nodeModulesPath : path.resolve(root,"node_modules"),
+        nodeModulesPath : nodeModulesPath,
         outputPath
     });
     const $assets = r.$assets;

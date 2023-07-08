@@ -41,7 +41,7 @@ module.exports = function(api,opts) {
 								 </body>
 							 </html>
              `);
-             console.log("appexchart file overwrited*******************")
+             //console.log("appexchart file overwrited*******************")
           }
         }
     }

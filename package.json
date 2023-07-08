@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "6.0.0",
+  "version": "6.0.1",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "index.js",
   "scripts": {
@@ -61,7 +61,7 @@
     "@emotion/native": "^11.11.0",
     "@expo/html-elements": "^0.5.1",
     "@expo/vector-icons": "^13.0.0",
-    "@fto-consult/common": "^3.18.31",
+    "@fto-consult/common": "^3.18.32",
     "@gorhom/portal": "^1.0.14",
     "@pchmn/expo-material3-theme": "^1.0.1",
     "@react-native-async-storage/async-storage": "1.18.2",

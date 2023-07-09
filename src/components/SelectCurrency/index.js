@@ -18,8 +18,8 @@ CurrencySelector.Format = Format;
 
 export default CurrencySelector;
 
-export const selectCurrencyFieldProps = ({disabled,readOnly,isFilter,editable,...props})=>{
-    const isEditable = disabled !== true && readOnly !== true && editable !== false;
+export const selectCurrencyFieldProps = ({disabled,readOnly,isFilter,...props})=>{
+    const isEditable = disabled !== true && readOnly !== true;
     const currency = appConfig.currency;
     return {
         items : currencies,
@@ -31,7 +31,7 @@ export const selectCurrencyFieldProps = ({disabled,readOnly,isFilter,editable,..
         ...props,
         isFilter,
         disabled : !isEditable,
-        editable : isEditable,
+        readOnly : readOnly || !isEditable,
         type : 'select',
     }
 }

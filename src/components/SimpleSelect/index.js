@@ -16,7 +16,7 @@ import { matchOperators,getSearchTimeout,canAutoFocusSearchField} from "$ecompon
 import Dialog from "$ecomponents/Dialog";
 
 const  SimpleSelect = React.forwardRef((props,ref)=>{
-    let {style : customStyle,onMount,mode,showSearch,anchorContainerProps,renderText,contentContainerProps,withCheckedIcon,testID,selectionColor,dialogProps,onShow,anchor,onUnmont,controlled:cr,onDismiss,visible:controlledVisible,selectedColor,inputProps,itemProps,itemContainerProps,label,listProps,editable,readOnly,text,filter,renderItem,itemValue,getItemValue,defaultValue,items:menuItems,onPress,onChange,disabled,...rest} = props;
+    let {style : customStyle,onMount,mode,showSearch,anchorContainerProps,renderText,contentContainerProps,withCheckedIcon,testID,selectionColor,dialogProps,onShow,anchor,onUnmont,controlled:cr,onDismiss,visible:controlledVisible,selectedColor,inputProps,itemProps,itemContainerProps,label,listProps,readOnly,text,filter,renderItem,itemValue,getItemValue,defaultValue,items:menuItems,onPress,onChange,disabled,...rest} = props;
     const flattenStyle = StyleSheet.flatten(customStyle) || {};
     const controlledRef = React.useRef(typeof controlledVisible ==='boolean'? true : false);
     const controlled = controlledRef.current;
@@ -127,7 +127,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
         }
     },[value]);
     const [canEdit,setCanEdit] = React.useState(true);
-    const isEditable = canEdit && !disabled && !readOnly && editable !== false ? true : false;
+    const isEditable = canEdit && !disabled && !readOnly ? true : false;
     const pointerEvents = isEditable ? "auto" : "none";
     const isMob = !isDesktopMedia();
     const prevIsMob = React.usePrevious(isMob);
@@ -231,7 +231,6 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
         label : defaultVal(label,text,inputProps.label),
         disabled,
         readOnly,
-        editable : false,
         pointerEvents,
         value,
         autoHeight : false,
@@ -247,13 +246,12 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
             {...rest}
             {...inputProps}
             label = {defaultVal(label,text,inputProps.label)}
-            editable = {false}
+            readOnly = {typeof readOnly ==='boolean'? readOnly : true}
             disabled = {disabled}
-            readOnly = {readOnly}
             defaultValue = {selectedObj.textContent}
         />
     const inputRef = React.useRef(null);
-    const canFilter = !props.disabled && !props.readOnly && props.editable !== false && visible;
+    const canFilter = !props.disabled && !props.readOnly && visible;
     const [filterText,setFilterText] = React.useState("");
     let filterRegex = undefined;
     if(canFilter && isNonNullString(filterText)){
@@ -261,7 +259,6 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
     }
     const textInputProps = {
         disabled : props.disabled,
-        editable : props.editable,
         readOnly : props.readOnly,
         label : props.label,
         mode:flatMode,
@@ -281,7 +278,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
     const autoFocus = canAutoFocusSearchField({visible,items:renderingItems});
     testID = defaultStr(testID, "RN_SimpleSelectComponent");
     anchor =  <TouchableOpacity
-        accessibilityRole="button"
+        role="button"
         activeOpacity={0.3}
         testID = {testID}
         {...defaultObj(anchorContainerProps)}
@@ -308,7 +305,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
             visible = {visible}
             onDismiss={close}
             disabled = {!isEditable}
-            editable = {editable !== false? true : false}
+            readOnly = {readOnly === true? true : false}
             style = {[{marginTop}]}
             anchor = {anchor}
             contentProps = {{style:{flex:1}}}

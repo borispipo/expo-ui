@@ -19,7 +19,7 @@ export default function CountryFlagComponent({code,label,withName,withCode,text,
             <Image  
             accessibilityIgnoresInvertColors 
             testID ={testID+"Image"}
-            editable = {false}
+            readOnly = {true}
             {...props}
             size = {25} 
             style={[props.style]} 

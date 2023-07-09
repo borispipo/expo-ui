@@ -12,7 +12,7 @@ const FilterBetweenComponent = React.forwardRef(({inputProps,contentContainerPro
         ref = {ref}
         {...props}
         contentContainerProps={contentContainerProps}
-        inputProps = {{...defaultObj(inputProps),pointerEvents:"none",editable:false}}
+        inputProps = {{...defaultObj(inputProps),style : [inputProps?.style,{pointerEvents:"none"}],readOnly:true}}
         type ="text"
         format = {undefined}
         onChange = {(e)=>false}

@@ -1,5 +1,5 @@
 import React from '$react';
-import {Platform,StyleSheet,TouchableWithoutFeedback,View} from 'react-native';
+import {Platform,StyleSheet,Pressable,View} from 'react-native';
 import Label from "$ecomponents/Label";
 import theme,{Colors,StyleProp} from "$theme";
 import PropTypes from "prop-types";
@@ -30,7 +30,7 @@ const AppbarContent = React.forwardRef(({
   const subtitleColor = Colors.setAlpha(titleTextColor,0.7);
 
   return (
-    <TouchableWithoutFeedback testID={testID+"_Container"} {...defaultObj(containerProps)} onPress={onPress} disabled={!onPress}>
+    <Pressable testID={testID+"_Container"} {...defaultObj(containerProps)} onPress={onPress} disabled={!onPress}>
       <View
         pointerEvents="box-none"
         style={[styles.container, style]}
@@ -54,7 +54,7 @@ const AppbarContent = React.forwardRef(({
           numberOfLines={1}
           accessible
           // @ts-ignore Type '"heading"' is not assignable to type ...
-          accessibilityRole={Platform.OS === 'web' ? 'heading' : 'header'}
+          role={Platform.OS === 'web' ? 'heading' : 'header'}
         >
           {title}
         </Label>
@@ -69,7 +69,7 @@ const AppbarContent = React.forwardRef(({
           </Label>
         ) : null}
       </View>
-    </TouchableWithoutFeedback>
+    </Pressable>
   );
 });
 

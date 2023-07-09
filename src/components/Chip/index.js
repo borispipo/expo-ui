@@ -4,7 +4,7 @@ import {
   Animated,
   Platform,
   StyleSheet,
-  TouchableWithoutFeedback,
+  Pressable,
 } from 'react-native';
 import Icon from "$ecomponents/Icon";
 import {Text,TouchableRipple } from 'react-native-paper';
@@ -131,7 +131,7 @@ const ChipComponent = React.forwardRef(({
         // @ts-expect-error We keep old a11y props for backwards compat with old RN versions
         accessibilityTraits={accessibilityTraits}
         accessibilityComponentType="button"
-        accessibilityRole="button"
+        role="button"
         accessibilityState={accessibilityState}
         testID={testID+"_Container"}
       >
@@ -195,12 +195,12 @@ const ChipComponent = React.forwardRef(({
       </TouchableRipple>
       {onClose ? (
         <View style={styles.closeButtonStyle} testID={testID+"_CloseButtonContainer"}>
-          <TouchableWithoutFeedback
+          <Pressable
             onPress={onPress}
             // @ts-expect-error We keep old a11y props for backwards compat with old RN versions
             accessibilityTraits="button"
             accessibilityComponentType="button"
-            accessibilityRole="button"
+            role="button"
             accessibilityLabel={closeIconAccessibilityLabel}
             testID={testID+"_CloseButtonRipple"}
           >
@@ -217,7 +217,7 @@ const ChipComponent = React.forwardRef(({
                 />
               )}
             </View>
-          </TouchableWithoutFeedback>
+          </Pressable>
         </View>
       ) : null}
     </Surface>
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
   text: {
     minHeight: 24,
     lineHeight: 24,
-    textAlignVertical: 'center',
+    verticalAlign: 'center',
     marginVertical: 4,
   },
   avatar: {

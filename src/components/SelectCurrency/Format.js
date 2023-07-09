@@ -8,8 +8,8 @@ import {isNonNullString,defaultStr} from "$cutils";
 import Icon from "$ecomponents/Icon";
 import {styles} from "$theme";
 
-const CurrencyFormat = React.forwardRef(({disabled,readOnly,right,isFilter,editable,...props},ref)=>{
-    const isEditable = disabled !== true && readOnly !== true && editable !== false;
+const CurrencyFormat = React.forwardRef(({disabled,readOnly,right,isFilter,...props},ref)=>{
+    const isEditable = disabled !== true && readOnly !== true;
     const defaultValue = isNonNullString(props.defaultValue) && props.defaultValue.contains("v" && props.defaultValue) && props.defaultValue || defaultStr(appConfig.currencyFormat,"%v %s");
     const title = "Format d'affichage des valeurs numériques : une chaine de caractère constituée des lettre %v et %s où %v représente la valeur du montant et %s représente la devise : exemple %s%v => $10 et %v %s => 10 $";
     return <TextField      
@@ -17,8 +17,7 @@ const CurrencyFormat = React.forwardRef(({disabled,readOnly,right,isFilter,edita
         enableCopy = {false}
         {...props}
         disabled = {disabled}
-        readOnly = {readOnly}
-        editable = {isEditable}
+        readOnly = {readOnly || !isEditable}
         defaultValue = {defaultValue}
         right = {!isEditable || isFilter ? right : (rP)=>{
             const r = typeof right =='function'? right(rP) : right;

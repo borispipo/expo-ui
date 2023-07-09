@@ -6,7 +6,7 @@ import React from "$react";
 import {IconButton} from "react-native-paper"
 
 const IconComponentRef = React.forwardRef((props,ref)=>{
-    let {icon,style,Component,button,color,name,...rest} = props;
+    let {icon,style,Component,button,color,name,containerColor,...rest} = props;
     icon = defaultVal(icon,name);
     if(isNonNullString(icon)){
         icon = icon.trim().ltrim("")
@@ -22,14 +22,22 @@ const IconComponentRef = React.forwardRef((props,ref)=>{
     if(button === false){
         flattenedStyle.borderRadius = 0;
     }
+    const C = React.isComponent(Component)?Component:IconButton;
     const iconColor = Colors.isValid(color) ? color : Colors.isValid(rest.iconColor)? rest.iconColor : Colors.isValid(flattenedStyle.color)? flattenedStyle.color : theme.colors.text
+    const restP = {};
+    if(C == IconButton){
+        restP.iconColor = iconColor;
+        restP.containerColor = Colors.isValid(containerColor)? containerColor : Colors.isValid(flattenStyle.backgroundColor) ? flattenStyle.backgroundColor : "transparent";
+    } else {
+        restP.color = iconColor; 
+    }
     return <Tooltip 
         animated 
-        {...rest}  
-        color={iconColor}
-        iconColor = {iconColor} 
+        {...restP}
+        {...rest}
+        testID = {defaultStr(rest.testID,"RN_IconComponent")}
         style = {flattenedStyle}
-        Component={React.isComponent(Component)?Component:IconButton}
+        Component={C}
         ref = {ref}
     />
 });

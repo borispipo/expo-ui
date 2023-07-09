@@ -1,5 +1,6 @@
 import React from "$react"
-import { AppState,BackHandler,} from "react-native";
+import { AppState} from "react-native";
+import BackHandler from "$ecomponents/BackHandler";
 import * as Linking from 'expo-linking';
 import APP from "$capp";
 import {AppStateService,trackIDLE,stop as stopIDLE} from "$capp/idle";

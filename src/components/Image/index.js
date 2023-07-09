@@ -55,7 +55,7 @@ export default function ImageComponent(props){
     })*/ 
     const [isDrawing,setIsDrawing] = React.useState(false);
     let {disabled,onMount,defaultSource,onUnmount,label,text,labelProps,readOnly,beforeRemove,
-        onChange,draw,round,drawText,drawLabel,rounded,editable,defaultSrc,
+        onChange,draw,round,drawText,drawLabel,rounded,defaultSrc,
         createSignatureOnly,pickImageProps,width,height,cropProps,size,resizeProps,containerProps,
         menuProps,pickUri,drawProps,imageProps,length,testID,...rest} = props;
     rest = defaultObj(rest);
@@ -72,9 +72,8 @@ export default function ImageComponent(props){
     drawProps = defaultObj(drawProps);
     const flattenStyle = StyleSheet.flatten(props.style) || {};
     defaultSrc = defaultVal(defaultSrc);
-    editable = defaultBool(editable,false);
     if(disabled){
-        editable = false;
+        readOnly = true;
     }
     React.useEffect(()=>{
         if(src == props.src) return;
@@ -211,7 +210,7 @@ export default function ImageComponent(props){
     imageProps = defaultObj(imageProps);
     testID = defaultStr(testID,"RN_ImageComponent");
     let menuItems = []
-    if(editable){
+    if(!readOnly){
         menuItems.push({
             label : 'Sélect Image',
             icon :'image-search',
@@ -232,7 +231,7 @@ export default function ImageComponent(props){
         }
     })();
 
-    if(canUpdate && editable){
+    if(canUpdate && !readOnly){
         menuItems.push({
             key : 'has-photo',
             label : 'Retirer la photo',
@@ -240,7 +239,7 @@ export default function ImageComponent(props){
             onPress : x=> context.deleteImage()
         })
     }
-    if(false && defaultBool(draw ,true) && editable){
+    if(false && defaultBool(draw ,true) && !readOnly){
         menuItems.push({
             key : "drawImageCustom",
             label : defaultString(drawText,drawLabel,'Faire un dessin'),
@@ -308,7 +307,7 @@ const styles = StyleSheet.create ({
 ImageComponent.propTypes = {
     containerProps : PropTypes.object,//les props du container entre le lable et l'image rendu
     menuProps : PropTypes.object, ///les props du menu d'édition du composant,
-    editable : PropTypes.bool,
+    readOnly : PropTypes.bool,
     disabled: PropTypes.bool,
     pickUri : PropTypes.bool,////si l'uri sera retournée lorsqu'on pick l'image en lieu et place du dataURL
     imageProps : PropTypes.object, ///les props supplémentaires du composant Image

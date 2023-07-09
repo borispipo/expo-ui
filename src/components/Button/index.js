@@ -50,7 +50,7 @@ const ButtonComponent = React.forwardRef((prs,ref) => {
     accessible,
     backgroundColor,
     borderColor,
-    accessibilityRole,
+    role,
     contentContainerProps,
     loadingProps,
     rounded,
@@ -243,7 +243,7 @@ const ButtonComponent = React.forwardRef((prs,ref) => {
                     // @ts-expect-error We keep old a11y props for backwards compat with old RN versions
                     accessibilityTraits={disabled ? ['button', 'disabled'] : 'button'}
                     accessibilityComponentType="button"
-                    accessibilityRole={disabled?accessibilityRole || "button":undefined}
+                    role={disabled?role || "button":undefined}
                     accessibilityState={{ disabled }}
                     accessible={accessible}
                     disabled={disabled}
@@ -254,7 +254,7 @@ const ButtonComponent = React.forwardRef((prs,ref) => {
                   >
                     <View testID={testID+"_Content"} {...contentProps} style={[styles.content, contentStyle,noPadding && theme.styles.noPadding,noMargin && theme.styles.noMargin]}>
                       {React.isValidElement(left)? left : typeof left =='function' ?left(leftRProps):null}
-                      {icon && isLoading !== true ? (
+                      {icon && isLoading !== true && false ? (
                         <View style={[iconStyle,{color:textColor},iconProps.style]} testID={testID+"_IconContainer"}>
                           {React.isValidElement(icon)?icon : <Icon
                             testID={testID+"_Icon"}

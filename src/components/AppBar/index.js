@@ -7,7 +7,7 @@ import theme,{Colors,flattenStyle} from "$theme";
 import {StyleSheet} from "react-native";
 import {goBack as navGoBack,useNavigation,useRoute,useScreenOptions } from "$cnavigation";
 import PropTypes from "prop-types";
-import { Dimensions,View,TouchableWithoutFeedback} from "react-native";
+import { Dimensions,View,Pressable} from "react-native";
 import Content from "./Content";
 import Icon from "$ecomponents/Icon";
 import {Elevations} from "$ecomponents/Surface";
@@ -81,9 +81,9 @@ const AppBarComponent = React.forwardRef((props,ref)=> {
     }
     backAction =  React.isValidElement(backAction)? backAction : null;
     if(!backAction && BackActionComponent){
-      backAction = <BackActionComponent back={options.back} ref={backActionRef} {...backActionProps} onPress={onBackActionPress} />
+      backAction = <BackActionComponent containerColor="transparent" testID="RN_AppBarBackAction" back={options.back} ref={backActionRef} {...backActionProps} onPress={onBackActionPress} />
     } else if(backAction){
-        backAction = <TouchableWithoutFeedback
+        backAction = <Pressable
           {...backActionProps}
           ref = {backActionRef}
           onPress={onBackActionPress}
@@ -114,23 +114,30 @@ const AppBarComponent = React.forwardRef((props,ref)=> {
     titleProps = defaultObj(titleProps);
     React.setRef(ref,context);
     testID = defaultStr(testID,"RN_AppBarComponent")
+    const renderedActions = renderSplitedActions(splitedActions,{
+      ...defaultObj(menuProps,appBarProps.menuProps),
+      anchorProps : {
+       style : anchorStyle,
+       color : anchorStyle.color,
+      }
+   });
+   const renderedRight = React.isValidElement(rightContent) && rightContent || right;
+   const hasRight = React.isValidElement(renderedActions) || React.isValidElement(renderedRight);
     return (
       <Appbar.Header elevation={elevation} {...appBarProps}  testID={testID} style={[styles.header,{backgroundColor},elevStyle,appBarProps.style]} onLayout={onPageResize}>
-        {backAction}
-        <Content {...defaultObj(appBarProps.contentProps)} 
-            title={title}
-            titleProps = {{...titleProps,style:[styles.title,{color:primaryText},titleProps.style]}}
-            subtitle = {defaultVal(subtitle,params.subtitle,options.subtitle)}
-            subtitleProps = {subtitleProps}
-        />
-        {renderSplitedActions(splitedActions,{
-           ...defaultObj(menuProps,appBarProps.menuProps),
-           anchorProps : {
-            style : anchorStyle,
-            color : anchorStyle.color,
-           }
-        })}
-        {React.isValidElement(rightContent) && rightContent || right}
+        <View style={styles.title2Back} testID={testID+"_AppBarBack2Titlte"}>
+          {backAction}
+          <Content {...defaultObj(appBarProps.contentProps)} 
+              title={title}
+              titleProps = {{...titleProps,style:[styles.title,{color:primaryText},titleProps.style]}}
+              subtitle = {defaultVal(subtitle,params.subtitle,options.subtitle)}
+              subtitleProps = {subtitleProps}
+          />
+        </View>
+        {hasRight ? <View testID={testID+"_Actions"} style={styles.actions2right}>
+          {renderedActions}
+          {renderedRight}
+        </View> : null}
       </Appbar.Header>
     );
 });
@@ -144,9 +151,23 @@ const styles = StyleSheet.create({
     fontSize : TITLE_FONT_SIZE,
     fontWeight : 'bold'
   },
+  title2Back : {
+    flexDirection : "row",
+    justifyContent : "start",
+    alignItems : "center",
+  },
+  actions2right : {
+    flexDirection : "row",
+    justifyContent : "start",
+    alignItems : "center",
+  },
   header : {
     paddingHorizontal : 5,
     paddingRight : 10,
+    justifyContent : "space-between",
+    alignItems : "center",
+    flexDirection : "row",
+    w : "100%"
   },
 })
 

@@ -23,7 +23,7 @@ export default function showConfirm (p,cb){
         confirm,
         no,
         type,
-        keyboardType,
+        inputMode,
         alertType,
         actions,
         testID,

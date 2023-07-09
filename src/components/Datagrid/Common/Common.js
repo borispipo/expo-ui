@@ -2451,7 +2451,6 @@ export default class CommonDatagridComponent extends AppComponent {
                 render,
                 readOnly,
                 disabled,
-                editable,
                 visible,
                 defaultValue,
                 id,

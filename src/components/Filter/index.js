@@ -506,7 +506,7 @@ export default class Filter extends AppComponent {
      const ignoreDefaultValue = (isPeriodAction||isBetweenAction) && isNonNullString(defaultValue) && defaultValue.contains("=>");
      rest.defaultValue = defaultValue;
      rest.disabled = rest.readOnly = rest.affix = false;
-     rest.editable = true;
+     rest.readOnly = false;
      rest.style = [style];
      rest.type = type;
      const isMob = isMobileMedia() || withBottomSheet;

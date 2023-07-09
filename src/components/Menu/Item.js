@@ -84,7 +84,7 @@ const MenuItemComponent = React.forwardRef(({
       disabled={disabled}
       testID={testID}
       accessibilityLabel={accessibilityLabel}
-      accessibilityRole="menuitem"
+      role="menuitem"
       accessibilityState={{ disabled }}
       pointerEvents = {pointerEvents}
     >

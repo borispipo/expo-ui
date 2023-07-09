@@ -506,7 +506,7 @@ class DropdownComponent extends AppComponent {
             }
         }
         force = typeof force !== 'boolean'? false : force;
-        if(this.props.disabled === true || this.props.editable ===false || this.props.readOnly === true || (force !== true && this.isLoading())) return;
+        if(this.props.disabled === true || this.props.readOnly === true || (force !== true && this.isLoading())) return;
         if(!this.state.visible){
             if(this.props.withBottomSheet){
                 getContentHeight(this.anchorRef).then(({height})=>{
@@ -548,7 +548,7 @@ class DropdownComponent extends AppComponent {
         return this.hide(cb);
     }
     canHandleFilter(){
-        return this.props.disabled !== true && this.props.readOnly !==true && this.props.editable !== false && this.state.visible ? true : false;
+        return this.props.disabled !== true && this.props.readOnly !==true && this.state.visible ? true : false;
     }
     focus = ()=>{
         if(this.canHandleFilter() && this.inputRef && this.inputRef.current){
@@ -659,7 +659,6 @@ class DropdownComponent extends AppComponent {
             visible: _visible,
             itemProps,
             disabled,
-            editable,
             readOnly,
             defaultValue,
             selectedColor,
@@ -722,13 +721,7 @@ class DropdownComponent extends AppComponent {
         itemProps = defaultObj(itemProps);
         disabled = defaultBool(disabled,false);
         readOnly = defaultBool(readOnly,false);
-        editable = defaultBool(editable,true);
-
-        if(!readOnly){
-            readOnly = editable === false ? true : false;
-            editable = !readOnly;
-        }
-
+        
         listProps = defaultObj(listProps);
         selectedColor = (Colors.isValid(selectedColor)? selectedColor : theme.colors.primaryOnSurface);
         this.selectedColor = selectedColor;
@@ -736,19 +729,19 @@ class DropdownComponent extends AppComponent {
         const {layout:inputLayout,selectedText,visible,isFiltering,filterText} = this.state;
         const self = this,state = this.state;
         const canHandle = !this.isLoading();
-        const canFilter = !disabled && !readOnly && editable && visible;
+        const canFilter = !disabled && !readOnly && visible;
         const isMob = isMobileOrTabletMedia();
         inputProps = defaultObj(inputProps);
         const contentContainerProps = Object.assign({},inputProps.contentContainerProps);
         const containerProps = Object.assign({},inputProps.containerProps);
-        const inputRest = {disabled,editable,label,error}
+        const inputRest = {disabled,readOnly,label,error}
         clearTimeout(this.doSearchFilter);
         this.doSearchFilter = null;
         mode = defaultStr(mode,inputProps.mode);
         const textInputProps = {
             ...inputRest,
             mode,
-            editable,disabled,
+            disabled,
             style : StyleSheet.flatten([styles.input,inputProps.style])
         }
         const dimensions = Dimensions.get("window");
@@ -757,11 +750,11 @@ class DropdownComponent extends AppComponent {
         if(isMob){
             contentContainerHeight = '95%';
         }
-        const iconDisabled = !canHandle || disabled || readOnly ||!editable?true : false;
+        const iconDisabled = !canHandle || disabled || readOnly ?true : false;
         const pointerEvents = iconDisabled?"none":"auto";
         addIconTooltip = defaultStr(addIconTooltip,'Ajouter un élément');
         addIconProps = defaultObj(addIconProps);
-        if(disabled || readOnly || editable === false){
+        if(disabled || readOnly){
             showAdd = false;
         }
         if(typeof showAdd ==='function'){
@@ -912,7 +905,6 @@ class DropdownComponent extends AppComponent {
                         readOnly = {readOnly}
                         //divider = {canHandle}
                         alwaysUseLabel = {renderTag?true : false}
-                        editable = {false}
                         contentContainerProps = {{
                             ...contentContainerProps,
                             pointerEvents:iconDisabled && (!enableCopy && disabled)?'none':'auto',
@@ -975,7 +967,7 @@ class DropdownComponent extends AppComponent {
             restProps.pointerEvents = "auto";
         }
         const renderingItems = this.getItems();
-        const isDisabled = !editable || readOnly || disabled?true:false;
+        const isDisabled = readOnly || disabled?true:false;
         const isBigList = this.isBigList;
         const ListComponent = isBigList ? BigList : List;
         const autoFocus = canAutoFocusSearchField({visible,items:renderingItems});

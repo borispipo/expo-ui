@@ -69,7 +69,7 @@ const IconButtonComponent = ({
         // @ts-expect-error We keep old a11y props for backwards compat with old RN versions
         accessibilityTraits={disabled ? ['button', 'disabled'] : 'button'}
         accessibilityComponentType="button"
-        accessibilityRole="button"
+        role="button"
         accessibilityState={{ disabled }}
         disabled={disabled}
         hitSlop={

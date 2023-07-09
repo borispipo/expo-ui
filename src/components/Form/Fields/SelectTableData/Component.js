@@ -82,7 +82,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,prepareFilters:
     }
     const foreignKeyColumnValue = props.defaultValue;
     let isDisabled = defaultBool(props.disabled,props.readOnly,false);
-    if(!isDisabled && props.editable === false){
+    if(!isDisabled && props.readOnly === true){
         isDisabled = true;
     }
     if(isUpdate && isNonNullString(foreignKeyColumnValue) && (isDisabled)){

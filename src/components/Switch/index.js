@@ -39,7 +39,6 @@ const SwitchComponent = React.forwardRef((props,ref)=>{
         checked,
         testID,
         title,
-        editable,
         disabled,
         readOnly,
         right,
@@ -50,7 +49,7 @@ const SwitchComponent = React.forwardRef((props,ref)=>{
     } = props;
     p = defaultObj(p);
     disabled = defaultBool(disabled,false);
-    const isEditable = !disabled && readOnly !== true && editable !== false ? true : false;
+    const isEditable = !disabled && readOnly !== true ? true : false;
     const pointerEvents = isEditable ? "auto" : "none";
     checkedValue = defaultVal(onValue,checkedValue,1);
     uncheckedValue = defaultVal(offValue,uncheckedValue,0);
@@ -105,7 +104,7 @@ const SwitchComponent = React.forwardRef((props,ref)=>{
    const disabledStyle = undefined;//disabled ? {opacity : DISABLED_OPACITY} : undefined;
    const sw = <Switch
         disabled = {disabled}
-        editable = {isEditable}
+        readOnly = {readOnly || !isEditable}
         pointerEvents={pointerEvents}
         style = {[{paddingHorizontal:0,['margin'+(isLeftPosition?'Right':'Left')]:10},style,disabledStyle]}
         value = {isSwitchOn}
@@ -116,7 +115,7 @@ const SwitchComponent = React.forwardRef((props,ref)=>{
                 {...p} 
                 tooltip={tooltip} 
                 accessibilityLabel={label}
-                accessibilityRole="switch"
+                role="switch"
                 disabled = {!isEditable}
                 pointerEvents = {pointerEvents}
                 accessibilityState={{checked:isSwitchOn}}

@@ -31,7 +31,6 @@ const SliderComponent = React.forwardRef((props,ref)=>{
         renderValue,
         step,
         percentage,
-        editable,
         disabled,
         readOnly,
         ...p
@@ -39,7 +38,7 @@ const SliderComponent = React.forwardRef((props,ref)=>{
     p = defaultObj(p);
     disabled = defaultBool(disabled,false);
     readOnly = defaultBool(readOnly,false);
-    const isEditable = !disabled && !readOnly && editable !== false ? true : false;
+    const isEditable = !disabled && !readOnly ? true : false;
     const pointerEvents = isEditable ? "auto" : "none";
     containerProps = defaultObj(containerProps);
     valueProps = defaultObj(valueProps);
@@ -95,7 +94,7 @@ const SliderComponent = React.forwardRef((props,ref)=>{
                 <Slider
                     {...p}
                     disabled = {disabled}
-                    editable = {isEditable}
+                    readOnly = {readOnly || !isEditable}
                     thumbTintColor = {Colors.isValid(p.thumbTintColor)? p.thumbTintColor:tinColor}
                     minimumTrackTintColor = {Colors.isValid(p.minimumTrackTintColor)
                         ?p.minimumTrackTintColor:tinColor}

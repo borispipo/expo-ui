@@ -44,7 +44,7 @@ const TabItemComponentNotThemed = ({
   const isIconTop = iconPosition =='top'? true : false;
   
   return (<TouchableRipple
-          accessibilityRole="tab"
+          role="tab"
           accessibilityState={{ selected: active }}
           accessibilityValue={
             typeof label === 'string' ? { text: label } : undefined

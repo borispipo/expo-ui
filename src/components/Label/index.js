@@ -10,7 +10,7 @@ const defaultSelectable = canTextBeSelectable();
 
 export const EllipsizeMode = {'head':'head','middle':'middle', 'tail':'tail' , 'clip':'clip'}
 
-const LabelComponent = React.forwardRef(({ children,color,upperCase,fontSize,testID,wrap,nativeID,wrapText,error,underlined,splitText,secondary,primary,bold,textBold,disabled,text,style,...rest},ref)=> {
+const LabelComponent = React.forwardRef(({ children,color,upperCase,fontSize,testID,wrap,id,wrapText,error,underlined,splitText,secondary,primary,bold,textBold,disabled,text,style,...rest},ref)=> {
     children = defaultVal(children,text);
     let isText = false;
     if(!React.isValidElement(children) && Array.isArray(children) && children.length){
@@ -43,7 +43,7 @@ const LabelComponent = React.forwardRef(({ children,color,upperCase,fontSize,tes
     
     style = Object.assign({},StyleSheet.flatten(style));
     testID = defaultStr(testID,"RN_LabelComponent");
-    const restProps = {nativeID};
+    const restProps = {id};
     if(splitText){
         restProps.numberOfLines = defaultNumber(restProps.numberOfLines,1);
         restProps.ellipsizeMode = defaultStr(restProps.ellipsizeMode,'tail');
@@ -80,8 +80,8 @@ const LabelComponent = React.forwardRef(({ children,color,upperCase,fontSize,tes
     }
     if(React.isValidElement(children)){
         if(!hasP) {
-            if(nativeID || ref){
-                return <View ref = {ref} testID = {testID} nativeID={nativeID}>{children}</View>
+            if(id || ref){
+                return <View ref = {ref} testID = {testID} id={id}>{children}</View>
             }
             return <>{children}</>
         }

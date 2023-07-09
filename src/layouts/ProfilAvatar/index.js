@@ -120,7 +120,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,chevronIconProps
                             size={size}
                             style = {styles.itemLeft}
                             testID = {"RN_ProfilAvatar_Avatar"}
-                            editable
+                            readOnly = {false}
                             defaultSource ={avatarProps.defaultSrc}
                             onChange = {onChangeAvatar}
                         />
@@ -146,7 +146,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,chevronIconProps
                             size={size}
                             style = {styles.itemLeft}
                             testID = {"RN_ProfilAvatar_AvatarImage"}
-                            editable
+                            readOnly = {false}
                             defaultSource ={avatarProps.defaultSrc}
                             onChange = {onChangeAvatar}
                         />}

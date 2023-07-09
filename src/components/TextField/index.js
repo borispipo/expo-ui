@@ -33,11 +33,11 @@ const isIos = _isIos();
 const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
     let {defaultValue,toCase:toCustomCase,color,validType,validRule,placeholder,outlined,placeholderColor,
         label,labelProps,labelStyle,fontSize,containerProps,selection,roundness,
-        autoCapitalize,disabled,editable,readOnly,elevation,divider,render,
+        autoCapitalize,disabled,readOnly,elevation,divider,render,
         leftContainerProps,left,right,rightContainerProps,rows,
         emptyValue,usePlaceholderWhenEmpty,
         numberOfLines,mode,selectionColor,activeOutlineColor,multiline
-        ,underlineColor,alwaysUseLabel,activeUnderlineColor,autoHeight,multiple,keyboardType,setRef,type,error,
+        ,underlineColor,alwaysUseLabel,activeUnderlineColor,autoHeight,multiple,inputMode,setRef,type,error,
         style,maxLength,length,affixStyle,affix,helperText, upperCase,
         upper,onChangeText,onChange,onMount,onUnmount,
         format , 
@@ -97,32 +97,29 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
     if(type =="pass") type = "password";
     const ref = React.useRef(null);
     disabled = defaultBool(disabled,false);
-    editable = defaultBool(editable,true);
     readOnly = defaultBool(readOnly,false);
-    if(readOnly){
-        editable = false;
-    }
-    const isEditable = !disabled && !readOnly && editable !== false;
-    keyboardType = defaultStr(keyboardType).toLowerCase();
+
+    const isEditable = !disabled && !readOnly;
+    inputMode = defaultStr(inputMode).toLowerCase();
     let hasFountKeyboardType = false;
-    if(isNonNullString(keyboardType)){
-        if(!keyboardTypes[keyboardType]){
+    if(isNonNullString(inputMode)){
+        if(!keyboardTypes[inputMode]){
             for(let i in keyboardTypes){
-                if(keyboardType === keyboardTypes[i]){
+                if(inputMode === keyboardTypes[i]){
                     hasFountKeyboardType = true;
                 }
             }
         }
     }
-    if(!hasFountKeyboardType && (!keyboardType || !keyboardTypes[keyboardType])){
+    if(!hasFountKeyboardType && (!inputMode || !keyboardTypes[inputMode])){
         if(canValueBeDecimal){
-            keyboardType = keyboardTypes.decimal;
+            inputMode = keyboardTypes.decimal;
         } else if(type == "email"){
-            keyboardType = keyboardTypes.email;
+            inputMode = keyboardTypes.email;
         } else if(type =="phone" || type =="tel"){
-            keyboardType = keyboardTypes.phone;
+            inputMode = keyboardTypes.phone;
         } else if(!keyboardTypes[type]){
-            keyboardType = keyboardTypes.default;
+            inputMode = keyboardTypes.default;
         }
     }
     const isSecureText = type =="password"?true : false;
@@ -222,9 +219,9 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
     rightContainerProps = defaultObj(rightContainerProps);
     const pointerEvents = isEditable?"auto":'none';
     const upperStyle =  text && (upper || lower) && !isAndroid ? {textTransform:upper?'uppercase':'lowercase'} : null;
-    const opacity = disabled ? DISABLED_OPACITY : (useReadOnlyOpacity !== false && !error && (readOnly || editable === false)) ? READONLY_OPACITY : undefined;
+    const opacity = disabled ? DISABLED_OPACITY : (useReadOnlyOpacity !== false && !error && (readOnly)) ? READONLY_OPACITY : undefined;
     const disabledStyle = handleOpacity != false && opacity ? {opacity} : undefined;
-    if((editable === false || disabled === true) ){
+    if((readOnly === true || disabled === true) ){
         selection = defaultObj(selection);
         if(!isNumber(selection.start)){
             selection.start = 0;
@@ -339,7 +336,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
         },
 
         disabled,
-        editable : isEditable,
+        readOnly : readOnly || !isEditable,
         error : !!error,
         mode,
         underlineColor,
@@ -351,7 +348,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
                 backgroundColor : 'transparent',
                 color : !error && !isFocused && Colors.isValid(flattenStyle.color)?flattenStyle.color : inputColor,
                 fontSize,
-                textAlignVertical: 'center',//multiline ? 'top' : 'center',
+                verticalAlign: 'center',//multiline ? 'top' : 'center',
                 overflow : 'hidden',
             },
             isWeb && { outline: 'none'},
@@ -364,7 +361,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
         ],
         pointerEvents,
         secureTextEntry,
-        keyboardType,
+        inputMode,
         autoCapitalize : upper?(isAndroid?'characters':"none"):autoCapitalize,
         value : currentDefaultValue,
         realValue : text,

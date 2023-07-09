@@ -44,10 +44,10 @@ export const timeToString = (value,withSeconds)=>{
      return value.substring(0,5);
   }
 export default function TimePickerComponent (props){
-    let {right:customRight,upper,anchorProps,dialogProps,withLabel,inputProps,containerProps,mode,onChange,withSeconds,cancelLabel,confirmLabel,label,text,upperCase,defaultValue,disabled,editable,withModal,readOnly,...rest} = props;
+    let {right:customRight,upper,anchorProps,dialogProps,withLabel,inputProps,containerProps,mode,onChange,withSeconds,cancelLabel,confirmLabel,label,text,upperCase,defaultValue,disabled,withModal,readOnly,...rest} = props;
     rest = defaultObj(rest);
     inputProps = defaultObj(inputProps);
-    const isEditable = disabled !== true && readOnly !== true && editable !== false?true : false;
+    const isEditable = disabled !== true && readOnly !== true?true : false;
     withModal = defaultBool(withModal,true);
     if(!isEditable){
        withModal = false;
@@ -127,7 +127,7 @@ export default function TimePickerComponent (props){
           label = {label}
           right = {right}
           disabled = {disabled}
-          editable = {false}
+          readOnly = {true}
           handleOpacity = {false}
           style = {[rest.style,!disabled && {opacity:1,color:theme.colors.text}]}
           contentContainerProps = {{...defaultObj(rest.contentContainerProps),pointerEvents:'auto'}}

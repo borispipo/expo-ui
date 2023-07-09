@@ -1,7 +1,7 @@
 import {Colors} from "$theme";
 import React from 'react';
 import View from "$ecomponents/View";
-import {StyleSheet,ScrollView,TouchableWithoutFeedback} from 'react-native';
+import {StyleSheet,ScrollView,Pressable} from 'react-native';
 //import ScrollView from "$ecomponents/ScrollView";
 import Label from "$ecomponents/Label";
 import Icon from "$ecomponents/Icon"
@@ -105,12 +105,12 @@ const ExpandableComponent = React.forwardRef(({
   />:null;
   return ( <View testID={testID+"_ExpandableContainer"} {...containerProps}>
         <Surface {...props} ref={ref} testID={testID}>
-          <TouchableWithoutFeedback
+          <Pressable
             delayPressIn={0}
             borderless = {false}  
             accessibilityTraits="button"
             accessibilityComponentType="button"
-            accessibilityRole="button"
+            role="button"
             style={[styles.container,props.style]}
             onPress={handlePressAction}
             onLongPress={onLongPress}
@@ -157,7 +157,7 @@ const ExpandableComponent = React.forwardRef(({
                 {!isIconPositionLeft ? expandIcon:null}
               </View>
             </View>
-          </TouchableWithoutFeedback>
+          </Pressable>
         {(autoMountChildren !== false || isExpanded) ? <View testID={testID+'_Content'} {...contentProps} 
           style={[{maxWidth:'100%'},styles.children,contentProps.style,!isExpanded && {opacity:0,height:0}]}
         >

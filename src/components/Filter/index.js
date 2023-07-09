@@ -15,7 +15,7 @@ import React,{Component as AppComponent} from "$react";
 import theme from "$theme";
 import {isMobileMedia} from "$cplatform/dimensions";
 import { ActivityIndicator } from "react-native-paper";
-import DialogProvider from "$components/Form/FormData/DialogProvider";
+import DialogProvider from "$ecomponents/Form/FormData/DialogProvider";
 import FilterBetweenComponent from "./BetweenComponent";
 
 const manualRunKey = "manual-run";

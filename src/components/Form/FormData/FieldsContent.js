@@ -1,5 +1,5 @@
 import React from "$react";
-import Divider from "$components/Divider";
+import Divider from "$ecomponents/Divider";
 import {isObj,isNonNullString,defaultStr,defaultObj} from "$utils";
 import getComponentFromType from "./componentsTypes";
 import appConfig from "$capp/config";

@@ -1,5 +1,5 @@
 import {isObj} from "$cutils";
-import {notify} from "$components/Dialog";
+import notify from "$enotify";
 import Camera from "./camera";
 import {isMobileNative} from "$platform";
 import React from "react";

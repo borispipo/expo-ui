@@ -1,13 +1,13 @@
 // Copyright 2022 @fto-consult/Boris Fouomene. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
-import Button from "$components/Button";
-import Menu from "$components/Menu";
+import Button from "$ecomponents/Button";
+import Menu from "$ecomponents/Menu";
 import theme from "$theme";
 import React from "$react";
 import {isObj,defaultStr,defaultObj} from "$cutils";
 import PropTypes from "prop-types";
-import View from "$components/View";
+import View from "$ecomponents/View";
 
 /****le selecteur de provider, pour l'authentification */
 const ProviderSelector = React.forwardRef(({providers,anchorProps,containerProps,anchor,activeProvider,testID,onChange,...props},ref)=>{

@@ -5,7 +5,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import Label from "$comonents/Label";
+import Label from "$ecomponents/Label";
 import theme,{Colors} from "$theme";
 import {isIos,isWeb} from "$cplatform";
 import {defaultObj,defaultStr} from "$cutils";
@@ -23,6 +23,7 @@ const AppbarContent = ({
   containerProps,
   titleProps,
   subtitleProps,
+  testID,
   ...rest
 }) => {
   
@@ -32,7 +33,7 @@ const AppbarContent = ({
     testID = defaultStr(testID,"RN_AppBarContentComponent")
     subtitle = subtitle === false ? null : subtitle;
     const subtitleColor = Colors.setAlpha(titleTextColor,0.7);
-
+   const webStyle = isWeb() && theme.styles.webFontFamilly;
    const content = (
     <View
       pointerEvents="box-none"
@@ -40,17 +41,16 @@ const AppbarContent = ({
       testID={testID}
       {...rest}
     >
-      {typeof title === 'string' ? (
-        <Label
+      <Label
           ref={titleRef}
           {...titleProps}
           style={[
-            styles.title,
             {
-                color: titleTextColor,
-                ...(isIos()? theme.fonts.regular: theme.fonts.medium),
+              color: titleTextColor,
+              ...(isIos()? theme.fonts.regular: theme.fonts.medium),
             },
-            isWeb() && theme.styles.webFontFamilly,
+            webStyle,
+            titleProps.style,
             titleStyle,
           ]}
           numberOfLines={1}
@@ -67,15 +67,12 @@ const AppbarContent = ({
           testID={`${testID}-title-text`}
         >
           {title}
-        </Label>
-      ) : (
-        title
-      )}
+      </Label>
       {subtitle ? (
         <Label
           testID = {testID+"_Subtitle"}
           {...subtitleProps}
-          style={[styles.subtitle, { color: subtitleColor }, subtitleStyle]}
+          style={[styles.subtitle, { color: subtitleColor },webStyle, subtitleProps.style, subtitleStyle]}
           numberOfLines={1}
         >
           {subtitle}
@@ -136,3 +133,7 @@ const touchableRole = Platform.select({
   ios: iosTouchableRole,
   default: iosTouchableRole[0],
 });
+
+export default AppbarContent;
+
+AppbarContent.displayName = "AppBarContentComponent";

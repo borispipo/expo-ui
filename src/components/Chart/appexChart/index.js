@@ -1,6 +1,6 @@
 import ApexChart from 'apexcharts/dist/apexcharts.min';
 import React from "$react";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import { destroyChart } from './utils';
 import theme from "$theme";
 

@@ -3,8 +3,8 @@
 // license that can be found in the LICENSE file.
 
 import React from "$react";
-import View from "$components/View";
-import Label from "$components/Label";
+import View from "$ecomponents/View";
+import Label from "$ecomponents/Label";
 import PropTypes from 'prop-types';
 import { StyleSheet } from "react-native";
 import {defaultStr,defaultObj} from "$cutils";

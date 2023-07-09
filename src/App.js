@@ -10,7 +10,7 @@ import APP from "$app";
 import {isMobileNative} from "$cplatform";
 import {setDeviceIdRef} from "$capp";
 import appConfig from "$capp/config";
-import {showPrompt} from "$components/Dialog/confirm";
+import {showPrompt} from "$ecomponents/Dialog/confirm";
 import { AppState } from 'react-native'
 import {canFetchOffline} from "$capi/utils";
 import {defaultNumber} from "$cutils";

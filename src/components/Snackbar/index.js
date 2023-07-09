@@ -16,7 +16,7 @@ import useEventCallback from '$react/useEventCallback';
 import PropTypes from "prop-types";
 import Surface from '$ecomponents/Surface';
 import Label from "$ecomponents/Label"
-import Button from "$components/Button";
+import Button from "$ecomponents/Button";
 
 const DURATION_SHORT = 4000;
 const DURATION_MEDIUM = 7000;

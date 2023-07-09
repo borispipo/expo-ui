@@ -7,7 +7,7 @@ import Text from "./Text";
 import theme from "$theme";
 import AvatarImage from "./Image";
 import { Pressable } from "react-native";
-import Tooltip from "$components/Tooltip";
+import Tooltip from "$ecomponents/Tooltip";
 
 const defaultSize = 40;
 

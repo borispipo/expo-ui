@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-import Label from "$components/Label";
+import Label from "$ecomponents/Label";
 
 export default function ContentTermsOfUses (){
     return <Label primary style={{fontSize:15,fontWeight:'bold',padding:10}}>

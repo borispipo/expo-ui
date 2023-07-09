@@ -1,5 +1,5 @@
 import React,{BaseComponent as AppComponent} from '$react';
-import View from "$components/View";
+import View from "$ecomponents/View";
 import { ScrollView } from 'react-native';
 import {
   Platform,
@@ -14,7 +14,6 @@ import {
 import BackHandler from "$ecomponents/BackHandler";
 import PropTypes from "prop-types";
 import { withTheme,Surface,Portal} from 'react-native-paper';
-//import Surface from "$components/Surface";
 import { NativeModules} from 'react-native';
 import {defaultDecimal,extendObj} from "$cutils";
 import theme,{StylePropTypes} from "$theme";

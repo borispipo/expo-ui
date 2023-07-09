@@ -2,7 +2,7 @@ import FormDataScreen from "$elayouts/Screen/FormData";
 import {defaultStr,defaultObj} from "$cutils";
 import PermLines from "./PermLines";
 import PropTypes from "prop-types";
-import Label from "$components/Label";
+import Label from "$ecomponents/Label";
 import theme from "$theme";
 
 export const screenName = "PermProfileScreens";

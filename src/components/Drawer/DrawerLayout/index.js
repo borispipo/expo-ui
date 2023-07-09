@@ -17,7 +17,7 @@ import Preloader from "$epreloader";
 import {Elevations} from "$ecomponents/Surface";
 
 const MIN_SWIPE_DISTANCE = 3;
-const DEVICE_WIDTH = parseFloat(Dimensions.get('window').width);
+const DEVICE_WIDTH = Math.max(Dimensions.get('window').width,280);
 const THRESHOLD = DEVICE_WIDTH / 2;
 const VX_MAX = 0.1;
 

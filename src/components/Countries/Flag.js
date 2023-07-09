@@ -1,10 +1,10 @@
 import React from "$react";
-import Image from "$components/Image";
+import Image from "$ecomponents/Image";
 import { getCountry,styles} from "./utils";
 import {isNonNullString,defaultStr,isNumber} from "$cutils";
 import View from "$ecomponents/View"
 import theme from "$theme";
-import Label from "$components/Label";
+import Label from "$ecomponents/Label";
 
 export default function CountryFlagComponent({code,label,withName,withCode,text,containerProps,labelProps,withLabel,testID,...props}){
     if(!isNonNullString(code)) return null;

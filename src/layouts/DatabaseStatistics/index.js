@@ -1,5 +1,5 @@
 import Screen from "$screen";
-import Grid,{Cell} from "$components/Grid";
+import Grid,{Cell} from "$ecomponents/Grid";
 import {defaultStr,defaultNumber,defaultVal} from "$cutils";
 import React from "$react";
 import DatabaseStatistic from "./DatabaseStatistic";

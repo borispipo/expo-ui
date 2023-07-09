@@ -125,19 +125,15 @@ const AppBarComponent = React.forwardRef((props,ref)=> {
    const hasRight = React.isValidElement(renderedActions) || React.isValidElement(renderedRight);
     return (
       <Appbar.Header elevation={elevation} {...appBarProps}  testID={testID} style={[styles.header,{backgroundColor},elevStyle,appBarProps.style]} onLayout={onPageResize}>
-        <View style={styles.title2Back} testID={testID+"_AppBarBack2Titlte"}>
-          {backAction}
-          <Content {...defaultObj(appBarProps.contentProps)} 
-              title={title}
-              titleProps = {{...titleProps,style:[styles.title,{color:primaryText},titleProps.style]}}
-              subtitle = {defaultVal(subtitle,params.subtitle,options.subtitle)}
-              subtitleProps = {subtitleProps}
-          />
-        </View>
-        {hasRight ? <View testID={testID+"_Actions"} style={styles.actions2right}>
-          {renderedActions}
-          {renderedRight}
-        </View> : null}
+        {backAction}
+         <Content {...defaultObj(appBarProps.contentProps)} 
+            title={title}
+            titleProps = {{...titleProps,style:[styles.title,{color:primaryText},titleProps.style]}}
+            subtitle = {defaultVal(subtitle,params.subtitle,options.subtitle)}
+            subtitleProps = {subtitleProps}
+        />
+        {renderedActions}
+        {renderedRight}
       </Appbar.Header>
     );
 });

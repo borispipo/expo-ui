@@ -10,7 +10,7 @@ import Label from "$ecomponents/Label";
 import theme from "$theme"
 import Expandable from "$ecomponents/Expandable";
 import { Dimensions } from "react-native";
-import Grid from "$components/Grid";
+import Grid from "$ecomponents/Grid";
 import { Pressable } from "react-native";
 import Tooltip from "$ecomponents/Tooltip";
 

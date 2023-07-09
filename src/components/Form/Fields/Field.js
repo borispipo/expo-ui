@@ -20,7 +20,7 @@ import defaultKeyboardEvents from "../utils/keyboardEvents";
 import sprintf from "./sprintf";
 import ErrorMessage from "$ecomponents/ErrorBoundary/ErrorMessage";
 import { UPPER_CASE, LOWER_CASE} from "$common/lib/validator";
-import Label from "$components/Label";
+import Label from "$ecomponents/Label";
 
 
 export default class Field extends AppComponent {

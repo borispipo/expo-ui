@@ -1,6 +1,6 @@
 import {get,set} from "./Common/session";
 import Icon from "$ecomponents/Icon";
-import {notify} from "$ecomponents/Dialog";
+import notify from "$enotify";
 import {isDesktopMedia} from "$cplatform/dimensions";
 import {defaultStr} from "$cutils";
 import {Menu} from "$ecomponents/BottomSheet";

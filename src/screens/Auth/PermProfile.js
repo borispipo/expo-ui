@@ -1,20 +1,19 @@
-import showConfirm from "$components/Dialog/confirm";
+import showConfirm from "$ecomponents/Dialog/confirm";
 import notify from "$notify";
 import {defaultArray,arrayValueExists,defaultStr,uniqid} from "$cutils";
 import userDbName from "$database/tables/users/dbName";
 import Auth from "$auth";
 import getData from "$database/getData";
 import getDB from "$database/getDB";
-import {FormData,getForm,getFormData} from "$components/Form";
-import Icon from "$components/Icon";
+import Icon from "$ecomponents/Icon";
 import React from "$react";
-import Label from "$components/Label";
+import Label from "$ecomponents/Label";
 import {open as showPreloader,close as hidePreloader} from "$preloader";
-import Expandable from "$components/Expandable";
+import Expandable from "$ecomponents/Expandable";
 import theme from "$theme";
-import View from "$components/View";
-import Link from "$components/Link";
-import Button from "$components/Button";
+import View from "$ecomponents/View";
+import Link from "$ecomponents/Link";
+import Button from "$ecomponents/Button";
 
 const tableName = Auth.permProfilesTableName.toUpperCase();
 

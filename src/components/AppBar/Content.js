@@ -1,86 +1,127 @@
-import React from '$react';
-import {Platform,StyleSheet,Pressable,View} from 'react-native';
-import Label from "$ecomponents/Label";
-import theme,{Colors,StyleProp} from "$theme";
-import PropTypes from "prop-types";
+import * as React from 'react';
+import {
+  Platform,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
+import Label from "$comonents/Label";
+import theme,{Colors} from "$theme";
+import {isIos,isWeb} from "$cplatform";
 import {defaultObj,defaultStr} from "$cutils";
-import {isIos,isAndroid,isWeb} from "$cplatform";
-
-const AppbarContent = React.forwardRef(({
+const AppbarContent = ({
   color: titleColor,
   subtitle,
-  subtitleProps,
   subtitleStyle,
   onPress,
+  disabled,
   style,
-  titleProps,
   titleRef,
   titleStyle,
   title,
-  testID,
+  theme: themeOverrides,
   containerProps,
+  titleProps,
+  subtitleProps,
   ...rest
-},ref) => {
+}) => {
+  
+    const titleTextColor = Colors.isValid(titleColor) ? titleColor : theme.colors.primaryText;
+    titleProps = defaultObj(titleProps);
+    subtitleProps = defaultObj(subtitleProps);
+    testID = defaultStr(testID,"RN_AppBarContentComponent")
+    subtitle = subtitle === false ? null : subtitle;
+    const subtitleColor = Colors.setAlpha(titleTextColor,0.7);
 
-  const titleTextColor = titleColor ? titleColor : theme.colors.primaryText;
-  titleProps = defaultObj(titleProps);
-  subtitleProps = defaultObj(subtitleProps);
-  testID = defaultStr(testID,"RN_AppBarContentComponent")
-  subtitle = subtitle === false ? null : subtitle;
-  const subtitleColor = Colors.setAlpha(titleTextColor,0.7);
-
-  return (
-    <Pressable testID={testID+"_Container"} {...defaultObj(containerProps)} onPress={onPress} disabled={!onPress}>
-      <View
-        pointerEvents="box-none"
-        style={[styles.container, style]}
-        {...rest}
-        testID = {testID}
-        ref = {ref}
-      >
+   const content = (
+    <View
+      pointerEvents="box-none"
+      style={[styles.container, style]}
+      testID={testID}
+      {...rest}
+    >
+      {typeof title === 'string' ? (
         <Label
           ref={titleRef}
-          testID = {testID+"_Title"}
           {...titleProps}
           style={[
+            styles.title,
             {
-              color: titleTextColor,
-              ...(isIos()? theme.fonts.regular: theme.fonts.medium),
+                color: titleTextColor,
+                ...(isIos()? theme.fonts.regular: theme.fonts.medium),
             },
             isWeb() && theme.styles.webFontFamilly,
-            titleProps.style,
             titleStyle,
           ]}
           numberOfLines={1}
           accessible
-          // @ts-ignore Type '"heading"' is not assignable to type ...
-          role={Platform.OS === 'web' ? 'heading' : 'header'}
+          accessibilityRole={
+            onPress
+              ? 'none'
+              : Platform.OS === 'web'
+              ? ('heading')
+              : 'header'
+          }
+          // @ts-expect-error We keep old a11y props for backwards compat with old RN versions
+          accessibilityTraits="header"
+          testID={`${testID}-title-text`}
         >
           {title}
         </Label>
-        {subtitle ? (
-          <Label
-            testID = {testID+"_Subtitle"}
-            {...subtitleProps}
-            style={[styles.subtitle, { color: subtitleColor }, subtitleProps.style, subtitleStyle]}
-            numberOfLines={1}
-          >
-            {subtitle}
-          </Label>
-        ) : null}
-      </View>
-    </Pressable>
+      ) : (
+        title
+      )}
+      {subtitle ? (
+        <Label
+          testID = {testID+"_Subtitle"}
+          {...subtitleProps}
+          style={[styles.subtitle, { color: subtitleColor }, subtitleStyle]}
+          numberOfLines={1}
+        >
+          {subtitle}
+        </Label>
+      ) : null}
+    </View>
   );
-});
 
-AppbarContent.displayName = 'Appbar.Content';
+  if (onPress) {
+    return (
+      <TouchableWithoutFeedback
+        testID={testID+"_Container"}
+        {...containerProps}
+        accessibilityRole={touchableRole}
+        accessibilityTraits={touchableRole}
+        accessibilityComponentType="button"
+        onPress={onPress}
+        disabled={disabled}
+      >
+        {content}
+      </TouchableWithoutFeedback>
+    );
+  }
+  return content;
+};
+
+AppbarContent.displayName = 'AppbarComponent.Content';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 5,
-    justifyContent : 'center',
-    alignItems : 'flex-start',
+    paddingHorizontal: 12,
+  },
+  v3DefaultContainer: {
+    paddingHorizontal: 0,
+  },
+  v3MediumContainer: {
+    paddingHorizontal: 0,
+    justifyContent: 'flex-end',
+    paddingBottom: 24,
+  },
+  v3LargeContainer: {
+    paddingHorizontal: 0,
+    paddingTop: 36,
+    justifyContent: 'flex-end',
+    paddingBottom: 28,
   },
   title: {
     fontSize: Platform.OS === 'ios' ? 17 : 20,
@@ -90,43 +131,8 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AppbarContent;
-const titleType = PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.node,
-    PropTypes.bool,
-])
-
-AppbarContent.propTypes = {
-    /**
-   * Custom StyleProp for the text.
-   */
-  StyleProp: PropTypes.string,
-  /**
-   * Text for the title.
-   */
-  title: titleType,
-  /**
-   * Style for the title.
-   */
-  titleStyle: StyleProp,
-  /**
-   * Reference for the title.
-   */
-  titleRef : PropTypes.any,
-  /**
-   * @deprecated Deprecated in v5.x
-   * Text for the subtitle.
-   */
-  subtitle : titleType,
-  /**
-   * @deprecated Deprecated in v5.x
-   * Style for the subtitle.
-   */
-  subtitleStyle: StyleProp,
-  /**
-   * Function to execute on press.
-   */
-  onPress : PropTypes.func,
-  style : StyleProp
-}
+const iosTouchableRole = ['button', 'header'];
+const touchableRole = Platform.select({
+  ios: iosTouchableRole,
+  default: iosTouchableRole[0],
+});

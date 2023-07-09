@@ -7,7 +7,7 @@ import {
 	Image,
 	PanResponder,
 	StyleSheet,
-	TouchableWithoutFeedback,
+	Pressable,
 } from 'react-native';
 
 import Elevations from '$ecomponents/Surface/Elevations';
@@ -399,20 +399,20 @@ export default class ColorPickerComponent extends Component {
 	renderSwatches () {
 		this.swatches = this.props.palette.map((c,i) => (
 			<View testID={"RN_ColorPicker_SWATCHES"} style={[styles.swatch,theme.styles.cursorPointer,{backgroundColor:c}]} key={'S'+i} hitSlop={this.props.swatchesHitSlop}>
-				<TouchableWithoutFeedback onPress={x=>this.onSwatchPress(c,i)} hitSlop={this.props.swatchesHitSlop}>
+				<Pressable onPress={x=>this.onSwatchPress(c,i)} hitSlop={this.props.swatchesHitSlop}>
 					<Animated.View style={[styles.swatchTouch,{backgroundColor:c,transform:[{scale:this.swatchAnim[i].interpolate({inputRange:[0,0.5,1],outputRange:[0.666,1,0.666]})}]}]} />
-				</TouchableWithoutFeedback>
+				</Pressable>
 			</View>
 		))
 	}
 	renderDiscs () {
 		this.disc = (`1`).repeat(this.props.discreteLength).split('').map((c,i) => (
 			<View testID={"RN_ColorPicker_DISC"} style={[styles.swatch,{backgroundColor:this.state.hueSaturation}]} key={'D'+i} hitSlop={this.props.swatchesHitSlop}>
-				<TouchableWithoutFeedback style={[theme.styles.cursorPointer]} onPress={x=>this.onDiscPress(c,i)} hitSlop={this.props.swatchesHitSlop}>
+				<Pressable style={[theme.styles.cursorPointer]} onPress={x=>this.onDiscPress(c,i)} hitSlop={this.props.swatchesHitSlop}>
 					<Animated.View style={[styles.swatchTouch,{backgroundColor:this.state.hueSaturation,transform:[{scale:this.discAnim[i].interpolate({inputRange:[0,0.5,1],outputRange:[0.666,1,0.666]})}]}]}>
 						<View style={[styles.wheelImg,{backgroundColor:'#000',opacity:1-(i>=9?1:(i*11/100))}]}></View>
 					</Animated.View>
-				</TouchableWithoutFeedback>
+				</Pressable>
 			</View>
 		)).reverse()
 		this.tryForceUpdate()
@@ -428,7 +428,7 @@ export default class ColorPickerComponent extends Component {
 			sliderHidden,
 			discrete,
             disabled,
-            editable,
+            readOnly,
 			row,
 			testID : customTestId,
 		} = this.props
@@ -520,7 +520,7 @@ export default class ColorPickerComponent extends Component {
 						testID={`${testID}_ColorPickerInput`}
 						enableCopy
 						label = ''
-						editable = {editable}
+						readOnly = {readOnly}
 						disabled = {disabled}
 						defaultValue = {hex}
 						{...restProps}

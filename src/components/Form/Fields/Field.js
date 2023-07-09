@@ -860,7 +860,6 @@ export default class Field extends AppComponent {
             disabled,
             visible,
             readOnly,
-            editable,
             beforeValidate,
             footer,
             archived,
@@ -898,12 +897,12 @@ export default class Field extends AppComponent {
             disabled = true;
             readOnly = true;
             rest.disabled = rest.readOnly = true;
-            rest.editable = false;
+            rest.readOnly = true;
         } else if(this.isEnabledBySymbol()){
             disabled = readOnly = false;
-            editable = true;
+            readOnly = false;
             rest.disabled = rest.readOnly = false;
-            rest.editable = true;
+            rest.readOnly = false;
         } else {    
             const callArgs = {context:this,field:this.name,name:this.name,value:this.validatingValue,validValue:this.state.validValue,...rest,data,props:this.props};
             readOnly = defaultVal(readOnly);
@@ -911,11 +910,7 @@ export default class Field extends AppComponent {
                 readOnly = readOnly.call(this,callArgs);
             } 
             if(!isUndefined(readOnly)) readOnly = readOnly?true:false;
-            if(isFunction(editable)){
-                editable = editable.call(this,callArgs);
-            } 
-            if(isBool(editable)) editable = editable;
-            else rest.editable = readOnly ? false : true;
+            else rest.readOnly = readOnly ? true : false;
             if(isFunction(disabled)){
                 disabled = disabled.call(this,callArgs);
             } 
@@ -925,16 +920,12 @@ export default class Field extends AppComponent {
                 archived = archived.call(this,callArgs);
             }
             if(archived === true){
-                editable = false;
+                readOnly = false;
                 disabled = true;
-            }
-            if(readOnly || disabled){
-                editable = false;
             }
             rest.disabled = disabled;
             rest.readOnly = readOnly;
-            rest.editable = editable;
-            if(disabled || readOnly || !editable){
+            if(disabled || readOnly){
                 this[this.isEditableSymbol] = false;
             }
         }
@@ -966,7 +957,7 @@ export default class Field extends AppComponent {
         format = defaultStr(format);
         tooltip = defaultVal(tooltip,title);
 
-        const isEditable = rest.disabled !== true && rest.readOnly !== true && rest.editable !== false ? true : false;
+        const isEditable = rest.disabled !== true && rest.readOnly !== true ? true : false;
         const hasDefaultValue = isNonNullString(rest.defaultValue) || typeof rest.defaultValue =='number'? true : false;
         const canChangeRight = this.isTextField() && !isEditable && hasDefaultValue;
         if(canChangeRight){

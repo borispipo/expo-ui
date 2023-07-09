@@ -8,7 +8,7 @@ import React, {Component} from 'react';
 import {
   Dimensions,
   View,
-  TouchableWithoutFeedback,
+  Pressable,
 } from 'react-native';
 import PropTypes from 'prop-types';
 
@@ -713,7 +713,7 @@ export class DragResizeBlock extends Component {
           },containerProps.style]}
         testID = {testID}
       >
-        <TouchableWithoutFeedback
+        <Pressable
           onPress={this.onPress}
           testID = {testID+"_TouchableFeedBack"}
         >
@@ -727,7 +727,7 @@ export class DragResizeBlock extends Component {
           >
             {children}
           </View>
-        </TouchableWithoutFeedback>
+        </Pressable>
 
         {isDisabled ? null : this.renderConnectors()}
 

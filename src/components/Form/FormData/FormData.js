@@ -247,7 +247,7 @@ export default class FormDataComponent extends AppComponent{
             saveButtonIcon,
             formProps,
             closeAfterSave,
-            editable,
+            readOnly,
             component,
             disabled,
             onValidate,

@@ -17,9 +17,8 @@ import View from "$ecomponents/View";
 import {Easing} from "react-native";
 import Portal from "$ecomponents/Portal";
 import { ScrollView } from "react-native";
-
+import BackHandler from "$ecomponents/BackHandler";
 import {
-  BackHandler,
   TouchableOpacity,
   Animated,
   PanResponder,

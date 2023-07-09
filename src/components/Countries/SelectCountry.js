@@ -39,7 +39,7 @@ export const getCountryFieldProps = (props)=>{
         },
         renderItem : ({item})=>{
             return <View style={[styles.renderedImage]}>
-                {(isNonNullString(item.image) || isNumber(item.image)) && <Image  editable = {false} accessibilityIgnoresInvertColors {...imageProps} style={[styles.flagImage,{marginRight:10},imageProps.style]} source={isNumber(item.image)?item.image:{uri:item.image}}/>}
+                {(isNonNullString(item.image) || isNumber(item.image)) && <Image  readOnly= {true} accessibilityIgnoresInvertColors {...imageProps} style={[styles.flagImage,{marginRight:10},imageProps.style]} source={isNumber(item.image)?item.image:{uri:item.image}}/>}
                 <Label>{item.label}</Label>
             </View>
         },

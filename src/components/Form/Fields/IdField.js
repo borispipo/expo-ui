@@ -89,7 +89,7 @@ export default class FormIDField extends TextField {
         props.contentContainerProps.pointerEvents = defaultStr(props.contentContainerProps.pointerEvents,"auto");
         props.enableCopy = typeof props.enableCopy ==='boolean'? props.enableCopy : (props.defaultValue || this.newFieldIdValue ? true : false);
         const {right} = props;
-        props.editable = typeof props.editable =='boolean'? props.editable : typeof props.disabled ==='boolean' ? !!!props.disabled : typeof props.readOnly =="boolean"? !!!props.disabled : false;
+        props.readOnly = typeof props.disabled ==='boolean' ? !!!props.disabled : typeof props.readOnly =="boolean"? !!!props.disabled : false;
         props.right = (props)=>{
             const r = typeof right =='function'? right (props) : React.isValidElement(right)? right : null;
             if(!defValue){

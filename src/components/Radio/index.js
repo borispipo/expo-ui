@@ -37,7 +37,6 @@ const RadioComponent = React.forwardRef((props,ref)=>{
         labelStyle,
         helperText,
         position,
-        editable,
         disabled,
         readOnly,
         primaryOnCheck,
@@ -45,7 +44,7 @@ const RadioComponent = React.forwardRef((props,ref)=>{
         ...p
     } = props;
     disabled = defaultBool(disabled,false);
-    const isEditable = !disabled && readOnly !== true && editable !== false ? true : false;
+    const isEditable = !disabled && readOnly !== true ? true : false;
     const pointerEvents = isEditable ? "auto" : "none";
     p = defaultObj(p);
     checkedValue = defaultVal(checkedValue,1);
@@ -117,7 +116,7 @@ const RadioComponent = React.forwardRef((props,ref)=>{
             Component = {RadioButton.Item}
             {...p}
             disabled = {disabled}
-            editable = {isEditable}
+            readOnly = {!isEditable}
             pointerEvents = {pointerEvents}
             style = {[styles.checkbox,style]}
             position = {position}

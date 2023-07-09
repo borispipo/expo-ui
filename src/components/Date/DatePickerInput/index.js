@@ -38,7 +38,7 @@ const DatePickerInput = React.forwardRef(({
     left : customLeft,
     helperText,
     format,
-    disabled,readOnly,editable
+    disabled,readOnly
     ,text,
     withLabel,
     style,
@@ -90,7 +90,7 @@ const DatePickerInput = React.forwardRef(({
   }
   
 
-  const isEditable = disabled !== true && readOnly !== true && editable !== false?true : false;
+  const isEditable = disabled !== true && readOnly !== true ?true : false;
   withModal = defaultBool(withModal,true);
   if(!isEditable){
       withModal = false;
@@ -174,7 +174,7 @@ const DatePickerInput = React.forwardRef(({
           affix = {false}
           {...rest}
           style = {[styles.input,style]}
-          editable = {isEditable}
+          readOnly = {!isEditable}
           disabled = {disabled}
           left = {left}
           right = {right}
@@ -183,7 +183,7 @@ const DatePickerInput = React.forwardRef(({
           label={labelText}
           defaultValue={formattedValue}
           placeholder={inputFormatLabel}
-          keyboardType={'number-pad'}
+          inputMode={'number-pad'}
           mask={inputFormat}
           keyboardAppearance={theme.dark ? 'dark' : 'default'}
           error={hasError}

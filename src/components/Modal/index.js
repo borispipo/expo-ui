@@ -1,10 +1,10 @@
 import React from "$react";
 import {
-  BackHandler,
   StyleSheet,
   View,
-  TouchableWithoutFeedback,
+  Pressable,
 } from 'react-native';
+import BackHandler from "$ecomponents/BackHandler";
 import PropTypes from "prop-types";
 import theme,{StyleProp} from "$theme";
 //import Animated  from "react-native-reanimated";
@@ -108,16 +108,16 @@ const ModalComponent = React.forwardRef((props,ref)=>{
         {...rest}
         pointerEvents={visible ? 'auto' : 'none'}
         accessibilityViewIsModal
-        accessibilityLiveRegion="polite"
+        role="polite"
         onAccessibilityEscape={hideModal}
         style = {[styles.modal,rest.style]}
         animationType = {animationType}
         animationDuration = {animationDuration}
         animationPosition = {animationPosition}
       >
-          <TouchableWithoutFeedback
+          <Pressable
             accessibilityLabel={overlayAccessibilityLabel}
-            accessibilityRole="button"
+            role="button"
             disabled={!dismissable}
             onPress={dismissable ? hideModal : undefined}
             importantForAccessibility="no"
@@ -132,7 +132,7 @@ const ModalComponent = React.forwardRef((props,ref)=>{
                 backdropProps.style,
               ]}
             />
-          </TouchableWithoutFeedback>
+          </Pressable>
           <Surface testID="RN__ModalComponent__ContentContainer"
               elevation = {5}
               {...contentContainerProps}

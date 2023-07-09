@@ -125,7 +125,7 @@ export default function PhoneInputComponent(props){
         setState(nState);
         return nState;
     }
-    const pointerEvents = props.disabled || props.editable === false || props.readOnly ? "none":"auto";
+    const pointerEvents = props.disabled || props.readOnly ? "none":"auto";
     const isFlatMode = theme.textFieldMode === flatMode;
     testID = defaultStr(testID,"RN_PhoneInputComponent");
     return <SelectCountry
@@ -163,7 +163,7 @@ export default function PhoneInputComponent(props){
                     pointerEvents = {pointerEvents}
                     left = {
                         <TouchableOpacity testID={testID+"_Left"} style={[styles.flag,disabledStyle,!isFlatMode && styles.notFlatModeFlag]}
-                            accessibilityRole="button"
+                            role="button"
                             disabled = {props.disabled}
                             pointerEvents = {pointerEvents}
                             onPress={onPressFlag}
@@ -175,7 +175,7 @@ export default function PhoneInputComponent(props){
                             </>
                         </TouchableOpacity>
                     }
-                    keyboardType ={keyboardTypes.number}
+                    inputMode ={keyboardTypes.number}
                     defaultValue = {state.displayValue}
                     onChange = {(args)=>{
                         const {value:nValue} = args;

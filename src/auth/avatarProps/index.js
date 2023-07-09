@@ -5,7 +5,7 @@ import {isNativeMobile} from "$platform";
 import defaultSrc from "./defaultAvatar";
 export default {
     accordion:false,
-    editable : !isNativeMobile(),
+    readOnly : isNativeMobile(),
     text : 'Avatar',
     type : 'image',
     defaultSrc,

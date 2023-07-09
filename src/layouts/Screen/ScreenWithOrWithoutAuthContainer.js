@@ -122,7 +122,7 @@ export default function MainScreenScreenWithOrWithoutAuthContainer(props) {
               ...authProps,
               required : authRequired,
             },
-              children : <View testID={testID} nativeID={portalId} {...containerProps}   style={[styles.container,{backgroundColor},modal && styles.modal,containerProps.style]}>
+              children : <View testID={testID} id={portalId} {...containerProps}   style={[styles.container,{backgroundColor},modal && styles.modal,containerProps.style]}>
                   {withStatusBar !== false ? <StatusBar/> : null}
                   {appBar === false ? null : React.isValidElement(appBar)? state.AppBar :  <AppBar 
                       testID={testID+'_AppBar'} {...appBarProps} 

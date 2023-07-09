@@ -74,7 +74,6 @@ export const renderRowCell = (arg)=>{
                     multiple : undefined,
                     readOnly : undefined,
                     disabled : undefined,
-                    editable : undefined,
                     data : rowData,
                     columnField,
                 }
@@ -116,7 +115,7 @@ export const renderRowCell = (arg)=>{
             columnDef = defaultObj(columnDef)
             columnDef = {...columnDef,...defaultObj(columnDef.datagrid)};
             columnDef.size = defaultDecimal(columnDef.size,50);
-            columnDef.editable = defaultBool(columnDef.editable,false)
+            columnDef.readOnly = defaultBool(columnDef.readOnly,true)
             columnDef.rounded = defaultBool(columnDef.rounded,columnDef.round,true);
             columnDef.src = rowData[columnField];
             _render = <Image {...columnDef}/>

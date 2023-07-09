@@ -10,11 +10,11 @@ import {isMobileOrTabletMedia} from "$cplatform/dimensions";
 import {defaultStr,defaultObj} from "$cutils";
 
 const ColorPickerComponent = React.forwardRef ((props,ref)=>{
-    let {defaultValue,label,rippleColor,onChange,text,containerProp,editable,disabled,readOnly,...rest} = props;
+    let {defaultValue,label,rippleColor,onChange,text,containerProp,disabled,readOnly,...rest} = props;
     containerProp = defaultObj(containerProp);
     disabled = defaultBool(disabled,false);
     readOnly = defaultBool(readOnly,false);
-    const isEditable = !disabled && readOnly !== true && editable !== false ? true : false;
+    const isEditable = !disabled && readOnly !== true ? true : false;
     const pointerEvents = isEditable ? "auto" : "none";
     const isMob = isMobileOrTabletMedia();
     const _label = defaultStr(label,text);
@@ -69,7 +69,7 @@ const ColorPickerComponent = React.forwardRef ((props,ref)=>{
     return <>
             <TouchableOpacity
                 {...containerProp}
-                accessibilityRole="button"
+                role="button"
                 disabled = {!isEditable}
                 pointerEvents = {pointerEvents}
                 accessibilityLabel={defaultStr(label,text)}
@@ -84,7 +84,7 @@ const ColorPickerComponent = React.forwardRef ((props,ref)=>{
                 mode = {mode}
                 ref = {ref}
                 label = {defaultVal(label,_label)}
-                editable = {false}
+                readOnly = {true}
                 disabled = {disabled}
                 selectionColor = {selectionColor}
                 color = {selectionColor}
@@ -124,7 +124,7 @@ const ColorPickerComponent = React.forwardRef ((props,ref)=>{
                     color={color}
                     thumbSize={40}
                     disabled = {disabled}
-                    editable = {isEditable}
+                    readOnly = {!isEditable}
                     onColorChange={onColorChange}
                     onColorChangeComplete={onColorChangeComplete}
                 />

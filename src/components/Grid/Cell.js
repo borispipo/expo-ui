@@ -111,7 +111,7 @@ GridCellComponent.propTypes = {
         PropTypes.number,
     ]),
     withSurface : PropTypes.bool,
-    elevation : PropTypes.number,///l'elévation pour le box shadow
+    elevation : PropTypes.number,
     contentProps : PropTypes.object,
 }
 const styles = StyleSheet.create({

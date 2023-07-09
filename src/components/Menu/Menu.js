@@ -5,13 +5,13 @@ import {
   Platform,
   StyleSheet,
   Animated,
-  BackHandler,
   Dimensions,
   Easing,
   I18nManager,
-  TouchableWithoutFeedback,
+  Pressable,
   findNodeHandle,
 } from 'react-native';
+import BackHandler from "$ecomponents/BackHandler";
 import PropTypes from "prop-types";
 import { withTheme,Surface,Portal} from 'react-native-paper';
 //import Surface from "$components/Surface";
@@ -472,15 +472,15 @@ class _Menu extends AppComponent {
         {anchor}
         {true ? (
           <Portal>
-            {rendered ? <TouchableWithoutFeedback
+            {rendered ? <Pressable
               testID={testID+"_TouchableWithoutFeedBack"}
               accessibilityLabel={overlayAccessibilityLabel}
-              accessibilityRole="button"
+              role="button"
               onPress={onDismiss}
               style = {[hiddenStyle]}
             >
               <View style={[StyleSheet.absoluteFill,{flex:1,backgroundColor:'transparent'}]} testID={testID+"_Backdrop"} />
-            </TouchableWithoutFeedback>:null}
+            </Pressable>:null}
             <View
               testID = {testID+"_ContentContainer"}
               ref={(ref) => {

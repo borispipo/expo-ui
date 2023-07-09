@@ -128,7 +128,7 @@ const Snackbar = ({
     >
       <Surface
         pointerEvents="box-none"
-        accessibilityLiveRegion="polite"
+        role="polite"
         elevation = {elevation}
         {...rest}
         testID={testID}

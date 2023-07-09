@@ -43,7 +43,7 @@ const TippyTooltipComponent  = React.forwardRef((props,ref)=>{
     },[content])
     const cProps = {
         ...defaultObj(rest),
-        nativeID:instanceIdRef.current,
+        id:instanceIdRef.current,
     }
     if(typeof children =='function'){
         return children(cProps,innerRef);

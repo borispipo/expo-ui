@@ -1,15 +1,12 @@
 import React from '$react';
 import {useAfterInteractions }  from "./utils";
-import { Transition, Transitioning } from 'react-native-reanimated'
+import { Transition } from 'react-native-reanimated'
 import PropTypes from "prop-types";
+import {Animated} from "react-native";
 import { StylePropTypes } from '$theme';
 import {isNumber,defaultStr} from "$cutils";
 
 const OptimizedHeavyScreen = React.forwardRef(({
-  transition = (<Transition.Together>
-      <Transition.Change interpolation="easeInOut" />
-      <Transition.In type="fade" />
-    </Transition.Together>),
   style,
   children:cChildren,
   isLoading,
@@ -26,14 +23,14 @@ const OptimizedHeavyScreen = React.forwardRef(({
   if(enabled === false) return children;
   placeholder = React.isComponent(Placeholder)? <Placeholder /> : React.isValidElement(Placeholder)? Placeholder :  null;
   return (
-    <Transitioning.View
+    <Animated.View
       testID={defaultStr(testID,'RN_OptimizedHeavyScreen')}
-      transition={transition}
+      //transition={transition}
       style={[{flex:1},style]}
       ref={React.useMergeRefs(transitionRef,ref)}
     >
       {areInteractionsComplete && isLoading !==true ? (children) :  placeholder}
-    </Transitioning.View>
+    </Animated.View>
   )
 });
 

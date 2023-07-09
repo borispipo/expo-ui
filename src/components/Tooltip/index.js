@@ -21,7 +21,7 @@ const TooltipComponent = React.forwardRef((props,ref)=>{
         rest.children = children;
     }
     const ct = <Component {...rest}/>
-    if(!content || rest.disabled === true || rest.readOnly === true || rest.editable === false){
+    if(!content || rest.disabled === true || rest.readOnly === true){
         return typeof children =='function'? children(rest,ref) : ct;
     }
     return <Popover 

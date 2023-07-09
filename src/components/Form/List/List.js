@@ -262,7 +262,7 @@ export default class FormListComponent extends AppComponent {
             text,
             title,
             indexField,
-            editable,addIcon,
+            readOnly,addIcon,
             addIconLabel,
             onRemove,onSave,
             onDelete,
@@ -347,12 +347,12 @@ export default class FormListComponent extends AppComponent {
             selectedRowsActions = selectedRowsActions(args);
         }
         selectedRowsActions = isObjOrArray(selectedRowsActions)? selectedRowsActions : []
-        let editable = defaultVal(datagridProps.editable,this.props.editable);
+        let readOnly = defaultVal(datagridProps.readOnly,this.props.readOnly);
         let deletable = defaultVal(datagridProps.deletable,this.props.deletable);
         let _sActs = isObj(selectedRowsActions)? {} : [];
-        if(editable){
+        if(!readOnly){
             let _edit = {
-                text : isNonNullString(editable)? editable:'Modifier l\'élément',
+                text : isNonNullString(readOnly)? readOnly:'Modifier l\'élément',
                 icon : 'pencil',
                 onPress : (args)=>{
                     let {selectedRows} = args;
@@ -360,7 +360,7 @@ export default class FormListComponent extends AppComponent {
                     let index = keys[0];
                     let data = Object.assign({},selectedRows[index]);
                     let pArgs = {...args,data,index,allData:allData,selectedRows};
-                    const canEdit = defaultVal(isFunction(editable)?editable.call(context,pArgs):editable,true)
+                    const canEdit = defaultVal(isFunction(readOnly)?readOnly.call(context,pArgs):readOnly,false)
                     if(canEdit){
                         return this.show(pArgs);
                     }
@@ -434,7 +434,7 @@ export default class FormListComponent extends AppComponent {
             renderAvatar,context,primaryText,show,title,indexField,
             allData : customAllData,
             controlled,
-            editable,addIcon,addIconLabel,onRemove,onSave,onDelete,
+            readOnly,addIcon,addIconLabel,onRemove,onSave,onDelete,
             beforeSave,beforeRemove,formDataProps,formName,
             itemProps,avatarProps,secondaryText,content,
             itemContainerProps,
@@ -495,14 +495,14 @@ export default class FormListComponent extends AppComponent {
         
         let canRenderTable =  this.canRenderDatagrid(fields);
 
-        if(typeof editable =='undefined'){
-            editable = true;
+        if(typeof readOnly =='undefined'){
+            readOnly = false;
         }
         if(typeof deletable =='undefined'){
             deletable = true;
         }
         const deletableFunc = typeof deletable =='function'? args => defaultVal(deletable.call(context,args,true)) : x => deletable;
-        const editableFunc = typeof editable =='function'? args => defaultVal(deletable.call(context,args),true) : x => editable;
+        const readOnlyFunc = typeof readOnly =='function'? args => defaultVal(deletable.call(context,args),false) : x => readOnly;
         const isCurrentDisplayTable = canRenderTable && this.state.display === 'table';
         let listContent = null;
         if(isCurrentDisplayTable){
@@ -513,7 +513,7 @@ export default class FormListComponent extends AppComponent {
             },datagridProps)
             dgProps.progressbar = defaultVal(dgProps.progressbar,<Datagrid.LinesProgressBar/>)
             delete dgProps.deletable;
-            delete dgProps.editable;
+            delete dgProps.readOnly;
             let _fields = extendObj(true,{},fields,datagridProps.fields)
             this.restDatagridProps = dgProps;
             this._onRowsClick = dgProps.onRowPress;
@@ -572,7 +572,7 @@ export default class FormListComponent extends AppComponent {
                                 counter++;
                                 const pArgs = {avatarProps,context,itemProps,data:data,index,allData:allData};
                                 const deletable = deletableFunc(pArgs),
-                                      editable = editableFunc(pArgs);
+                                      readOnly = readOnlyFunc(pArgs);
                                 let avatar = renderAvatar.call(context,pArgs);
                                 const avatarProps = Object.assign({},avatarProps);
                                 if(isObj(avatar)){
@@ -597,7 +597,7 @@ export default class FormListComponent extends AppComponent {
                                     index,
                                     _index,
                                     deletable,
-                                    editable,
+                                    readOnly,
                                     key,
                                     props : {
                                         ...itemProps,
@@ -612,7 +612,7 @@ export default class FormListComponent extends AppComponent {
                             return itx;
                         }}
                         renderItem = {({item})=>{
-                            const {data,title,description,key,_index,props,index,editable,deletable} = item;
+                            const {data,title,description,key,_index,props,index,readOnly,deletable} = item;
                             const titleText = React.getTextContent(title);
                             return <View key={key} testID={testID+".Cell"+key} style={[theme.styles.w100]}>
                                 <Surface key={key} elevation={5} {...itemContainerProps} style={[styles.itemContainer,itemContainerProps.style]}>
@@ -625,9 +625,9 @@ export default class FormListComponent extends AppComponent {
                                         description={description}
                                         descriptionStyle = {[{color:theme.colors.text},props.descriptionStyle]}
                                         style = {[props.style,styles.item]}
-                                        right = {!editable && !deletable?undefined : (rProps)=>{
+                                        right = {readOnly && !deletable?undefined : (rProps)=>{
                                             return <View {...rProps} style={[styles.itemRight]}>
-                                                {!editable?null:<Icon title={"Modifier ["+titleText+"]"} name={"pencil"} color={theme.colors.secondary} onPress = {(e)=>{
+                                                {readOnly?null:<Icon title={"Modifier ["+titleText+"]"} name={"pencil"} color={theme.colors.secondary} onPress = {(e)=>{
                                                     React.stopEventPropagation(e);
                                                     this.show({data:{...data},index,_index,allData,context})
                                                 }} ></Icon>} 

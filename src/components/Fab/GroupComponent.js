@@ -3,8 +3,7 @@ import {
   StyleSheet,
   Animated,
   SafeAreaView,
-  Pressable,
-  TouchableWithoutFeedback,
+  Pressable
 } from 'react-native';
 import View from "$ecomponents/View";
 import {FAB,Text,Card,withTheme} from "react-native-paper";
@@ -117,7 +116,7 @@ const FABGroup = ({
   const itemComponentProps = isFormAction ? {Component : FabItem} : {};
   return (
     <View testID={testID+"_Container"} pointerEvents="box-none" style={[styles.container, style]}>
-      <TouchableWithoutFeedback testID={testID+"_TouchableOpacity"} onPress={close}>
+      <Pressable testID={testID+"_TouchableOpacity"} onPress={close}>
         <Animated.View
           testID={testID+"_AnimatedView"}
           pointerEvents={open ? 'auto' : 'none'}
@@ -129,7 +128,7 @@ const FABGroup = ({
             },
           ]}
         />
-      </TouchableWithoutFeedback>
+      </Pressable>
       <SafeAreaView testID={testID+"_SafeAreaView"} pointerEvents="box-none" style={styles.safeArea}>
         <View testID={testID+"_ItemsContainer"} style={[styles.itemsContainer]} pointerEvents={open ? 'box-none' : 'none'}>
           {actions.map((it, i) => {
@@ -175,7 +174,7 @@ const FABGroup = ({
           // @ts-expect-error We keep old a11y props for backwards compat with old RN versions
           accessibilityTraits="button"
           accessibilityComponentType="button"
-          accessibilityRole="button"
+          role="button"
           accessibilityState={{ expanded: open }}
           style={StyleSheet.flatten([styles.fab, fabStyle])}
           visible={visible}
@@ -311,7 +310,7 @@ const _FabItem = function({children,label,disabled:customDisabled,pointerEvents,
                  }
                  accessibilityTraits="button"
                  accessibilityComponentType="button"
-                 accessibilityRole="button"
+                 role="button"
                >
                  <Text testID={testID+"_Label"} style={StyleSheet.flatten([{ color},cursorStyle])}>
                    {label}
@@ -346,7 +345,7 @@ const _FabItem = function({children,label,disabled:customDisabled,pointerEvents,
              // @ts-expect-error We keep old a11y props for backwards compat with old RN versions
              accessibilityTraits="button"
              accessibilityComponentType="button"
-             accessibilityRole="button"
+             role="button"
              testID={testID}
              visible={open}
         />

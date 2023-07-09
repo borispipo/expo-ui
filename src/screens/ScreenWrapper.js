@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 import React from "$react";
-import { BackHandler } from "react-native";
+import BackHandler from "$ecomponents/BackHandler";
 import APP from "$capp";
 import {useDrawer} from "$ecomponents/Drawer";
 import {navigationRef,getScreenProps,setRoute,setActiveNavigation,setScreenOptions,goBack} from "$cnavigation";

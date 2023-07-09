@@ -5,7 +5,7 @@ import {
     Keyboard,
     PanResponder,
     StyleSheet,
-    Pressable,
+    TouchableWithoutFeedback,
     I18nManager,
 } from 'react-native';
 import PropTypes from "prop-types";
@@ -174,7 +174,7 @@ export default class DrawerLayout extends React.PureComponent {
                 style={{ flex: 1, backgroundColor: 'transparent',flexDirection:permanent?'row':'column'}}
                 {...this._panResponder.panHandlers}
             >
-                {!permanent && <Pressable
+                {!permanent && <TouchableWithoutFeedback
                     pointerEvents={pointerEvents}
                     testID = {testID+"_TouchableWithoutFeedBack"}
                     onPress={this._onOverlayClick}
@@ -185,7 +185,7 @@ export default class DrawerLayout extends React.PureComponent {
                         ref = {this._backdropRef}
                         style={[styles.overlay,{backgroundColor:theme.colors.backdrop}, animatedOverlayStyles]}
                     />
-                </Pressable>}
+                </TouchableWithoutFeedback>}
                 {posRight && content}
                 <Animated.View
                     testID={testID+"_NavigationViewContainer"}

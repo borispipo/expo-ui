@@ -2,7 +2,7 @@ import React from "$react";
 import {
   StyleSheet,
   View,
-  Pressable,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import BackHandler from "$ecomponents/BackHandler";
 import PropTypes from "prop-types";
@@ -115,7 +115,7 @@ const ModalComponent = React.forwardRef((props,ref)=>{
         animationDuration = {animationDuration}
         animationPosition = {animationPosition}
       >
-          <Pressable
+          <TouchableWithoutFeedback
             accessibilityLabel={overlayAccessibilityLabel}
             role="button"
             disabled={!dismissable}
@@ -132,7 +132,7 @@ const ModalComponent = React.forwardRef((props,ref)=>{
                 backdropProps.style,
               ]}
             />
-          </Pressable>
+          </TouchableWithoutFeedback>
           <Surface testID="RN__ModalComponent__ContentContainer"
               elevation = {5}
               {...contentContainerProps}

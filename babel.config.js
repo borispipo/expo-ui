@@ -46,9 +46,6 @@ module.exports = function(api,opts) {
   }
   
   return {
-    presets: [
-      ['babel-preset-expo']
-    ],
     plugins : [
       ["inline-dotenv",inlineDovOptions],
       ["module-resolver", {"alias": alias}],

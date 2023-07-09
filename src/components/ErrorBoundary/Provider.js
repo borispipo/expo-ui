@@ -34,8 +34,7 @@ const Provider = React.forwardRef((_props,innerRef)=>{
            }
         },
         isOpen : x=> {
-            console.log("checking message ref",messageRef.current);
-            return messageRef.current && messageRef.current.setNativeProps ? true : false
+            return messageRef.current && messageRef.current? true : false
         },
     });
     setRef(ref,context);        

@@ -124,6 +124,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
     }
     const isSecureText = type =="password"?true : false;
     const [secureTextEntry,setSecureTextEntry] = React.useState(isSecureText);
+    const [toggle,setToggle] = React.useState(false);
     const prevSecureTextEntry = React.usePrevious(secureTextEntry);
     containerProps = defaultObj(containerProps);
     mode = defaultStr(mode,theme.textFieldMode);
@@ -271,10 +272,8 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
         }
     }
     let hasLabel = label && (isShadowMode || isNormalMode || alwaysUseLabel || text || (isFocused || (!usePlaceholderWhenEmpty && canValueBeFormattable)))? true : labelText !== placeholder;
-    const innerRef = (el)=>{
-        ref.current = el;
-        React.setRef(inputRef,el,setRef);
-    };
+    const innerRef = React.useRef(null);
+    const componentRef = React.useMergeRefs(innerRef,ref,setRef);
     validType = defaultStr(validType,validRule).toLowerCase();
     multiline = isFilter ? false : defaultBool(multiline,multiple,!!numberOfLines);
     let inputColor = (isFocused || error) ? labelColor : Colors.isValid(color)?color : theme.colors.text;
@@ -304,7 +303,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
         keyboardAppearance : theme.isDark()? 'dark': 'default',
         caretHidden : false,
         ...props,
-        innerRef,
+        innerRef:componentRef,
         placeholder : (isFocused || isShadowMode || isNormalMode) && labelText ? "":placeholder,
         placeholderTextColor : error ? theme.colors.error : placeholderColor,
         selectionColor,
@@ -377,12 +376,12 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
                 text2 = "0"+text2;
             }
             if(multiline){
-                const minHeight = Math.max(tHeight,target.scrollHeight);
-                if( tHeight < minHeight) {
-                    heightRef.current = minHeight;
-                    if(!isFocused && innerRef.current?.setNativeProps){
-                        innerRef.current.setNativeProps({style:{minHeight}})
-                    }
+                if(!text2 || text2.length < 30){
+                    heightRef.current = HEIGHT;
+                    setToggle(!toggle);
+                } else  if(target.scrollHeight > heightRef.current){
+                    heightRef.current = target.scrollHeight; 
+                    setToggle(!toggle);
                 }
             }
             const tVal = toCase(text2);
@@ -475,7 +474,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
         } else affix = undefined;
     }
     elevation = defaultNumber(contentContainerProps.elevation,elevation,isShadowMode?4:0);
-    const paddingVertical = (hasRight || hasLeft)? isMob?5 : 0 : 10;
+    const paddingVertical = multiline ? 0 : (hasRight || hasLeft)? isMob?5 : 0 : 10;
     const contentContainerStyle = isOutlinedMode ? {
         borderColor,
         borderWidth,
@@ -540,7 +539,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
                             typeof render ==="function"? render(inputProps):
                              <RNTextInput 
                                 {...inputProps}
-                                ref = {innerRef}
+                                ref = {componentRef}
                             /> 
                         }
                     </KeyboardAvoidingView>

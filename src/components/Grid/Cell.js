@@ -83,6 +83,7 @@ const GridCellComponent = React.forwardRef((p,ref)=>{
         {...props}
         testID={testID} 
         mediaQueryUpdateNativeProps = {(args)=>{
+            console.log("calling ",args);
             if(typeof mediaQueryUpdateNativeProps =='function' && mediaQueryUpdateNativeProps(args) === false) return;
             return getSizeStyle(p);
         }}

@@ -8,7 +8,7 @@ import {
   Dimensions,
   Easing,
   I18nManager,
-  Pressable,
+  TouchableWithoutFeedback,
   findNodeHandle,
 } from 'react-native';
 import BackHandler from "$ecomponents/BackHandler";
@@ -472,7 +472,7 @@ class _Menu extends AppComponent {
         {anchor}
         {true ? (
           <Portal>
-            {rendered ? <Pressable
+            {rendered ? <TouchableWithoutFeedback
               testID={testID+"_TouchableWithoutFeedBack"}
               accessibilityLabel={overlayAccessibilityLabel}
               role="button"
@@ -480,7 +480,7 @@ class _Menu extends AppComponent {
               style = {[hiddenStyle]}
             >
               <View style={[StyleSheet.absoluteFill,{flex:1,backgroundColor:'transparent'}]} testID={testID+"_Backdrop"} />
-            </Pressable>:null}
+            </TouchableWithoutFeedback>:null}
             <View
               testID = {testID+"_ContentContainer"}
               ref={(ref) => {

@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import View from "$ecomponents/View";
-import {Dimensions,TouchableOpacity,StyleSheet,Animated,} from "react-native";
+import {Dimensions,Pressable,StyleSheet,Animated,} from "react-native";
 import {TouchableRipple} from "react-native-paper";
 import Divider from "$ecomponents/Divider";
 import React, {Fragment,Component as AppComponent} from "$react";
@@ -877,7 +877,7 @@ class DropdownComponent extends AppComponent {
         const testID = defaultStr(dropdownProps.testID,"RN_DropdownComponent");
         const defRight = defaultVal(textInputProps.right,inputProps.right);
         const enableCopy = defaultBool(inputProps.enableCopy,textInputProps.enableCopy,(iconDisabled || (!multiple && !showAdd)) && !loadingElement ?true : false);
-        const anchor = <TouchableOpacity
+        const anchor = <Pressable
                 activeOpacity = {0.3}   
                 onPress={this.open.bind(this)}
                 disabled = {disabled}
@@ -943,7 +943,7 @@ class DropdownComponent extends AppComponent {
                     {helperText}
                 </View>
             }</React.Fragment>}
-        </TouchableOpacity>
+        </Pressable>
 
         let restProps = {};
         if(!isMob){

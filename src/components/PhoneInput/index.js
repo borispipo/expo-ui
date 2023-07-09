@@ -1,7 +1,7 @@
 import React from "$react";
 import {defaultObj,defaultStr,isNonNullString} from "$cutils";
 import TextField from "$ecomponents/TextField";
-import { StyleSheet,Image,TouchableOpacity} from 'react-native';
+import { StyleSheet,Image,Pressable} from 'react-native';
 import PropTypes from "prop-types";
 import theme,{DISABLED_OPACITY} from "$theme";
 import {keyboardTypes,flatMode} from "$ecomponents/TextField";
@@ -162,7 +162,7 @@ export default function PhoneInputComponent(props){
                     disabled = {props.disabled}
                     pointerEvents = {pointerEvents}
                     left = {
-                        <TouchableOpacity testID={testID+"_Left"} style={[styles.flag,disabledStyle,!isFlatMode && styles.notFlatModeFlag]}
+                        <Pressable testID={testID+"_Left"} style={[styles.flag,disabledStyle,!isFlatMode && styles.notFlatModeFlag]}
                             role="button"
                             disabled = {props.disabled}
                             pointerEvents = {pointerEvents}
@@ -173,7 +173,7 @@ export default function PhoneInputComponent(props){
                                 : null}
                                 <Icon testID={testID+"_FlagChevronIcon"} name="chevron-down" size={16} style={[styles.flagIcon]} onPress={onPressFlag} />
                             </>
-                        </TouchableOpacity>
+                        </Pressable>
                     }
                     inputMode ={keyboardTypes.number}
                     defaultValue = {state.displayValue}

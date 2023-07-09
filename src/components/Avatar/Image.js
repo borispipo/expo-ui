@@ -1,5 +1,5 @@
 import React from '$react';
-import {Image,StyleSheet,TouchableOpacity} from 'react-native';
+import {Image,StyleSheet,Pressable} from 'react-native';
 import PropTypes from "prop-types";
 import { StyleProp } from '$theme';
 import {defaultStr,isNumber,defaultNumber} from "$cutils";
@@ -45,7 +45,7 @@ const AvatarImage = React.forwardRef(({
   }
   const cProps = !hasImage? {width,height} : {};
   return (
-    <TouchableOpacity
+    <Pressable
       ref = {ref}
       testID = {testID}
       style={[
@@ -78,7 +78,7 @@ const AvatarImage = React.forwardRef(({
           onProgress={onProgress}
         />
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 });
 

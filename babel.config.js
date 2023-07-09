@@ -47,13 +47,11 @@ module.exports = function(api,opts) {
   
   return {
     presets: [
-      ['babel-preset-expo'],
-      ["@babel/preset-react", {"runtime": "automatic"}],
+      ['babel-preset-expo']
     ],
     plugins : [
       ["inline-dotenv",inlineDovOptions],
       ["module-resolver", {"alias": alias}],
-      ['@babel/plugin-proposal-export-namespace-from'],
       ['transform-inline-environment-variables',{
         "include": [
           "NODE_ENV"

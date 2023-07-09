@@ -1,7 +1,7 @@
 import React from "$react";
 import {defaultObj,isDecimal,defaultStr,debounce,extendObj,defaultVal,defaultFunc} from "$cutils";
 import TextField,{flatMode} from "$ecomponents/TextField";
-import {TouchableOpacity,Dimensions,StyleSheet} from "react-native";
+import {Pressable,Dimensions,StyleSheet} from "react-native";
 import { TouchableRipple} from "react-native-paper";
 import View from "$ecomponents/View";
 import Divider from "$ecomponents/Divider";
@@ -277,7 +277,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
     const renderingItems = getItems();
     const autoFocus = canAutoFocusSearchField({visible,items:renderingItems});
     testID = defaultStr(testID, "RN_SimpleSelectComponent");
-    anchor =  <TouchableOpacity
+    anchor =  <Pressable
         role="button"
         activeOpacity={0.3}
         testID = {testID}
@@ -290,7 +290,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
         onLayout={onLayout}
     >
         <>{anchor}</>
-    </TouchableOpacity>
+    </Pressable>
     const getItemLayout = typeof listProps.itemHeight ==='number' && listProps.itemHeight ? (data, index) => (
         {length: listProps.itemHeight, offset: listProps.itemHeight * index, index}
       ) : undefined;

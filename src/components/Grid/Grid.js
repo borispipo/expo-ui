@@ -1,5 +1,5 @@
 import React from  '$react';
-import {TouchableOpacity,StyleSheet} from 'react-native';
+import {Pressable,StyleSheet} from 'react-native';
 import {grid} from "$theme";
 import {defaultStr} from "$cutils";
 import PropTypes from "prop-types";
@@ -11,7 +11,7 @@ const GridComponent = React.forwardRef(({onPress,responsive,activeOpacity,onLong
     const flattenedStyle = StyleSheet.flatten(style);
     flexGrow = typeof flexGrow =='number'? flexGrow : 0;
     const flex = customFlex !== undefined ? customFlex :   (flattenedStyle && (col && flattenedStyle.width || !col && flattenedStyle.height)) ? undefined : undefined;
-    const C = onPress || onLongPress || onPressIn || onPressOut ? TouchableOpacity : View;
+    const C = onPress || onLongPress || onPressIn || onPressOut ? Pressable : View;
     return <C {...props} activeOpacity={activeOpacity} onLongPress={onLongPress} onPressIn={onPressIn} onPressOut={onPressOut}
         testID={testID+"_Container"} onPress={onPress}
         style={[styles.container,{flexGrow},col && {flexDirection:'column'},responsive!== false && !col && grid.row(false),style,flex !== undefined && {flex}]} ref={ref}

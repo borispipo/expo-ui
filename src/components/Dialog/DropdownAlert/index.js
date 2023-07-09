@@ -7,7 +7,7 @@ import stableHash from "stable-hash";
 import Dimensions,{isMobileMedia,isTabletMedia,isDesktopMedia} from "$dimensions";
 import {
   StyleSheet,
-  TouchableOpacity,
+  Pressable,
   Animated,
   StatusBar,
   PanResponder,
@@ -590,11 +590,11 @@ export default class DropdownAlert extends Component {
       return renderCancel(this.props, this.alertData);
     }
     return (
-      <TouchableOpacity
+      <Pressable
         style={cancelBtnStyle}
         onPress={() => this.closeAction(ACTION.cancel)}>
         {this._renderImage(cancelBtnImageSrc, cancelBtnImageStyle)}
-      </TouchableOpacity>
+      </Pressable>
     );
   };
   render() {
@@ -663,7 +663,7 @@ export default class DropdownAlert extends Component {
             {...this.panResponder.panHandlers}
             testID={testID+"_AnimatedView"}
             style={[wrapperAnimStyle, wrapperStyle]}>
-            <TouchableOpacity
+            <Pressable
               activeOpacity={activeOpacity}
               onPress={onPress}
               disabled={!tapToCloseEnabled}
@@ -685,7 +685,7 @@ export default class DropdownAlert extends Component {
                       {this._renderCancel(showCancel)}
                 </View>
             </View>
-            </TouchableOpacity>
+            </Pressable>
         </Animated.View>
       </Portal>
     );

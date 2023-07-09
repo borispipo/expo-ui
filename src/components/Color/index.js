@@ -1,4 +1,4 @@
-import { StyleSheet,TouchableOpacity } from 'react-native'
+import { StyleSheet,Pressable } from 'react-native'
 import View from "$ecomponents/View";
 import TextField,{shadowMode} from "$ecomponents/TextField";
 import ColorPicker from './ColorPicker';
@@ -67,7 +67,7 @@ const ColorPickerComponent = React.forwardRef ((props,ref)=>{
     },[defaultValue]);
     const mode = defaultStr(rest.mode,theme.textFieldMode)
     return <>
-            <TouchableOpacity
+            <Pressable
                 {...containerProp}
                 role="button"
                 disabled = {!isEditable}
@@ -93,7 +93,7 @@ const ColorPickerComponent = React.forwardRef ((props,ref)=>{
                 style = {[rest.style,{color:selectionColor,backgroundColor:selectionColor},styles.input]}
                 contentContainerProps = {{style:textStyle}}
             />
-        </TouchableOpacity>
+        </Pressable>
         <Dialog
             visible = {state.visible}
             title = {_label+(color?("["+color+"]"):"")}

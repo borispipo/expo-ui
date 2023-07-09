@@ -17,7 +17,7 @@ export {Item};
 /****
  * @voir : https://callstack.github.io/react-native-paper/menu.html;
  * @param anchorProps a deux type de valuers : lorsque anchor n'est pas un élément réact valide, il s'agit des props du composant Icon de react-native-paper
- *        lorsque anchror est un element réact valide, il s'agit des props du composant TouchableOpacity de react-native
+ *        lorsque anchror est un element réact valide, il s'agit des props du composant Pressable de react-native
  *      si closeOnPress est différent de false, alors le menu sera fermé lorsqu'on clique sur un item
  *      anchorProps peut être de la forme : {
  *          Component {default : Icon}  qui est le composant qui sera rendu

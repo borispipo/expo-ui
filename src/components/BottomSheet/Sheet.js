@@ -19,7 +19,7 @@ import Portal from "$ecomponents/Portal";
 import { ScrollView } from "react-native";
 import BackHandler from "$ecomponents/BackHandler";
 import {
-  TouchableOpacity,
+  Pressable,
   Animated,
   PanResponder,
   Dimensions,
@@ -250,7 +250,7 @@ const BottomSheetComponent = React.forwardRef((props,ref)=> {
                 {...mProps}
                 style = {[styles.modal,bStyle,mProps.style]}
             >
-                <TouchableOpacity
+                <Pressable
                     testID={testID+"_Backdrop"}
                     {...backdropProps}
                     style={[styles.mask,backdropProps.style]}

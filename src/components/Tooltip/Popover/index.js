@@ -8,7 +8,7 @@ import View from "$ecomponents/View";
 import {
   Modal,
   Animated,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   Pressable,
   Dimensions,
@@ -150,7 +150,7 @@ const TooltipPopoverComponent = React.forwardRef(({
     hideModal();
   }}>
         <View style={[styles.overlay, overlayStyle]} />
-        <TouchableOpacity
+        <Pressable
           activeOpacity={1}
           style={[{ flex: 1 }, modalButtonStyle]}
           onPress={hideModal}
@@ -162,7 +162,7 @@ const TooltipPopoverComponent = React.forwardRef(({
               containerStyle,
             ]}
           >
-            <TouchableOpacity onPress={isModalOpen ? hideModal : openModal}>
+            <Pressable onPress={isModalOpen ? hideModal : openModal}>
                   <View
                     style={[styles.innerContainer]}
                   >
@@ -170,7 +170,7 @@ const TooltipPopoverComponent = React.forwardRef(({
                     onLayout={onInnerContentLayout} 
                     style={[{color:theme.colors.primaryText,backgroundColor:theme.colors.primary,padding:10,borderRadius:5}]}>{content}</Label>
               </View>
-            </TouchableOpacity>
+            </Pressable>
           </View>
           <Animated.View
             style={[
@@ -179,7 +179,7 @@ const TooltipPopoverComponent = React.forwardRef(({
               arrowStyle,
             ]}
           />
-        </TouchableOpacity>
+        </Pressable>
       </Modal>;
   if(typeof children =='function'){
       return <>

@@ -1,7 +1,7 @@
 'use strict';
 
 import React from '$react';
-import {TouchableOpacity, StyleSheet} from 'react-native';
+import {Pressable, StyleSheet} from 'react-native';
 import Dimensions from "$cplatform/dimensions";
 import View from "$ecomponents/View";
 import {defaultStr} from "$cutils";
@@ -76,7 +76,7 @@ const GridCellComponent = React.forwardRef((p,ref)=>{
     const {style,size,children,phoneSize,withSurface,elevation:cElev,mediaQueryUpdateNativeProps,contentProps:cProps,tabletSize,desktopSize,smallPhoneSize,onPress,activeOpacity,onLongPress,flex:customFlex,onPressIn,onPressOut,...props} = p;
     const testID = defaultStr(props.testID,"RN_Grid.CellComponent");
     const contentProps = defaultObj(cProps);
-    const C = onPress || onLongPress || onPressIn || onPressOut ? TouchableOpacity : View;
+    const C = onPress || onLongPress || onPressIn || onPressOut ? Pressable : View;
     const elevation = typeof elevation == "number"? elevation : withSurface ? 5 : undefined;
     const elevStyle = typeof elevation =="number" ? Elevations[elevation] || null : null;
     return <View 

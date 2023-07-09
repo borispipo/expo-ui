@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 /****Le composant TableLink est utilisé pour les liens cliquable vers les tables de données */
-import {TouchableOpacity,StyleSheet} from "react-native";
+import {Pressable,StyleSheet} from "react-native";
 import React from "$react";
 import View from "$ecomponents/View";
 import PropTypes from "prop-types";
@@ -56,7 +56,7 @@ const TableLinKComponent = React.forwardRef((props,ref)=>{
         }
     }
     rest.style = [rest.style,_styles.cursorPointer];
-    const CP = disabled || readOnly ? View : TouchableOpacity;
+    const CP = disabled || readOnly ? View : Pressable;
     return <CP testID={testID} onLongPres={(e)=>React.stopEventPropagation(e)} {...containerProps} onPress={disabled? undefined : onPressLink} style={[styles.container,containerProps.style]}>
         <Tooltip testID={testID+"_Tooltip"} {...rest} Component={Component}  onPress={disabled || readOnly?undefined:onPressLink} ref={ref} pointerEvents={pointerEvents} readOnly={readOnly} disabled = {disabled}>
             <Label testID={testID+"_Label"} underlined primary {...labelProps} style={[_styles.lh15,labelProps.style]} disabled={disabled} readOnly={readOnly}>{children}</Label>

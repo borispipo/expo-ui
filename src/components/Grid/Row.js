@@ -1,7 +1,7 @@
 'use strict';
 
 import React from '$react';
-import {TouchableOpacity, StyleSheet} from 'react-native';
+import {Pressable, StyleSheet} from 'react-native';
 import View from "$ecomponents/View";
 import {defaultStr} from "$cutils";
 import PropTypes from "prop-types";
@@ -11,7 +11,7 @@ const GridRowComponent = React.forwardRef((p,ref)=>{
     const flattenedStyle = StyleSheet.flatten(style);
     const testID = defaultStr(props.testID,"RN_Grid.RowComponent");
     const flex = customFlex !== undefined ? customFlex : (flattenedStyle && flattenedStyle.height) ? 0 : 1;
-    const C = onPress || onLongPress || onPressIn || onPressOut ? TouchableOpacity : View;
+    const C = onPress || onLongPress || onPressIn || onPressOut ? Pressable : View;
     return <C {...props} activeOpacity={activeOpacity} onLongPress={onLongPress} onPressIn={onPressIn} onPressOut={onPressOut}
         onPress={onPress} testID={testID} style={[styles.container,flattenedStyle,{flex}]} ref={ref}
     />

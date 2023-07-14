@@ -5,7 +5,7 @@
 import { isRouteActive} from "$cnavigation";
 import {defaultObj} from "$cutils";
 import appConfig from "$capp/config";
-import useContext from "$econtext";
+import useContext from "$econtext/hooks";
 import {useMemo,useEffect,useRef} from "react";
 ///les items du drawer
 import { screenName as aboutScreenName} from "$escreens/Help/About";
@@ -13,7 +13,7 @@ import theme from "$theme";
 import APP from "$capp/instance";
 
 const useGetItems = (options)=>{
-    const {drawerItems} = useContext(); 
+    const {navigation:{drawerItems}} = useContext(); 
     options = defaultObj(options);
     const {refresh,force} = options;
     const showProfilOnDrawer = theme.showProfilAvatarOnDrawer;

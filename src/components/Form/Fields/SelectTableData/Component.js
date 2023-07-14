@@ -11,7 +11,7 @@ import {getFetchOptions,prepareFilters} from "$cutils/filters";
 import fetch from "$capi"
 import {willConvertFiltersToSQL} from "$ecomponents/Datagrid/utils";
 import React from "$react";
-import useApp from "$econtext";
+import useApp from "$econtext/hooks";
 
 /*** la tabledataSelectField permet de faire des requêtes distantes pour rechercher les données
  *  Elle doit prendre en paramètre et de manière requis : les props suivante : 

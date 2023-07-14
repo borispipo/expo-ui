@@ -3,6 +3,7 @@ import {handleContent,sanitizeName} from '$escreens';
 import {Stack,setInitialRouteName } from "$cnavigation";
 import React from "$react";
 import DrawerNavigator from "./Drawer";
+import useContext from "$econtext/hooks";
 
 export * from "./utils";
 
@@ -11,7 +12,8 @@ export * from "./utils";
 */
 export default function NavigationComponent (props){
     let {state,hasGetStarted,onGetStart,initialRouteName,extra} = props;
-    const allScreens = initScreens({Factory:Stack,ModalFactory:Stack,filter:({name,Screen})=>{
+    const {navigation:{screens}} = useContext();
+    const allScreens = initScreens({Factory:Stack,screens,ModalFactory:Stack,filter:({name})=>{
         if(name === initialRouteName){
             extra = defaultObj(extra);
             extra.onGetStart = onGetStart;

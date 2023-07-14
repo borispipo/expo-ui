@@ -4,11 +4,11 @@ import React from "$react";
 import theme,{remToPixel,Colors,flattenStyle} from '$theme';
 import {StyleSheet} from "react-native";
 import {defaultStr,defaultObj,defaultNumber} from "$cutils";
-import LogoComponent from "$logoComponent";
-
+import useContext from "$econtext/hooks";
 export const height = 150;
 export const width = undefined;//300;
 export default function Logo (props) {
+    const {components:{logo:LogoComponent}} = useContext();
     let {icon,color,style,testID,containerProps,smallStyle,largeStyle,mediumStyle,height:customHeight,withImage,withText} = props;
         testID = defaultStr(testID,"RN_LogoComponent");
         containerProps = defaultObj(containerProps);

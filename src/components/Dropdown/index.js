@@ -882,12 +882,12 @@ class DropdownComponent extends AppComponent {
                 onPress={this.open.bind(this)}
                 disabled = {disabled}
                 onLayout={bindResizeEvents === false ? undefined : this.onLayout.bind(this)}
-                pointerEvents = {pointerEvents}
+                style = {{pointerEvents}}
                 accessibilityLabel={defaultStr(accessibilityLabel,label,text)}
                 testID = {testID}
             >
             {<React.Fragment>{
-                <View {...dropdownProps} {...contentContainerProps} style={[contentContainerProps.style,flattenStyle]}
+                <View {...dropdownProps} {...contentContainerProps} style={[contentContainerProps.style,{pointerEvents},flattenStyle]}
                     ref = {this.anchorRef}
                     collapsable = {false}
                 >
@@ -900,15 +900,14 @@ class DropdownComponent extends AppComponent {
                         mode = {mode}
                         enableCopy = {enableCopy}
                         label = {labelTextField}
-                        pointerEvents = "none"
+                        style = {[inputProps.style,textInputProps.style,{pointerEvents:"none"}]}
                         disabled = {disabled}
                         readOnly = {readOnly}
                         //divider = {canHandle}
                         alwaysUseLabel = {renderTag?true : false}
                         contentContainerProps = {{
                             ...contentContainerProps,
-                            pointerEvents:iconDisabled && (!enableCopy && disabled)?'none':'auto',
-                            style : [renderTag? styles.inputContainerTag:null,contentContainerProps.style],
+                            style : [renderTag? styles.inputContainerTag:null,{pointerEvents:iconDisabled && (!enableCopy && disabled)?'none':'auto'},contentContainerProps.style],
                         }}
                         containerProps = {{...containerProps,style:[containerProps.style,styles.mbO]}}
                         error = {!!error}
@@ -932,7 +931,7 @@ class DropdownComponent extends AppComponent {
                         onPress = {this.open.bind(this)}
                         placeholder={placeholder}
                         render = {!renderTag?inputProps.render : (tagProps)=>{
-                            return <View pointerEvents={pointerEvents} style={[styles.tagsContentContainer,isFlatMode?styles.tagsContentContainerFlatMode:null]}>
+                            return <View style={[styles.tagsContentContainer,{pointerEvents},isFlatMode?styles.tagsContentContainerFlatMode:null]}>
                                 {tagsContent}
                             </View>
                         }}
@@ -1001,8 +1000,8 @@ class DropdownComponent extends AppComponent {
                             height : !isMob?contentContainerHeight:'90%',
                         },
                         isMob && {flex:1},
+                        {pointerEvents}
                     ]}
-                    pointerEvents = {pointerEvents}
                     testID = {testID+"_Container"}
                 >
                     {showSearch !== false && <>

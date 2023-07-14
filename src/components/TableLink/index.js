@@ -14,9 +14,10 @@ import Tooltip from "$ecomponents/Tooltip";
 import {navigateToTableData} from "$enavigation/utils";
 import Auth from "$cauth";
 import fetch from "$capi/fetch";
-
+import useContext from "$econtext/hooks";
 const TableLinKComponent = React.forwardRef((props,ref)=>{
-    let {disabled,readOnly,labelProps,server,containerProps,perm,id,fetchForeignData,foreignKeyTable,foreignKeyColumn,data,testID,Component,routeName,routeParams,component,primary,triggerProps,onPress,children, ...rest} = props;
+    const {components:{tableLinkPropsMutator}} = useContext();
+    let {disabled,readOnly,labelProps,server,containerProps,perm,id,fetchForeignData,foreignKeyTable,foreignKeyColumn,data,testID,Component,routeName,routeParams,component,primary,triggerProps,onPress,children, ...rest} = tableLinkPropsMutator(props);
     testID = defaultStr(testID,"RN_TableDataLinkContainer")
     foreignKeyTable = defaultStr(foreignKeyTable).trim();
     foreignKeyColumn = defaultStr(foreignKeyColumn).trim();
@@ -24,11 +25,11 @@ const TableLinKComponent = React.forwardRef((props,ref)=>{
     containerProps = defaultObj(containerProps)
     labelProps = defaultObj(labelProps);
     data = defaultObj(data);
-    id = defaultStr(id);
+    id = typeof id =='number'? String(id) : defaultStr(id);
     if(!id || !foreignKeyTable){
         readOnly = true;
     }
-    const pointerEvents = disabled || readOnly || !id? 'none' : 'auto';
+    const pointerEvents = disabled || readOnly ? 'none' : 'auto';
     const onPressLink = (event)=>{
         React.stopEventPropagation(event);
         if((isNonNullString(perm) && !Auth.isAllowedFromString(perm)) || !Auth.isTableDataAllowed({table:foreignKeyTable,action:'read'})){
@@ -55,9 +56,9 @@ const TableLinKComponent = React.forwardRef((props,ref)=>{
             cb().finally(closePreloader);
         }
     }
-    rest.style = [rest.style,_styles.cursorPointer];
+    rest.style = [rest.style,{pointerEvents},_styles.cursorPointer];
     const CP = disabled || readOnly ? View : Pressable;
-    return <CP testID={testID} onLongPres={(e)=>React.stopEventPropagation(e)} {...containerProps} onPress={disabled? undefined : onPressLink} style={[styles.container,containerProps.style]}>
+    return <CP testID={testID} onLongPres={(e)=>React.stopEventPropagation(e)} {...containerProps} onPress={disabled || readOnly? undefined : onPressLink} style={[styles.container,containerProps.style]}>
         <Tooltip testID={testID+"_Tooltip"} {...rest} Component={Component}  onPress={disabled || readOnly?undefined:onPressLink} ref={ref} pointerEvents={pointerEvents} readOnly={readOnly} disabled = {disabled}>
             <Label testID={testID+"_Label"} underlined primary {...labelProps} style={[_styles.lh15,labelProps.style]} disabled={disabled} readOnly={readOnly}>{children}</Label>
         </Tooltip>
@@ -76,7 +77,7 @@ TableLinKComponent.propTypes = {
     ///les props à utiliser pour afficher la table de données en cas de click sur le lien
     triggerProps : PropTypes.object,
     /*** l'id de la données à récupérer en cas de clic sur le lien */
-    id : PropTypes.string,
+    id : PropTypes.oneOfType([PropTypes.number,PropTypes.string]),
     routeName : PropTypes.string,///la route via laquelle on devra naviguer
     routeParam : PropTypes.object,///les props à passer à la route en question
     children : PropTypes.node

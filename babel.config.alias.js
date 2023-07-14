@@ -20,27 +20,20 @@ module.exports = (opts)=>{
     r["$econfirm"] = path.resolve(r["$expo-components"],"Dialog","confirm");
     r["$confirm"] = r["$confirm"] || r["$econfirm"];
     r["$eauth"] = path.resolve(expo,"auth");
-    r["$etableLink"] = r["$eTableLink"] = path.resolve(r["$ecomponents"],"TableLink");
-    r.$tableLink = r.$TableLink = r.$tableLink || r.$TableLink || path.resolve(r.$etableLink,"default");
     r["$components"] = r["$components"] || r["$ecomponents"];
     r["$elayouts"] = path.resolve(expo,"layouts");
     r["$emedia"] = path.resolve(expo,"media");
     r["$enavigation"] = path.resolve(expo,"navigation");
     r["$escreens"] = path.resolve(expo,"screens");
-    r["$emainScreens"] = path.resolve(expo,"screens","mainScreens");
     ///les screens principaux de l'application
-    r["$mainScreens"] = r["$mainScreens"] || r["$emainScreens"];
     r["$escreen"] = r["$eScreen"] = path.resolve(expo,"layouts/Screen");
-    r["$eTableDataScreen"] = path.resolve(expo,"layouts","Screen","TableData");
-    r["$TableDataScreen"] = r["$tableDataScreen"] = r["$TableDataScreen"] || r["$tableDataScreen"] || r["$eTableDataScreen"]
     r["$eassets"] = path.resolve(dir,"assets");
     r["$ethemeSelectorComponent"] = path.resolve(expo,"auth","ThemeSelector");
     /*** le composant permettant de sélectionner un theme utilisateur */
     r["$themeSelectorComponent"] = r["$themeSelectorComponent"] || r["$ethemeSelectorComponent"];
-
+    r.$tableLink = r.$TableLink = r["$etableLink"] = r["$eTableLink"] = path.resolve(r["$ecomponents"],"TableLink");
+    
     r["$Screen"] = r["$Screen"] || r["$eScreen"];
-    ///pour personnaliser les écrans de l'application, il suffit de redefinir l'alis $screens, pointant vers le repertoire racine des écrans personnalisés
-    ///cependant, ce repertoire doit contenir un fichier mainScreens.js qui contient la liste de tous les écrans de lapplicaiton
     r["$screens"] = r["$screens"] || r["$escreens"];
     
     r["$expo"] = r["$expo-ui"] = expo;
@@ -72,15 +65,6 @@ module.exports = (opts)=>{
     ///si l'alias $navigation n'a pas été définie par défaut, alors celui cet allias prendra la même valeur que celle de $envigation
     if(r["$navigation"] == r["$cnavigation"]){
         r["$navigation"] = r["$enavigation"];
-    }
-    if(r["$loginComponent"] == r["$cloginComponent"]){
-        r["$loginComponent"] = path.resolve(expo,"auth","Login");
-    }
-
-    /*** alias pour le composant logo par défaut :  */
-    r["$elogoComponent"] = path.resolve(expo,"components","Logo","defaultComponent");
-    if(!r["$logoComponent"]){
-        r["$logoComponent"] = r["$elogoComponent"];
     }
     if(typeof opts.mutator =='function'){
         opts.mutator(r);
@@ -123,9 +107,9 @@ module.exports = (opts)=>{
     //le chemin ver le repertoire electron
     r.$eelectron = r["$e-electron"] = $electron;
     r.$electron = r.$electron || r.$eelectron;
-    r.$econtext = path.resolve(expo,"context");
+    r.$econtext/hooks = path.resolve(expo,"context");
     if(!r.$context){
-        r.$context = r.$econtext;
+        r.$context = r.$econtext/hooks;
     }
     const electronAssetsPath = path.resolve(dir,"electron","assets");
     if($assets){

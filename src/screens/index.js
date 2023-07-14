@@ -1,9 +1,9 @@
 import {defaultBool,defaultArray,defaultVal,isObj,isNonNullString,defaultObj,isArray,defaultStr} from "$cutils";
 import {sanitizeName,GROUP_NAMES} from "./utils";
-import mainScreens from "$mainScreens"
 import React from "$react";
 import ScreenWrapper from "./ScreenWrapper";
 import { SCREEN_OPTIONS } from "./utils";
+
 
 export * from "./utils";
 
@@ -96,7 +96,7 @@ export const handleScreen = ({Screen,Factory,ModalFactory,result,filter,index})=
  */
 export default function initScreens ({Factory,ModalFactory,screens,result,filter}){
     if(!isArray(screens) || !screens.length){
-        screens = mainScreens;
+        screens = [];
     }
     result = defaultObj(result);
     result.screens = defaultObj(result.screens);

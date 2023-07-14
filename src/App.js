@@ -17,7 +17,7 @@ import { timeout as SWR_REFRESH_TIMEOUT} from '$ecomponents/Datagrid/SWRDatagrid
 import { Dimensions,Keyboard } from 'react-native';
 import {isTouchDevice} from "$platform";
 import * as Utils from "$cutils";
-import useContext from "$econtext";
+import {useContext} from "$econtext/hooks";
 import appConfig from "$capp/config";
 
 Object.map(Utils,(v,i)=>{

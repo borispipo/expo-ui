@@ -25,7 +25,7 @@ import {getRowsPerPagesLimits} from "./Common/utils";
 import PropTypes from "prop-types";
 import {Menu} from "$ecomponents/BottomSheet";
 import session from "$session";
-import useContext from "$econtext";
+import useContext from "$econtext/hooks";
 
 export const getSessionKey = ()=>{
     return Auth.getSessionKey("swrDatagrid");

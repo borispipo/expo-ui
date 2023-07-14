@@ -2,7 +2,7 @@ import FormDataScreen from "$elayouts/Screen/FormData";
 import {defaultStr,defaultObj,isObjOrArray,isObj} from "$cutils";
 import Auth from "$cauth";
 import {navigate} from "$cnavigation";
-import SelectTheme from "$themeSelectorComponent";
+import SelectTheme from "$ethemeSelectorComponent";
 import Preloader from "$epreloader";
 import {SignIn2SignOut} from "$cauth";
 import React from "$react";

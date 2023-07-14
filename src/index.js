@@ -39,7 +39,7 @@ import  {updateTheme,defaultTheme} from "$theme";
 import StatusBar from "$ecomponents/StatusBar";
 import {Provider as PaperProvider } from 'react-native-paper';
 import FontIcon from "$ecomponents/Icon/Font";
-import useContext from "$econtext";
+import useContext from "$econtext/hooks";
 
 let MAX_BACK_COUNT = 1;
 let countBack = 0;

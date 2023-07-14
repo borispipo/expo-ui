@@ -57,9 +57,9 @@ const NAVIGATION_PERSISTENCE_KEY = 'NAVIGATION_STATE';
  *  initialRouteName : la route initiale par défaut
  *  getStartedRouteName : la route par défaut de getStarted lorsque l'application est en mode getStarted, c'est à dire lorsque la fonction init renvoie une erreur (reject)
  */
-function App({init:initApp,initialRouteName:appInitialRouteName,render,onMount,preferences:appPreferences,getStartedRouteName}) {
+function App({init:initApp,initialRouteName:appInitialRouteName,render,onMount}) {
   AppStateService.init();
-  const {FontsIconsFilter,beforeExit} = useContext();
+  const {FontsIconsFilter,beforeExit,preferences:appPreferences,getStartedRouteName} = useContext();
   const [initialState, setInitialState] = React.useState(undefined);
   const appReadyRef = React.useRef(true);
   const [state,setState] = React.useState({

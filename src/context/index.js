@@ -22,7 +22,7 @@ export const useExpoUI = ()=> React.useContext(ExpoUIContext);
     strucsData : {object}, la liste des données de structures
 */
 export const Provider = ({children,getTableData,getStructData,tablesData,structsData,...props})=>{
-    const {extendAppTheme,structsData,getTableData} = appConfig;
+    const {extendAppTheme} = appConfig;
     const { theme : pTheme } = useMaterial3Theme();
     structsData = isObj(structsData)? structsData : null;
     tablesData = isObj(tablesData) ? tablesData : null;

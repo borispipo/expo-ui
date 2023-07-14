@@ -18,9 +18,9 @@ import {isObj} from "$cutils";
  * }
  */
 export default function registerApp (options){
-    const {onMount,onUnmount,onRender,swrConfig,...rest} = isObj(options)? options : {};
+    const {onMount,onUnmount,onRender,render,swrConfig,...rest} = isObj(options)? options : {};
     registerRootComponent(function(props){
-        return <Provider {...props} {...rest} swrConfig={isObj(swrConfig) && swrConfig || {}} children={<App onMount={onMount} onUnmount={onUnmount} onRender={onRender}/>}/>
+        return <Provider {...props} {...rest} swrConfig={isObj(swrConfig) && swrConfig || {}} children={<App render={render} onMount={onMount} onUnmount={onUnmount} onRender={onRender}/>}/>
     });
 }
 

@@ -55,7 +55,7 @@ const AppbarContent = ({
           ]}
           numberOfLines={1}
           accessible
-          accessibilityRole={
+          role={
             onPress
               ? 'none'
               : Platform.OS === 'web'
@@ -86,7 +86,7 @@ const AppbarContent = ({
       <TouchableWithoutFeedback
         testID={testID+"_Container"}
         {...containerProps}
-        accessibilityRole={touchableRole}
+        role={touchableRole}
         accessibilityTraits={touchableRole}
         accessibilityComponentType="button"
         onPress={onPress}

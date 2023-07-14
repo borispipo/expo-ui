@@ -1,7 +1,7 @@
 import Drawer,{DrawerItems} from "$ecomponents/Drawer";
 import ProfilAvatar from "$elayouts/ProfilAvatar";
 import React from "$react";
-import items,{isItemActive,refresh as refreshItems} from "./items";
+import useGetItems,{isItemActive} from "./items";
 import APP from "$capp/instance";
 import Auth from "$cauth";
 import Login from "$eauth/Login";
@@ -12,6 +12,20 @@ import Logo  from "$ecomponents/Logo";
 const DrawerNavigator = React.forwardRef(({content,children,state,...props},ref)=>{
     const drawerRef = React.useRef(null);
     const mergedRefs = React.useMergeRefs(drawerRef,ref);
+    const items = useGetItems({refresh:()=>{
+        if(drawerRef.current && drawerRef.current && drawerRef.current.forceRenderNavigationView){
+            return  drawerRef.current.forceRenderNavigationView();
+        }
+    }});
+    React.useEffect(()=>{
+        const onLogoutUser = ()=>{
+            setIsLoggedIn(false);
+        }
+        APP.on(APP.EVENTS.AUTH_LOGOUT_USER,onLogoutUser);
+        return ()=>{
+            APP.off(APP.EVENTS.AUTH_LOGOUT_USER,onLogoutUser);
+        }
+    },[])
     const headerCB = ({isMinimized})=>{
         if(isMinimized) return null;
         if(!theme.showProfilAvatarOnDrawer){
@@ -26,28 +40,6 @@ const DrawerNavigator = React.forwardRef(({content,children,state,...props},ref)
     state = defaultObj(state);
     const itemRefs = React.useRef(null);
     const uProfileRef = React.useRef(null);
-    React.useEffect(()=>{
-        const onRefreshItems = (a)=>{
-            refreshItems();
-            if(drawerRef.current && drawerRef.current && drawerRef.current.forceRenderNavigationView){
-                return  drawerRef.current.forceRenderNavigationView();
-            }
-        }
-        const onLoginUser = ()=>{
-            onRefreshItems();
-        }
-        const onLogoutUser = ()=>{
-            setIsLoggedIn(false);
-        }
-        APP.on(APP.EVENTS.REFRESH_MAIN_DRAWER,onRefreshItems);
-        APP.on(APP.EVENTS.AUTH_LOGIN_USER,onLoginUser);
-        APP.on(APP.EVENTS.AUTH_LOGOUT_USER,onLogoutUser);
-        return ()=>{
-            APP.off(APP.EVENTS.REFRESH_MAIN_DRAWER,onRefreshItems);
-            APP.off(APP.EVENTS.AUTH_LOGIN_USER,onLoginUser);
-            APP.off(APP.EVENTS.AUTH_LOGOUT_USER,onLogoutUser);
-        }
-    },[]);
     React.useEffect(()=>{
         if(prevIsLoggedIn === isLoggedIn) return;
         navigate("Home");

@@ -100,7 +100,6 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,chevronIconProps
             }
             Auth.upsertUser({...u,avatar:u.avatar},false);
       }
-
       return <View ref ={ref}>
             <Menu
              anchor = { (aProps)=>{
@@ -131,34 +130,30 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,chevronIconProps
                         />
                     </View>
                 }
-                return <Button
+                return <Pressable
                         normal
                         upperCase = {false}
                         disableRipple
                         title = {tooltip}
                         {...aProps}
                         style = {[styles.container]}
-                        surfaceProps = {{style:[theme.styles.noMargin,theme.styles.noPadding]}}
+                        //surfaceProps = {{style:[theme.styles.noMargin,theme.styles.noPadding]}}
                         onLongPress = {onLongPress}
-                        left={props1 => <Image
+                    >
+                        <Image
                             {...props} 
-                            {...props1}
                             size={size}
                             style = {styles.itemLeft}
                             testID = {"RN_ProfilAvatar_AvatarImage"}
                             readOnly = {false}
                             defaultSource ={avatarProps.defaultSrc}
                             onChange = {onChangeAvatar}
-                        />}
-                        right = {(p)=>{
-                            return <Icon 
-                                {...p} 
-                                {...chevronIconProps}
-                            />
-                        }}
-                    >
-                    {children}
-                    </Button>
+                        />
+                        {children}
+                        <Icon 
+                            {...chevronIconProps}
+                        />
+                    </Pressable>
             } }  
             items={menItems}
         />
@@ -173,6 +168,10 @@ const styles = StyleSheet.create({
     container : {
         marginLeft : 0,
         marginVertical : 10,
+        flex : 1,
+        flexDirection : "row",
+        justifyContent : "start",
+        alignItems : "center",
     },
     labelContainer : {
         flexDirection : 'column',

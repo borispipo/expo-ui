@@ -3,66 +3,77 @@
 // license that can be found in the LICENSE file.
 
 import { isRouteActive} from "$cnavigation";
-import "$cutils";
+import {defaultObj} from "$cutils";
 import appConfig from "$capp/config";
-import APP from "$capp";
+import useContext from "$econtext";
+import {useMemo,useEffect,useRef} from "react";
 ///les items du drawer
-import items from "$drawerItems";
 import { screenName as aboutScreenName} from "$escreens/Help/About";
 import theme from "$theme";
+import APP from "$capp/instance";
 
-export const getItems = (force)=>{
-    const name = !theme.showProfilAvatarOnDrawer ? 'Dashboard' : APP.getName();
-    const itx = typeof items === "function" ? items() : items;
+const useGetItems = (options)=>{
+    const {drawerItems} = useContext(); 
+    options = defaultObj(options);
+    const {refresh,force} = options;
+    const showProfilOnDrawer = theme.showProfilAvatarOnDrawer;
     const handleHelp =  appConfig.get("handleHelpScreen") !== false ? true : false;
-    const r = [
-        {
-            label : name,
-            icon : 'view-dashboard',
-            title : 'Dashboard',
-            routeName : "Home",
-            divider : true,
-        },
-    ];
-    Object.map(itx,(item,i)=>{
-        if(isObj(item)){
-            r.push(item);
+    const refreshItemsRef = useRef(false);
+    useEffect(()=>{
+        const refreshItems = (...a)=>{
+            refreshItemsRef.current = !refreshItemsRef.current;
+            if(typeof refresh =='function'){
+                refresh(...a);
+            }
         }
-    })
-    if(handleHelp){
-        r.push({divider:true});
-        const dataHelp = {
-            key : 'dataHelp',
-            label : 'Aide',
-            section : true,
-            divider : false,
-            items : [
-                {
-                    icon : 'help',
-                    label : 'A propos de '+APP.getName(),
-                    routeName : aboutScreenName,
-                }
-            ]
-        };
-        r.push(dataHelp);
-    }
-    return r;
+        APP.on(APP.EVENTS.REFRESH_MAIN_DRAWER,refreshItems);
+        APP.on(APP.EVENTS.AUTH_LOGIN_USER,refreshItems);
+        APP.on(APP.EVENTS.AUTH_LOGOUT_USER,refreshItems);
+        return ()=>{
+            APP.off(APP.EVENTS.REFRESH_MAIN_DRAWER,refreshItems);
+            APP.off(APP.EVENTS.AUTH_LOGIN_USER,refreshItems);
+            APP.off(APP.EVENTS.AUTH_LOGOUT_USER,refreshItems);
+        }
+    },[])
+    return useMemo(()=>{
+        const name = !showProfilOnDrawer ? 'Dashboard' : appConfig.name;
+        const itx = typeof drawerItems === "function" ? drawerItems() : drawerItems;
+        const r = [
+            {
+                label : name,
+                icon : 'view-dashboard',
+                title : 'Dashboard',
+                routeName : "Home",
+                divider : true,
+            },
+        ];
+        Object.map(itx,(item,i)=>{
+            if(isObj(item)){
+                r.push(item);
+            }
+        })
+        if(handleHelp){
+            r.push({divider:true});
+            const dataHelp = {
+                key : 'dataHelp',
+                label : 'Aide',
+                section : true,
+                divider : false,
+                items : [
+                    {
+                        icon : 'help',
+                        label : 'A propos de '+APP.getName(),
+                        routeName : aboutScreenName,
+                    }
+                ]
+            };
+            r.push(dataHelp);
+        }
+        return r;
+    },[showProfilOnDrawer,handleHelp,refreshItemsRef.current,force])
 }
 
-
-let CACHED_ITEMS = []
-
-export const refresh = ()=>{
-    CACHED_ITEMS = getItems();
-    return CACHED_ITEMS;
-}
-
-export default function mainDrawerItems(options){
-    if(!CACHED_ITEMS.length){
-        refresh();
-    }
-    return CACHED_ITEMS;
-};
+export default useGetItems;
 
 export const isItemActive = (opts)=>{
     if(isRouteActive(opts)){

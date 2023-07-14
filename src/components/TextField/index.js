@@ -347,7 +347,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
                 backgroundColor : 'transparent',
                 color : !error && !isFocused && Colors.isValid(flattenStyle.color)?flattenStyle.color : inputColor,
                 fontSize,
-                textAlignVertical: 'center',//multiline ? 'top' : 'center',
+                verticalAlign: 'center',//multiline ? 'top' : 'center',
                 overflow : 'hidden',
             },
             isWeb && { outline: 'none'},

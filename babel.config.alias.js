@@ -72,13 +72,6 @@ module.exports = (opts)=>{
     if(!r["$file-system"]){
         r["$file-system"] = r["$efile-system"];
     }
-    /*** cet alias est utilisé pour modifier les différents items par défaut, rendu par le composant Drawer
-     *  l'alias @drawerItems doit retourner en default, soit un tableau où un objet d'objet où une fonction
-     * si c'est une fonction, alors la function est exécutée pour obtenir la liste des items à utiliser par le drawer principal
-     */
-    if(!r["$drawerItems"]){
-        r["$drawerItems"] = path.resolve(expo,"navigation","Drawer","items","default")
-    }
     ///si l'alias $navigation n'a pas été définie par défaut, alors celui cet allias prendra la même valeur que celle de $envigation
     if(r["$navigation"] == r["$cnavigation"]){
         r["$navigation"] = r["$enavigation"];

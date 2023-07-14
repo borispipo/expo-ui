@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
   text: {
     minHeight: 24,
     lineHeight: 24,
-    textAlignVertical: 'center',
+    verticalAlign: 'center',
     marginVertical: 4,
   },
   avatar: {

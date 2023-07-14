@@ -252,7 +252,8 @@ const DrawerComponent = React.forwardRef((props,ref)=>{
                return isItemActive(opts);
             }
             return false;
-          },getState:getDrawerState,getDrawerRef}}>
+          },getState:getDrawerState,getDrawerRef
+          }}>
           <View style={styles.container} testID={`${testID}_Container`}>
               <DrawerLayout
                   testID = {`${testID}_DrawerLayout`}

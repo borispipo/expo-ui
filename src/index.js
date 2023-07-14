@@ -39,6 +39,7 @@ import  {updateTheme,defaultTheme} from "$theme";
 import StatusBar from "$ecomponents/StatusBar";
 import {Provider as PaperProvider } from 'react-native-paper';
 import FontIcon from "$ecomponents/Icon/Font";
+import useContext from "$econtext";
 
 let MAX_BACK_COUNT = 1;
 let countBack = 0;
@@ -58,17 +59,17 @@ const NAVIGATION_PERSISTENCE_KEY = 'NAVIGATION_STATE';
  */
 function App({init:initApp,initialRouteName:appInitialRouteName,render,onMount,preferences:appPreferences,getStartedRouteName}) {
   AppStateService.init();
+  const {FontsIconsFilter,beforeExit} = useContext();
   const [initialState, setInitialState] = React.useState(undefined);
   const appReadyRef = React.useRef(true);
   const [state,setState] = React.useState({
      isLoading : true,
      isInitialized:false,
   });
-  React.useEffect(() => {
+   React.useEffect(() => {
     const loadResources = ()=>{
        return new Promise((resolve)=>{
-          //FontsIconsFilter porte le nom de la props de appConfig dans lequel définir les filtres à utiliser pour charger l'iconSet désirée pour l'appication
-          loadFonts(appConfig.get("FontsIconsFilter")).catch((e)=>{
+          loadFonts(FontsIconsFilter).catch((e)=>{
             console.warn(e," ierror loading app resources fonts");
           }).finally(()=>{
             resolve(true);
@@ -111,10 +112,10 @@ function App({init:initApp,initialRouteName:appInitialRouteName,render,onMount,p
                     }
                 }
                 const exit = ()=>{
-                  if(typeof appConfig.beforeExit =='function'){
-                     const r2 = appConfig.beforeExit()
+                  if(typeof beforeExit =='function'){
+                     const r2 = beforeExit()
                      if(!isPromise(r2)){
-                        throw {message:'La fonction before exit de appConfig.beforeExit doit retourner une promesse',returnedResult:r2}
+                        throw {message:'La fonction before exit du contexte doit retourner une promesse',returnedResult:r2}
                      }
                      return r2.then(foreceExit).catch(reject);
                   }

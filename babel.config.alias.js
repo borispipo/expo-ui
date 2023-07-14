@@ -133,6 +133,10 @@ module.exports = (opts)=>{
     //le chemin ver le repertoire electron
     r.$eelectron = r["$e-electron"] = $electron;
     r.$electron = r.$electron || r.$eelectron;
+    r.$econtext = path.resolve(expo,"context");
+    if(!r.$context){
+        r.$context = r.$econtext;
+    }
     const electronAssetsPath = path.resolve(dir,"electron","assets");
     if($assets){
         const l1 = path.resolve($assets,"logo.png"), l2 = path.resolve($assets,"logo.png");

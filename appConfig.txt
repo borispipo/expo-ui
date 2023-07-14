@@ -8,9 +8,7 @@
 
     /*** le nombre maximal de courbes qu'on peut afficher sur le même graphe***/
     maxSupportedChartSeries {number}
-    
-    ///fonction de rappel appelée avant d'exit l'application, doit retourner une promesse que lorsque résolue, exit l'application
-    beforeExit : ()=><Promise>
+   
     
     /***les fonctions d'aggregations du datagrid**/
     datagridAggregatorFunctions : {objectOf({code:{string},label:{string},eval:{function}})|| arrayOf({code:{string},label:{string},eval:{function}})}
@@ -19,7 +17,6 @@
          "&libele&" : selectLabel,
     }
     getTableData : {function(tableName)=>table} retourne l'ojet table data,
-    swrRefreshTimeout : {number} le délai d'inactivité auquel, une fois l'application active, les données de type listData sont rafraichies
     handleHelpScreen : {boolean}, //if Help screen will be added on navigation's main drawer
     
     checkNavigationPermsOnTableOrStructData : {boolean}, si le test de la permission sur la table data où sur la struct data sera effectuée lorsqu'on appelera la fonction navigateToTableData ou navigateToStructData

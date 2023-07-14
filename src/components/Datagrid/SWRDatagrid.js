@@ -25,6 +25,7 @@ import {getRowsPerPagesLimits} from "./Common/utils";
 import PropTypes from "prop-types";
 import {Menu} from "$ecomponents/BottomSheet";
 import session from "$session";
+import useContext from "$econtext";
 
 export const getSessionKey = ()=>{
     return Auth.getSessionKey("swrDatagrid");
@@ -48,8 +49,8 @@ export const setSessionData = (key,value)=>{
 export const timeout = 5000*60;//5 minutes
 /***@see : https://swr.vercel.app/docs/api */
 
-export const getSWROptions = ()=>{
-    const delay = defaultNumber(appConfig.get("swrRefreshTimeout"),timeout);
+export const getSWROptions = (defTimeout)=>{
+    const delay = defaultNumber(defTimeout,timeout);
     return {
         dedupingInterval : delay,
         errorRetryInterval : Math.max(delay*2,timeout),
@@ -101,6 +102,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         defaultSortOrder,
         ...rest
     } = props;
+    const {swrConfig} = useContext();
     rest = defaultObj(rest);
     rest.exportTableProps = defaultObj(rest.exportTableProps)
     const firstPage = 1;
@@ -227,10 +229,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             });
         },
         showError  : false,
-        swrOptions : {
-            ...getSWROptions(),
-            ...defaultObj(appConfig.swr),
-        },
+        swrOptions : getSWROptions(swrConfig.refreshTimeout)
     });
     const isLoading = isLoadingRef.current  && customIsLoading || false;
     /*React.useEffect(()=>{

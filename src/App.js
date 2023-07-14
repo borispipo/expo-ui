@@ -9,7 +9,6 @@ import {GestureHandlerRootView} from "react-native-gesture-handler";
 import APP from "$app";
 import {isMobileNative} from "$cplatform";
 import {setDeviceIdRef} from "$capp";
-import appConfig from "$capp/config";
 import {showPrompt} from "$ecomponents/Dialog/confirm";
 import { AppState } from 'react-native'
 import {canFetchOffline} from "$capi/utils";
@@ -18,51 +17,18 @@ import { timeout as SWR_REFRESH_TIMEOUT} from '$ecomponents/Datagrid/SWRDatagrid
 import { Dimensions,Keyboard } from 'react-native';
 import {isTouchDevice} from "$platform";
 import * as Utils from "$cutils";
-import {MD3LightTheme,MD3DarkTheme} from "react-native-paper";
-import { useMaterial3Theme } from '@pchmn/expo-material3-theme';
-import { useColorScheme } from 'react-native';
-import {colorsAlias,Colors} from "$theme";
+import useContext from "$econtext";
+import appConfig from "$capp/config";
 
-import { configureFonts} from 'react-native-paper';
 Object.map(Utils,(v,i)=>{
   if(typeof v =='function' && typeof window !='undefined' && window && !window[i]){
      window[i] = v;
   }
 });
-const themeAttributes = ["primary","secondary","background",""]
-export default function getIndex({onMount,onUnmount,swrConfig,onRender,...rest}){
-  const {extendAppTheme} = appConfig;
-  const { theme : pTheme } = useMaterial3Theme();
-  //const colorScheme = useColorScheme();
-  appConfig.extendAppTheme = (theme)=>{
-      if(!isObj(theme)) return;
-      const newTheme = theme.dark || theme.isDark ? { ...MD3DarkTheme, colors: pTheme.dark } : { ...MD3LightTheme, colors: pTheme.light };
-      for(let i in newTheme){
-        if(i !== 'colors' && !(i in theme)){
-          theme[i] = newTheme[i];
-        }
-      }
-      if(isObj(theme.colors)){
-        colorsAlias.map((color)=>{
-          color = color.trim();
-          const cUpper = color.ucFirst();
-          //math theme colors to material desgin V3
-          const textA = `${color}Text`,onColor=`on${cUpper}`//,containerA = `${color}Container`,onColorContainer=`on${cUpper}Container`;
-          const c = Colors.isValid(theme.colors[onColor])? theme.colors[onColor] : (theme.colors[textA]) || undefined;
-          if(c){
-            theme.colors[onColor] = c;
-          }
-        });
-        for(let i in newTheme.colors){
-          if(!(i in theme.colors)){
-            theme.colors[i] = newTheme.colors[i];
-          }
-        }
-      }
-      theme.fonts = newTheme.fonts;
-      return typeof extendAppTheme == 'function'? extendAppTheme(theme)  : theme;
-  }
-  const isScreenFocusedRef = React.useRef(true);
+
+export default function getIndex({onMount,onUnmount,onRender}){
+    const {swrConfig} = useContext();
+    const isScreenFocusedRef = React.useRef(true);
     ///garde pour chaque écran sa date de dernière activité
     const screensRef = React.useRef({});//la liste des écrans actifs
     const activeScreenRef = React.useRef('');
@@ -70,7 +36,6 @@ export default function getIndex({onMount,onUnmount,swrConfig,onRender,...rest})
     const appStateRef = React.useRef({});
     const isKeyboardOpenRef = React.useRef(false);
     React.useOnRender(onRender);
-    swrConfig = defaultObj(swrConfig);
     React.useEffect(()=>{
         ///la fonction de rappel lorsque le composant est monté
         const onScreenFocus = ({sanitizedName})=>{
@@ -144,7 +109,7 @@ export default function getIndex({onMount,onUnmount,swrConfig,onRender,...rest})
             }
             const date = screensRef.current[screen];
             const diff = new Date().getTime() - date.getTime();
-            const timeout = defaultNumber(appConfig.get("swrRefreshTimeout"),SWR_REFRESH_TIMEOUT)
+            const timeout = defaultNumber(swrConfig.refreshTimeout,SWR_REFRESH_TIMEOUT)
             screensRef.current[screen] = new Date();
             return diff >= timeout ? true : false;
           },
@@ -174,7 +139,7 @@ export default function getIndex({onMount,onUnmount,swrConfig,onRender,...rest})
           }
         }}
       >
-          <GestureHandlerRootView style={{ flex: 1 }}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
           <SafeAreaProvider>
             <Index {...rest} onMount={onMount}/>
           </SafeAreaProvider>

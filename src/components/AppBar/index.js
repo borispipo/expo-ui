@@ -114,15 +114,6 @@ const AppBarComponent = React.forwardRef((props,ref)=> {
     titleProps = defaultObj(titleProps);
     React.setRef(ref,context);
     testID = defaultStr(testID,"RN_AppBarComponent")
-    const renderedActions = renderSplitedActions(splitedActions,{
-      ...defaultObj(menuProps,appBarProps.menuProps),
-      anchorProps : {
-       style : anchorStyle,
-       color : anchorStyle.color,
-      }
-   });
-   const renderedRight = React.isValidElement(rightContent) && rightContent || right;
-   const hasRight = React.isValidElement(renderedActions) || React.isValidElement(renderedRight);
     return (
       <Appbar.Header elevation={elevation} {...appBarProps}  testID={testID} style={[styles.header,{backgroundColor},elevStyle,appBarProps.style]} onLayout={onPageResize}>
         {backAction}
@@ -132,8 +123,14 @@ const AppBarComponent = React.forwardRef((props,ref)=> {
             subtitle = {defaultVal(subtitle,params.subtitle,options.subtitle)}
             subtitleProps = {subtitleProps}
         />
-        {renderedActions}
-        {renderedRight}
+        {renderSplitedActions(splitedActions,{
+          ...defaultObj(menuProps,appBarProps.menuProps),
+          anchorProps : {
+           style : anchorStyle,
+           color : anchorStyle.color,
+          }
+       })}
+        {React.isValidElement(rightContent) && rightContent || React.isValidElement(right) && right || null}
       </Appbar.Header>
     );
 });

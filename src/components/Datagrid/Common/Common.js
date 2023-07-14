@@ -3371,7 +3371,7 @@ export default class CommonDatagridComponent extends AppComponent {
         fetchOptions.dataSources = this.currentDataSources;
         fetchOptions.selector = fetchFilters;
         fetchOptions.sort = this.getSort();
-        const canIncludeField = typeof this.props.includeFieldsInFetchOptions =='boolean'? this.props.includeFieldsInFetchOptions : defaultBool(appConfig.get("includeFieldsInDatagridFetchOptions"),appConfig.includeFieldsInDatagridFetchOptions) !== false;
+        const canIncludeField = typeof this.props.includeFieldsInFetchOptions =='boolean'? this.props.includeFieldsInFetchOptions : defaultBool(appConfig.get("includeFieldsInDatagridFetchOptions")) !== false;
         if(canIncludeField){
             const ff = this.getFilterableColumnsNames();
             let fields = ff;

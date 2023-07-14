@@ -11,7 +11,7 @@ import {getFetchOptions,prepareFilters} from "$cutils/filters";
 import fetch from "$capi"
 import {willConvertFiltersToSQL} from "$ecomponents/Datagrid/utils";
 import React from "$react";
-import appConfig from "$appConfig";
+import useApp from "$econtext";
 
 /*** la tabledataSelectField permet de faire des requêtes distantes pour rechercher les données
  *  Elle doit prendre en paramètre et de manière requis : les props suivante : 
@@ -19,8 +19,9 @@ import appConfig from "$appConfig";
  *  foreignKeyTable : la tableData dans laquelle effectuer les donées de la requêtes
  *  foreignKeyLabel : Le libélé dans la table étrangère
  */
-const TableDataSelectField = React.forwardRef(({foreignKeyColumn,prepareFilters:cPrepareFilters,bindUpsert2RemoveEvents,onAdd,showAdd:customShowAdd,canShowAdd,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,convertFiltersToSQL,mutateFetchedItems,getForeignKeyTable,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchOptions,...props},ref)=>{
+const TableDataSelectField = React.forwardRef(({foreignKeyColumn,prepareFilters:cPrepareFilters,bindUpsert2RemoveEvents,onAdd,showAdd:customShowAdd,canShowAdd,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,convertFiltersToSQL,mutateFetchedItems,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchOptions,...props},ref)=>{
     props.data = defaultObj(props.data);
+    const {getTableData:getForeignKeyTable} = useApp();
     if(!foreignKeyColumn && isNonNullString(props.field)){
         foreignKeyColumn = props.field;
     }
@@ -32,11 +33,13 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,prepareFilters:
         foreignKeyLabel = foreignKeyLabel.ltrim("[").rtrim("]").split(",");
     }
     convertFiltersToSQL = defaultVal(convertFiltersToSQL,willConvertFiltersToSQL());
-    getForeignKeyTable = getForeignKeyTable || appConfig.getTableData;
-    const foreignKeyTableStr = defaultStr(foreignKeyTable,props.table,props.tableName);
-    let fKeyTable = typeof getForeignKeyTable =='function' ? getForeignKeyTable(foreignKeyTableStr,props) : undefined;
+    const foreignKeyTableStr = defaultStr(foreignKeyTable,props.tableName,props.table);
+    if(typeof getForeignKeyTable !=='function'){
+        console.error("la fonction getTableData non définie des les paramètres d'initialisation de l'application!!! Rassurez vous d'avoir définier cette fonction!!, options : foreignKeyTable:",foreignKeyTable,"foreignKeyColumn:",foreignKeyColumn,props)
+        return null;
+    }
+    let fKeyTable = getForeignKeyTable(foreignKeyTableStr,props);
     fetchItemsPath = defaultStr(fetchItemsPath).trim();
-    
     if(!fetchItemsPath && (!isObj(fKeyTable) || !(defaultStr(fKeyTable.tableName,fKeyTable.table)))){
         console.error("type de données invalide pour la foreignKeyTable ",foreignKeyTable," label : ",foreignKeyLabel,fKeyTable," composant SelectTableData",foreignKeyColumn,foreignKeyTable,props);
         return null;
@@ -306,7 +309,6 @@ TableDataSelectField.propTypes = {
     canShowAdd : PropTypes.func, //({foreignKeyTable,foreignKeyColumn})=><boolean> la fonction permettant de spécifier si l'on peut afficher le bouton showAdd
     mutateFetchedItems : PropTypes.func, //la fonction permettant d'effectuer une mutation sur l'ensemble des donnéees récupérées à distance
     fetchItems : PropTypes.func,//la fonction de rappel à utiliser pour faire une requête fetch permettant de selectionner les données à distance
-    getForeignKeyTable : PropTypes.func, //la fonction permettant de récupérer la fKeyTable data dont fait référence le champ
     foreignKeyTable : PropTypes.string, //le nom de la fKeyTable data à laquelle se reporte le champ
     fetchItemsPath : PropTypes.string, //le chemin d'api pour récupérer les items des données étrangères en utilisant la fonction fetch
     beforeFetchItems : PropTypes.func, //appelée immédiatement avant l'exécution de la requête fetch

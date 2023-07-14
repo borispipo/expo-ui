@@ -1,7 +1,9 @@
 import { registerRootComponent } from "expo";
 import {Platform } from 'react-native';
 import App from "./src/App";
+import { Provider } from "$econtext";
 const isWeb = Platform.OS === "web";
+import {isObj} from "$cutils";
 
 /****
  * les options sont de la forme : 
@@ -16,9 +18,9 @@ const isWeb = Platform.OS === "web";
  * }
  */
 export default function registerApp (options){
-    options = options && typeof options =='object' && !Array.isArray(options)? options : {};
+    const {onMount,onUnmount,onRender,swrConfig,...rest} = isObj(options)? options : {};
     registerRootComponent(function(props){
-        return <App {...props} {...options}/>
+        return <Provider {...props} {...rest} swrConfig={isObj(swrConfig) && swrConfig || {}} children={<App onMount={onMount} onUnmount={onUnmount} onRender={onRender}/>}/>
     });
 }
 

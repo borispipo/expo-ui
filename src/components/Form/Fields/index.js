@@ -16,12 +16,10 @@ import Image from "./Image";
 import Tel from "./Tel";
 import SelectCountry from "./SelectCountry";
 import Html from "./Html";
-import * as eFormFields from "$extendFormFields";
 import "$cutils";
 import React from "$react";
 import SelectDateFormat from "./SelectDateFormat";
 import CurrencyFormat from "./CurrencyFormat";
-export * from "$extendFormFields";
 
 const defFormFields = {
     Field,
@@ -45,13 +43,6 @@ const defFormFields = {
     ,SelectDateFormat
     ,Html
 }
-
-//pour étendre les FormFields par défaut
-Object.map(eFormFields,(F,i)=>{
-    if(React.isComponent(F)){
-        defFormFields[i] = F;
-    }
-})
 
 export default defFormFields;
 

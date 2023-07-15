@@ -229,7 +229,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
         }
     }
     selectionColor = Colors.isValid(selectionColor)? selectionColor : theme.colors.secondaryOnSurface;
-    const flattenStyle = StyleSheet.flatten([styles.input,styles.textInput,props.style,styles.w100,style,upperStyle]);
+    const flattenStyle = StyleSheet.flatten([{pointerEvents},styles.input,styles.textInput,props.style,styles.w100,style,upperStyle]);
     fontSize = defaultNumber(fontSize,flattenStyle.fontSize,FONT_SIZE);
     labelProps = defaultObj(labelProps);
     const alphaColor = isShadowMode || isNormalMode ? theme.colors.text : Colors.setAlpha(theme.colors.text,theme.ALPHA);
@@ -296,6 +296,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
     const withAutoHeight = typeof autoHeight === 'boolean'? autoHeight : false;
     const height = withAutoHeight || multiline ? undefined : tHeight;
     const inputStyle2 = withAutoHeight || multiline ? {minHeight : heightRef.current} : null;
+    const containerStyle = StyleSheet.flatten(containerProps.style) || {};
     const inputProps= {
         caretHidden : false,
         ellipsizeMode : "head",
@@ -358,7 +359,6 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
             isShadowMode && styles.inputShadowMode,
             multiline && {paddingTop : isFlatMode? 12 : 7},
         ],
-        pointerEvents,
         secureTextEntry,
         inputMode,
         autoCapitalize : upper?(isAndroid?'characters':"none"):autoCapitalize,
@@ -399,7 +399,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
     let hasRight = React.isValidElement(right),hasLeft = React.isValidElement(left);
     enableCopy = enableCopy ? true : false;
     fieldToCopy = defaultStr(fieldToCopy).toLowerCase().trim();
-    if(isEditable ||  isFilter || defaultStr(contentContainerProps.pointerEvents).toLowerCase().contains("none")){
+    if(isEditable ||  isFilter || defaultStr(containerStyle.pointerEvents).toLowerCase().contains("none")){
         enableCopy = false;
     }
     if(enableCopy){
@@ -530,7 +530,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
                 {label}
             </Label> : null}
             <>
-                <Surface testID={testID+"_ContentContainer"} pointerEvents={pointerEvents} {...contentContainerProps} elevation={elevation}  style={[styles.contentContainer,!left? styles.paddingLeft:null,styles.row,contentContainerStyle,contentContainerProps.style]}>
+                <Surface testID={testID+"_ContentContainer"}  {...contentContainerProps} elevation={elevation}  style={[styles.contentContainer,{pointerEvents},!left? styles.paddingLeft:null,styles.row,contentContainerStyle,contentContainerProps.style]}>
                     {left ? (<View testID={testID+"_Left"} {...leftContainerProps} style={[styles.AdornmentContainer,styles.leftAdornment,leftContainerProps.style,disabledStyle]}>
                         {left}
                     </View>) : null}

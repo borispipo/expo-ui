@@ -21,13 +21,13 @@ import {isWeb} from "$cplatform";
 import ProviderSelector from "./ProviderSelector";
 import { ScrollView } from "react-native";
 import PropTypes from "prop-types";
-import getLoginProps from "$getLoginProps";
-const getProps = typeof getLoginProps =='function'? getLoginProps : x=>null;
+import useContext from "$econtext/hooks";
 
 const WIDTH = 400;
 
 export default function LoginComponent(props){
     let {formName,step,appBarProps,onSuccess,withPortal,testID} = props;
+    const {components:{loginPropsMutator}} = useContext();
     const loginTitle = getTitle();
     testID = defaultStr(testID,"RN_Auth.LoginComponent");
     formName = React.useRef(uniqid(defaultStr(formName,"login-formname"))).current;
@@ -91,7 +91,7 @@ export default function LoginComponent(props){
         containerProps : customContainerProps,
         withHeaderAvatar,
         contentProps : customContentProps,
-        withScrollView:customWithScrollView,children,initialize,contentTop,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,mutateData,beforeSubmit:beforeSubmitForm,canSubmit:canSubmitForm,onStepChange,...loginProps} = defaultObj(getProps({
+        withScrollView:customWithScrollView,children,initialize,contentTop,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,mutateData,beforeSubmit:beforeSubmitForm,canSubmit:canSubmitForm,onStepChange,...loginProps} = loginPropsMutator({
         ...state,
         setState,
         state,
@@ -105,7 +105,7 @@ export default function LoginComponent(props){
         nextButtonRef,
         ProviderSelector,
         previousButtonRef,
-    }));
+    });
     const containerProps = defaultObj(customContainerProps);
     const contentProps = defaultObj(customContentProps);
 

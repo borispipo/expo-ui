@@ -6,6 +6,7 @@ import {colorsAlias,Colors} from "$theme";
 import {isObj} from "$cutils";
 import eMainScreens from "$escreens/mainScreens";
 import {ExpoUIContext} from "./hooks";
+import Login from "$eauth/Login";
 
 /*****
     les utilitaires disponibles à passer au provider : 
@@ -22,7 +23,7 @@ import {ExpoUIContext} from "./hooks";
             ReactNode,
             ReactComponent
         },
-        //la fonction permettant de muter les props du composant TableLink
+        loginPropsMutator : ({object})=><{object}>, la fonction permettant de muter les props du composant Login,
         tableLinkPropsMutator : ({object})=><{object}>, la fonction permettant de muter les props du composant TableLink
     },
     navigation : {
@@ -42,6 +43,7 @@ const Provider = ({children,getTableData,navigation,components,getStructData,tab
     appConfig.structsData = appConfig.structsData = isObj(structsData)? structsData : null;
     appConfig.getTableData = getTableData;
     appConfig.getStructData = getStructData;
+    appConfig.LoginComponent = Login;
     //const colorScheme = useColorScheme();
     appConfig.extendAppTheme = (theme)=>{
         if(!isObj(theme)) return;
@@ -77,13 +79,11 @@ const Provider = ({children,getTableData,navigation,components,getStructData,tab
         navigation,
         components : {
             ...components,
+            loginPropsMutator : (props)=>{
+               return extendProps(components.loginPropsMutator,props);
+            },
             tableLinkPropsMutator : (props)=>{
-                const prs = defaultObj(props);
-                const o = typeof components.tableLinkPropsMutator ==='function'? components.tableLinkPropsMutator(props) : null;
-                if(isObj(o)){
-                    return {...prs,...o};
-                }
-                return prs
+                return extendProps(components.tableLinkPropsMutator,props);
             }
         },
         getTableData,getStructData,tablesData,structsData,appConfig
@@ -92,4 +92,12 @@ const Provider = ({children,getTableData,navigation,components,getStructData,tab
     />;
 }
 
+const extendProps = (cb,props)=>{
+  const prs = defaultObj(props);
+  const o = typeof  cb ==='function'? cb(props) : null;
+  if(isObj(o)){
+      return {...prs,...o};
+  }
+  return prs
+}
 export default Provider;

@@ -41,7 +41,7 @@ const DialogComponent = React.forwardRef((props,ref)=>{
         onCancelButtonPress,no,yes,
         onDismiss:customOnDismiss,backAction,onShow,backActionProps,
         fullScreen:customFullScreen,appBarProps,contentProps,actionsProps,
-        title,subtitle,onMount,onUnmount,mediaQueryUpdateNativeProps,
+        title,subtitle,onMount,onUnmount,
         titleProps,
         visible,
         scrollViewProps,withScrollView,
@@ -146,11 +146,6 @@ const DialogComponent = React.forwardRef((props,ref)=>{
         const {height} = Dimensions.get("window");
         return Math.max((height>600?(50):70)*height/100,MIN_HEIGHT);
     }
-    const modalStyle = React.useMediaQueryUpdateStyle({
-        mediaQueryUpdateStyle : (args)=>{
-            return null;
-        }
-    });
    const onModalShown = (a)=>{
       if(onShow){
         onShow(a);
@@ -197,7 +192,7 @@ const DialogComponent = React.forwardRef((props,ref)=>{
                 dismissable = {isDimissable}
                 onShow = {onModalShown}
                 visible={visible} 
-                style = {[styles.modal,modalProps.style,modalStyle]}
+                style = {[styles.modal,modalProps.style]}
                 ref={modalRef}
                 testID = {testID}
                 contentContainerProps = {contentContainerProps}

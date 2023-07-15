@@ -3,10 +3,11 @@ import PropTypes from "prop-types";
 import React from "$react";
 import {isMobileNative} from "$cplatform";
 import {debounce,isNumber} from "$cutils";
+import {useMediaQueryUpdateStyle} from "$ehooks";
 
 
-const ViewComponent = React.forwardRef(({mediaQueryUpdateNativeProps,onRender,onLayoutTimeout,onLayout,autoHeight,autoWidth,elevation,...props},ref)=>{
-    const style = React.useMediaQueryUpdateStyle(props);
+const ViewComponent = React.forwardRef(({onRender,onLayoutTimeout,onLayout,autoHeight,autoWidth,elevation,...props},ref)=>{
+    const style = useMediaQueryUpdateStyle(props);
     const autoSize = autoHeight||autoWidth ? true : false;
     const [state,setState] = autoSize ? React.useState({}) : [{}];
     const {width,height} = state;
@@ -32,7 +33,7 @@ const ViewComponent = React.forwardRef(({mediaQueryUpdateNativeProps,onRender,on
             ]
          ]}
          onLayout = {isMobileNative()? onL : debounce(onL,typeof onLayoutTimeout =='number'? onLayoutTimeout : 100)}
-         ref={typeof mediaQueryUpdateNativeProps =='function' ? React.useMediaQueryUpdateNativeProps(mediaQueryUpdateNativeProps,ref) : ref}
+         ref={ref}
     />
 });
 
@@ -41,7 +42,6 @@ export default ViewComponent;
 ViewComponent.displayName = "ViewComponent";
 
 ViewComponent.propTypes = {
-    mediaQueryUpdateNativeProps : PropTypes.func,
     mediaQueryUpdateStyle : PropTypes.func,
     autoWidth : PropTypes.bool,//si la taille de la vue est calculée automatiquement
     autoHeight : PropTypes.bool,//si la taille de 

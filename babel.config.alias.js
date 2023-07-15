@@ -69,6 +69,8 @@ module.exports = (opts)=>{
     if(typeof opts.mutator =='function'){
         opts.mutator(r);
     }
+    r.$eutils = path.resolve(expo,"utils");
+    r.$ehooks = path.resolve(expo,"hooks");
     ///le chemin racine du projet expo-ui
     r["$expo-ui-root-path"] = r["$expo-ui-root"]= path.resolve(expo,"..");
 

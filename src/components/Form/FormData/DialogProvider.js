@@ -42,10 +42,10 @@ const FormDataDialogProvider = React.forwardRef((props,innerRef)=>{
     if(state.visible){
         formProps.fieldProps = defaultObj(formProps.fieldProps);
         formProps.fieldProps.windowWidth = !isMobile ? MAX_WIDTH : undefined;
-        formProps.fieldProps.updateNativePropsOnUpdate = ({target})=>{
-            if(!target || !target.current || target.setNativeProps || !formRef.current || !formRef.current.dialogRef || !formRef.current.dialogRef.current || !formRef.current.dialogRef.current.isFullScreen) return;
+        formProps.fieldProps.mediaQueryUpdateStyle = ({target})=>{
+            if(!formRef.current || !formRef.current.dialogRef || !formRef.current.dialogRef.current || !formRef.current.dialogRef.current.isFullScreen) return;
             const f = formRef.current.dialogRef.current.isFullScreen();
-            target.current.setNativeProps({ style : f? grid.col() : {width:'100%'}});
+            return f ? grid.col() : {width:'100%'};
         }
     }
     return <Dialog 

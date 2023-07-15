@@ -4,7 +4,7 @@ import React from '$react';
 import {Pressable, StyleSheet} from 'react-native';
 import Dimensions from "$cplatform/dimensions";
 import View from "$ecomponents/View";
-import {defaultStr} from "$cutils";
+import {defaultStr,isObj} from "$cutils";
 import PropTypes from "prop-types";
 import {medias} from "$theme/grid";
 import theme from "$theme";
@@ -66,14 +66,11 @@ export const getSizeStyle = (props)=>{
     }
     paddingMultiplicator = typeof paddingMultiplicator =='number'? paddingMultiplicator : 1.8;
     marginMultiplicator = typeof marginMultiplicator =="number"? marginMultiplicator : 0;
-    const marginRight = marginMultiplicator*gutter;
-    return {
-        style : {paddingRight:gutter*paddingMultiplicator,marginVertical:gutter,width : (((size)/totalSize)*100)+"%"}
-    }
+    return {paddingRight:gutter*paddingMultiplicator,marginVertical:gutter,width : (((size)/totalSize)*100)+"%"}
 }
 
 const GridCellComponent = React.forwardRef((p,ref)=>{
-    const {style,size,children,phoneSize,withSurface,elevation:cElev,mediaQueryUpdateNativeProps,contentProps:cProps,tabletSize,desktopSize,smallPhoneSize,onPress,activeOpacity,onLongPress,flex:customFlex,onPressIn,onPressOut,...props} = p;
+    const {style,size,children,phoneSize,withSurface,elevation:cElev,mediaQueryUpdateStyle,contentProps:cProps,tabletSize,desktopSize,smallPhoneSize,onPress,activeOpacity,onLongPress,flex:customFlex,onPressIn,onPressOut,...props} = p;
     const testID = defaultStr(props.testID,"RN_Grid.CellComponent");
     const contentProps = defaultObj(cProps);
     const C = onPress || onLongPress || onPressIn || onPressOut ? Pressable : View;
@@ -82,13 +79,16 @@ const GridCellComponent = React.forwardRef((p,ref)=>{
     return <View 
         {...props}
         testID={testID} 
-        mediaQueryUpdateNativeProps = {(args)=>{
-            console.log("calling ",args);
-            if(typeof mediaQueryUpdateNativeProps =='function' && mediaQueryUpdateNativeProps(args) === false) return;
-            return getSizeStyle(p);
+        mediaQueryUpdateStyle = {(args)=>{
+            const style2 = getSizeStyle(p);
+            const style = typeof mediaQueryUpdateStyle =='function' && mediaQueryUpdateStyle(args) || undefined;
+            if(isObj(style) || Array.isArray(style)){
+                return StyleSheet.flatten([style2,styles]);
+            }
+            return style2;
         }}
         ref={ref} 
-        style = {[styles.container,customFlex !== undefined && {flex:customFlex},getSizeStyle(p).style,style]}
+        style = {[styles.container,customFlex !== undefined && {flex:customFlex},style]}
     >
         <C testID={testID+"_Content"}  activeOpacity={activeOpacity}  {...contentProps}
              

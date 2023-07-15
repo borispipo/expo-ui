@@ -672,9 +672,11 @@ export default class DropdownAlert extends Component {
               accessibilityLabel={accessibilityLabel}
               accessible={accessible}>
             <View style={style} testID={testID+"_ContentContainer"}>
-                  <View testID={testID+"_ContentWrapper"} style={[contentContainerStyle,getContainerStyle().style]}
-                     mediaQueryUpdateNativeProps={(args)=>{
-                       return getContainerStyle(args);
+                  <View testID={testID+"_ContentWrapper"} style={[contentContainerStyle]}
+                     mediaQueryUpdateStyle={({isMobile,isTablet,width,...rest})=>{
+                       return {
+                          maxWidth  : isMobile ? (90*width)/100 : isTablet? Math.max((70*width/100),350) : 500
+                       }
                     }}
                   >
                       {this._renderImage(imageSrc, imageStyle)}
@@ -689,17 +691,5 @@ export default class DropdownAlert extends Component {
         </Animated.View>
       </Portal>
     );
-  }
-}
-
-const getContainerStyle = (args)=>{
-  if(!isObj(args)){
-     args = {isMobile : isMobileMedia(),isTablet : isTabletMedia()};
-  }
-  const {width} = Dimensions.get("window");
-  return {
-    style : {
-       maxWidth  : args.isMobile ? (90*width)/100 : args.isTablet? Math.max((70*width/100),350) : 500
-    }
   }
 }

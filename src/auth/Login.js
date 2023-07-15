@@ -199,22 +199,16 @@ export default function LoginComponent(props){
     });
     const withScrollView = typeof customWithScrollView =='boolean'? customWithScrollView : true;
     const Wrapper = withPortal ? ScreenWithoutAuthContainer  : withScrollView ? ScrollView: View;
-    const mQueryUpdateProps = (a)=>{
-        const style = StyleSheet.flatten([updateMediaQueryStyle(),contentProps.style]);
-        if(typeof contentProps.updateMediaQueryStyle =='function'){
-            return contentProps.updateMediaQueryStyle({style})
-        }
-        return {style};
+    const mediaQueryUpdateStyle = (a)=>{
+        return StyleSheet.flatten([updateMediaQueryStyle(),contentProps.style]);
     };
     const wrapperProps = withPortal ? {appBarProps,authRequired:false,title:loginTitle,withScrollView} : { style:styles.wrapper};
-    const sH = React.isComponent(HeaderTopContent)? <HeaderTopContent
-        mediaQueryUpdateNativeProps = {mQueryUpdateProps}
-    /> : React.isValidElement(HeaderTopContent)? HeaderTopContent : null;
+    const sH = React.isComponent(HeaderTopContent)? <HeaderTopContent mediaQueryUpdateStyle = {mediaQueryUpdateStyle} /> : React.isValidElement(HeaderTopContent)? HeaderTopContent : null;
     return <Wrapper testID = {testID+"_Wrapper" }{...wrapperProps}>
         <DialogProvider ref={dialogProviderRef}/>
         {sH}
         <Surface {...containerProps} {...defaultObj(loginProps?.containerProps)} style={[styles.container,{backgroundColor},containerProps.style,loginProps?.containerProps?.style]}  testID={testID}>
-            <Surface elevation = {0} {...contentProps} mediaQueryUpdateNativeProps = {mQueryUpdateProps} {...contentProps} testID={testID+"_Content"} style={[styles.content,updateMediaQueryStyle(),{backgroundColor},contentProps.style]}>
+            <Surface elevation = {0} {...contentProps} mediaQueryUpdateStyle = {mediaQueryUpdateStyle} {...contentProps} testID={testID+"_Content"} style={[styles.content,{backgroundColor},contentProps.style]}>
                 <FormData 
                     formName = {formName}
                     testID = {testID+"_FormData"}

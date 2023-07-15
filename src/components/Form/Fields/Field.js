@@ -1,5 +1,7 @@
 import PropTypes from "prop-types";
 import KeyboardEventHandler from "../KeyboardEventHandler";
+import { addMediaQueryUpdateStyeSubscription } from "$ehooks";
+import Dimensions from "$cdimensions";
 const {getActions,getFormFields,Forms} = require("../utils")
 import TextField,{parseDecimal} from "$ecomponents/TextField";
 import Icon from "$ecomponents/Icon";
@@ -219,10 +221,10 @@ export default class Field extends AppComponent {
         this.state.validatingValue = this.validatingValue = defaultVal(this.props.defaultValue);
         this.keybaordEvents = [...Object.keys(defaultKeyboardEvents),...this.keybaordEvents]
         this.state.isMobile = isMobileMedia();
-        this.state.textFieldMode = theme.textFieldMode;
         this.state.isReadOnlyOrDisabled = false;
         this.state.isFieldEditable = true;
         this.state.isFieldVisible = typeof this.props.visible =='boolean'? this.props.visible : true;
+        this.state.wrapperStyle = this.getMediaQueryUpdateStyle();
     }
     validatorBeforeValidate({value,validRule,validParams,event,...rest}){
         let _result = undefined;
@@ -610,18 +612,11 @@ export default class Field extends AppComponent {
         }
         return ob;
     }
-    componentDidUpdate(){
-        super.componentDidUpdate();
-        if(typeof this.props.updateNativePropsOnUpdate ==='function'){
-            this.props.updateNativePropsOnUpdate({
-                target : this.wrapperRef,
-                props : this.props,
-            });
-        }
-    }
+    
+    
     componentDidMount (validate){
         super.componentDidMount();
-        this.mediaQueryPropsSubscription = React.getMediaQueryPropsSubscription(this.mediaQueryUpdateNativeProps.bind(this),this.wrapperRef);
+        this.mediaQueryUpdateStyleSubscription = addMediaQueryUpdateStyeSubscription(this.doUpdateMediaQueryStyle.bind(this));
         if(this.canValidate !== false){
             Forms.trigger("registerField",this.getName(),this.getFormName(),this);
         }
@@ -632,8 +627,8 @@ export default class Field extends AppComponent {
         this._fieldRef = undefined;
         this.offAll();
         this.clearEvents();
-        if(this.mediaQueryPropsSubscription){
-            this.mediaQueryPropsSubscription.remove();
+        if(this.mediaQueryUpdateStyleSubscription && this.mediaQueryUpdateStyleSubscription?.remove){
+            this.mediaQueryUpdateStyleSubscription.remove();
         }
         if(this.canValidate !== false){
             Forms.trigger("unregisterField",this.getName(),this.getFormName());
@@ -642,20 +637,17 @@ export default class Field extends AppComponent {
     isHtml(){
         return false;
     }
-    mediaQueryUpdateNativeProps(args){
-        const {isMobile} = args;
-        if(typeof this.props.mediaQueryUpdateNativeProps =='function'){
-            args.props = this.props;
-            args.context = this;
-            return this.props.mediaQueryUpdateNativeProps(args);
+    doUpdateMediaQueryStyle(args){
+        const wrapperStyle = this.getMediaQueryUpdateStyle(args);
+        this.setState({isMobile:args.isMobile,wrapperStyle});
+    }
+    getMediaQueryUpdateStyle(args){
+        if(this.props.responsive === false) return null;
+        if(!isObj(args)){
+            args = Dimensions.getDimensionsProps();
         }
-        const hasTextFieldModeChanged = true;// = this.state.textFieldMode !== theme.textFieldMode && this.state.isMobile !== isMobile;
-        if(this.props.responsive === false && !hasTextFieldModeChanged) return;
-        if((hasTextFieldModeChanged)){
-            this.setState({isMobile,textFieldMode:theme.textFieldMode});
-            return null;
-        }
-        return {style:grid.col(this.props.windowWidth)};
+        const style2 = typeof this.props.mediaQueryUpdateStyle =='function'? this.props.mediaQueryUpdateStyle(args) : null;
+        return StyleSheet.flatten([grid.col(this.props.windowWidth),style2]);
     }
     onKeyEvent(key,event){
         let form = this.getForm();
@@ -1032,11 +1024,13 @@ export default class Field extends AppComponent {
                 rest.height = height;
             }
         }
-        return  <KeyboardEventHandler formFieldName={this.getName()} testID={'RN_FormFieldContainer_'+this.getName()} innerRef={this.wrapperRef} {...wrapperProps}
+        return  <KeyboardEventHandler formFieldName={this.getName()} testID={'RN_FormFieldContainer_'+this.getName()} innerRef={this.wrapperRef} 
+                {...wrapperProps}
                 handleKeys={this.keybaordEvents}
                 onKeyEvent = {this.onKeyEvent.bind(this)}
                 isDisabled = {rest.disabled}
-                style = {[wrapperProps.style,visibleStyle]}
+                mediaQueryUpdateStyle={null}
+                style = {[this.state.wrapperStyle,wrapperProps.style,visibleStyle]} 
             >
                 {(kProps)=>{
                     return this._render({...rest,...kProps},this.setRef.bind(this))

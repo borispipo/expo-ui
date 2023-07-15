@@ -64,6 +64,7 @@ const AvatarComponent = React.forwardRef((props,ref)=>{
     const c = <Component
             {...rest}
             {...cProps}
+            containerProps = {containerProps}
             ref={ref}
             onPress = {!handleOnPress && onPress ? onPress : undefined}
             title = {onPress?null : defaultVal(toolip,title)}
@@ -71,7 +72,7 @@ const AvatarComponent = React.forwardRef((props,ref)=>{
             style = {style}
             size= {size}
         />;
-    return onPress && handleOnPress ?  <Tooltip title={title} toolip={toolip} Component = {Pressable} testID={testID+"_Container"} {...containerProps} onPress={onPress}>{c}</Tooltip> : c;
+    return onPress && handleOnPress ?  <Tooltip title={title} toolip={toolip} Component = {Pressable} testID={testID+"_Container"}  onPress={onPress}>{c}</Tooltip> : c;
 });
 
 AvatarComponent.displayName = "AvatarComponent";

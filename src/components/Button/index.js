@@ -254,7 +254,7 @@ const ButtonComponent = React.forwardRef((prs,ref) => {
                   >
                     <View testID={testID+"_Content"} {...contentProps} style={[styles.content, contentStyle,noPadding && theme.styles.noPadding,noMargin && theme.styles.noMargin]}>
                       {React.isValidElement(left)? left : typeof left =='function' ?left(leftRProps):null}
-                      {icon && isLoading !== true && false ? (
+                      {icon && isLoading !== true ? (
                         <View style={[iconStyle,{color:textColor},iconProps.style]} testID={testID+"_IconContainer"}>
                           {React.isValidElement(icon)?icon : <Icon
                             testID={testID+"_Icon"}

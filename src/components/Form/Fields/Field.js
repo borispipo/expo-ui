@@ -225,6 +225,7 @@ export default class Field extends AppComponent {
         this.state.isFieldEditable = true;
         this.state.isFieldVisible = typeof this.props.visible =='boolean'? this.props.visible : true;
         this.state.wrapperStyle = this.getMediaQueryUpdateStyle();
+        this.state.currentMedia = Dimensions.getDimensionsProps().currentMedia;
     }
     validatorBeforeValidate({value,validRule,validParams,event,...rest}){
         let _result = undefined;
@@ -638,6 +639,7 @@ export default class Field extends AppComponent {
         return false;
     }
     doUpdateMediaQueryStyle(args){
+        if(args?.currentMedia === this.state.currentMedia) return null;
         const wrapperStyle = this.getMediaQueryUpdateStyle(args);
         this.setState({isMobile:args.isMobile,wrapperStyle});
     }

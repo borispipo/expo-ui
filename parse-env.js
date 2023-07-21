@@ -1,10 +1,16 @@
 const LINE = /(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*"(?:\\"|[^"])*"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)/mg
-
+const fs = require("fs");
+const path = require("path");
 // Parser src into an Object
 module.exports = function parse (src) {
+  if(typeof src !=='string' || !src.trim()){
+    try {
+        const envPath = path.resolve(process.cwd(),".env");
+        src = fs.existsSync(envPath)? fs.readFileSync(envPath,'utf8') :"";
+    } catch{}
+  }
   if(typeof src !=='string' || !src) return {};
   const obj = {}
-
   // Convert buffer to string
   let lines = src.toString()
 

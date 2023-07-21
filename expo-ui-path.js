@@ -18,8 +18,7 @@ module.exports = function (){
     const rootPath = process.cwd();
     const src = path.resolve(rootPath,"src");
     try {
-        const envPath = path.resolve(rootPath,".env");
-        const envObj = fs.existsSync(envPath)? require("./parse-env")(fs.readFileSync(envPath,'utf8')) : {};
+        const envObj = require("./parse-env")();
         const euPathm = typeof envObj.EXPO_UI_ROOT_PATH =="string" && envObj.EXPO_UI_ROOT_PATH && path.resolve(envObj.EXPO_UI_ROOT_PATH)||'';
         const eu = euPathm && fs.existsSync(euPathm)? euPathm : null;
         if(eu &&  fs.existsSync(path.resolve(eu,"src")) && fs.existsSync(path.resolve(eu,"webpack.config.js"))){

@@ -3,7 +3,7 @@ import appConfig from "$capp/config";
 import {MD3LightTheme,MD3DarkTheme} from "react-native-paper";
 import { useMaterial3Theme } from '@pchmn/expo-material3-theme';
 import {colorsAlias,Colors} from "$theme";
-import {isObj} from "$cutils";
+import {isObj,isNonNullString} from "$cutils";
 import eMainScreens from "$escreens/mainScreens";
 import {ExpoUIContext} from "./hooks";
 import Login from "$eauth/Login";
@@ -41,7 +41,14 @@ const Provider = ({children,getTableData,navigation,components,getStructData,tab
     structsData = isObj(structsData)? structsData : null;
     appConfig.tablesData = tablesData;
     appConfig.structsData = appConfig.structsData = isObj(structsData)? structsData : null;
-    appConfig.getTableData = getTableData;
+    if(isObj(tablesData) && Object.size(tablesData,true)){
+        appConfig.getTableData = (tableName)=>{
+            if(!isNonNullString(tableName)) return null;
+            tableName = tableName.trim();
+        }
+    } else if(typeof getTableData =='function'){
+        appConfig.getTableData = getTableData;
+    }
     appConfig.getStructData = getStructData;
     appConfig.LoginComponent = Login;
     //const colorScheme = useColorScheme();

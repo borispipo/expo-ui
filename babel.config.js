@@ -57,8 +57,8 @@ module.exports = function(api,opts) {
                 if(getTableJSContent){
                     writeFile(getTableJsPath,`
   module.exports = function(tableName){
-    if(!tableName || typeof tableName !=="string") return null;
-    tableName = tableName.toUpperCase().trim();
+      if(!tableName || typeof tableName !=="string") return null;
+      tableName = tableName.toUpperCase().trim();
     ${getTableJSContent}
     return null;
   }

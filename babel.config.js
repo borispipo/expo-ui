@@ -60,7 +60,7 @@ module.exports = function(api,opts) {
       if(!tableName || typeof tableName !=="string") return null;
       tableName = tableName.toUpperCase().trim();
     ${getTableJSContent}
-    return null;
+      return null;
   }
                     `);
                 }

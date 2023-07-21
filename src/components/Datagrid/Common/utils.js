@@ -45,9 +45,11 @@ export const renderRowCell = (arg)=>{
         } else if(typeof columnDef.render === "function"){
             _render = columnDef.render.call(context,renderArgs);
         } else if(arrayValueExists( _type,["date","datetime","time"])){
-            let _dd =DateLib.parse(rowData[columnField],_type === 'time'?DateLib.isoTimeFormat:DateLib.SQLDateFormat);
+            const sqlFormat =_type === 'time'?DateLib.isoTimeFormat : _type ==="datetime" ? DateLib.SQLDateTimeFormat : DateLib.SQLDateFormat;
+            let _dd =DateLib.parse(rowData[columnField],sqlFormat);
             if(DateLib.isDateObj(_dd)){
-                _render = DateLib.format(_dd,defaultStr(columnDef.format,(_type === 'time'?DateLib.defaultTimeFormat:DateLib.masks.defaultDate)));
+                const eFormat = defaultStr(columnDef.format,(_type === 'time'?DateLib.defaultTimeFormat:DateLib.masks.defaultDate));
+                _render = DateLib.format(_dd,eFormat);
             }
             if(!_render) _render = rowData[columnField]
         } else if(arrayValueExists(_type,['switch','checkbox'])){

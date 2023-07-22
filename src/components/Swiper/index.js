@@ -286,7 +286,7 @@ class SwiperComponent extends React.Component {
     childrenProps = Array.isArray(childrenProps)? childrenProps : [];
     const isReady = customHeight > 40 ? true : false;
     const autoHeight = !!this.props.autoHeight;
-    const height = autoHeight ? "100%" : !isReady ? WIDTH_HEIGHT : customHeight;
+    const height = autoHeight ? undefined : !isReady ? WIDTH_HEIGHT : customHeight;
     if(withScrollView){
       wrapperProps.nestedScrollEnabled = typeof wrapperProps.nestedScrollEnabled ==="boolean"? wrapperProps.nestedScrollEnabled : isNative;
       if(typeof wrapperProps.showsVerticalScrollIndicator !=='boolean'){
@@ -440,7 +440,7 @@ const styles = {
     backgroundColor: 'transparent',
   },
   // Fix web vertical scaling (like expo v33-34)
-  container: (positionFixed, x, y, width, height,autoHeight) => ({
+  container: (positionFixed, x, y, width, height,autoHeight) => addAutoHeight(({
     backgroundColor: 'transparent',
     // Fix safari vertical bounces
     position: positionFixed ? 'fixed' : 'relative',
@@ -449,18 +449,16 @@ const styles = {
     top: positionFixed ? y : 0,
     left: positionFixed ? x : 0,
     width,
-    height:!autoHeight ? undefined : height,
     justifyContent: 'flex-start',
     alignItems : 'flex-start',
-  }),
-  swipeArea: (vertical, count, width, height,autoHeight) => ({
+  }),height,autoHeight),
+  swipeArea: (vertical, count, width, height,autoHeight) => addAutoHeight(({
     position: 'relative',
     top: 0,
     left: 0,
     width:vertical ? width : width * count,
-    height:!autoHeight ? undefined : vertical ? height * count : height,
     flexDirection: vertical ? 'column' : 'row',
-  }),
+  }),typeof height ==='number'? (vertical ? height * count : height) : undefiend,autoHeight),
   scrollViewContentContainer : {
     paddingBottom : 40,
     flex : 1,
@@ -472,5 +470,12 @@ const styles = {
     alignItems : 'center',
   }
 };
+
+const addAutoHeight = (style,height,autoHeight)=>{
+  if(height !== undefined && autoHeight){
+    style.height = height;
+  }
+  return style;
+}
 
 export default SwiperComponent;

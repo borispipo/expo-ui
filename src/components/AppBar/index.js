@@ -37,6 +37,7 @@ const AppBarComponent = React.forwardRef((props,ref)=> {
       right,
       onBackActionPress : customOnBackActionPress,actions,backActionRef,route,
       ...appBarProps} = props;
+    testID = defaultStr(testID)+"_RN_AppBarComponent";
     const customOptions = options;
     route = defaultObj(route,useRoute());
     options = defaultObj(options,useScreenOptions());
@@ -65,7 +66,7 @@ const AppBarComponent = React.forwardRef((props,ref)=> {
     }
     title = defaultVal(title,params.title,APP.getName());
     backActionProps = Object.assign({},backActionProps);
-    backActionProps.testID = defaultStr(backActionProps.testID,testID+"_BackAction");
+    backActionProps.testID = defaultStr(backActionProps.testID)+"_AppBarBackAction";
     
     let BackActionComponent  = backAction === false ? null : React.isComponent(backAction)? backAction : back ? Appbar.BackAction : Icon ;
     backActionProps.color = backActionProps.color && Colors.isValid(backActionProps.color)? backActionProps.color : anchorStyle.color;
@@ -113,7 +114,7 @@ const AppBarComponent = React.forwardRef((props,ref)=> {
     const elevStyle = elevation && Elevations[elevation];
     titleProps = defaultObj(titleProps);
     React.setRef(ref,context);
-    testID = defaultStr(testID,"RN_AppBarComponent")
+;
     return (
       <Appbar.Header elevation={elevation} {...appBarProps}  testID={testID} style={[styles.header,{backgroundColor},elevStyle,appBarProps.style]} onLayout={onPageResize}>
         {backAction}
@@ -122,6 +123,7 @@ const AppBarComponent = React.forwardRef((props,ref)=> {
             titleProps = {{...titleProps,style:[styles.title,{color:primaryText},titleProps.style]}}
             subtitle = {defaultVal(subtitle,params.subtitle,options.subtitle)}
             subtitleProps = {subtitleProps}
+            testID={testID+"_Content"}
         />
         {renderSplitedActions(splitedActions,{
           ...defaultObj(menuProps,appBarProps.menuProps),

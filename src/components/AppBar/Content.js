@@ -30,7 +30,7 @@ const AppbarContent = ({
     const titleTextColor = Colors.isValid(titleColor) ? titleColor : theme.colors.primaryText;
     titleProps = defaultObj(titleProps);
     subtitleProps = defaultObj(subtitleProps);
-    testID = defaultStr(testID,"RN_AppBarContentComponent")
+    testID = defaultStr(testID)+"_RN_AppBarContent";
     subtitle = subtitle === false ? null : subtitle;
     const subtitleColor = Colors.setAlpha(titleTextColor,0.7);
    const webStyle = isWeb() && theme.styles.webFontFamilly;

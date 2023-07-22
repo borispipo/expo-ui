@@ -8,17 +8,20 @@ import Login from "$eauth/Login";
 import {navigate} from "$cnavigation";
 import theme from "$theme";
 import Logo  from "$ecomponents/Logo";
+import Dimensions from "$dimensions";
 
-const DrawerNavigator = React.forwardRef(({content,children,state,...props},ref)=>{
+const DrawerNavigator = React.forwardRef(({content,children:customChildren,state,...props},ref)=>{
     const drawerRef = React.useRef(null);
     const mergedRefs = React.useMergeRefs(drawerRef,ref);
     const forceRender = React.useForceRender();
     const refreshItemsRef = React.useRef(false);
+    const [currentMedia,setCurrentMedia] = React.useState(Dimensions.getCurrentMedia());
     const items = useGetItems({refresh:()=>{
         if(drawerRef.current && drawerRef.current && drawerRef.current.forceRenderNavigationView){
             return  drawerRef.current.forceRenderNavigationView();
         }
     },force:refreshItemsRef.current});
+    const children= React.useMemo(()=>customChildren,[customChildren,isLoggedIn])
     React.useEffect(()=>{
         const onLogoutUser = ()=>{
             setIsLoggedIn(false);
@@ -28,11 +31,18 @@ const DrawerNavigator = React.forwardRef(({content,children,state,...props},ref)
             forceRender();
             refreshItemsRef.current = false;
         };
+        const onResizePage = ()=>{
+            forceRender();
+        }
         APP.on(APP.EVENTS.AUTH_LOGOUT_USER,onLogoutUser);
+        const bindResize = Dimensions.addEventListener("change",()=>{
+            setCurrentMedia(Dimensions.getCurrentMedia());
+        })
         APP.on(APP.EVENTS.UPDATE_THEME,refreshItems);
         return ()=>{
             APP.off(APP.EVENTS.AUTH_LOGOUT_USER,onLogoutUser);
             APP.off(APP.EVENTS.UPDATE_THEME,refreshItems);
+            if(typeof bindResize ==='function') bindResize();
         }
     },[])
     const headerCB = ({isMinimized})=>{

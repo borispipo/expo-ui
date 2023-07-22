@@ -140,6 +140,10 @@ const DrawerComponent = React.forwardRef((props,ref)=>{
         }
         setState(nS);
     }
+    context.getPosition = ()=>position;
+    context.hasLeftPositon = ()=> position === DRAWER_POSITIONS.left;
+    context.hasRightPosition = ()=> position === DRAWER_POSITIONS.right;
+    context.isLeftPosition = ()=> isLeftPosition;
     context.canToggle = x=> canHandleExtra() ? true : permanent? false : true;
     context.canMinimize = x => minimizable !== false && canBeMinimizedOrPermanent() ? true : false;
                     
@@ -221,10 +225,10 @@ const DrawerComponent = React.forwardRef((props,ref)=>{
     ///lorsque le drawer est en mode permanent, l'icone par défaut est l'icon devant le dépingler du mode permanent
     const backIcon = "window-close";//isLeftPosition ? "arrow-left" : "arrow-right";
     const chevronIcon = isLeftPosition ? "chevron-left":"chevron-right";
-    temporaryToggleIcon = React.isValidElement(temporaryToggleIcon)? temporaryToggleIcon : backIcon;
-    permanentToggleIcon = React.isValidElement(permanentToggleIcon)? permanentToggleIcon : chevronIcon;
-    minimizedToggleIcon = React.isValidElement(minimizedToggleIcon)? minimizedToggleIcon : MENU_ICON;
-
+    context.temporaryToggleIcon = temporaryToggleIcon = React.isValidElement(temporaryToggleIcon)? temporaryToggleIcon : backIcon;
+    context.permanentToggleIcon = permanentToggleIcon = React.isValidElement(permanentToggleIcon)? permanentToggleIcon : chevronIcon;
+    context.minimizedToggleIcon = minimizedToggleIcon = React.isValidElement(minimizedToggleIcon)? minimizedToggleIcon : chevronIcon//MENU_ICON;
+    
     let toggleIconTooltip = null;
     let toggleIcon = null, mobileToggleIconTooltip = "Cliquez pour "+(open?'Masquer':'Afficher')+ " le drawer";
     if(!isPermanent){

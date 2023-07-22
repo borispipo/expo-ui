@@ -12,43 +12,58 @@ const AppBarLayout = React.forwardRef(({backActionProps,withDrawer,backAction,ba
     const innerRef = React.useRef(null);
     options = defaultObj(options);
     const mergedRef = React.useMergeRefs(innerRef,ref);
-    backActionProps = Object.assign({},backActionProps);
-    const {drawerRef} = useDrawer();
     return <AppBar
-        backAction = {backAction === false ? null : ({back,...props})=>{
-            props = defaultObj(props);
-            const size = 30;
-            const bProps = {
-                size,
-                //color : theme.colors.primaryText,
-                ...backActionProps,
-                ...props,
-            }
-            return backAction === true ? <Appbar.BackAction {...bProps}/> : withDrawer !== false? <Icon {...bProps} icon = {MENU_ICON}/> : null;
-        }}
+        backAction = {getBackActionComponent({backAction,backActionProps,withDrawer})}
         {...props}
-        onBackActionPress = {(args)=>{
-            const {canGoBack,goBack} = args;
-            if(backAction === true && canGoBack()){
-                goBack();
-                return false;
-            }
-            if(drawerRef && drawerRef.current){
-                if(drawerRef.current.isMinimized() && drawerRef.current.isOpen()){
-                    drawerRef.current.restore();
-                    return false;
-                }
-                if(!drawerRef.current.isPermanent()){
-                    drawerRef.current.toggle();
-                } else if(!drawerRef.current.isOpen()){
-                    drawerRef.current.open();
-                }
-            }
-            return false;
-        }}
         ref = {mergedRef}
     />
 });
+
+export const getBackActionComponent = ({backAction,backActionProps,withDrawer})=>{
+    backActionProps = Object.assign({},backActionProps);
+    return function MainDrawerBackAction({...props}){
+        const {drawerRef} = useDrawer();
+        const size = 30;
+        const bProps = {
+            size,
+            ...backActionProps,
+            ...props,
+            onPress : (args)=>{
+                const {canGoBack,goBack} = args;
+                if(typeof props.onPress ==='function' && props.onPress(args) === false) return false;
+                if(backAction === true && canGoBack()){
+                    goBack();
+                    return false;
+                }
+                if(drawerRef && drawerRef.current){
+                    if(drawerRef.current.isMinimized() && drawerRef.current.isOpen()){
+                        drawerRef.current.restore();
+                        return false;
+                    }
+                    if(!drawerRef.current.isPermanent()){
+                        drawerRef.current.toggle();
+                    } else if(!drawerRef.current.isOpen()){
+                        drawerRef.current.open();
+                    }
+                }
+                return false;
+            },
+        }
+        if(backAction === true) return <Appbar.BackAction {...bProps}/>;
+        const isPermanent = typeof drawerRef.current?.isPermanent =='function' && drawerRef?.current?.isPermanent(); 
+        const isMinimized = typeof drawerRef.current?.isMinimized =="function" && drawerRef.current.isMinimized();
+        if(backAction === false || withDrawer === false) return null;
+        const hasRightPosition = typeof drawerRef.current?.hasRightPosition =="function" && drawerRef.current?.hasRightPosition();
+        if(isMinimized){
+            bProps.style =[bProps.style];
+            if(hasRightPosition){
+                bProps.style.push({marginRight:-10});
+            } else bProps.style.push({marginLeft:-10});
+            bProps.title = "Cliquez pour restaurer le drawer à sa position initiale"
+        }
+        return !isPermanent || isMinimized ? <Icon {...bProps} icon = {isMinimized ? `chevron-${hasRightPosition?"left":"right"}` : MENU_ICON}/> : null
+    }
+}
 
 AppBarLayout.displayName = "AppBarLayout";
 

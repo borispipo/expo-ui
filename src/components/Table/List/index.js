@@ -20,5 +20,4 @@ const AutoSizeVerticalList = React.forwardRef(({testID,autoSizerProps,...props},
 })
 
 AutoSizeVerticalList.displayName = "AutoSizeVerticalListComponent";
-
 export default AutoSizeVerticalList;

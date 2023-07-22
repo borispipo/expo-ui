@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-import Screen from "$escreen";
-import SWRDatagrid from "../SWRDatagrid";
-export default function TestDataScreen({...props}){
-    return <SWRDatagrid {...props}/>
+import fields from "./fields";
+import Table from "../Table";
+const data = require("./data.json");
+export default function TestDatagridComponent({...props}){
+    return <Table  columns={fields} data={data.docs} {...props}/>
 }
-
-HomeScreen.screenName = "Home";

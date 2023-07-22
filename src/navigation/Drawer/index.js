@@ -36,7 +36,10 @@ const DrawerNavigator = React.forwardRef(({content,children:customChildren,state
         }
         APP.on(APP.EVENTS.AUTH_LOGOUT_USER,onLogoutUser);
         const bindResize = Dimensions.addEventListener("change",()=>{
-            setCurrentMedia(Dimensions.getCurrentMedia());
+            const cMedia = Dimensions.getCurrentMedia();
+            if(cMedia !== currentMedia){
+               setCurrentMedia(cMedia);
+            }
         })
         APP.on(APP.EVENTS.UPDATE_THEME,refreshItems);
         return ()=>{

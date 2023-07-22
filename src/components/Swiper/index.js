@@ -285,7 +285,8 @@ class SwiperComponent extends React.Component {
     testID = defaultStr(testID,'RN_SwiperComponent');
     childrenProps = Array.isArray(childrenProps)? childrenProps : [];
     const isReady = customHeight > 40 ? true : false;
-    const height = !isReady ? WIDTH_HEIGHT : customHeight;
+    const autoHeight = !!this.props.autoHeight;
+    const height = autoHeight ? "100%" : !isReady ? WIDTH_HEIGHT : customHeight;
     if(withScrollView){
       wrapperProps.nestedScrollEnabled = typeof wrapperProps.nestedScrollEnabled ==="boolean"? wrapperProps.nestedScrollEnabled : isNative;
       if(typeof wrapperProps.showsVerticalScrollIndicator !=='boolean'){
@@ -313,12 +314,12 @@ class SwiperComponent extends React.Component {
         <View
           testID={testID+"_ContentContainer"}
           {...contentContainerProps}
-          style={[styles.container(positionFixed, x, y, width, height),contentContainerProps.style]}
+          style={[styles.container(positionFixed, x, y, width, height,autoHeight),contentContainerProps.style]}
         >
           <Animated.View
             testID={testID+"_AnimatedContent"}
             style={[
-              styles.swipeArea(vertical, this.count, width, height),
+              styles.swipeArea(vertical, this.count, width, height,autoHeight),
               swipeAreaProps.style,
               {
                 transform: [{ translateX: pan.x }, { translateY: pan.y }],
@@ -339,7 +340,8 @@ class SwiperComponent extends React.Component {
                   style={[
                     childProps.style,
                     contentProps.style,
-                    {width, height,maxHeight:height},
+                    {width},
+                    autoHeight && {height,maxHeight:height},
                   ]}
                 >
                   <W {...wProps}>
@@ -373,6 +375,7 @@ class SwiperComponent extends React.Component {
 SwiperComponent.propTypes = {
   vertical: PropTypes.bool,
   activeIndex: PropTypes.number,
+  autoHeight : PropTypes.bool,//si la valeur de la taille des éléments sera automatiquement réajusté
   loop: PropTypes.bool,
   timeout: PropTypes.number,
   gesturesEnabled: PropTypes.func,
@@ -437,7 +440,7 @@ const styles = {
     backgroundColor: 'transparent',
   },
   // Fix web vertical scaling (like expo v33-34)
-  container: (positionFixed, x, y, width, height) => ({
+  container: (positionFixed, x, y, width, height,autoHeight) => ({
     backgroundColor: 'transparent',
     // Fix safari vertical bounces
     position: positionFixed ? 'fixed' : 'relative',
@@ -446,16 +449,16 @@ const styles = {
     top: positionFixed ? y : 0,
     left: positionFixed ? x : 0,
     width,
-    height,
+    height:!autoHeight ? undefined : height,
     justifyContent: 'flex-start',
     alignItems : 'flex-start',
   }),
-  swipeArea: (vertical, count, width, height) => ({
+  swipeArea: (vertical, count, width, height,autoHeight) => ({
     position: 'relative',
     top: 0,
     left: 0,
     width:vertical ? width : width * count,
-    height:vertical ? height * count : height,
+    height:!autoHeight ? undefined : vertical ? height * count : height,
     flexDirection: vertical ? 'column' : 'row',
   }),
   scrollViewContentContainer : {

@@ -106,7 +106,7 @@ TabComponent.Item = (props)=>null;
 
 const styles = StyleSheet.create({
     container : {
-        minHeight : 300,
+        minHeight : 150,
         flex : 1,
     },
 })

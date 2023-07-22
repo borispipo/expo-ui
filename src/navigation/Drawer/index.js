@@ -12,18 +12,27 @@ import Logo  from "$ecomponents/Logo";
 const DrawerNavigator = React.forwardRef(({content,children,state,...props},ref)=>{
     const drawerRef = React.useRef(null);
     const mergedRefs = React.useMergeRefs(drawerRef,ref);
+    const forceRender = React.useForceRender();
+    const refreshItemsRef = React.useRef(false);
     const items = useGetItems({refresh:()=>{
         if(drawerRef.current && drawerRef.current && drawerRef.current.forceRenderNavigationView){
             return  drawerRef.current.forceRenderNavigationView();
         }
-    }});
+    },force:refreshItemsRef.current});
     React.useEffect(()=>{
         const onLogoutUser = ()=>{
             setIsLoggedIn(false);
         }
+        const refreshItems = ()=>{
+            refreshItemsRef.current = true;
+            forceRender();
+            refreshItemsRef.current = false;
+        };
         APP.on(APP.EVENTS.AUTH_LOGOUT_USER,onLogoutUser);
+        APP.on(APP.EVENTS.UPDATE_THEME,refreshItems);
         return ()=>{
             APP.off(APP.EVENTS.AUTH_LOGOUT_USER,onLogoutUser);
+            APP.off(APP.EVENTS.UPDATE_THEME,refreshItems);
         }
     },[])
     const headerCB = ({isMinimized})=>{

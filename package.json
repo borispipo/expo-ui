@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "6.6.9",
+  "version": "6.7.0",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "index.js",
   "scripts": {
@@ -41,7 +41,7 @@
     "fix-dependencies": "expo-cli doctor --fix-dependencies",
     "delete-node-modules": "rimraf ./**/node_modules",
     "modifier-url-remote-git": "git remote set-url origin 'https://borispipo@github.com/borispipo/smart-eneo.git'",
-    "update": "npm i @emotion/native@latest apexcharts@latest file-saver@latest fs-extra@latest google-libphonenumber@latest @pchmn/expo-material3-theme@latest @gorhom/portal@latest @emotion/native@latest @fto-consult/common@latest react-native-blob-util react-native-gesture-handler@latest react-native-iphone-x-helper@latest react-native-mime-types@latest react-native-paper@latest  react-native-paper-dates@latest @react-navigation/native@latest @react-navigation/native-stack@latest react-virtuoso@latest sharp-cli@latest tippy.js@latest websql@latest xlsx@latest && npx expo install --fix"
+    "update": "npm i expo @emotion/native@latest apexcharts@latest file-saver@latest fs-extra@latest google-libphonenumber@latest @pchmn/expo-material3-theme@latest @gorhom/portal@latest @emotion/native@latest @fto-consult/common@latest react-native-blob-util react-native-gesture-handler@latest react-native-iphone-x-helper@latest react-native-mime-types@latest react-native-paper@latest  react-native-paper-dates@latest @react-navigation/native@latest @react-navigation/native-stack@latest react-virtuoso@latest sharp-cli@latest tippy.js@latest websql@latest xlsx@latest && npx expo install --fix"
   },
   "bin": "./bin/index.js",
   "repository": {
@@ -73,7 +73,7 @@
     "@react-navigation/native-stack": "^6.9.13",
     "@shopify/flash-list": "1.4.3",
     "apexcharts": "^3.41.0",
-    "expo": "^49.0.3",
+    "expo": "^49.0.4",
     "expo-camera": "~13.4.2",
     "expo-clipboard": "~4.3.0",
     "expo-font": "~11.4.0",
@@ -106,7 +106,7 @@
     "react-native-svg": "13.9.0",
     "react-native-web": "~0.19.6",
     "react-native-webview": "13.2.2",
-    "react-virtuoso": "^4.4.0",
+    "react-virtuoso": "^4.4.1",
     "sharp-cli": "^4.1.1",
     "tippy.js": "^6.3.7",
     "websql": "^2.0.3",

@@ -41,15 +41,8 @@ const Provider = ({children,getTableData,navigation,components,getStructData,tab
     structsData = isObj(structsData)? structsData : null;
     appConfig.tablesData = tablesData;
     appConfig.structsData = appConfig.structsData = isObj(structsData)? structsData : null;
-    if(isObj(tablesData) && Object.size(tablesData,true)){
-        appConfig.getTableData = (tableName)=>{
-            if(!isNonNullString(tableName)) return null;
-            tableName = tableName.trim();
-        }
-    } else if(typeof getTableData =='function'){
-        appConfig.getTableData = getTableData;
-    }
-    appConfig.getStructData = getStructData;
+    getTableData = appConfig.getTable = appConfig.getTableData = getTableOrStructDataCall(tablesData,getTableData);
+    getStructData = appConfig.getStructData = getTableOrStructDataCall(structsData,getStructData);
     appConfig.LoginComponent = Login;
     //const colorScheme = useColorScheme();
     appConfig.extendAppTheme = (theme)=>{
@@ -93,12 +86,28 @@ const Provider = ({children,getTableData,navigation,components,getStructData,tab
                 return extendProps(components.tableLinkPropsMutator,props);
             }
         },
-        getTableData,getStructData,tablesData,structsData,appConfig
+        getTableData,
+        getTable : getTableData,
+        getStructData,
+        tablesData,
+        structsData,
+        appConfig
       }} 
       children={children}
     />;
 }
-
+const getTableOrStructDataCall = (tablesOrStructDatas,getTableOrStructDataFunc)=>{
+  return (tableName,...rest)=>{
+      if(!isNonNullString(tableName)) return null;
+      tableName = tableName.trim();
+      const ret2 = typeof getTableOrStructDataFunc ==='function' ? getTableOrStructDataFunc (tableName,...rest) : null;
+      if(isObj(ret2) && Object.size(ret2,true)) return ret2;
+      if(!isObj(tablesOrStructDatas)) return null;
+      const ret = tablesOrStructDatas[tableName] || tablesOrStructDatas[tableName.toLowerCase()] || tablesOrStructDatas[tableName.toUpperCase];
+      if(isObj(ret)) return ret;
+      return null;
+  }
+}
 const extendProps = (cb,props)=>{
   const prs = defaultObj(props);
   const o = typeof  cb ==='function'? cb(props) : null;

@@ -26,9 +26,6 @@ export * from "./utils";
 //const isNative = isNativeMobile();
 const isAndroid = _isAndroid() //|| isAndroidMobileBrowser();
 const isWeb = _isWeb();
-const isIos = _isIos();
-
-
 
 const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
     let {defaultValue,toCase:toCustomCase,color,validType,validRule,placeholder,outlined,placeholderColor,
@@ -135,6 +132,8 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
     const isShadowMode = mode ==shadowMode ? true : false;
     const isNormalMode = mode == normalMode ? true : false;
     const isFlatMode =  mode == flatMode ? true : false;
+    
+    const MULTIPLE_HEIGHT = isShadowMode ? HEIGHT : HEIGHT;
     
     const [inputState, setInputState] = React.useState({
         focused : false,
@@ -287,7 +286,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
     const borderWidth = outlined !== false ? (isFocused ? 2: 1):0;
     const _height = typeof flattenStyle.height == 'number' && flattenStyle.height > 20 ?  flattenStyle.height : HEIGHT;
     const tHeight = _height;//isShadowMode ?  (_height+(isMobileNative()?10:0)) : isNormalMode ? (_height-10) : _height;
-    const heightRef = React.useRef(tHeight);
+    const heightRef = React.useRef(multiline?MULTIPLE_HEIGHT:tHeight);
     //const lineHeightRef = React.useRef(0);
     roundness = typeof roundness =='number'? roundness : undefined;
     const borderRadius = isShadowMode ? (roundness || Math.max(tHeight/3,10)) : isOutlinedMode ? (roundness || 10) : 0;
@@ -357,6 +356,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
             inputStyle2,
             isNormalMode && styles.inputNormalMode,
             isShadowMode && styles.inputShadowMode,
+            isShadowMode && multiline && {minHeight:heightRef.current},
             multiline && {paddingTop : isFlatMode? 12 : 7},
         ],
         secureTextEntry,
@@ -377,10 +377,10 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
             }
             if(multiline){
                 if(!text2 || text2.length < 30){
-                    heightRef.current = HEIGHT;
+                    heightRef.current = MULTIPLE_HEIGHT;
                     setToggle(!toggle);
                 } else  if(target.scrollHeight > heightRef.current){
-                    heightRef.current = target.scrollHeight; 
+                    heightRef.current = Math.max(target.scrollHeight,MULTIPLE_HEIGHT); 
                     setToggle(!toggle);
                 }
             }

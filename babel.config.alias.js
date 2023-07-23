@@ -70,21 +70,11 @@ module.exports = (opts)=>{
         opts.mutator(r);
     }
     r.$eutils = path.resolve(expo,"utils");
-    r.$ehooks = path.resolve(expo,"hooks");
+    r.$ehooks = path.resolve(expo,"context","hooks");
     ///le chemin racine du projet expo-ui
     r["$expo-ui-root-path"] = r["$expo-ui-root"]= path.resolve(expo,"..");
 
     const HelpScreen = path.resolve(r["$escreens"],"Help");
-    /*** alias des termsOfUses */
-    r.$eTermsOfUses = path.resolve(HelpScreen,"TermsOfUses","content");
-    if(!r.$TermsOfUses){
-        r.$TermsOfUses = r.$eTermsOfUses;
-    }
-    /*** alias des privacyPolicy */
-    r.$ePrivacyPolicy = path.resolve(HelpScreen,"PrivacyPolicy","content");
-    if(!r.$PrivacyPolicy){
-        r.$PrivacyPolicy = r.$ePrivacyPolicy;
-    }
     ///on génère les librairies open sources utilisées par l'application
     const root = path.resolve(r.$src,"..");
     const nModulePath = fs.existsSync(path.resolve(root,"node_modules")) && path.resolve(root,"node_modules") || fs.existsSync(path.resolve(r.$src,"node_modules")) && path.resolve(r.$src,"node_modules") || path.resolve(base,"node_modules");

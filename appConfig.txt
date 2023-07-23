@@ -21,3 +21,6 @@
     
     checkNavigationPermsOnTableOrStructData : {boolean}, si le test de la permission sur la table data où sur la struct data sera effectuée lorsqu'on appelera la fonction navigateToTableData ou navigateToStructData
  }
+ 
+la routine useMainNavigation de $enavigation/hooks, renvoie toutes  les propriétés passées à l'objet principal MainNavoigationProvider, nottement, 
+la fonction onGetStart, qui est appélé après initialisation de l'application, mais aussi l'état du composant App de $expoUI/src/index

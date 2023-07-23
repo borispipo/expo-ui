@@ -2,7 +2,7 @@ import {TERMS_OF_USES} from "./routes";
 import title from "./title";
 import Screen from "$screen";
 import Link from "./Link";
-import Content from "$TermsOfUses";
+import Content from "./content";
 import {extendObj} from "$cutils";
 import React from "$react";
 

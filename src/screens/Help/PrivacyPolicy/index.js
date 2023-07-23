@@ -2,7 +2,7 @@ import {PRIVACY_POLICY} from "./routes";
 import title from "./title"
 import  Screen  from "$screen";
 import Link from "./Link";
-import Content from "$PrivacyPolicy";
+import Content from "./content";
 import React from "$react";
 
 export default function PrivacyPolicy(props){

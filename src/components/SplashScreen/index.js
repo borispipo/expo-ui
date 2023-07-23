@@ -100,6 +100,7 @@ const SplashScreenComponent = ({isLoaded,children , duration, delay,logoWidth,lo
     ],
   }
   const child = (animationDone && isLoaded)? React.isValidElement(children) && children : null;
+  console.log("sppash ",isLoaded,child);
   return (
     <View style={[styles.container]} testID={testID} id={testID}>
       {!animationDone && <View style={StyleSheet.absoluteFill} testID={testID+"_Animation"}/>}

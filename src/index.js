@@ -273,7 +273,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,render,onMount})
           initialRouteName = {defaultStr(hasGetStarted ? appInitialRouteName : getStartedRouteName,"Home")}
           state = {state}
           hasGetStarted = {hasGetStarted}
-          isInitialized = {!isLoading}
+          isInitialized = {isInitialized}
           onGetStart = {(e)=>{
             setState({...state,hasGetStarted:true})
           }}
@@ -282,7 +282,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,render,onMount})
     </PortalProvider>
   </NavigationContainer>  : null;
   const content = isLoaded ? typeof render == 'function'? render({children:child,appConfig,config:appConfig}) : child : null;
-  return (<SplashScreen isLoaded={!isLoading}>
+  return (<SplashScreen isLoaded={isLoaded}>
       <AuthProvider>
         <PaperProvider 
           theme={theme}

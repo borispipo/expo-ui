@@ -22,7 +22,8 @@ const AppBarLayout = React.forwardRef(({backActionProps,withDrawer,backAction,ba
 export const getBackActionComponent = ({backAction,backActionProps,withDrawer})=>{
     backActionProps = Object.assign({},backActionProps);
     return function MainDrawerBackAction({...props}){
-        const {drawerRef} = useDrawer();
+        const {drawerRef,hasContext} = useDrawer();
+        if(!hasContext()) return null;
         const size = 30;
         const bProps = {
             size,
@@ -51,7 +52,7 @@ export const getBackActionComponent = ({backAction,backActionProps,withDrawer})=
         }
         if(backAction === true) return <Appbar.BackAction {...bProps}/>;
         const isPermanent = typeof drawerRef.current?.isPermanent =='function' && drawerRef?.current?.isPermanent(); 
-        const isMinimized = typeof drawerRef.current?.isMinimized =="function" && drawerRef.current.isMinimized();
+        const isMinimized = typeof drawerRef.current?.isMinimized =="function" && drawerRef?.current?.isMinimized();
         if(backAction === false || withDrawer === false) return null;
         const hasRightPosition = typeof drawerRef.current?.hasRightPosition =="function" && drawerRef.current?.hasRightPosition();
         if(isMinimized){

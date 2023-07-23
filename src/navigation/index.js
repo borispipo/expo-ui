@@ -4,6 +4,9 @@ import {Stack,setInitialRouteName } from "$cnavigation";
 import React from "$react";
 import DrawerNavigator from "./Drawer";
 import useContext from "$econtext/hooks";
+import { MainNavigationProvider } from "./hooks";
+
+export * from "./hooks";
 
 export * from "./utils";
 
@@ -11,15 +14,9 @@ export * from "./utils";
  *  lorsque hasGetStarted est à false, celle-ci rend l'écran Start permettant de rendre le contenu GetStarted
 */
 export default function NavigationComponent (props){
-    let {state,hasGetStarted,onGetStart,initialRouteName,extra} = props;
+    let {state,hasGetStarted,onGetStart,initialRouteName,...rest} = props;
     const {navigation:{screens}} = useContext();
     const allScreens = initScreens({Factory:Stack,screens,ModalFactory:Stack,filter:({name})=>{
-        if(name === initialRouteName){
-            extra = defaultObj(extra);
-            extra.onGetStart = onGetStart;
-            extra.state = state;
-            return extra;
-        }
         return true;
     }});
     initialRouteName = sanitizeName(initialRouteName);
@@ -33,25 +30,27 @@ export default function NavigationComponent (props){
         headerShown : false,
         header : ()=> null,
     }
-    return <DrawerNavigator {...props}>
+    return <MainNavigationProvider {...rest} onGetStart={onGetStart} state={state} initialRouteName={initialRouteName}>
+        <DrawerNavigator {...props}>
             {<Stack.Navigator 
-                initialRouteName={initialRouteName} 
-                screenOptions={opts}
-            >
-                {<Stack.Group screenOptions={{...opts}}>
-                    {drawerScreens}
-                </Stack.Group>}
-                <Stack.Group
-                    key = {"MODAL-DRAWERS-SCREENS"}
-                    screenOptions={{
-                        ...opts,
-                        presentation: 'transparentModal', 
-                    }}
+                    initialRouteName={initialRouteName} 
+                    screenOptions={opts}
                 >
-                    {stackScreens}
-                </Stack.Group>
-            </Stack.Navigator> }
-    </DrawerNavigator>
+                    {<Stack.Group screenOptions={{...opts}}>
+                        {drawerScreens}
+                    </Stack.Group>}
+                    <Stack.Group
+                        key = {"MODAL-DRAWERS-SCREENS"}
+                        screenOptions={{
+                            ...opts,
+                            presentation: 'transparentModal', 
+                        }}
+                    >
+                        {stackScreens}
+                    </Stack.Group>
+                </Stack.Navigator> }
+        </DrawerNavigator>
+    </MainNavigationProvider>
 }
 
 export * from "$cnavigation";

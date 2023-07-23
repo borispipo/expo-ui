@@ -1,9 +1,8 @@
 import { registerRootComponent } from "expo";
 import {Platform } from 'react-native';
 import App from "./src/App";
-import { Provider } from "$econtext";
+import Provider from "$econtext/Provider";
 const isWeb = Platform.OS === "web";
-import {isObj} from "$cutils";
 
 /****
  * les options sont de la forme : 
@@ -17,10 +16,9 @@ import {isObj} from "$cutils";
  *   les écrans d'initialisation doivent garder la propriété Start à true ou doivent avoir le groupe INTALL, pour spécifier que ce sont es écrans qui apparaissent lorsque l'application n'est pas initialisée
  * }
  */
-export default function registerApp (options){
-    const {onMount,onUnmount,onRender,render,swrConfig,...rest} = isObj(options)? options : {};
+export default function registerApp ({onMount,onUnmount,onRender,render,swrConfig,init,...rest}){
     registerRootComponent(function(props){
-        return <Provider {...props} {...rest} swrConfig={isObj(swrConfig) && swrConfig || {}} children={<App render={render} onMount={onMount} onUnmount={onUnmount} onRender={onRender}/>}/>
+        return <Provider {...props} {...rest} swrConfig={isObj(swrConfig) && swrConfig || {}} children={<App init={init} render={render} onMount={onMount} onUnmount={onUnmount} onRender={onRender}/>}/>
     });
 }
 

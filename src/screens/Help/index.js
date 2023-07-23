@@ -6,3 +6,9 @@ export default [
     PrivacyPolicy,
     About,
 ]
+
+export {PrivacyPolicy};
+
+export {About};
+
+export {TermsOfUses};

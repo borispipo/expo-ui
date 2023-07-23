@@ -166,6 +166,7 @@ const DrawerComponent = React.forwardRef((props,ref)=>{
     context.isMinimized = ()=>{
       return minimizable !== false && canBeMinimizedOrPermanent() && isDesktopMedia() && session.get("minimized")? true : false;
     }
+    const hasContext = ()=>drawerRef && isObj(drawerRef?.current) && Object.size(drawerRef?.current,true);
     context.canBeMinimizedOrPermanent = canBeMinimizedOrPermanent;
     context.isPermanent = x=>{
        if(!drawerRef.current || !drawerRef.current.isOpen()) return false;
@@ -247,8 +248,11 @@ const DrawerComponent = React.forwardRef((props,ref)=>{
     }
     return (
       <DrawerContext.Provider value={{
-          context,drawerRef,
+          ...context,
+          context,
+          drawerRef,
           session,
+          hasContext,
           close : (cb,force) =>closeDrawer(drawerRef,cb,force),
           sessionName,
           isItemActive : (opts)=>{

@@ -109,7 +109,7 @@ export default function initScreens ({Factory,ModalFactory,screens,result,filter
     return result;
 }
 
-export const handleContent = ({screens,hasGetStarted,onGetStart,state,Factory})=>{
+export const handleContent = ({screens,hasGetStarted,state,Factory})=>{
     const content = [];
     state = defaultObj(state);
     screens = defaultObj(screens);

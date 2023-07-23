@@ -26,7 +26,7 @@ Object.map(Utils,(v,i)=>{
   }
 });
 
-export default function getIndex({onMount,onUnmount,render,onRender}){
+export default function getIndex({onMount,onUnmount,render,onRender,init}){
     const {swrConfig} = useContext();
     const isScreenFocusedRef = React.useRef(true);
     ///garde pour chaque écran sa date de dernière activité
@@ -141,7 +141,7 @@ export default function getIndex({onMount,onUnmount,render,onRender}){
       >
         <GestureHandlerRootView style={{ flex: 1 }}>
           <SafeAreaProvider>
-            <Index onMount={onMount} render={render} onUnmount={onUnmount} onRender={onRender}/>
+            <Index onMount={onMount} render={render} onUnmount={onUnmount} onRender={onRender} init={init}/>
           </SafeAreaProvider>
         </GestureHandlerRootView>
       </SWRConfig>

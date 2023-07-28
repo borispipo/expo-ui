@@ -288,7 +288,6 @@ class SwiperComponent extends React.Component {
     const autoHeight = !!this.props.autoHeight;
     const height = autoHeight ? undefined : !isReady ? WIDTH_HEIGHT : customHeight;
     if(withScrollView){
-      wrapperProps.nestedScrollEnabled = typeof wrapperProps.nestedScrollEnabled ==="boolean"? wrapperProps.nestedScrollEnabled : isNative;
       if(typeof wrapperProps.showsVerticalScrollIndicator !=='boolean'){
         wrapperProps.showsVerticalScrollIndicator = !isNative;
       }

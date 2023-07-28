@@ -248,7 +248,7 @@ const DatagridFactory = (Factory)=>{
                         {this.renderDisplayTypes()}
                         {this.renderAggregatorFunctionsMenu()}
                         {this.renderExportableMenu()}
-                        <View pointerEvents={pointerEvents} testID={testID+"_HeaderPagination"} style = {styles.paginationItem}>
+                        {!canRenderChart ? <View pointerEvents={pointerEvents} testID={testID+"_HeaderPagination"} style = {styles.paginationItem}>
                             <BottomSheetMenu
                                 testID={testID+"_HeaderMenus"}
                                 anchor={(props)=>(<Icon {...props} icon={'axis-z-arrow'}/>)} 
@@ -270,7 +270,7 @@ const DatagridFactory = (Factory)=>{
                                     },
                                 ]}
                             />
-                        </View>
+                        </View>:null}
                         {/*filters !== false && <td  className="datagrid-local-filter-wrapper" ><LocalFilter title = {this.props.title} fields ={this.state.columns} onChange={this.onLocalFiltersChange.bind(this)}/></td>*/}
                         {!canRenderChart && <RenderType/> || null}
                     </View>

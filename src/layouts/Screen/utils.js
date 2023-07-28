@@ -8,7 +8,7 @@ import {getTableDataRouteName} from "$enavigation/utils";
 //@seee : https://github.com/typeorm/typeorm/blob/master/src/entity-schema/EntitySchemaColumnOptions.ts
 export const generatedColumnsProperties = ["createDate","updateDate","deleteDate","createBy","updateBy","deleteBy"]
 
-export const renderTabsContent = ({tabs,context,data,sessionName,tabsPropsMutator,isMobile,props,firstTab,tabKey,tabProps,tabsProps})=>{
+export const renderTabsContent = ({tabs,context,data,sessionName,isMobile,props,firstTab,tabKey,tabProps,tabsProps})=>{
     let tabsArr = [],hasFirstTab = false; 
     if(React.isValidElement(firstTab)){
         tabsArr.push(firstTab);
@@ -52,9 +52,6 @@ export const renderTabsContent = ({tabs,context,data,sessionName,tabsPropsMutato
         })
     }
     if(tabsArr.length> (hasFirstTab ? 1 : 0)){
-        if(typeof tabsPropsMutator =='function' && tabsPropsMutator({tabsProps,tabs:tabsArr,hasFirstTab}) === false){
-            return null;
-        }
         return <Tab testID={testID}
              {...tabsProps} 
             onChange={(args)=>{

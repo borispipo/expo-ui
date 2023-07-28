@@ -377,11 +377,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
         const isMobile = isMobileOrTabletMedia();
         const contentProps = restProps.contentProps;
         const elevation = restProps.elevation;
-        const renderingTabsProps = {tabs,data:this.getCurrentData(),tabsPropsMutator:({tabs,tabsProps})=>{
-            if(!isMobileOrTabletMedia()){
-                tabsProps.withScrollView = false;
-            }
-        },isMobile,sessionName:this.getSessionName(),props:restProps,tabProps,tabsProps,context,tabKey};
+        const renderingTabsProps = {tabs,data:this.getCurrentData(),isMobile,sessionName:this.getSessionName(),props:restProps,tabProps,tabsProps,context,tabKey};
         const hasTabs = Object.size(tabs,true);
         let mainContent = undefined;
         testID = defaultStr(testID,"RN_TableDataScreenItem_"+restProps.tableName);

@@ -8,6 +8,7 @@
   "devWebsite": "http://fto-consulting.com/smart-eneo/",
   "copyRight": "FirsTo consulting@Août 2022",
   "apiVersion": "1.0",
+  "tablesDataPath": "./src/database/tables",
   "includeCredentialsOnApiFetch": false,
   "checkNavigationPermsOnTableOrStructData": false,
   "authLoginIdField": "userId",
@@ -34,7 +35,7 @@
     "url": "git+https://github.com/borispipo/smart-eneo.git"
   },
   "dependencies": {
-    "@fto-consult/expo-ui": "^6.10.0",
+    "@fto-consult/expo-ui": "^6.11.0",
     "socket.io-client": "^4.6.1"
   },
   "devDependencies": {

@@ -35,7 +35,7 @@ module.exports = function(api,opts) {
         //generate getTable.js file
         const generateGetTable = String(envObj.GENERATE_GET_TABLE_JS_FILE ).trim().toLowerCase();
         const willGenerateGetTableJs = generateGetTable === "false" || generateGetTable ==="0" ? false : true;
-        const tableDataPath = envObj.TABLES_DATA_PATH && path.resolve(String(envObj.TABLES_DATA_PATH)) || packageJSON?.tablesDataPath && path.resolve(string(packageJSON.tablesDataPath)) || null;
+        const tableDataPath = envObj.TABLES_DATA_PATH && path.resolve(String(envObj.TABLES_DATA_PATH)) || packageJSON?.tablesDataPath && path.resolve(String(packageJSON.tablesDataPath)) || null;
         if(willGenerateGetTableJs && tableDataPath && fs.existsSync(tableDataPath)){
           if(fs.lstatSync(tableDataPath).isDirectory()){
             const getTableJsPath = path.resolve(tableDataPath,"getTable.js");

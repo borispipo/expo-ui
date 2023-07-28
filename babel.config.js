@@ -24,6 +24,8 @@ module.exports = function(api,opts) {
   const aDistPath = path.join("apexcharts","dist","apexcharts.min.js");
   const expoRootModulesP = expoRoot && fs.existsSync(path.resolve(expoRoot,"node_modules")) && path.resolve(expoRoot,"node_modules") || null;
   const nodeModulesPath = expoRootModulesP && fs.existsSync(path.resolve(expoRootModulesP,aDistPath)) ? expoRootModulesP :   alias.$enodeModulesPath;
+  const packageRootPath = path.resolve(process.cwd(),"package.json");
+  const packageJSON = fs.existsSync(packageRootPath) && require(`${packageRootPath}`) || {};
   const envObj = require("./parse-env")();
   
   if(nodeModulesPath && fs.existsSync(nodeModulesPath) && $eelectron && fs.existsSync($eelectron)){
@@ -33,7 +35,7 @@ module.exports = function(api,opts) {
         //generate getTable.js file
         const generateGetTable = String(envObj.GENERATE_GET_TABLE_JS_FILE ).trim().toLowerCase();
         const willGenerateGetTableJs = generateGetTable === "false" || generateGetTable ==="0" ? false : true;
-        const tableDataPath = envObj.TABLES_DATA_PATH && path.resolve(String(envObj.TABLES_DATA_PATH)) || null;
+        const tableDataPath = envObj.TABLES_DATA_PATH && path.resolve(String(envObj.TABLES_DATA_PATH)) || packageJSON?.tablesDataPath && path.resolve(string(packageJSON.tablesDataPath)) || null;
         if(willGenerateGetTableJs && tableDataPath && fs.existsSync(tableDataPath)){
           if(fs.lstatSync(tableDataPath).isDirectory()){
             const getTableJsPath = path.resolve(tableDataPath,"getTable.js");

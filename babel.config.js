@@ -59,10 +59,10 @@ module.exports = function(api,opts) {
                 if(getTableJSContent){
                     writeFile(getTableJsPath,`
   module.exports = function(tableName){
-      if(!tableName || typeof tableName !=="string") return null;
-      tableName = tableName.toUpperCase().trim();
+    \tif(!tableName || typeof tableName !=="string") return null;
+    \ttableName = tableName.toUpperCase().trim();
     ${getTableJSContent}
-      return null;
+    \treturn null;
   }
                     `);
                 }

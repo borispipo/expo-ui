@@ -17,6 +17,7 @@ import Login from "$eauth/Login";
     getStructData : ()=>{object|array}
     tablesData : {object}, la liste des tables de données
     strucsData : {object}, la liste des données de structures
+    convertFiltersToSQL : {boolean}, si les filtres de datagrid ou filtres seront convertis au format SQL
     components : {
         logo : {
             object |
@@ -31,7 +32,7 @@ import Login from "$eauth/Login";
       drawerItems : {object|array|function}, la fonction permettant d'obtenir les items du drawer principal de l'application
     }
 */
-const Provider = ({children,getTableData,navigation,components,getStructData,tablesData,structsData,...props})=>{
+const Provider = ({children,getTableData,navigation,components,convertFiltersToSQL,getStructData,tablesData,structsData,...props})=>{
     const {extendAppTheme} = appConfig;
     const { theme : pTheme } = useMaterial3Theme();
     navigation = defaultObj(navigation);
@@ -44,6 +45,9 @@ const Provider = ({children,getTableData,navigation,components,getStructData,tab
     getTableData = appConfig.getTable = appConfig.getTableData = getTableOrStructDataCall(tablesData,getTableData);
     getStructData = appConfig.getStructData = getTableOrStructDataCall(structsData,getStructData);
     appConfig.LoginComponent = Login;
+    if(convertFiltersToSQL !== undefined){
+      appConfig.set("convertFiltersToSQL",convertFiltersToSQL);
+    }
     //const colorScheme = useColorScheme();
     appConfig.extendAppTheme = (theme)=>{
         if(!isObj(theme)) return;
@@ -77,6 +81,7 @@ const Provider = ({children,getTableData,navigation,components,getStructData,tab
       value={{
         ...props,
         navigation,
+        convertFiltersToSQL,
         components : {
             ...components,
             loginPropsMutator : (props)=>{

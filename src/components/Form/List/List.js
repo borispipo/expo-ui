@@ -462,7 +462,7 @@ export default class FormListComponent extends AppComponent {
         renderAvatar = defaultFunc(renderAvatar,x=>null);
         /*** les props de chaque items de la liste */
         itemProps= {...defaultObj(itemProps)}
-        const descriptionNumberOfLines = typeof itemProps.numberOfLines ==='number' && itemProps.numberOfLines ? itemProps.numberOfLines : 3;
+        const descriptionNumberOfLines = typeof itemProps.rows ==='number' && itemProps.rows ? itemProps.rows : 3;
         let counter = -1;
         let is_o = this.isHandlingObject;
         let addIconObj = null;

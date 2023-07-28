@@ -367,7 +367,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
         formattedValue,
         displayText,
         parsedValue,
-        numberOfLines,
+        rows:numberOfLines,
         onChange : ({ nativeEvent: {target, text:text2} }) => {
             if(canValueBeDecimal && (text2 && !text2.isNumber() && !text2.endsWith(".") && !text2.endsWith(","))) {
                 return;
@@ -376,12 +376,23 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
                 text2 = "0"+text2;
             }
             if(multiline){
-                if(!text2 || text2.length < 30){
-                    heightRef.current = MULTIPLE_HEIGHT;
-                    setToggle(!toggle);
-                } else  if(target.scrollHeight > heightRef.current){
-                    heightRef.current = Math.max(target.scrollHeight,MULTIPLE_HEIGHT); 
-                    setToggle(!toggle);
+                let hasS = false;
+                if(text2){
+                    const spl = text2.trim().split('\n');
+                    if(spl.length>1){
+                        heightRef.current+=MULTIPLE_HEIGHT+(10*(spl.length-1));
+                        hasS = true;
+                        setToggle(!toggle);
+                    }
+                }
+                if(!hasS){
+                    if(!text2 || text2.length < 30){
+                        heightRef.current = MULTIPLE_HEIGHT;
+                        setToggle(!toggle);
+                    } else  if(target.scrollHeight > heightRef.current){
+                        heightRef.current = Math.max(target.scrollHeight,MULTIPLE_HEIGHT); 
+                        setToggle(!toggle);
+                    }
                 }
             }
             const tVal = toCase(text2);

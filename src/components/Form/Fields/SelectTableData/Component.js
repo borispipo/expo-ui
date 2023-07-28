@@ -19,9 +19,9 @@ import useApp from "$econtext/hooks";
  *  foreignKeyTable : la tableData dans laquelle effectuer les donées de la requêtes
  *  foreignKeyLabel : Le libélé dans la table étrangère
  */
-const TableDataSelectField = React.forwardRef(({foreignKeyColumn,prepareFilters:cPrepareFilters,bindUpsert2RemoveEvents,onAdd,showAdd:customShowAdd,canShowAdd,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,convertFiltersToSQL,mutateFetchedItems,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchOptions,...props},ref)=>{
+const TableDataSelectField = React.forwardRef(({foreignKeyColumn,isStructData,getForeignKeyTable:cGetForeignKeyTable,prepareFilters:cPrepareFilters,bindUpsert2RemoveEvents,onAdd,showAdd:customShowAdd,canShowAdd,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,convertFiltersToSQL,mutateFetchedItems,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchOptions,...props},ref)=>{
     props.data = defaultObj(props.data);
-    const {getTableData:getForeignKeyTable} = useApp();
+    const {getTableData:appGetForeignKeyTable,getStructData} = useApp();
     if(!foreignKeyColumn && isNonNullString(props.field)){
         foreignKeyColumn = props.field;
     }
@@ -32,6 +32,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,prepareFilters:
         foreignKeyLabel = foreignKeyLabel.trim();
         foreignKeyLabel = foreignKeyLabel.ltrim("[").rtrim("]").split(",");
     }
+    const getForeignKeyTable = typeof cGetForeignKeyTable =='function'? cGetForeignKeyTable : isStructData ? getStructData: appGetForeignKeyTable;
     convertFiltersToSQL = defaultVal(convertFiltersToSQL,willConvertFiltersToSQL());
     const foreignKeyTableStr = defaultStr(foreignKeyTable,props.tableName,props.table);
     if(typeof getForeignKeyTable !=='function'){

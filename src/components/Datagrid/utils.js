@@ -185,4 +185,4 @@ export const getRowStyle = ({row,bordered,numColumns,rowData,isAccordion,isTable
     return style;
 }
 
-export const willConvertFiltersToSQL = x=>!!appConfig.get("convertDatagridFiltersToSQL");
+export const willConvertFiltersToSQL = x=>!!appConfig.get("convertFiltersToSQL");

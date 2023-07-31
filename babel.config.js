@@ -117,7 +117,7 @@ const generateTableOrStructDataStr = (tableDataPath)=>{
           if(!indexContent || (!indexContent.includes("table") && !indexContent.includes("tableName"))){
               return;
           }
-           getTableJSContent+=`\t\tif(tableName === "${tableName}"){return require("./${table}").default;}\n`;
+           getTableJSContent+=`\t\t\tif(tableName === "${tableName}"){return require("./${table}").default;}\n`;
         });
         //on génère le fichier getTable des tables data de l'application
         if(getTableJSContent){
@@ -125,7 +125,7 @@ const generateTableOrStructDataStr = (tableDataPath)=>{
 module.exports = function(tableName){
 \tif(!tableName || typeof tableName !=="string") return null;
 \ttableName = tableName.toUpperCase().trim();
-\t${getTableJSContent}\treturn null;
+${getTableJSContent}\treturn null;
 }
             `);
         }

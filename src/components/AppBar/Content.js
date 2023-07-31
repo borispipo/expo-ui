@@ -36,8 +36,7 @@ const AppbarContent = ({
    const webStyle = isWeb() && theme.styles.webFontFamilly;
    const content = (
     <View
-      pointerEvents="box-none"
-      style={[styles.container, style]}
+      style={[styles.container,{pointerEvents:"box-none"}, style]}
       testID={testID}
       {...rest}
     >

@@ -1,12 +1,12 @@
-import {View} from "react-native";
+import {View,StyleSheet} from "react-native";
 import PropTypes from "prop-types";
 import React from "$react";
 import {isMobileNative} from "$cplatform";
-import {debounce,isNumber} from "$cutils";
+import {debounce,isNumber,isNonNullString} from "$cutils";
 import {useMediaQueryUpdateStyle} from "$context/hooks";
 
 
-const ViewComponent = React.forwardRef(({onRender,onLayoutTimeout,onLayout,autoHeight,autoWidth,elevation,...props},ref)=>{
+const ViewComponent = React.forwardRef(({onRender,onLayoutTimeout,pointerEvents,onLayout,autoHeight,autoWidth,elevation,...props},ref)=>{
     const style = useMediaQueryUpdateStyle(props);
     const autoSize = autoHeight||autoWidth ? true : false;
     const [state,setState] = autoSize ? React.useState({}) : [{}];
@@ -26,7 +26,8 @@ const ViewComponent = React.forwardRef(({onRender,onLayoutTimeout,onLayout,autoH
     React.useOnRender(onRender);
     return <View
          {...props} 
-         style = {[style,
+         style = {[isNonNullString(pointerEvents) && pointerEventsStyles[pointerEvents] ||null,
+         style,
             autoSize && [
                 autoHeight && isNumber(height) && height > 10 && {height},
                 autoWidth && isNumber(width) && width > 10 && {width}
@@ -48,3 +49,15 @@ ViewComponent.propTypes = {
     onLayout : PropTypes.func,
     ///si useCurrentMedia est à true, alors la mise à jour sera opérée uniquement lorsque le current media change
 }
+
+const pointerEventsStyles = StyleSheet.create({
+    auto : {
+        pointerEvents : "auto",
+    },
+    none : {
+        pointerEvents : "none",
+    },
+    "box-none" : {
+        pointerEvents : "box-none",
+    },
+})

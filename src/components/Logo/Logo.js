@@ -34,7 +34,7 @@ export default function Logo (props) {
         </View>
 }   
 
-const getStyle = ({style,color,height:customHeight,smallStyle,mediumStyle,largeStyle})=>{
+export const getStyle = ({style,color,height:customHeight,smallStyle,mediumStyle,largeStyle})=>{
     const cColor = flattenStyle([{color:Colors.isValid(color)? color : theme.colors.primaryOnSurface}]);
     let size = 5;
     if(typeof customHeight =='number' && customHeight <= customHeight){

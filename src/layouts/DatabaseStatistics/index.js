@@ -33,7 +33,7 @@ export default function DatabaseStatisticScreen ({withScreen,fetchDataProps,tabl
             const chartAllowedPerm =  defaultStr(table.chartAllowedPerm);
             const testID = "RN_DatabaseStatisticsCell_"+index;
             if((chartAllowedPerm && !Auth.isAllowedFromStr(chartAllowedPerm)) || (!Auth.isTableDataAllowed({table:tableName}))) return null;
-            content.push(<Cell elevation = {5} withSurface mobileSize={12} desktopSize={3} tabletSize={4} {...contentProps} testID={testID} key = {index} >
+            content.push(<Cell elevation = {5} withSurface mobileSize={12} desktopSize={3} tabletSize={6} {...contentProps} testID={testID} key = {index} >
                 <Surface testID = {testID+"_Surface"} elevation = {5} style={[theme.styles.w100]}>
                     <DatabaseStatistic
                         icon = {table.icon}

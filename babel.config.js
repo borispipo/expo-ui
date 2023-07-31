@@ -33,39 +33,20 @@ module.exports = function(api,opts) {
      if(fs.existsSync(writeFilePath)){
         const writeFile = require(`${writeFilePath}`);
         //generate getTable.js file
-        const generateGetTable = String(envObj.GENERATE_GET_TABLE_JS_FILE ).trim().toLowerCase();
-        const willGenerateGetTableJs = generateGetTable === "false" || generateGetTable ==="0" ? false : true;
         const tableDataPath = envObj.TABLES_DATA_PATH && path.resolve(String(envObj.TABLES_DATA_PATH)) || packageJSON?.tablesDataPath && path.resolve(String(packageJSON.tablesDataPath)) || null;
-        if(willGenerateGetTableJs && tableDataPath && fs.existsSync(tableDataPath)){
-          if(fs.lstatSync(tableDataPath).isDirectory()){
-            const getTableJsPath = path.resolve(tableDataPath,"getTable.js");
-            let getTableJSContent = '';
-            const tables = fs.readdirSync(tableDataPath);
-            if(Array.isArray(tables)){
-                tables.map((table,i)=>{
-                  table = table.trim();
-                  const tableName = table.toUpperCase();
-                  const tablePath = path.join(tableDataPath, table);
-                  const indexTablePath = path.join(tablePath,"index.js");
-                  const stat = fs.lstatSync(tablePath);
-                  if(!stat.isDirectory() || !fs.existsSync(indexTablePath)) return;
-                  const indexContent = fs.readFileSync(indexTablePath,'utf8') ;
-                  if(!indexContent || (!indexContent.includes("table") && !indexContent.includes("tableName"))){
-                      return;
-                  }
-                   getTableJSContent+=`\t\tif(tableName === "${tableName}"){return require("./${table}").default;}\n`;
-                });
-                //on génère le fichier getTable des tables data de l'application
-                if(getTableJSContent){
-                    writeFile(getTableJsPath,`
-  module.exports = function(tableName){
-    \tif(!tableName || typeof tableName !=="string") return null;
-    \ttableName = tableName.toUpperCase().trim();
-    \t${getTableJSContent}\treturn null;
-  }
-                    `);
-                }
-            }
+        if(tableDataPath && fs.existsSync(tableDataPath)){
+          const getTableJSContent = generateTableOrStructDataStr(tableDataPath);
+          if(getTableJSContent){
+            writeFile(path.resolve(tableDataPath,"getTable.js"),getTableJSContent);
+          }
+        }
+        
+        //generate getStructData.js file 
+        const structsDataPath = envObj.STRUCTS_DATA_PATH && path.resolve(String(envObj.STRUCTS_DATA_PATH)) || packageJSON?.structsDataPath && path.resolve(String(packageJSON.structsDataPath)) || null;
+        if(structsDataPath && fs.existsSync(structsDataPath)){
+          const getStructDataJSContent = generateTableOrStructDataStr(structsDataPath);
+          if(getStructDataJSContent){
+            writeFile(path.resolve(structsDataPath,"getStructData.js"),getStructDataJSContent);
           }
         }
       
@@ -110,3 +91,45 @@ module.exports = function(api,opts) {
     ],
   };
 };
+
+
+/****
+  retourne la chaine de caractère liée à la fonction getTable.js ou getStructData.js
+  @param {string} tableDataPath, le chemin de la tableDataPath
+  @return {string}, la chaine de caractère à enregistrer  dans la fonction getTable.js ou getStructData.js
+*/
+const generateTableOrStructDataStr = (tableDataPath)=>{
+  if(typeof tableDataPath !== 'string' || !tableDataPath.trim()) return null;
+  tableDataPath = tableDataPath.trim();
+  const fs = require("fs"), path = require("path");
+  if(fs.lstatSync(tableDataPath).isDirectory()){
+    let getTableJSContent = '';
+    const tables = fs.readdirSync(tableDataPath);
+    if(Array.isArray(tables)){
+        tables.map((table,i)=>{
+          table = table.trim();
+          const tableName = table.toUpperCase();
+          const tablePath = path.join(tableDataPath, table);
+          const indexTablePath = path.join(tablePath,"index.js");
+          const stat = fs.lstatSync(tablePath);
+          if(!stat.isDirectory() || !fs.existsSync(indexTablePath)) return;
+          const indexContent = fs.readFileSync(indexTablePath,'utf8') ;
+          if(!indexContent || (!indexContent.includes("table") && !indexContent.includes("tableName"))){
+              return;
+          }
+           getTableJSContent+=`\t\tif(tableName === "${tableName}"){return require("./${table}").default;}\n`;
+        });
+        //on génère le fichier getTable des tables data de l'application
+        if(getTableJSContent){
+          return (`
+module.exports = function(tableName){
+\tif(!tableName || typeof tableName !=="string") return null;
+\ttableName = tableName.toUpperCase().trim();
+\t${getTableJSContent}\treturn null;
+}
+            `);
+        }
+    }
+  }
+  return null;
+}

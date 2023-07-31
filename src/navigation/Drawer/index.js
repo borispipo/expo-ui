@@ -32,7 +32,7 @@ const DrawerNavigator = React.forwardRef(({content,children:customChildren,state
             refreshItemsRef.current = false;
         };
         const onResizePage = ()=>{
-            forceRender();
+            //forceRender();
         }
         APP.on(APP.EVENTS.AUTH_LOGOUT_USER,onLogoutUser);
         const bindResize = Dimensions.addEventListener("change",()=>{

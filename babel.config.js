@@ -53,7 +53,7 @@ module.exports = function(api,opts) {
                   if(!indexContent || (!indexContent.includes("table") && !indexContent.includes("tableName"))){
                       return;
                   }
-                   getTableJSContent+=`\tif(tableName === "${tableName}"){return require("./${table}").default;}\n`;
+                   getTableJSContent+=`\t\tif(tableName === "${tableName}"){return require("./${table}").default;}\n`;
                 });
                 //on génère le fichier getTable des tables data de l'application
                 if(getTableJSContent){
@@ -61,8 +61,7 @@ module.exports = function(api,opts) {
   module.exports = function(tableName){
     \tif(!tableName || typeof tableName !=="string") return null;
     \ttableName = tableName.toUpperCase().trim();
-    ${getTableJSContent}
-    \treturn null;
+    \t${getTableJSContent}\treturn null;
   }
                     `);
                 }

@@ -7,7 +7,6 @@ import { screenName } from "$escreens/Auth/utils";
 import Image from "$ecomponents/Image";
 import { StyleSheet,View,Pressable} from "react-native";
 import avatarProps from "$eauth/avatarProps";
-import Button from "$ecomponents/Button";
 import Label from "$ecomponents/Label";
 import Icon from "$ecomponents/Icon";
 import {navigate} from "$cnavigation";
@@ -17,6 +16,7 @@ import appConfig from "$capp/config";
 import Preloader from "$preloader";
 import {defaultNumber} from "$cutils";
 import Tooltip from "$ecomponents/Tooltip";
+import {isMultiUsersAllowed} from "$cauth/utils/session";
 const UserProfileAvatarComponent = React.forwardRef(({drawerRef,chevronIconProps:customChevronIconProps,size,withLabel,...props},ref)=>{
     let u = defaultObj(Auth.getLoggedUser());
     const deviceNameRef = React.useRef(null);
@@ -77,7 +77,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,chevronIconProps
                     });
                 }
             },
-            {
+            isMultiUsersAllowed() && {
                 label : i18n.lang("logout",'Déconnexion'),
                 icon : "logout",
                 onPress : (a)=>{

@@ -77,7 +77,7 @@ export default class FormDataLayout extends FormDataActions {
         const appBarProps = this.getAppBarActionsProps(props);
         appBarProps.elevation = typeof appBarProps.elevation =='number'? appBarProps.elevation : 5;
         return <ScreenContainer testID={defaultStr(testID,'RN_FormDataLayout')} {...props} appBarProps={appBarProps}>
-                {this.wrapRenderingContent(content)}
+            {this.wrapRenderingContent(content)}
         </ScreenContainer>
     }
 }

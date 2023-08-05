@@ -8,14 +8,12 @@ import Login from "$eauth/Login";
 import {navigate} from "$cnavigation";
 import theme from "$theme";
 import Logo  from "$ecomponents/Logo";
-import Dimensions from "$dimensions";
 
 const DrawerNavigator = React.forwardRef(({content,children:customChildren,state,...props},ref)=>{
     const drawerRef = React.useRef(null);
     const mergedRefs = React.useMergeRefs(drawerRef,ref);
     const forceRender = React.useForceRender();
     const refreshItemsRef = React.useRef(false);
-    const [currentMedia,setCurrentMedia] = React.useState(Dimensions.getCurrentMedia());
     const items = useGetItems({refresh:()=>{
         if(drawerRef.current && drawerRef.current && drawerRef.current.forceRenderNavigationView){
             return  drawerRef.current.forceRenderNavigationView();
@@ -31,23 +29,13 @@ const DrawerNavigator = React.forwardRef(({content,children:customChildren,state
             forceRender();
             refreshItemsRef.current = false;
         };
-        const onResizePage = ()=>{
-            //forceRender();
-        }
         APP.on(APP.EVENTS.AUTH_LOGOUT_USER,onLogoutUser);
-        const bindResize = Dimensions.addEventListener("change",()=>{
-            const cMedia = Dimensions.getCurrentMedia();
-            if(cMedia !== currentMedia){
-               setCurrentMedia(cMedia);
-            }
-        })
         APP.on(APP.EVENTS.UPDATE_THEME,refreshItems);
         return ()=>{
             APP.off(APP.EVENTS.AUTH_LOGOUT_USER,onLogoutUser);
             APP.off(APP.EVENTS.UPDATE_THEME,refreshItems);
-            if(typeof bindResize ==='function') bindResize();
         }
-    },[])
+    },[]);
     const headerCB = ({isMinimized})=>{
         if(isMinimized) return null;
         if(!theme.showProfilAvatarOnDrawer){

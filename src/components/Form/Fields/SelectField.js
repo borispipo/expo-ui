@@ -127,8 +127,6 @@ export default class FormSelectField extends Field{
                 this.validateWithCallOnChange(args);
                 if(typeof props.onChange =='function'){
                     props.onChange(args);
-                } else if(this.props.onChange =='function'){
-                    this.props.onChange(args);
                 }
             }}
         />

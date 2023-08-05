@@ -7,7 +7,7 @@ import {Vertical as AutoSizeVertical} from "$ecomponents/AutoSizer";
 const ScrollViewComponent = React.forwardRef(({withAutoSizer,autoSizerProps,testID,...rest},ref) => {
   testID = defaultStr(testID,'RN_ScrollViewComponent');
   const autoSize = React.useRef(withAutoSizer).current;
-    if(!autoSize || rest.horizontal === true || rest.vertical === false){
+  if(!autoSize || rest.horizontal === true || rest.vertical === false){
       return <ScrollView testID={testID} ref={ref} {...rest}/>
   }
   autoSizerProps = defaultObj(autoSizerProps);

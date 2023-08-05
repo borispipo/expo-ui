@@ -9,8 +9,6 @@ import { StyleSheet } from "react-native";
 import APP from "$capp/instance";
 import PropTypes from "prop-types";
 
-const defaultComponentNode = View
-
 /**** règles d'utilisation : 
     1. les forms doivent toujours avoir un nom : chaine de caractère unique pour l'application et non null
     2. tous les champs (Fields) doivent avoir un name et un formName
@@ -91,8 +89,10 @@ export default class FormComponent extends React.AppComponent {
         return fields[fieldName] || null;
     }
     render (){
+        if(isNonNullString(this.props.perm) && !Auth.isAllowedFromStr(this.props.perm)){
+            return null;
+        }
         let {
-            Component,
             onValidate,
             onNoValidate,
             onValidateField,
@@ -105,16 +105,11 @@ export default class FormComponent extends React.AppComponent {
             testID,
             ...rest
         } = this.props;
-        if(isNonNullString(perm) && !Auth.isAllowedFromStr(perm)){
-                return null;
-        }
-        rest = defaultObj(rest);
-        const ComponentNode = defaultVal(Component,defaultComponentNode);
         testID = defaultStr(testID,"RN_FormComponent");
         return (<KeyboardAvoidingView testID={testID+"_KeyboardAvoidingView"}>
-            <ComponentNode  {...rest} testID={testID} style={[styles.container,rest.style]}>
+            <View  {...rest} testID={testID} style={[styles.container,rest.style]}>
                 {this.props.children}
-            </ComponentNode>
+            </View>
         </KeyboardAvoidingView>);
     }
 }

@@ -10,12 +10,12 @@ import Dimensions,{isDesktopMedia,getCurrentMedia} from "$cplatform/dimensions";
 import {open,close} from "$epreloader";
 import {DRAWER_POSITIONS,DRAWER_TYPES,MINIMIZED_WIDTH,getDrawerWidth} from './utils';
 import Icon,{MENU_ICON} from "$ecomponents/Icon";
-import apiSession from "./session";
 import View from "$ecomponents/View";
 import {closeDrawer} from './DrawerItems/utils';
 import {DrawerContext} from "./Provider";
 import NavigationView from "./NavigationView";
 import { canBeMinimizedOrPermanent } from './utils';
+import { useSession } from './hooks';
 
 export * from "./Provider";
 
@@ -23,6 +23,7 @@ export {DrawerItems};
 export {default as DrawerItem} from "./DrawerItems/DrawerItem";
 
 export * from "./utils";
+export * from "./hooks";
 
 const canHandleExtra = x=> true;
 
@@ -33,40 +34,12 @@ const DrawerComponent = React.forwardRef((props,ref)=>{
       minimized,drawerItems,hideStatusBar,overlayColor, onDrawerMinimize,onDrawerToggleMinimize,
       onDrawerOpen,onDrawerClose,onDrawerToggle,header,headerProps,toggleIconProps,
       permanentToggleIcon,minimizedToggleIcon,temporaryToggleIcon,withMinimizedIcon,
-      isItemActive,onPageResize,navigationViewRef,
-      children,
-      testID,
-      drawerType} = props;
-    sessionName = defaultStr(sessionName);
+      isItemActive,onPageResize,navigationViewRef,children,testID,drawerType} = props;
+    
     testID = defaultStr(testID,"RN_DrawerComponent")
-    const sessionRef = React.useRef({});
-    const session = React.useMemo(()=>{
-        if(sessionName){
-            return {
-                get : (a,b)=> {
-                    return apiSession.get(sessionName,a,b);
-                },
-                set : (a,b)=>{
-                    return apiSession.set(sessionName,a,b);
-                }
-            }
-        }
-        return {
-          get: key => {
-            if(isNonNullString(key)) return sessionRef.current[key];
-            return sessionRef.current;
-          },
-          set:(key,value)=>{
-              if(isObj(key)){
-                sessionRef.current = {...sessionRef.current,...key}
-              } else if(isNonNullString(key)) {
-                sessionRef.current[key] = value;
-              }
-              return sessionRef.current;
-          }
-        };
-    },[sessionName]);
-   const sessionValue = session.get();
+    const session = useSession(sessionName);
+    sessionName = session.sessionName;
+    const sessionValue = session.get();
     const drawerRef = React.useRef(null);
     const onSlideCallbackRef = React.useRef(null);
     drawerItemsContainerProps = defaultObj(drawerItemsContainerProps);
@@ -247,7 +220,8 @@ const DrawerComponent = React.forwardRef((props,ref)=>{
         }
     }
     return (
-      <DrawerContext.Provider value={{
+      <DrawerContext.Provider 
+      value={{
           ...context,
           context,
           drawerRef,

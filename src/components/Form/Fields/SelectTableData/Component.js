@@ -268,29 +268,29 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,isStructData,ge
         defaultValue = {foreignKeyColumnValue}
         dropdownActions = {dropdownActions}
         context = {context}
-        itemValue = {(p) => {
+        itemValue = {(p,...rest) => {
             if(typeof props.itemValue ==='function'){
-                return props.itemValue(p);
+                return props.itemValue(p,...rest);
             }
             return p.item[foreignKeyColumn];
         }}
-        renderItem = {(p) => {
+        renderItem = {(p,...rest) => {
             if(typeof props.renderItem ==='function'){
-                return props.renderItem(p);
+                return props.renderItem(p,...rest);
             }
             if(typeof props.renderText =='function'){
-                return props.renderText(p);
+                return props.renderText(p,...rest);
             }
-            return rItem(p);
+            return rItem(p,...rest);
         }}
-        renderText = {(p) => {
+        renderText = {(p,...rest) => {
             if(typeof props.renderText ==='function'){
-                return props.renderText(p);
+                return props.renderText(p,...rest);
             }
             if(typeof props.renderItem ==='function'){
-                return props.renderItem(p);
+                return props.renderItem(p,...rest);
             }
-            return rItem(p);
+            return rItem(p,...rest);
         }}
         onAdd = {(args)=>{
             onAddProps = defaultObj(isFunction(onAddProps)? onAddProps.call(context,{context,foreignKeyTable,dbName,props}) : onAddProps);

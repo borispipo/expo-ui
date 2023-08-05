@@ -1249,7 +1249,7 @@ DropdownComponent.propTypes = {
         PropTypes.node,
         PropTypes.func,
     ]), //le contenu enfant à afficher après l'anchor
-    /**** les actions supplémentaires à ajouter au menu items */
+    /**** les actions supplémentaires à ajouter au menu items du dropdown */
     dropdownActions : PropTypes.oneOfType([
         PropTypes.arrayOf(PropTypes.object),
         PropTypes.objectOf(PropTypes.object),

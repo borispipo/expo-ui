@@ -280,7 +280,6 @@ export default class Field extends AppComponent {
                 let form = Forms.getForm(this.formName);
                 this.INITIAL_STATE.onValidate.call(this,{...defaultObj(rest),props:this.props,formName:this.formName,form,name:this.name,field:this.name,value,event,context:this});
                 this.callOnChange({value,event,isValid:true,...rest});
-
                 if(form && form.props){
                     if(canEnable){
                         if(isFunction(form.props.onValidate)){
@@ -639,7 +638,6 @@ export default class Field extends AppComponent {
         return false;
     }
     doUpdateMediaQueryStyle(args){
-        if(args?.currentMedia === this.state.currentMedia) return null;
         const wrapperStyle = this.getMediaQueryUpdateStyle(args);
         this.setState({isMobile:args.isMobile,wrapperStyle});
     }

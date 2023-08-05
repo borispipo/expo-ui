@@ -79,7 +79,7 @@ const TabComponent = React.forwardRef((props,ref)=>{
         })
         return {tabs,contents,childrenProps}
     },[children]);
-    return <View {...rest} testID={testID} style={[styles.container,tabItemsProps.style]}>
+    return <View {...rest} testID={testID} style={[styles.container,tabItemsProps.style,rest.style]}>
         <TabItems testID={testID+"_TabItems"} {...tabItemsProps} activeIndex={index} style={[styles.tab,rest.style]} onChange={setActiveIndex}>
             {tabs}
         </TabItems>

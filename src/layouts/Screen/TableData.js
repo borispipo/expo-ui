@@ -399,7 +399,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
                 contentProps.style = [contentProps.style,styles.noMarging,styles.noPadding,styles.content]
                 mainContent = ct;
             } else {
-                mainContent = <View  {...contentProps} testID={testID+"_ContentContainer"} style={[styles.container,styles.noPadding]}>
+                mainContent = <View  {...contentProps} testID={testID+"_ContentContainer"} style={[styles.container,styles.noPadding,contentProps.style]}>
                     <ScrollView  withAutoSizer testID={testID+"_MainContentScrollView"} contentProps={{style:theme.styles.p1}}>
                         <Surface elevation={elevation} testID={testID+"_ContentHeader"} style={[styles.screenContent,theme.styles.p1,header?styles.screenContentWithHeader:null]}>
                             {header}
@@ -412,14 +412,14 @@ export default class TableDataScreenComponent extends FormDataScreen{
                 </View>
             }
         } else {
-            mainContent = <Surface  {...contentProps} testID={testID+"_MainContentContainer"} elevation={elevation} style={[styles.container,styles.noPadding,{paddingTop:0,marginTop:0}]}>
+            mainContent = <View  {...contentProps} testID={testID+"_MainContentContainer"} elevation={elevation} style={[styles.container,{backgroundColor:theme.colors[theme.isDark()?"background":"surface"]},styles.noPadding,{paddingTop:0,marginTop:0},contentProps.style]}>
                 <ScrollView withAutoSizer testID={testID+"_MainContentScrollViewWithoutTab"}>
                     <View testID={testID+"_MainContent"} style={[styles.screenContent,!isMobOrTab && theme.styles.p1,header?styles.screenContentWithHeader:null]}>
                         {header}
                         {content}
                     </View>
                 </ScrollView>
-            </Surface>
+            </View>
         }
         const appBarProps = this.getAppBarActionsProps(restProps);
         if(hasTabs && isMobOrTab){
@@ -559,8 +559,9 @@ export default class TableDataScreenComponent extends FormDataScreen{
         }
         return;
     }
-    reset (args,cb){
+    reset (args,...rest){
         if(!this._isMounted()) return;
+        super.reset(args,...rest)
         clearTimeout(this.timeoutCallback);
         this.showPreloader();
         this.timeoutCallback = setTimeout(()=>{

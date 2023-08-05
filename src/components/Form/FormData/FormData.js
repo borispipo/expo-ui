@@ -1,8 +1,7 @@
 import {getAppBarActionsProps} from "./utils";
 import React, {Component as AppComponent} from "$react";
 import {isNonNullString,defaultStr,defaultNumber,defaultObj,extendObj,isObj,isFunction,defaultFunc,uniqid} from "$cutils";
-import {getForm,getFormField,Forms} from "../utils";
-import Divider from "$ecomponents/Divider";
+import {getForm,getFormField} from "../utils";
 import Surface from "$ecomponents/Surface";
 import Form from "../Form";
 import theme,{flattenStyle} from "$theme";
@@ -61,6 +60,9 @@ export default class FormDataComponent extends AppComponent{
     }
     onSave(args){
         return true;
+    }
+    reset(args){
+        return null;
     }
     getAppBarActionsProps(props){
         let {data,onCancel,perm,beforeSaveArgumentsMutator,beforeSave,actions,saveDataMutator,...rest} = (defaultObj(props,this.props));
@@ -179,26 +181,6 @@ export default class FormDataComponent extends AppComponent{
     isArchivable (){
         return false;
     }
-    getFieldsContent = (formProps)=>{
-        formProps = defaultObj(formProps);
-        this.formDataPrimaryKeyFields = {};
-        const data = isObj(formProps.data) ? formProps.data : typeof this.props.data =='object' && this.props.data ? this.props.data : {};
-        return <FieldsContent
-            {...formProps}
-            fields = {defaultObj(formProps.fields,this.props.fields)}
-            fieldProps = {defaultObj(formProps.fieldProps,this.props.fieldProps)}
-            style = {flattenStyle(formProps.style)}
-            data = {data}
-            responsive = {typeof formProps.responsive =='boolean' ? formProps.responsive : this.props.responsive !== false ? true : false}
-            responsiveProps = {extendObj({},this.props.responsiveProps,formProps.responsiveProps)}
-            windowWidth = {defaultNumber(formProps.windowWidth,this.props.windowWidth) || undefined}
-            primaryKeyFields = {this.formDataPrimaryKeyFields}
-            formName = {this.getFormName()}
-            disabled = {this.props.disabled}
-            archived = {this.props.archived || data?.archived && true || false}
-            archivable = {this.props.archivable || this.isArchivable()}
-        />
-    }
     getActions (){
         return renderActions(this.getAppBarActionsProps());
     }
@@ -301,14 +283,42 @@ export default class FormDataComponent extends AppComponent{
         containerProps = Object.assign({},containerProps);
         const cStyle = flattenStyle([styles.container,{backgroundColor:theme.surfaceBackgroundColor},containerProps.style]);
         formProps.style = flattenStyle([{backgroundColor:cStyle.backgroundColor},formProps.style]);
-        formProps.fields = defaultObj(formProps.fields,fields);
-        formProps.windowWidth = defaultNumber(formProps.windowWidth,windowWidth) || undefined;
+        data = isObj(formProps.data) ? formProps.data : isObj(data) ? data : {};
+        ///getting fields content
+        this.formDataPrimaryKeyFields = defaultObj(this.primaryKeyFields);
         const content = <Form 
             {...formProps} 
+            windowWidth = {defaultNumber(formProps.windowWidth,windowWidth) || undefined}
             name={this.getFormName()}
             onKeyEvent = {this.onKeyEvent.bind(this)}
+            data = {data}
         >
-            {this.getFieldsContent(formProps)}
+            <FieldsContent
+                {...formProps}
+                fields = {defaultObj(formProps.fields,fields)}
+                fieldProps = {defaultObj(formProps.fieldProps,this.props.fieldProps)}
+                style = {flattenStyle(formProps.style)}
+                data = {data}
+                responsive = {typeof formProps.responsive =='boolean' ? formProps.responsive : this.props.responsive !== false ? true : false}
+                responsiveProps = {extendObj({},this.props.responsiveProps,formProps.responsiveProps)}
+                windowWidth = {defaultNumber(formProps.windowWidth,this.props.windowWidth) || undefined}
+                primaryKeyFields = {this.formDataPrimaryKeyFields}
+                formName = {this.getFormName()}
+                disabled = {this.props.disabled}
+                archived = {this.props.archived || data?.archived && true || false}
+                archivable = {this.props.archivable || this.isArchivable()}
+                onLoopField={(opts)=>{
+                    this.formDataPrimaryKeyFields = defaultObj(this.formDataPrimaryKeyFields);
+                    if(opts.primaryKey){
+                        this.formDataPrimaryKeyFields[opts.name] = true;
+                    } else {
+                        delete this.formDataPrimaryKeyFields[opts.name];
+                    }
+                    if(typeof this.props.onLoopField ==='function'){
+                        this.props.onLoopField(opts)
+                    }
+                }}
+            />
         </Form>
         if(this.handleCustomRender()){
             return this._render({
@@ -318,7 +328,7 @@ export default class FormDataComponent extends AppComponent{
             });
         }
         if(typeof children ==='function'){
-            this._render(children({
+            return this._render(children({
                 header,
                 context : this,
                 content,
@@ -351,7 +361,8 @@ FormDataComponent.propTypes = {
         PropTypes.string,
         PropTypes.number,
         PropTypes.node,
-    ])
+    ]),
+    onLoopField : PropTypes.func,//la fonction appelée lorsqu'on boucle sur un champ du form data
 }
 
 const styles = {

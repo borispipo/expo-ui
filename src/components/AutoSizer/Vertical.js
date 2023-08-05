@@ -47,9 +47,7 @@ const AutoSizerVerticalComponent = React.forwardRef(({onLayout,isScrollView,scre
       },500);
     }
     const dim = Dimensions.addEventListener("change",onResizePage);
-    //APP.on(APP.EVENTS.RESIZE_PAGE,onResizePage);
     return ()=>{
-      //APP.off(APP.EVENTS.RESIZE_PAGE,onResizePage);
       React.setRef(ref,null);
       dim?.remove();
     }

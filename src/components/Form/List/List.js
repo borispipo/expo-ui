@@ -10,7 +10,7 @@ import {isPhoneMedia} from "$cplatform/dimensions";
 import View from "$ecomponents/View";
 import {StyleSheet} from "react-native";
 import {List} from "react-native-paper";
-import FlashList from "$ecomponents/List";
+import FlashList from "$ecomponents/Table/List";
 import Surface from "$ecomponents/Surface";
 import {navigate} from "$cnavigation";
 import { handleBeforeSaveCallback } from "$ecomponents/Form/FormData/utils";
@@ -476,7 +476,7 @@ export default class FormListComponent extends AppComponent {
             addIconLabel = defaultVal(addIconLabel,"Ajouter un élément");
             addIcon = defaultVal(addIcon,"plus")
             addIconObj = {...onCHandle,icon:addIcon,text:addIconLabel};
-            if(isNonNullString(addIcon)) _addIcon = <Icon name={addIcon} size={40} title={'ajouter un élément'}></Icon>;
+            if(isNonNullString(addIcon)) _addIcon = <Icon name={addIcon} size={30} title={'ajouter un élément'}></Icon>;
             if(!React.isValidElement(addIcon)){
                 addIcon = _addIcon;
             }

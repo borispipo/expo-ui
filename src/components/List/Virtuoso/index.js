@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-import {Virtuoso} from "react-virtuoso/dist/index.mjs";
+import {Virtuoso,VirtuosoGrid} from "react-virtuoso/dist/index.mjs";
 import React from "$react";
 import PropTypes from "prop-types";
-import {defaultObj,defaultNumber,isDOMElement,isNumber,uniqid,isNonNullString,defaultStr} from "$cutils";
+import {defaultObj,classNames,defaultNumber,isObj,isDOMElement,isNumber,uniqid,isNonNullString,defaultStr} from "$cutils";
 import { View } from "react-native";
+import {useList} from "../hooks";
+import theme,{grid} from "$theme";
+import Dimensions from "$cdimensions";
 
 const propTypes = {
     ...defaultObj(Virtuoso.propTypes),
@@ -26,13 +29,17 @@ const propTypes = {
     isScrolling : PropTypes.func,
 };
 /***@see : https://virtuoso.dev/virtuoso-api-reference/ */
-const VirtuosoListComponent = React.forwardRef(({items,onRender,testID,renderItem,onEndReached,onLayout,onContentSizeChange,onScroll,isScrolling,estimatedItemSize,onEndReachedThreshold,containerProps,style,autoSizedStyle,...props},ref)=>{
+const VirtuosoListComponent = React.forwardRef(({onRender,listClassName,components,itemProps,windowWidth,numColumns,responsive,testID,renderItem,onEndReached,onLayout,onContentSizeChange,onScroll,isScrolling,estimatedItemSize,onEndReachedThreshold,containerProps,style,autoSizedStyle,...props},ref)=>{
+    const Component = React.useMemo(()=>responsive?VirtuosoGrid:Virtuoso,[responsive])
+    const context = useList(props);
+    itemProps = defaultObj(itemProps);
+    const items = context.items;
     const r2 = {};
-    for(let i in propTypes){
+    Object.map(Component.propTypes,(_,i)=>{
         if(i in props){
             r2[i] = props[i];
         }
-    }
+    });
     containerProps = defaultObj(containerProps);
     testID = defaultStr(testID,containerProps.testID,"RN_VirtuosoListComponent");
     const listIdRef = React.useRef(uniqid("virtuoso-list-id"));
@@ -95,10 +102,20 @@ const VirtuosoListComponent = React.forwardRef(({items,onRender,testID,renderIte
     },[]);
     React.useOnRender((a,b,c)=>{
         if(onRender && onRender(a,b,c));
-    },Math.max(Array.isArray(items) && items.length/10 || 0,500))
+    },Math.max(Array.isArray(items) && items.length/10 || 0,500));
+    const listP = responsive ? {
+        listClassName : classNames(listClassName,"rn-virtuoso-list",responsive && gridClassName)
+    } : {
+        atBottomThreshold : typeof onEndReachedThreshold =='number'? onEndReachedThreshold : undefined,
+        totalListHeightChanged : (height)=>{
+            checkSize();
+        },
+        defaultItemHeight : typeof estimatedItemSize=='number' && estimatedItemSize || undefined,
+    };
     return <View {...containerProps} {...props} style={[{flex:1},containerProps.style,style,autoSizedStyle,{minWidth:'100%',height:'100%',maxWidth:'100%'}]} onLayout={onLayout} testID={testID}>
-        <Virtuoso
+        <Component
             {...r2}
+            {...listP}
             style = {listStyle}
             ref = {listRef}
             data = {items}
@@ -108,7 +125,6 @@ const VirtuosoListComponent = React.forwardRef(({items,onRender,testID,renderIte
             itemContent = {(index)=>{
                 return renderItem({index,item:items[index],items})
             }}
-            atBottomThreshold = {typeof onEndReachedThreshold =='number'? onEndReachedThreshold : undefined}
             atBottomStateChange = {()=>{
                 if(typeof onEndReached =='function'){
                     onEndReached();
@@ -120,16 +136,23 @@ const VirtuosoListComponent = React.forwardRef(({items,onRender,testID,renderIte
                     return isScrolling(isC);
                 }
             }}
-            totalListHeightChanged = {(height)=>{
-                checkSize();
+            components = {{
+                Item : responsive ? function(props){return <ItemContainer {...props} style={[itemProps.style,props.style]} numColumns={numColumns}/>} : undefined,
+                //List : responsive ? ResponsiveVirtuosoListItemContainer: undefined,
+                ...defaultObj(components),
             }}
-            defaultItemHeight = {typeof estimatedItemSize=='number' && estimatedItemSize || undefined}
         />
     </View>
 });
 
 VirtuosoListComponent.propTypes = {
-    ...propTypes
+    ...propTypes,
+    numColumns : PropTypes.number,
+    items : PropTypes.oneOfType([
+        PropTypes.object,
+        PropTypes.array,
+        PropTypes.func,
+    ])
 };
 
 VirtuosoListComponent.displayName = "VirtuosoListComponent";
@@ -167,3 +190,46 @@ const normalizeEvent = (e)=>{
       timeStamp: Date.now()
     };
   }
+  
+  function ItemContainer({numColumns,responsive,windowWidth,...props}){
+    const width = React.useMemo(()=>{
+        if(!numColumns || numColumns <= 1) return undefined;
+        if(typeof windowWidth =='number' && windowWidth <=600) return "100%";
+        if(Dimensions.isMobileMedia()){
+            return "100%";
+        }
+        return (100/numColumns)+"%";
+    },[windowWidth,numColumns]);
+    const style = width && {width} || grid.col(windowWidth);
+    const dataIntex  = "index" in props ? props.index : "data-index" in props ? props["data-index"] : ""
+    const dataItemIndex = props["data-item-index"];
+    if(isObj(style)){
+        style.paddingRight = style.paddingLeft = style.paddingHorizontal = undefined;
+    }
+    return <View
+        testID={`RN_VirtosoGridItem_${dataIntex}-${dataItemIndex}`}
+        {...props}
+        style = {[style,props.style]}
+    />
+  }
+  const ResponsiveVirtuosoListItemContainer = React.forwardRef((props,ref)=>{
+    return <View ref={ref} testID={"RN_ResponsiveVirtuosoListItemContainer"} {...props} style={[responsiveListStyle,props.style,]}/>
+  });
+  
+  export const gridClassName = "rn-virtuoso-responsive-list";
+  
+  const responsiveListStyle = [theme.styles.row,theme.styles.row,theme.styles.flexWrap,theme.styles.justifyContentStart,theme.styles.alignItemsStart]
+  ResponsiveVirtuosoListItemContainer.displayName = "ResponsiveVirtuosoListItemContainer";
+  
+  if(typeof document !=='undefined' && document && document?.createElement){
+    const gridDomId = "dynamic-virtuoso-grid-styles";
+    let style = document.getElementById(gridDomId);
+    if(!style){
+        style = document.createElement("style");
+    }
+    style.id = gridDomId;
+    style.textContent = `
+        .${gridClassName}{display:flex;flex-direction:row;align-items:flex-start;flex-wrap:wrap;justify-content:flex-start;};
+    `;
+    document.body.appendChild(style);
+  } 

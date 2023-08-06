@@ -1,6 +1,6 @@
 import React from "$react";
 import {Vertical as AutoSizeVertical} from "$ecomponents/AutoSizer";
-import List from "./List";
+import List from "$ecomponents/List/Virtuoso";
 import {defaultStr,isObj,defaultObj} from "$cutils";
 const normalize = (size)=>{
     if(isObj(size)){

@@ -28,17 +28,19 @@ export default class FormDataListScreen extends FormData{
             ,saveAction : typeof saveAction !=='undefined'? saveAction:true,
         });
     }
-    createNew (){
+    createNew (...p){
         const {show} = this.props;
         if(typeof show =='function'){
-            show({...this.props,index:undefined,data:{}});
+            return show({...this.props,index:undefined,data:{}});
         }
+        return super.createNew(...p)
     }
-    doSave2New(args){
+    doSave2New(args,...rest){
         const {show} = this.props;
         if(typeof show =='function'){
-            show({...args,index:undefined,data:{}});
+            return show({...args,index:undefined,data:{}});
         }
+        return super.doSave2Close(args,...rest);
     }
     doSave2Close(args){
         return this.close();

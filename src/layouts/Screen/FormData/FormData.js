@@ -11,7 +11,6 @@ import {goBack} from "$cnavigation";
 
 export default class FormDataLayout extends FormDataActions {
     getComponentProps(props){
-        this.__mainProps = null;
         return super.getComponentProps(props);
     }
     getDataProp(){

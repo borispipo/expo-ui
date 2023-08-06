@@ -1,16 +1,18 @@
 
 import React from "$react";
 import { prepareItems as customPrepareItems,getBToTopRef } from "./utils";
-import theme,{grid,StylePropTypes} from "$theme";
+import {grid,StylePropTypes} from "$theme";
 import PropTypes from "prop-types";
-import {defaultObj,isObj,defaultDecimal,defaultArray,defaultFunc} from "$cutils";
+import {defaultObj,extendObj,isObj,defaultDecimal,defaultArray,defaultFunc} from "$cutils";
 import {isMobileMedia} from "$cplatform/dimensions";
 import BackToTop from "$ecomponents/BackToTop";
 import {FlatList,StyleSheet,View} from "react-native";
 import Label from "$ecomponents/Label";
 import { useWindowDimensions,Dimensions } from "react-native";
+import { useList } from "./hooks";
 
 const CommonListComponent = React.forwardRef((props,ref)=>{
+    const context = useList(props);
     let {responsive,defaultItemHeight,itemHeight,windowWidth,onRender,componentProps,columnWrapperStyle,onViewableItemsChanged,withFlatListItem,Component,withBackToTop,backToTopRef:customBackToTopRef,withBackToTopButton,onScroll,onScrollEnd,onMount,onUnmount,renderScrollViewWrapper,prepareItems,getItemKey,getKey,keyExtractor,items,filter,renderItem,numColumns,containerProps,bindResizeEvents,...rest} = props;
     withBackToTopButton = withBackToTop === true || withBackToTopButton == true || isMobileMedia()? true : false;
     rest = defaultObj(rest);
@@ -28,10 +30,7 @@ const CommonListComponent = React.forwardRef((props,ref)=>{
     const hasCustomBackToTop = typeof customBackToTopRef == 'function'? true : false;
     const backToTopRef = React.useRef(null);
     const isFlatList = Component === FlatList;
-
-    const context = {
-        itemsRefs : [],
-        prepareItems : defaultFunc((prepareItems === false ? (items)=> items:null),prepareItems,customPrepareItems),
+    extendObj(context,{
         getKey : typeof keyExtractor =='function'? keyExtractor : typeof getItemKey =='function'? getItemKey : typeof getKey =='function'? getKey : undefined,
         addItemsRefs : function(ref, itemRef){
             context.itemsRefs[itemRef.index] = {
@@ -130,21 +129,10 @@ const CommonListComponent = React.forwardRef((props,ref)=>{
         onBackActionPress : !hasCustomBackToTop ? function(){
             return context?.scrollToTop()
         }: undefined,
-    };
-    const contextRef = React.useRef({}).current;
-    contextRef.prevItems = React.usePrevious(items);
-    const getItems = React.useCallback(()=>{
-        if(items === contextRef.prevItems && contextRef.items) {
-            return contextRef.items;
-        }
-        return context.prepareItems(items,filter);
-    },[items]);
+    })
+    
     context.listRef = listRef.current;
-    context.items = contextRef.items = prepareItems === false ? items : getItems();
-    if(!Array.isArray(context.items)){
-        console.error(context.items," is not valid list data array",props);
-        context.items = [];
-    }
+    
     React.useOnRender(onRender,Math.max(items.length/10 || 0,500));
     React.setRef(ref,context);
     React.useEffect(()=>{

@@ -637,16 +637,16 @@ export default class Field extends AppComponent {
     isHtml(){
         return false;
     }
-    canBindResizeEvent(){
+    canHandleMediaQueryUpdate(){
         return !this.isFilter() && this.props.responsive !== false;
     }
     doUpdateMediaQueryStyle(args){
-        if(!this.canBindResizeEvent()) return;
+        if(!this.canHandleMediaQueryUpdate()) return;
         const wrapperStyle = this.getMediaQueryUpdateStyle(args);
         this.setState({isMobile:args.isMobile,wrapperStyle});
     }
     getMediaQueryUpdateStyle(args){
-        if(!this.canBindResizeEvent()) return null;
+        if(!this.canHandleMediaQueryUpdate()) return null;
         if(!isObj(args)){
             args = Dimensions.getDimensionsProps();
         }

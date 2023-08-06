@@ -52,6 +52,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
         lower,
         dynamicBackgroundColor,
         lowerCase,
+        onContentSizeChange,
         handleOpacity,
         ...props} = componentProps;
     upper = defaultBool(upper,upperCase,false);
@@ -294,7 +295,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
     const currentDefaultValue = alwaysUseLabel && displayText == emptyValue ? "" : displayText;
     const withAutoHeight = typeof autoHeight === 'boolean'? autoHeight : false;
     const height = withAutoHeight || multiline ? undefined : tHeight;
-    const inputStyle2 = withAutoHeight || multiline ? {minHeight : heightRef.current} : null;
+    const inputStyle2 = withAutoHeight || multiline ? {height : heightRef.current} : null;
     const containerStyle = StyleSheet.flatten(containerProps.style) || {};
     const inputProps= {
         caretHidden : false,
@@ -356,7 +357,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
             inputStyle2,
             isNormalMode && styles.inputNormalMode,
             isShadowMode && styles.inputShadowMode,
-            isShadowMode && multiline && {minHeight:heightRef.current},
+            //isShadowMode && multiline && {minHeight:heightRef.current},
             multiline && {paddingTop : isFlatMode? 12 : 7},
         ],
         secureTextEntry,
@@ -368,6 +369,13 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
         displayText,
         parsedValue,
         rows:numberOfLines,
+        onContentSizeChange : (e,...rest) => {
+            if(typeof onContentSizeChange ==='function' && onContentSizeChange(e,...rest) === false)  return;
+            if(multiline){
+                heightRef.current = e.nativeEvent.contentSize.height;
+                setToggle(!toggle);
+            }
+        },
         onChange : ({ nativeEvent: {target, text:text2} }) => {
             if(canValueBeDecimal && (text2 && !text2.isNumber() && !text2.endsWith(".") && !text2.endsWith(","))) {
                 return;
@@ -375,28 +383,11 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
             if(canValueBeDecimal && isFocused && (text2 ==='.'|| text2 =='.')){
                 text2 = "0"+text2;
             }
-            if(multiline){
-                let hasS = false;
-                if(text2){
-                    const spl = text2.trim().split('\n');
-                    if(spl.length>1){
-                        heightRef.current+=MULTIPLE_HEIGHT+(10*(spl.length-1));
-                        hasS = true;
-                        setToggle(!toggle);
-                    }
-                }
-                if(!hasS){
-                    if(!text2 || text2.length < 30){
-                        heightRef.current = MULTIPLE_HEIGHT;
-                        setToggle(!toggle);
-                    } else  if(target.scrollHeight > heightRef.current){
-                        heightRef.current = Math.max(target.scrollHeight,MULTIPLE_HEIGHT); 
-                        setToggle(!toggle);
-                    }
-                }
-            }
             const tVal = toCase(text2);
             if(tVal !== text){
+                if(multiline && tVal.toLowerCase()+"\n" === text.toLowerCase()){
+                    heightRef.current = Math.max(heightRef.current - 16,MULTIPLE_HEIGHT);
+                }
                 setText(text2,true);
                 callOnChange(tVal);
             }

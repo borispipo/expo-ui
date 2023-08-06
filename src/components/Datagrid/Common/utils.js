@@ -45,7 +45,7 @@ export const renderRowCell = (arg)=>{
         } else if(typeof columnDef.render === "function"){
             _render = columnDef.render.call(context,renderArgs);
         } else if(arrayValueExists( _type,["date","datetime","time"])){
-            const sqlFormat =_type === 'time'?DateLib.isoTimeFormat : _type ==="datetime" ? DateLib.SQLDateTimeFormat : DateLib.SQLDateFormat;
+            const sqlFormat =_type === 'time'? undefined : _type ==="datetime" ? DateLib.SQLDateTimeFormat : DateLib.SQLDateFormat;
             let _dd =DateLib.parse(rowData[columnField],sqlFormat);
             if(DateLib.isDateObj(_dd)){
                 const eFormat = defaultStr(columnDef.format,(_type === 'time'?DateLib.defaultTimeFormat:DateLib.masks.defaultDate));

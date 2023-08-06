@@ -8,7 +8,6 @@ import { useNavigation} from '$cnavigation';
 import Fab from "$layouts/Fab";
 import APP from "$capp";
 import AppBar,{createAppBarRef} from "$elayouts/AppBar";
-import Portal from "$ecomponents/Portal";
 import {Portal as RNPortal} from "react-native-paper";
 import theme,{StyleProp} from "$theme";
 import StatusBar from "$ecomponents/StatusBar";

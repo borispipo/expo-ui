@@ -2,7 +2,7 @@ import * as React from 'react'
 import Types from 'prop-types';
 import {StyleSheet,ScrollView,View,useWindowDimensions} from "react-native";
 import {Paragraph,Button,List } from "react-native-paper";
-import Portal from "$ecomponents/Portal";
+import {Portal} from "react-native-paper";
 import theme from "$theme";
 import {navigationRef,sanitizeName} from "$cnavigation";
 import Expandable from "$ecomponents/Expandable";

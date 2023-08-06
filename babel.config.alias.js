@@ -82,7 +82,7 @@ module.exports = (opts)=>{
     const outputPath = path.resolve(HelpScreen,"openLibraries.js");
     r.$nodeModulesPath = r.$enodeModulesPath= nodeModulesPath;
     require("./find-licenses")({
-        paths : [root,r["$expo-ui-root-path"]],
+        paths : [root,r["$expo-ui-root-path",path.resolve(process.cwd())]],
         nodeModulesPath : nodeModulesPath,
         outputPath
     });

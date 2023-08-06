@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 import {MENU_ICON} from "$ecomponents/Icon";
 import theme,{Colors} from "$theme";
 import Group from "./GroupComponent";
-import Portal from "$ecomponents/Portal";
+import {Portal} from "react-native-paper";
 import {isAllowedFromStr} from "$cauth/perms";
 
 const activeRef = {current:null};

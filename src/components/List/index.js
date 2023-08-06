@@ -2,7 +2,7 @@ import FlashList from "./FlashList";
 
 export * from "./utils";
 
-export {default} from "./Virtuoso";
+export {default} from "./FlashList";
 
 export {default as FlatList} from "./FlatList";
 

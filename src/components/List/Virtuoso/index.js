@@ -137,7 +137,7 @@ const VirtuosoListComponent = React.forwardRef(({onRender,listClassName,componen
                 }
             }}
             components = {{
-                Item : responsive ? function(props){return <ItemContainer {...props} style={[itemProps.style,props.style]} numColumns={numColumns}/>} : undefined,
+                //Item : responsive ? function(props){return <ItemContainer {...props} style={[itemProps.style,props.style]} numColumns={numColumns}/>} : undefined,
                 //List : responsive ? ResponsiveVirtuosoListItemContainer: undefined,
                 ...defaultObj(components),
             }}

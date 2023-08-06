@@ -637,12 +637,16 @@ export default class Field extends AppComponent {
     isHtml(){
         return false;
     }
+    canBindResizeEvent(){
+        return !this.isFilter() && this.props.responsive !== false;
+    }
     doUpdateMediaQueryStyle(args){
+        if(!this.canBindResizeEvent()) return;
         const wrapperStyle = this.getMediaQueryUpdateStyle(args);
         this.setState({isMobile:args.isMobile,wrapperStyle});
     }
     getMediaQueryUpdateStyle(args){
-        if(this.props.responsive === false) return null;
+        if(!this.canBindResizeEvent()) return null;
         if(!isObj(args)){
             args = Dimensions.getDimensionsProps();
         }
@@ -877,6 +881,9 @@ export default class Field extends AppComponent {
             />
         }
         const isFilter = this.isFilter();
+        if(isFilter){
+            responsive = false;
+        }
         rest = defaultObj(rest);
         data = defaultObj(data);
         this.label = label = defaultVal(label,text);

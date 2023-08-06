@@ -15,12 +15,16 @@ import {navigateToTableData} from "$enavigation/utils";
 import Auth from "$cauth";
 import fetch from "$capi/fetch";
 import useContext from "$econtext/hooks";
+/***** la fonction fetchForeignData permet de spécifier s'il s'agit d'une données de structure où non 
+    dans le champ isStructData
+*/
 const TableLinKComponent = React.forwardRef((props,ref)=>{
     const {components:{tableLinkPropsMutator}} = useContext();
-    let {disabled,readOnly,labelProps,server,containerProps,perm,id,fetchForeignData,foreignKeyTable,foreignKeyColumn,data,testID,Component,routeName,routeParams,component,primary,triggerProps,onPress,children, ...rest} = tableLinkPropsMutator(props);
+    let {disabled,readOnly,labelProps,server,containerProps,isStructData,type,perm,id,fetchForeignData,foreignKeyTable,foreignKeyColumn,data,testID,Component,routeName,routeParams,component,primary,triggerProps,onPress,children, ...rest} = tableLinkPropsMutator(props);
     testID = defaultStr(testID,"RN_TableDataLinkContainer")
     foreignKeyTable = defaultStr(foreignKeyTable).trim();
     foreignKeyColumn = defaultStr(foreignKeyColumn).trim();
+    isStructData = isStructData || defaultStr(type).toLowerCase().replaceAll("_","").replaceAll("-","").includes("structdata");
     rest = defaultObj(rest);
     containerProps = defaultObj(containerProps)
     labelProps = defaultObj(labelProps);
@@ -32,10 +36,10 @@ const TableLinKComponent = React.forwardRef((props,ref)=>{
     const pointerEvents = disabled || readOnly ? 'none' : 'auto';
     const onPressLink = (event)=>{
         React.stopEventPropagation(event);
-        if((isNonNullString(perm) && !Auth.isAllowedFromString(perm)) || !Auth.isTableDataAllowed({table:foreignKeyTable,action:'read'})){
+        if((isNonNullString(perm) && !Auth.isAllowedFromString(perm)) || !Auth[isStructData?"isStructDataAllowed":"isTableDataAllowed"]({table:foreignKeyTable,action:'read'})){
             return;
         }
-        const args = {...React.getOnPressArgs(event),...rest,fetch,foreignKeyTable,foreignKeyColumn,data,id,value:id};
+        const args = {...React.getOnPressArgs(event),...rest,type,columnType:type,isStructData,fetch,foreignKeyTable,foreignKeyColumn,data,id,value:id};
         let r = typeof onPress =='function'? onPress(args) : undefined;
         if(r === false) return;
         const cb = (a)=>{

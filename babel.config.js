@@ -122,7 +122,7 @@ const generateTableOrStructDataStr = (tableDataPath)=>{
         //on génère le fichier getTable des tables data de l'application
         if(getTableJSContent){
           return (`
-module.exports = function(tableName){
+export default function(tableName){
 \tif(!tableName || typeof tableName !=="string") return null;
 \ttableName = tableName.toUpperCase().trim();
 ${getTableJSContent}\treturn null;

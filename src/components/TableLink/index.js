@@ -11,7 +11,7 @@ import {defaultStr,isPromise,defaultObj} from "$cutils";
 import {open as openPreloader,close as closePreloader} from "$preloader";
 import {styles as _styles} from "$theme";
 import Tooltip from "$ecomponents/Tooltip";
-import {navigateToTableData} from "$enavigation/utils";
+import {navigateToTableData,navigateToStructData} from "$enavigation/utils";
 import Auth from "$cauth";
 import fetch from "$capi/fetch";
 import useContext from "$econtext/hooks";
@@ -46,8 +46,9 @@ const TableLinKComponent = React.forwardRef((props,ref)=>{
             const r2 = typeof fetchForeignData === 'function'? fetchForeignData({...args,...defaultObj(a)}) : undefined;
             if(isPromise(r2)){
                 return r2.then((data)=>{
+                    const nav = isStructData ? navigateToStructData : navigateToTableData;
                     if(isObj(data) && (isNonNullString(foreignKeyColumn) ? data[foreignKeyColumn] !== undefined:true)){
-                        navigateToTableData({tableName:foreignKeyTable,data});
+                        nav({tableName:foreignKeyTable,isStructData,data});
                     }
                 });
             }

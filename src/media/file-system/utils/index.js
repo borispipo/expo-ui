@@ -1,1 +1,1 @@
-export * from "expo-file-system";
+export * from "./web";

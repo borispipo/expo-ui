@@ -187,10 +187,9 @@ export default class TableDataScreenComponent extends FormDataScreen{
         const isMobOrTab = isMobileOrTabletMedia();
         let archived = this.isArchived(); 
         const fields = {};
-        const fieldsToPrepare = extendObj({},true,this.fields,customFields);
         const {
             actions,
-            fields:customFields,
+            fields:preparedFields,
             onKeyEvent,
             canMakePhoneCall : customCanMakePhoneCall,
             makePhoneCallProps : customMakePhoneCallProps,
@@ -218,11 +217,11 @@ export default class TableDataScreenComponent extends FormDataScreen{
             prepareField,
             prepareComponentProps,
             ...rest
-        } = this.prepareComponentProps({...props,tableName,fields:fieldsToPrepare,isUpdated,isUpdate:isUpdated,data,datas,currentIndex});
+        } = this.prepareComponentProps({...props,tableName,fields:extendObj({},true,this.fields,props.fields),isUpdated,isUpdate:isUpdated,data,datas,currentIndex});
         const sessionName = this.getSessionName();
         const prepareCb = typeof prepareField =='function'? prepareField : x=> x;
         ///on effectue une mutator sur le champ en cours de modification
-        Object.map(fieldsToPrepare,(field,i,counterIndex)=>{
+        Object.map(preparedFields,(field,i,counterIndex)=>{
             const currentField = isObj(field)?Object.clone(field):field;
             if(isObj(field)){
                 const columnField = defaultStr(currentField.field,i);
@@ -237,7 +236,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
                         currentField.readOnly = true;
                     }
                 });
-                const cArgs = {field:currentField,columnField,columnDef:currentField,isUpdate:isUpdated,name:columnField,index:i,counterIndex,isPrimary,fields:fieldsToPrepare,contex:this,data:this.getCurrentData(),datas,currentIndex,isUpdated,tableName,table};
+                const cArgs = {field:currentField,columnField,columnDef:currentField,isUpdate:isUpdated,name:columnField,index:i,counterIndex,isPrimary,fields:preparedFields,contex:this,data:this.getCurrentData(),datas,currentIndex,isUpdated,tableName,table};
                 if(isUpdated){
                     //la props readOnlyOnEditing permet de rendre le champ readOnly en cas de mise à jour de la tableData
                     const readOnlyOnEditing = typeof currentField.readOnlyOnEditing =='function'? currentField.readOnlyOnEditing(cArgs) : currentField.readOnlyOnEditing;

@@ -26,6 +26,8 @@ export * from "./utils";
 //const isNative = isNativeMobile();
 const isAndroid = _isAndroid() //|| isAndroidMobileBrowser();
 const isWeb = _isWeb();
+const MAX_HEIGHT = 250;
+const N_LINE_HEIGHT = 16;
 
 const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
     let {defaultValue,toCase:toCustomCase,color,validType,validRule,placeholder,outlined,placeholderColor,
@@ -295,7 +297,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
     const currentDefaultValue = alwaysUseLabel && displayText == emptyValue ? "" : displayText;
     const withAutoHeight = typeof autoHeight === 'boolean'? autoHeight : false;
     const height = withAutoHeight || multiline ? undefined : tHeight;
-    const inputStyle2 = withAutoHeight || multiline ? {height : heightRef.current} : null;
+    const inputStyle2 = withAutoHeight || multiline ? {height : Math.min(heightRef.current,250)} : null;
     const containerStyle = StyleSheet.flatten(containerProps.style) || {};
     const inputProps= {
         caretHidden : false,
@@ -358,6 +360,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
             inputStyle2,
             isNormalMode && styles.inputNormalMode,
             isShadowMode && styles.inputShadowMode,
+            isShadowMode && multiline && styles.inputMultipleShadowMode,
             //isShadowMode && multiline && {minHeight:heightRef.current},
             multiline && {paddingTop : isFlatMode? 12 : 7},
         ],
@@ -373,7 +376,17 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
         onContentSizeChange : (e,...rest) => {
             if(typeof onContentSizeChange ==='function' && onContentSizeChange(e,...rest) === false)  return;
             if(multiline){
-                heightRef.current = e.nativeEvent.contentSize.height;
+                const mH = e.nativeEvent.contentSize.height;
+                const width = e.nativeEvent.contentSize.width;
+                if(width>10){
+                    const txt = defaultStr(displayText);
+                    const nC = txt.split("\n").length;
+                    const nbCharsByLine = width/4;//le nombre de caractère par line à supposer qu'un caractère vaut 4pixel, length caractère vallent combien ?
+                    const maxHeight = N_LINE_HEIGHT*(nC+ (txt.length/nbCharsByLine))+MULTIPLE_HEIGHT;//la hauteur maximale sur la base de la maxHeight
+                    heightRef.current = Math.min(maxHeight,mH);
+                } else {
+                    heightRef.current = Math.min(mH,MAX_HEIGHT)
+                }
                 setToggle(!toggle);
             }
         },
@@ -387,7 +400,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
             const tVal = toCase(text2);
             if(tVal !== text){
                 if(multiline && tVal.toLowerCase()+"\n" === text.toLowerCase()){
-                    heightRef.current = Math.max(heightRef.current - 16,MULTIPLE_HEIGHT);
+                    heightRef.current = Math.max(heightRef.current - N_LINE_HEIGHT,MULTIPLE_HEIGHT);
                 }
                 setText(text2,true);
                 callOnChange(tVal);
@@ -694,6 +707,10 @@ const styles = StyleSheet.create({
         marginVertical:0,
         paddingVertical:0,
     },
+    inputMultipleShadowMode : {
+        paddingHorizontal : 7,
+        paddingVertical : 7,
+    }
 })
 
 TextFieldComponent.propTypes = {

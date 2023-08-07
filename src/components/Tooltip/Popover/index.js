@@ -8,7 +8,6 @@ import View from "$ecomponents/View";
 import {
   Modal,
   Animated,
-  Pressable,
   StyleSheet,
   Pressable,
   Dimensions,

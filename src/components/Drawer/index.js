@@ -103,8 +103,19 @@ const DrawerComponent = React.forwardRef((props,ref)=>{
         callbackRef.current = callback;
         setState({minimized:false,permanent:true});
     }
+    const checkToggleBtn = (cb)=>{
+      if(!Dimensions.isDesktopMedia() && drawerRef?.current?.isPermanent()){
+          setState({permanent:false});
+          if(typeof cb ==='function'){
+            cb(getDrawerState());
+          }
+          return false;
+      }
+      return true;
+    }
     
     context.toggleMinimized = (minimized,s2)=>{
+        if(!checkToggleBtn()) return;
         if(!Dimensions.isDesktopMedia() || typeof minimized !== 'boolean' || !drawerRef.current || !drawerRef.current.isOpen()) return;
         if(!minimizable === false) return;
         let nS = {minimized};
@@ -119,6 +130,17 @@ const DrawerComponent = React.forwardRef((props,ref)=>{
     context.isLeftPosition = ()=> isLeftPosition;
     context.canToggle = x=> canHandleExtra() ? true : permanent? false : true;
     context.canMinimize = x => minimizable !== false && canBeMinimizedOrPermanent() ? true : false;
+    context.togglePermanent = (x,cb)=>{
+      if(typeof x !== "boolean") return;
+      if(!checkToggleBtn(cb)) return;
+      const isPerm = drawerRef?.current?.isPermanent();
+      if(x && ! isPerm || !x && isPerm){
+        setState({permanent:x});
+      } 
+      if(typeof cb =="function"){
+        cb(getDrawerState());
+      }
+    }
                     
     let {permanent:isPermanent,minimized:isMinimized} = session.get();
     if(_canBeMinimizedOrPermanent && isPermanent){
@@ -288,9 +310,10 @@ const DrawerComponent = React.forwardRef((props,ref)=>{
                         drawerRef.current.isOpen = context.isOpen = typeof drawerRef.current.isOpen =='function'? drawerRef.current.isOpen.bind(drawerRef.current) : x=> drawerRef && drawerRef.current ? drawerRef.current.drawerShown : false;
                         drawerRef.current.isClosed = context.isClosed = x => !drawerRef.current.isOpen();
                         context.toggle = drawerRef.current.toggleDrawer = drawerRef.current.toggle = cb =>{
+                          if(!checkToggleBtn(cb)) return;
                           if(isPermanent || isMinimized) {
                             if(typeof cb ==='function'){
-                                cb(getDrawerState(getDrawerState()));
+                                cb(getDrawerState());
                             }
                             return;
                           }

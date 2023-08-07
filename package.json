@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "6.17.2",
+  "version": "6.18.0",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "index.js",
   "scripts": {
@@ -114,8 +114,6 @@
   },
   "devDependencies": {
     "@expo/metro-config": "^0.10.6",
-    "babel-plugin-inline-dotenv": "^1.7.0",
-    "babel-plugin-module-resolver": "^5.0.0",
-    "babel-plugin-transform-inline-environment-variables": "^0.4.4"
+    "babel-plugin-module-resolver": "^5.0.0"
   }
 }

@@ -221,7 +221,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
     const pointerEvents = isEditable?"auto":'none';
     const upperStyle =  text && (upper || lower) && !isAndroid ? {textTransform:upper?'uppercase':'lowercase'} : null;
     const opacity = disabled ? DISABLED_OPACITY : (useReadOnlyOpacity !== false && !error && (readOnly)) ? READONLY_OPACITY : undefined;
-    const disabledStyle = handleOpacity != false && opacity ? {opacity} : undefined;
+    const disabledStyle = typeof opacity =="number" ? {opacity} : undefined;
     if((readOnly === true || disabled === true) ){
         selection = defaultObj(selection);
         if(!isNumber(selection.start)){
@@ -354,6 +354,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
             isWeb && { outline: 'none'},
             disabledStyle,
             {height},
+            readOnly || disabled && theme.styles.cursorNotAllowed,
             inputStyle2,
             isNormalMode && styles.inputNormalMode,
             isShadowMode && styles.inputShadowMode,
@@ -751,7 +752,7 @@ TextFieldComponent.propTypes = {
     ]),
     ///le style à afficher sur l'affix
     affixStyle : PropTypes.object,
-    handleOpacity : PropTypes.bool,///si l'opacité sera géré automatiquement en fonction du status disabled de la textField
+    //handleOpacity : PropTypes.bool,///si l'opacité sera géré automatiquement en fonction du status disabled de la textField
     toCase : PropTypes.func,
 };
 

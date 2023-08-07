@@ -894,7 +894,7 @@ class DropdownComponent extends AppComponent {
                     {<TextField
                         defaultValue={selectedText}
                         autoHeight = {renderTag}
-                        useReadOnlyOpacity = {false}
+                        useReadOnlyOpacity = {!disabled && !readOnly ? false : true}
                         {...inputProps}
                         {...textInputProps}
                         mode = {mode}

@@ -240,7 +240,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
     }) : 
         <TextField
             autoHeight = {false}
-            useReadOnlyOpacity = {false}
+            useReadOnlyOpacity = {!disabled && !readOnly ? false : true}
             affix = {false}
             mode = {mode}
             {...rest}

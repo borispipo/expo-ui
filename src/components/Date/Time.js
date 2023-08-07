@@ -7,6 +7,7 @@ import PropTypes from "prop-types";
 import theme,{styles} from "$theme";
 import { locale } from "./utils";
 import { TouchableRipple } from "react-native-paper";
+import View from "$ecomponents/View";
 export const getDate = (hours,minutes,seconds)=>{
     return new Date(2000, 1, 1, defaultDecimal(hours), defaultDecimal(minutes),defaultDecimal(seconds))
 }
@@ -72,7 +73,7 @@ export default function TimePickerComponent (props){
     let right = null;
     if(withModal){
       right = (props)=>{
-          return <>
+          return <View testID="RN_DatePickerRightContainer" style={[{pointerEvents:isEditable && !disabled ?"auto":"none"},styles.row,styles.justifyContentStart,styles.alignItemsCenter]}>
               <Icon title={label}  {...anchorProps} 
               icon="clock-outline" onPress={(e)=>{
                   React.stopEventPropagation(e);
@@ -82,7 +83,7 @@ export default function TimePickerComponent (props){
               style = {[props.style,anchorProps.style]}
               />
            {typeof customRight =='function'? customRight(props): customRight}  
-          </>
+          </View>
       }
    } else right = customRight;
     React.useEffect(()=>{
@@ -111,15 +112,16 @@ export default function TimePickerComponent (props){
     if(!disabled){
       containerProps.style = [containerProps.style,{opacity:1}]
     }
+    const tCursor = disabled || readOnly ?  styles.cursorNotAllowed:styles.cursorPointer;
     const iContainerProps = defaultObj(inputProps.containerProps);
     return <>
       <TouchableRipple {...containerProps} 
         disabled = {!isEditable}
-        style = {[containerProps.style,styles.cursorPointer]}
+        style = {[containerProps.style,tCursor]}
         onPress = {isEditable?openModal:undefined}
         rippleColor={containerProps.rippleColor}
       >
-          <TextField
+        <TextField
           mode = {mode||theme.textFieldMode}
           {...rest}
           {...inputProps}
@@ -128,12 +130,12 @@ export default function TimePickerComponent (props){
           right = {right}
           disabled = {disabled}
           readOnly = {true}
-          handleOpacity = {false}
-          style = {[rest.style,!disabled && {opacity:1,color:theme.colors.text}]}
+          useReadOnlyOpacity = {!disabled && !readOnly ? false : true}
+          style = {[rest.style,tCursor,!disabled && {color:theme.colors.text}]}
           contentContainerProps = {{...defaultObj(rest.contentContainerProps),pointerEvents:'auto'}}
           defaultValue = {state.value}
           placeholder = {formatLabel}
-        />
+       />
       </TouchableRipple>
       {withModal && <TimePickerModal
           {...dialogProps}

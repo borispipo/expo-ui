@@ -254,7 +254,10 @@ const TableComponent = React.forwardRef(({containerProps,sortedColumn,listContai
         if(onRender){
             onRender(a,b,c);
         }
-        if(hasChangedDataRef.current){
+        //au paravant il était possible de faire scroller le composant Table lorsque les données sont raffraichies, ce qui n'avait pas un bon impact sur le rendu de la table de données
+        if(false && hasChangedDataRef.current){
+            //permet de restaurer la position scrollé où scroll initial à chaque fois que le composant est re render
+            //ce qui n'est pas très interessant
             if(headerScrollViewRef.current && headerScrollViewRef.current.scrollTo){
                 headerScrollViewRef.current.scrollTo({
                     x : 0,

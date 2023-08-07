@@ -21,6 +21,8 @@ import useApp from "$econtext/hooks";
  */
 const TableDataSelectField = React.forwardRef(({foreignKeyColumn,isStructData,getForeignKeyTable:cGetForeignKeyTable,prepareFilters:cPrepareFilters,bindUpsert2RemoveEvents,onAdd,showAdd:customShowAdd,canShowAdd,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,convertFiltersToSQL,mutateFetchedItems,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchOptions,...props},ref)=>{
     props.data = defaultObj(props.data);
+    const type = defaultStr(props.type)?.toLowerCase();
+    isStructData = isStructData || type?.replaceAll("-","").replaceAll("_","").trim().contains("structdata");
     const {getTableData:appGetForeignKeyTable,getStructData} = useApp();
     if(!foreignKeyColumn && isNonNullString(props.field)){
         foreignKeyColumn = props.field;
@@ -252,7 +254,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,isStructData,ge
         if(typeof canShowAdd ==='function'){
             return canShowAdd({...props,table:foreignKeyTable,foreignKeyColumn,foreignKeyLabel,sortDir,foreignKeyTableObj:fKeyTable,foreignKeyTable})
         }
-        if(Auth.isTableDataAllowed({table:foreignKeyTable,action:'create'})){
+        if(Auth[isStructData?"isStructDataAllowed":"isTableDataAllowed"]({table:foreignKeyTable,action:'create'})){
             return !!defaultVal(customShowAdd,true);
         }
         return false;

@@ -11,7 +11,11 @@ module.exports = function(opts){
   sourceExts= Array.isArray(sourceExts)?sourceExts : [];
   const projectRoot = process.cwd();
   const localDir = path.resolve(__dirname);
-  const config = getDefaultConfig(projectRoot);
+  //@see : https://docs.expo.dev/versions/latest/config/metro/
+  const config = getDefaultConfig(projectRoot,{
+    // Enable CSS support.,
+    isCSSEnabled: true,
+  });
   config.watchFolders = Array.isArray(config.watchFolders) && config.watchFolders || [];
   if(projectRoot !== localDir){
     config.watchFolders.push(localDir);

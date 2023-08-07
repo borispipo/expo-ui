@@ -1,7 +1,7 @@
 ## Installation des dépendences, packages de dévéloppement
 
 ```javascript
-npm i --D babel-plugin-module-resolver  @expo/metro-config @expo/webpack-config
+npm i --D babel-plugin-module-resolver babel-plugin-inline-dotenv @expo/metro-config @expo/webpack-config
 ```
 
 ## **#ELECTRON**

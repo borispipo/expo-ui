@@ -10,8 +10,12 @@ module.exports = function(api,opts) {
   const fs = require("fs");
   const dir = path.resolve(__dirname);
   typeof api.cache =='function' && api.cache(true);
+  const inlineDovOptions = { unsafe: true};
   const options = {base:dir,...opts,platform:"expo"};
-  require("./copy-env-file")();
+  const environmentPath = require("./copy-env-file")();
+  if(fs.existsSync(environmentPath)){
+    inlineDovOptions.path ='./.env';
+  }
   /*** par défaut, les variables d'environnements sont stockés dans le fichier .env situé à la racine du projet, référencée par la prop base  */
   const alias =  require("./babel.config.alias")(options);
   const $eelectron = alias.$eelectron || null;
@@ -76,6 +80,7 @@ module.exports = function(api,opts) {
       ['babel-preset-expo']
     ],
     plugins : [
+      ["inline-dotenv",inlineDovOptions],
       ["module-resolver", {"alias": alias}],
       ['react-native-reanimated/plugin'],
     ],

@@ -63,7 +63,7 @@ module.exports = async function(env, argv,opts) {
     config.performance.maxAssetSize = typeof config.performance.maxAssetSize =='number'? config.performance.maxAssetSize : 512000;
     config.devtool = (config.mode === 'development') ? 'inline-source-map' : false;
     require("./compiler.config.js")({config,...opts});
-    const envPath = require("./copy-env-file")();
+    require("./copy-env-file")();
     const extensions = config.resolve.extensions;
     if(isElectron){
       mainExtensions.map((ex)=>{
@@ -72,18 +72,6 @@ module.exports = async function(env, argv,opts) {
           extensions.unshift(nExt);
         }
       });
-      //const electronPath = process.cwd();
-      //config.output = config.output || {};
-      //config.output.publicPath = "./";
-      //config.output.path = path.join(electronPath,"dist");
-      //writeFile(path.resolve(__dirname,"is-electron-platform.txt"),` ${JSON.stringify(extensions)} is extensions to resolve`)
     }
-    //fix process is not defined
-    config.plugins.unshift(new webpack.ProvidePlugin({
-      process: 'process/browser',
-    }));
-    config.resolve.alias.process = "process/browser";
-    config.resolve.fallback = typeof config.resolve.fallback =="object" && config.resolve.fallback || {};
-    config.resolve.fallback = {...config.resolve.fallback,process: require.resolve('process/browser')};
     return config;
 };;

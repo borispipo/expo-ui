@@ -4,33 +4,49 @@ const createAppDir = path.resolve(__dirname,"create-app");
 module.exports = function(parsedArgs,{projectRoot}){
     const packageObj = require("../package.json");
     const root = process.cwd(), mainPackagePath = path.resolve(root,"package.json");
-    const mainPackage = fs.existsSync(mainPackagePath) && require(`${mainPackagePath}`) || null;
-    if(!mainPackage || !mainPackage.name){
-        thowError("Nom de l'application invalide. Rassurez vous d'exécuter l'application dans un répertoire valide."," package : ",mainPackage);
-        return;
-    }
-    const name = String(parsedArgs.name||mainPackage.name).trim();
+    let mainPackage = fs.existsSync(mainPackagePath) && require(`${mainPackagePath}`) || null;
+    const name = String(parsedArgs.name||parsedArgs.appName || mainPackage?.name).trim();
     if(!name){
         return thowError(name," nom de l'application invalide, veuillez spécifier un nom d'application valide");
     }
-    const devDpendencies = packageObj.devDependencies;
-    const deps = devDpendencies && typeof devDpendencies =="object" && Object.keys(devDpendencies).join(" ") || "";
-    new Promise((resolve,reject)=>{
-      console.log("installing dev dependencies ....");
-      return exec(`npm i -D @expo/webpack-config @expo/metro-config ${typeof deps=="string" && deps||""}`).then(resolve).catch(reject);
-    }).then(()=>{}).finally(()=>{
-        console.log("creating application .....");
-        createEntryFile(projectRoot);
-        [path.join(projectRoot,"babel.config.js"),path.join(projectRoot,"metro.config.js"),path.join(projectRoot,"webpack.config.js")].map((p)=>{
-            if(!fs.existsSync(p)){
-                const file = path.basename(p);
-                writeFile(p,fs.readFileSync(`${path.join(createAppDir,file)}`));
-            }
+    const cb = (pkg,)=>{
+      mainPackage = pkg && typeof pkg =='object' && pkg || mainPackage;
+      const devDpendencies = packageObj.devDependencies;
+        const deps = devDpendencies && typeof devDpendencies =="object" && Object.keys(devDpendencies).join(" ") || "";
+          new Promise((resolve,reject)=>{
+          console.log("installing dev dependencies ....");
+          return exec(`npm i -D @expo/webpack-config @expo/metro-config ${typeof deps=="string" && deps||""}`).then(resolve).catch(reject);
+        }).then(()=>{}).finally(()=>{
+            console.log("creating application .....");
+            createEntryFile(projectRoot);
+            [path.join(projectRoot,"babel.config.js"),path.join(projectRoot,"metro.config.js"),path.join(projectRoot,"webpack.config.js")].map((p)=>{
+                if(!fs.existsSync(p)){
+                    const file = path.basename(p);
+                    writeFile(p,fs.readFileSync(`${path.join(createAppDir,file)}`));
+                }
+            });
+            createAPPJSONFile(projectRoot,{...mainPackage,name});
+            copy(path.resolve(createAppDir,"src"),path.resolve(projectRoot,"src"),{recursive:true,overwrite:false});
+            process.exit();
         });
-        createAPPJSONFile(projectRoot,{...mainPackage,name});
-        copy(path.resolve(createAppDir,"src"),path.resolve(projectRoot,"src"),{recursive:true,overwrite:false});
-        process.exit();
-    });
+    }
+    if(!mainPackage){
+       mainPackage = {
+          name,
+          version : "1.0.0",
+          "description": "",
+          "main": "index.js",
+          scripts : {
+            start : "npx expo start -c",
+          }
+       }
+       writeFile(mainPackagePath,JSON.stringify(mainPackage,null,2));
+       exec("npm i @fto-consult/expo-ui").finally(()=>{
+          return cb(mainPackage);
+       });
+    }  else {
+        return cb();
+    }
 }
 
 const createEntryFile = (projectRoot)=>{

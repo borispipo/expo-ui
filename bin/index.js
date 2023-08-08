@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 /**
   toujours ajouter l'instruction ci-dessus à la première ligne de chaque script npx
 @see : https://blog.shahednasser.com/how-to-create-a-npx-tool/ */
@@ -148,7 +149,7 @@ if(parsedArgs.electron){
     process.exit();
   });
 } else {
-  if(script ===createAppScript){
+  if(script ===createAppScript || script ==="init"){
     return require("./create-app")(parsedArgs,{projectRoot});
   }
   process.exit();

@@ -1,0 +1,1 @@
+module.exports = require("@fto-consult/expo-ui/webpack.config.js");

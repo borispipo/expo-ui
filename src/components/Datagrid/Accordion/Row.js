@@ -7,9 +7,7 @@ import PropTypes from "prop-types";
 import React from "$react";
 import theme from "$theme"
 import {styles as rStyles} from "../utils";
-import {getSelectedBackgroundColor} from "../Actions/Header";
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import {isMobileNative} from "$platform";
 
 const DatagridAccordionRow = React.forwardRef((props,ref)=>{
     const {selectable,rowKey,

@@ -1,32 +1,31 @@
-//#!/usr/bin/env node
-/**@see : https://blog.shahednasser.com/how-to-create-a-npx-tool/ */
+#!/usr/bin/env node
+/**
+  toujours ajouter l'instruction ci-dessus à la première ligne de chaque script npx
+@see : https://blog.shahednasser.com/how-to-create-a-npx-tool/ */
 'use strict';
 process.on('unhandledRejection', err => {
   throw err;
 });
+const createAppScript = "create-app";
 const supportedScript = {
   "init" : true, //initialize electron app
   "start" : true,//start electron
-  "build" : true, //script pour faire un build
+  "build" : true, //script pour faire un build,
   "package" : true, ///script pour le packagin de l'application
+  [createAppScript] : true,//les script de création de l'application
 }
-const createDir = require("../electron/utils/createDir");
-const writeFile = require("../electron/utils/writeFile");
-const copy = require("../electron/utils/copy");
+const  {createDir,writeFile,electronDir,copy,exec,throwError} = require("./utils");
 const path= require("path");
 const fs = require("fs");
 const dir = path.resolve(__dirname);
-const electronDir = path.resolve(dir, "..","electron");
-const exec = require("../electron/utils/exec");
 const projectRoot = path.resolve(process.cwd());
 if(projectRoot == dir){
-   throw `Invalid project root ${projectRoot}; project root must be different to ${dir}`
+   throwError(`Invalid project root ${projectRoot}; project root must be different to ${dir}`);
 }
-
 const parsedArgs = require("../electron/utils/parseArgs")(null,supportedScript);
+parsedArgs.script = typeof parsedArgs.script =='string' && parsedArgs.script && parsedArgs.script.toLowerCase().trim() || "";
 if(!parsedArgs.script || !(parsedArgs.script in supportedScript)){
-   console.error ("Erreur : script invalide, vous devez spécifier script figurant parmi les script : ["+Object.keys(supportedScript).join(", ")+"]");
-   process.exit();
+   throwError("Erreur : script invalide, vous devez spécifier script figurant parmi les script : ["+Object.keys(supportedScript).join(", ")+"]");
 }
 let cmd = null;
 const script = parsedArgs.script;
@@ -40,15 +39,15 @@ const script = parsedArgs.script;
 if(parsedArgs.electron){
   const pathsJSON = path.resolve(electronDir,"paths.json");
   if(!fs.existsSync(pathsJSON)){
-    throw "Le fichier des chemins d'accès à l'application est innexistant, rassurez vous de tester l'application en environnement web, via la cmde <npx expo start>, avant l'exécution du script electron."
+    throwError("Le fichier des chemins d'accès à l'application est innexistant, rassurez vous de tester l'application en environnement web, via la cmde <npx expo start>, avant l'exécution du script electron.");
   }
   const paths = require(`${pathsJSON}`);
   if(typeof paths !=='object' || !paths || !paths.projectRoot){
-      throw "Fichiers des chemins d'application invalide!!! merci d'exécuter l'application en environnement web|android|ios puis réessayez"
+      throwError("Fichiers des chemins d'application invalide!!! merci d'exécuter l'application en environnement web|android|ios puis réessayez");
   }
   /**** le project root d'où a été lancé le script electron doit être le même que celui de l'application principale */
   if(projectRoot !== paths.projectRoot){
-     throw `main app project root ${paths.projectRoot} must be equals to ${projectRoot} in which you want to generate electron app`; 
+     throwError(`main app project root ${paths.projectRoot} must be equals to ${projectRoot} in which you want to generate electron app`);
   }
   const electronProjectRoot = path.resolve(projectRoot,"electron");
   const isElectionInitialized = require("../electron/is-initialized")(electronProjectRoot);
@@ -69,7 +68,7 @@ if(parsedArgs.electron){
   const out = parsedArgs.out || parsedArgs["output-dir"];
   const outDir = out && path.dirname(out) && path.resolve(projectRoot,path.dirname(out),"electron") || path.resolve(electronProjectRoot,"bin")
   if(!createDir(outDir)){
-      throw "Impossible de créer le répertoire <<"+outDir+">> du fichier binaire!!";
+      throwError("Impossible de créer le répertoire <<"+outDir+">> du fichier binaire!!");
   }
   const logoPath = paths.logo || paths.$assets && path.resolve(paths.$assets,"logo.png") || paths.$images && path.resolve(paths.$images,"logo.png");
   if(!logoPath || !fs.existsSync(logoPath)){
@@ -114,7 +113,7 @@ if(parsedArgs.electron){
   });
   return promise.then(()=>{
     if(!fs.existsSync(buildOutDir) || !fs.existsSync(indexFile)){
-       throw "répertoire d'export web invalide où innexistant ["+buildOutDir+"]"
+       throwError("répertoire d'export web invalide où innexistant ["+buildOutDir+"]");
     }
     switch(parsedArgs.script){
         case "start":
@@ -124,7 +123,7 @@ if(parsedArgs.electron){
           break;
         default :
           if(!fs.existsSync(packagePath)){
-              throw "package.json file does not exist in "+projectRoot+". please make jure that your have running package script in expo root application";
+              throwError("package.json file does not exist in "+projectRoot+". please make jure that your have running package script in expo root application");
           }
           const packageObj = require(`${packagePath}`);
           const electronPackage = require(`${path.resolve(electronProjectRoot,'package.json')}`);
@@ -149,5 +148,8 @@ if(parsedArgs.electron){
     process.exit();
   });
 } else {
+  if(script ===createAppScript){
+    return require("./create-app")(parsedArgs,{projectRoot});
+  }
   process.exit();
 }

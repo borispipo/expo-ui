@@ -17,7 +17,7 @@ const isWeb = Platform.OS === "web";
  * }
  */
 export default function registerApp ({onMount,onUnmount,onRender,render,swrConfig,init,...rest}){
-    registerRootComponent(function(props){
+    return registerRootComponent(function(props){
         return <Provider {...props} {...rest} swrConfig={isObj(swrConfig) && swrConfig || {}} children={<App init={init} render={render} onMount={onMount} onUnmount={onUnmount} onRender={onRender}/>}/>
     });
 }

@@ -1,0 +1,4 @@
+Documentationo, pour débuter avec l'application expo-ui
+1. initialisation du projet : npm init
+2. création de l'application expo : npx expo-ui create-app appName
+3. exécution : npx expo start -c

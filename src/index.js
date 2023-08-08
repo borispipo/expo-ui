@@ -188,7 +188,8 @@ function App({init:initApp,initialRouteName:appInitialRouteName,render,onMount})
           ...state,hasGetStarted:true,...defaultObj(args && args?.state),isInitialized:true,isLoading : false,
         });  
       }).catch((e)=>{
-          console.error(e," initializing app")
+          console.error(e," initializing app");
+          return;
           setState({...state,isInitialized:true,isLoading : false,hasGetStarted:false});
       })
     });

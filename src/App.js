@@ -139,7 +139,7 @@ export default function getIndex({onMount,onUnmount,render,onRender,init}){
           }
         }}
       >
-        <GestureHandlerRootView style={{ flex: 1 }}>
+        <GestureHandlerRootView style={{ flex: 1,flexGrow:1,flexShrink:1}} testID={"RN_GestureHandlerRootView"}>
           <SafeAreaProvider>
             <Index onMount={onMount} render={render} onUnmount={onUnmount} onRender={onRender} init={init}/>
           </SafeAreaProvider>

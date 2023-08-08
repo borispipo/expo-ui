@@ -1,0 +1,1 @@
+module.exports = require("@fto-consult/expo-ui/metro.config.js");

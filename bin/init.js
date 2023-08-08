@@ -9,11 +9,7 @@ const electronDir = path.resolve(__dirname,"..","electron");
 const createIndexFile = require("../electron/create-index-file");
 const appSuffix = " Desktop";
 
-module.exports = ({
-    projectRoot,
-    electronProjectRoot,
-    paths,
- })=>{
+module.exports = ({projectRoot,electronProjectRoot,paths,})=>{
     return new Promise((resolve,reject)=>{
         //make shure electron project root exists
         if(!createDir(electronProjectRoot)){

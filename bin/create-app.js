@@ -10,6 +10,7 @@ module.exports = function(parsedArgs,{projectRoot}){
     if(!name){
         return thowError(name," nom de l'application invalide, veuillez spécifier un nom d'application valide",argv);
     }
+    const devDependencies = packageObj.devDependencies;
     let hasPackage = String(mainPackage?.name)?.toLowerCase() !== name?.toLowerCase() ? false : mainPackage && typeof mainPackage =='object';
     if(!hasPackage){
       mainPackage = {
@@ -17,20 +18,26 @@ module.exports = function(parsedArgs,{projectRoot}){
         version : "1.0.0",
         "description": "",
         "main": "index.js",
-        scripts : {
+        "scripts" : {
           start : "npx expo start -c",
-        }
+        },
+        "dependencies" : {
+          "@fto-consult/expo-ui" : "latest",
+        },
+        devDependencies : {
+          ...defaultDevDependencies,
+          ...(devDependencies && typeof devDependencies ==='object'? devDependencies : {}),
+        },
      }
       const newDir = createDirSync(path.resolve(root,name.trim())); 
       projectRoot = newDir || projectRoot;
       mainPackagePath = path.resolve(projectRoot,"package.json");
     }
     const cb = ()=>{
-      const devDpendencies = packageObj.devDependencies;
-        const deps = devDpendencies && typeof devDpendencies =="object" && Object.keys(devDpendencies).join(" ") || "";
+        const deps = devDependencies && typeof devDependencies =="object" && Object.keys(devDependencies).join(" ") || "";
           new Promise((resolve,reject)=>{
           console.log("installing dev dependencies ....");
-          return exec(`npm i -D @expo/webpack-config @expo/metro-config ${typeof deps=="string" && deps||""}`,{projectRoot}).then(resolve).catch(reject);
+          return exec(`npm i -D ${Object.keys(defaultDevDependencies).join(" ")} ${typeof deps=="string" && deps||""}`,{projectRoot}).then(resolve).catch(reject);
         }).then(()=>{}).finally(()=>{
             console.log("creating application .....");
             createEntryFile(projectRoot);
@@ -47,13 +54,19 @@ module.exports = function(parsedArgs,{projectRoot}){
     }
     if(!hasPackage){
        writeFile(mainPackagePath,JSON.stringify(mainPackage,null,2));
+       process.on('unhandledRejection', err => {
+          console.log(err," is thrown");
+       });
        console.log("initializing application "+name+"...");
-       exec("npm i @fto-consult/expo-ui",{projectRoot}).finally(cb);
+       exec("npm install",{projectRoot}).finally(cb);
     }  else {
         return cb();
     }
 }
-
+const defaultDevDependencies = {
+ "@expo/webpack-config":"latest", 
+ "@expo/metro-config" : "latest", 
+}
 const createEntryFile = (projectRoot)=>{
     const mainEntry = path.join(projectRoot,"index.js");
     if(!fs.existsSync(mainEntry)){

@@ -20,9 +20,6 @@ const path= require("path");
 const fs = require("fs");
 const dir = path.resolve(__dirname);
 const projectRoot = path.resolve(process.cwd());
-if(projectRoot == dir){
-   throwError(`Invalid project root ${projectRoot}; project root must be different to ${dir}`);
-}
 const parsedArgs = require("../electron/utils/parseArgs")(null,supportedScript);
 parsedArgs.script = typeof parsedArgs.script =='string' && parsedArgs.script && parsedArgs.script.toLowerCase().trim() || "";
 if(!parsedArgs.script || !(parsedArgs.script in supportedScript)){
@@ -38,6 +35,9 @@ const script = parsedArgs.script;
  *        url = [url-to-start-electron-to]
  * */
 if(parsedArgs.electron){
+  if(projectRoot == dir){
+      throwError(`Invalid project root ${projectRoot}; project root must be different to ${dir}`);
+  }
   const pathsJSON = path.resolve(electronDir,"paths.json");
   if(!fs.existsSync(pathsJSON)){
     throwError("Le fichier des chemins d'accès à l'application est innexistant, rassurez vous de tester l'application en environnement web, via la cmde <npx expo start>, avant l'exécution du script electron.");

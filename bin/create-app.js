@@ -1,21 +1,36 @@
-const {exec,thowError,copy,writeFile} = require("./utils");
+const {exec,thowError,copy,writeFile,createDirSync} = require("./utils");
 const fs = require("fs"), path = require("path");
 const createAppDir = path.resolve(__dirname,"create-app");
 module.exports = function(parsedArgs,{projectRoot}){
+    const argvName = process.argv[3];
     const packageObj = require("../package.json");
-    const root = process.cwd(), mainPackagePath = path.resolve(root,"package.json");
+    let root = process.cwd(), mainPackagePath = path.resolve(root,"package.json");
     let mainPackage = fs.existsSync(mainPackagePath) && require(`${mainPackagePath}`) || null;
-    const name = String(parsedArgs.name||parsedArgs.appName || mainPackage?.name).trim();
+    const name = argvName && argvName.trim() || String(mainPackage?.name).trim();
     if(!name){
-        return thowError(name," nom de l'application invalide, veuillez spécifier un nom d'application valide");
+        return thowError(name," nom de l'application invalide, veuillez spécifier un nom d'application valide",argv);
     }
-    const cb = (pkg,)=>{
-      mainPackage = pkg && typeof pkg =='object' && pkg || mainPackage;
+    let hasPackage = String(mainPackage?.name)?.toLowerCase() !== name?.toLowerCase() ? false : mainPackage && typeof mainPackage =='object';
+    if(!hasPackage){
+      mainPackage = {
+        name,
+        version : "1.0.0",
+        "description": "",
+        "main": "index.js",
+        scripts : {
+          start : "npx expo start -c",
+        }
+     }
+      const newDir = createDirSync(path.resolve(root,name.trim())); 
+      projectRoot = newDir || projectRoot;
+      mainPackagePath = path.resolve(projectRoot,"package.json");
+    }
+    const cb = ()=>{
       const devDpendencies = packageObj.devDependencies;
         const deps = devDpendencies && typeof devDpendencies =="object" && Object.keys(devDpendencies).join(" ") || "";
           new Promise((resolve,reject)=>{
           console.log("installing dev dependencies ....");
-          return exec(`npm i -D @expo/webpack-config @expo/metro-config ${typeof deps=="string" && deps||""}`).then(resolve).catch(reject);
+          return exec(`npm i -D @expo/webpack-config @expo/metro-config ${typeof deps=="string" && deps||""}`,{projectRoot}).then(resolve).catch(reject);
         }).then(()=>{}).finally(()=>{
             console.log("creating application .....");
             createEntryFile(projectRoot);
@@ -30,20 +45,10 @@ module.exports = function(parsedArgs,{projectRoot}){
             process.exit();
         });
     }
-    if(!mainPackage){
-       mainPackage = {
-          name,
-          version : "1.0.0",
-          "description": "",
-          "main": "index.js",
-          scripts : {
-            start : "npx expo start -c",
-          }
-       }
+    if(!hasPackage){
        writeFile(mainPackagePath,JSON.stringify(mainPackage,null,2));
-       exec("npm i @fto-consult/expo-ui").finally(()=>{
-          return cb(mainPackage);
-       });
+       console.log("initializing application "+name+"...");
+       exec("npm i @fto-consult/expo-ui",{projectRoot}).finally(cb);
     }  else {
         return cb();
     }

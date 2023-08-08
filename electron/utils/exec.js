@@ -1,12 +1,24 @@
-const exec = require('child_process').exec;
+const {exec,execSync} = require('child_process');
 const fs = require("fs");
-const _exec = (cmd,cmdOpts,logMessages)=>{
+const _exec = (cmd,cmdOpts,logMessages,sync)=>{
     cmdOpts = typeof cmdOpts =='object' && cmdOpts || {};
     cmdOpts.env = typeof cmdOpts.env =="object" && cmdOpts.env || {};
     cmdOpts.env = {...process.env,...cmdOpts.env};
     cmdOpts.env.platform = cmdOpts.env.platform || "electron";
+   if(sync) {
+    cmdOpts.stdio = cmdOpts.stdio || "inherit";
+   }
+    const timer = cmdOpts.loader !==false  && !sync ? loaderTimer(cmd) : null;
+    if(sync){
+        try {
+            return execSync(cmd,cmdOpts);
+        } catch(e){
+            clearInterval(timer);
+            throw e;
+        }
+        return null;
+    }
     return new Promise((resolve,reject)=>{
-        const timer = cmdOpts.loader !==false ? loaderTimer(cmd) : null;
         exec(cmd,cmdOpts, (error, stdout, stderr) => {
             if (error) {
                 logMessages !== false && console.log(`error: ${error.message}`);;
@@ -38,7 +50,8 @@ const loaderTimer = function(timout) {
       x &= 3;
     }, timout);
   };
-module.exports = function(cmdOpts,options){
+  
+const runExec = function(cmdOpts,options,sync){
     if(typeof cmdOpts =='string'){
         cmdOpts = {cmd:cmdOpts};
     }
@@ -57,5 +70,12 @@ module.exports = function(cmdOpts,options){
             return _exec(cmd,cmdOpts,logMessages);
         })
     }
-    return _exec(cmd,cmdOpts,logMessages);
+    return _exec(cmd,cmdOpts,logMessages,sync);
+}
+module.exports = function(cmdOpts,options){
+    return runExec(cmdOpts,options,false);
+}
+
+module.exports.execSync = module.exports.sync = function(cmdOpts,options){
+    return runExec(cmdOpts,options,true);
 }

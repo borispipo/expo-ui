@@ -1,67 +1,76 @@
 const {exec,thowError,copy,writeFile,createDirSync} = require("./utils");
 const fs = require("fs"), path = require("path");
 const createAppDir = path.resolve(__dirname,"create-app");
-module.exports = function(parsedArgs,{projectRoot}){
+module.exports = function(parsedArgs,{projectRoot:root}){
     const argvName = process.argv[3];
     const packageObj = require("../package.json");
-    let root = process.cwd(), mainPackagePath = path.resolve(root,"package.json");
-    let mainPackage = fs.existsSync(mainPackagePath) && require(`${mainPackagePath}`) || null;
-    const name = argvName && argvName.trim() || String(mainPackage?.name).trim();
+    root = root && fs.existsSync(root) || process.cwd();
+    let mainPackage = fs.existsSync(path.resolve(root,"package.json")) && require(`${path.resolve(root,"package.json")}`) || null;
+    const name = argvName && argvName.trim() || mainPackage?.name && typeof mainPackage?.name=="string" && mainPackage.name.trim() || "";
     if(!name){
-        return thowError(name," nom de l'application invalide, veuillez spécifier un nom d'application valide",argv);
+        return thowError(name," nom de l'application invalide, veuillez spécifier un nom d'application valide",argvName,process.argv);
     }
     const devDependencies = packageObj.devDependencies;
-    let hasPackage = String(mainPackage?.name)?.toLowerCase() !== name?.toLowerCase() ? false : mainPackage && typeof mainPackage =='object';
+    const inSameFolder = typeof mainPackage?.name =="string" && mainPackage?.name.trim().toLowerCase() === name?.toLowerCase().trim();
+    const projectRoot = path.join(`${root}/${inSameFolder && name || ""}`);
+    createDirSync(projectRoot);
+    const mainPackagePath = path.join(projectRoot,"package.json");
+    mainPackage = fs.existsSync(mainPackagePath) && require(`${mainPackagePath}`) || null;
+    let hasPackage = !!mainPackage;
+    const devDeps = {
+      ...defaultDevDependencies,
+      ...(devDependencies && typeof devDependencies ==='object'? devDependencies : {}),
+    };
+    const euModule = "@fto-consult/expo-ui";
+    let hasUpdateDeps = false;
     if(!hasPackage){
-      mainPackage = {
-        name,
-        version : "1.0.0",
-        "description": "",
-        "main": "index.js",
-        "scripts" : {
-          start : "npx expo start -c",
-        },
-        "dependencies" : {
-          "@fto-consult/expo-ui" : "latest",
-        },
-        devDependencies : {
-          ...defaultDevDependencies,
-          ...(devDependencies && typeof devDependencies ==='object'? devDependencies : {}),
-        },
-     }
-      const newDir = createDirSync(path.resolve(root,name.trim())); 
-      projectRoot = newDir || projectRoot;
-      mainPackagePath = path.resolve(projectRoot,"package.json");
+        mainPackage = {
+          name,
+          version : "1.0.0",
+          "description": "",
+          "main": "index.js",
+          "scripts" : {
+            start : "npx expo start -c",
+          },
+          "dependencies" : {
+            [euModule] : "latest",
+          },
+          devDependencies : devDeps
+        }
+     } else {
+      mainPackage.devDependencies = typeof mainPackage.devDependencies =='object' && mainPackage.devDependencies || {};
+      mainPackage.dependencies = typeof mainPackage.dependencies ==="object" && mainPackage.dependencies || {};
+      for(let i in devDeps){
+        if(!(i in mainPackage.devDependencies)){
+            hasUpdateDeps = true;
+            mainPackage.devDependencies[i] = devDeps[i];
+        }
+      }
+      if(!(euModule in mainPackage.dependencies)){
+          hasUpdateDeps = true;
+          mainPackage.dependencies[euModule] = "latest";
+      }
     }
-    const cb = ()=>{
-        const deps = devDependencies && typeof devDependencies =="object" && Object.keys(devDependencies).join(" ") || "";
-          new Promise((resolve,reject)=>{
-          console.log("installing dev dependencies ....");
-          return exec(`npm i -D ${Object.keys(defaultDevDependencies).join(" ")} ${typeof deps=="string" && deps||""}`,{projectRoot}).then(resolve).catch(reject);
-        }).then(()=>{}).finally(()=>{
-            console.log("creating application .....");
-            createEntryFile(projectRoot);
-            [path.join(projectRoot,"babel.config.js"),path.join(projectRoot,"metro.config.js"),path.join(projectRoot,"webpack.config.js")].map((p)=>{
-                if(!fs.existsSync(p)){
-                    const file = path.basename(p);
-                    writeFile(p,fs.readFileSync(`${path.join(createAppDir,file)}`));
-                }
-            });
-            createAPPJSONFile(projectRoot,{...mainPackage,name});
-            copy(path.resolve(createAppDir,"src"),path.resolve(projectRoot,"src"),{recursive:true,overwrite:false});
-            process.exit();
-        });
+    if(hasUpdateDeps || !hasPackage || !fs.existsSync(mainPackagePath)){
+        writeFile(mainPackagePath,JSON.stringify(mainPackage,null,2),{overwrite:true});
     }
-    if(!hasPackage){
-       writeFile(mainPackagePath,JSON.stringify(mainPackage,null,2));
-       process.on('unhandledRejection', err => {
-          console.log(err," is thrown");
-       });
-       console.log("initializing application "+name+"...");
-       exec("npm install",{projectRoot}).finally(cb);
-    }  else {
-        return cb();
-    }
+    console.log("creating application .....");
+    createEntryFile(projectRoot);
+    [path.join(projectRoot,"babel.config.js"),path.join(projectRoot,"metro.config.js"),path.join(projectRoot,"webpack.config.js")].map((p)=>{
+        if(!fs.existsSync(p)){
+            const file = path.basename(p);
+            writeFile(p,fs.readFileSync(`${path.join(createAppDir,file)}`));
+        }
+    });
+    createAPPJSONFile(projectRoot,{...mainPackage,name});
+    copy(path.resolve(createAppDir,"src"),path.resolve(projectRoot,"src"),{recursive:true,overwrite:false});
+    console.log("intalling dependencies ...");
+    return exec(`npm install`,{projectRoot}).finally(()=>{
+      setTimeout(()=>{
+        console.log("application ready");
+        process.exit();
+      },1000);
+    });
 }
 const defaultDevDependencies = {
  "@expo/webpack-config":"latest", 
@@ -70,7 +79,6 @@ const defaultDevDependencies = {
 const createEntryFile = (projectRoot)=>{
     const mainEntry = path.join(projectRoot,"index.js");
     if(!fs.existsSync(mainEntry)){
-        console.log("creating main entry ... on path",path.join(createAppDir,"registerApp.js"));
         writeFile(mainEntry,fs.readFileSync(path.join(createAppDir,"registerApp.js")));
         return true;
     }

@@ -1,9 +1,10 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "6.20.4",
+  "version": "6.20.14",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "index.js",
   "scripts": {
+    "clear-npx-cache": "npx clear-npx-cache",
     "publish1": "npm publish --access=public",
     "unpublish": "npm -f unpublish @fto-consult/expo-ui",
     "build-web": "",

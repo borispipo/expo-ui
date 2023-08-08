@@ -4,7 +4,7 @@ const createAppDir = path.resolve(__dirname,"create-app");
 module.exports = function(parsedArgs,{projectRoot:root}){
     const argvName = process.argv[3];
     const packageObj = require("../package.json");
-    root = root && fs.existsSync(root) || process.cwd();
+    root = root && fs.existsSync(root) && root || process.cwd();
     let mainPackage = fs.existsSync(path.resolve(root,"package.json")) && require(`${path.resolve(root,"package.json")}`) || null;
     const name = argvName && argvName.trim() || mainPackage?.name && typeof mainPackage?.name=="string" && mainPackage.name.trim() || "";
     if(!name){

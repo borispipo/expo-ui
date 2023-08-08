@@ -1,22 +1,39 @@
 import registerApp from "$expo-ui-root-path"; 
+import screens from "./src/screens";
 registerApp({
+    /**** application navigation */
     navigation : {
-        screens : [],//all application screeens
+        //all application screeens
+        screens,
         drawerItems : [], //application main drawer items
     },
-    components : {//application components
+    /**application components */
+    components : {
         logo : null,//logo component's properties
         loginPropsMutator : {},//login props mutator
     },
-    init : function({appConfig}){ //for application initialization
-        return Promise.resolve('appInitialized');
+    /*** //for application initialization
+        @param {
+            appConfig : {object}, //application configuration manager imported from $capp/config
+        }
+        @return {Promise} if rejected, application is suposed to not be started, so we need to display getStarted Screen, il not, application logic is runned
+    */
+    init : function({appConfig}){ 
+        return Promise.resolve("app is initialized");
     },
-    onMount : function(){ //when main application component is mounted
-    
+    /**
+     * //when main application component is mounted
+     */
+    onMount : function(){ 
     },
-    onUnmount : function(){ //when main application component is unmounted
+    /****when main application component is unmounted*/
+    onUnmount : function(){ 
     },
+    /**** called any time main application's component is rendered */
     onRender : function(){
-    
+    },
+    /*** if you need to wrap main application content with some custom react Provider */
+    render : ({children})=>{
+        return children;
     }
 });    

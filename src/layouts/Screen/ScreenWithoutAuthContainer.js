@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import {defaultObj,defaultStr,defaultNumber,defaultBool,uniqid} from "$cutils";
 import View from "$ecomponents/View";
 import { useNavigation} from '$cnavigation';
-import Fab from "$layouts/Fab";
+import Fab from "$elayouts/Fab";
 import APP from "$capp";
 import AppBar,{createAppBarRef} from "$elayouts/AppBar";
 import {Portal as RNPortal} from "react-native-paper";

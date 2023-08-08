@@ -40,6 +40,7 @@ import StatusBar from "$ecomponents/StatusBar";
 import {Provider as PaperProvider } from 'react-native-paper';
 import FontIcon from "$ecomponents/Icon/Font";
 import useContext from "$econtext/hooks";
+export * from "./context";
 
 let MAX_BACK_COUNT = 1;
 let countBack = 0;
@@ -180,7 +181,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,render,onMount})
       console.log(e," is net info heinn")
     });
     loadResources().finally(()=>{
-      (typeof initApp =='function'?initApp : init)().then((args)=>{
+      (typeof initApp =='function'?initApp : init)({appConfig,contex:{setState}}).then((args)=>{
         if(Auth.isLoggedIn()){
            Auth.loginUser(false);
         }

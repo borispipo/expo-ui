@@ -1,4 +1,4 @@
-const {exec,thowError,writeFile} = require("./utils");
+const {exec,thowError,copy,writeFile} = require("./utils");
 const fs = require("fs"), path = require("path");
 const createAppDir = path.resolve(__dirname,"create-app");
 module.exports = function(parsedArgs,{projectRoot}){
@@ -14,13 +14,10 @@ module.exports = function(parsedArgs,{projectRoot}){
         return thowError(name," nom de l'application invalide, veuillez spécifier un nom d'application valide");
     }
     const devDpendencies = packageObj.devDependencies;
-    const deps = devDpendencies && typeof devDpendencies =="object" && Object.keys(devDpendencies).join(" ");
+    const deps = devDpendencies && typeof devDpendencies =="object" && Object.keys(devDpendencies).join(" ") || "";
     new Promise((resolve,reject)=>{
-        if(typeof deps =="string" && deps){
-            console.log("installing dev dependencies ....");
-            return exec(`npm i -D ${deps}`).then(resolve).catch(reject);
-        }
-        return resolve({});
+      console.log("installing dev dependencies ....");
+      return exec(`npm i -D @expo/webpack-config @expo/metro-config ${typeof deps=="string" && deps||""}`).then(resolve).catch(reject);
     }).then(()=>{}).finally(()=>{
         console.log("creating application .....");
         createEntryFile(projectRoot);
@@ -30,6 +27,8 @@ module.exports = function(parsedArgs,{projectRoot}){
                 writeFile(p,fs.readFileSync(`${path.join(createAppDir,file)}`));
             }
         });
+        createAPPJSONFile(projectRoot,{...mainPackage,name});
+        copy(path.resolve(createAppDir,"src"),path.resolve(projectRoot,"src"),{recursive:true,overwrite:false});
         process.exit();
     });
 }
@@ -42,4 +41,49 @@ const createEntryFile = (projectRoot)=>{
         return true;
     }
     return false;
+}
+
+const createAPPJSONFile = (projectRoot,{name,version})=>{
+    version = version ||"1.0.0";
+    copy(path.join(createAppDir,"assets"),path.resolve(projectRoot,"assets"),{overwrite:false});
+    const appJSONPath = path.join(projectRoot,"app.json");
+        if(!fs.existsSync(appJSONPath)){
+            writeFile(appJSONPath,`
+{
+    "expo": {
+      "name": "${name}",
+      "slug": "${name.toLowerCase().replace(/\s\s+/g, '-')}",
+      "version":"${version}",
+      "orientation": "portrait",
+      "icon": "./assets/icon.png",
+      "splash": {
+        "image": "./assets/splash.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff"
+      },
+      "userInterfaceStyle": "automatic",
+      "assetBundlePatterns": [
+        "**/*"
+      ],
+      "ios": {
+        "supportsTablet": true
+      },
+      "android": {
+        "adaptiveIcon": {
+          "foregroundImage": "./assets/adaptive-icon.png",
+          "backgroundColor": "#ffffff"
+        }
+      },
+      "web": {
+        "favicon": "./assets/favicon.png"
+      }
+    }
+  }
+            `)
+        } else {
+            const appJSON = require(`${appJSONPath}`);
+            appJSON.version = version;
+            writeFile(appJSONPath,JSON.stringify(appJSON,null, 2));
+        }
+    return fs.existsSync(appJSONPath);
 }

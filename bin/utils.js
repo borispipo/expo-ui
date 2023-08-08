@@ -10,4 +10,5 @@ module.exports = {
         console.error(...args);
         process.exit(-1);
     },
+    createDirSync : require("../electron/utils/createDirSync"),
 }

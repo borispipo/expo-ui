@@ -8,10 +8,9 @@ module.exports = function(api,opts) {
   //console.log(environmentPath," is envvv ",opts);
   const path = require("path");
   const fs = require("fs");
-  const dir = path.resolve(__dirname);
   typeof api.cache =='function' && api.cache(true);
   const inlineDovOptions = { unsafe: true};
-  const options = {base:dir,...opts,platform:"expo"};
+  const options = {...opts,platform:"expo"};
   const environmentPath = require("./copy-env-file")();
   if(fs.existsSync(environmentPath)){
     inlineDovOptions.path ='./.env';

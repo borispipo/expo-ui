@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "6.18.30",
+  "version": "6.18.39",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "index.js",
   "scripts": {
@@ -41,7 +41,7 @@
     "fix-dependencies": "expo-cli doctor --fix-dependencies",
     "delete-node-modules": "rimraf ./**/node_modules",
     "modifier-url-remote-git": "git remote set-url origin 'https://borispipo@github.com/borispipo/smart-eneo.git'",
-    "update": "npm i expo @emotion/native@latest react-native-big-list@latest apexcharts@latest file-saver@latest fs-extra@latest google-libphonenumber@latest @pchmn/expo-material3-theme@latest @gorhom/portal@latest @emotion/native@latest @fto-consult/common@latest react-native-blob-util react-native-gesture-handler@latest react-native-iphone-x-helper@latest react-native-mime-types@latest react-native-paper@latest react-native-safe-area-context@latest react-native-paper-dates@latest @react-navigation/native@latest @react-navigation/native-stack@latest react-native-screens@latest react-virtuoso@latest sharp-cli@latest tippy.js@latest websql@latest xlsx@latest && npx expo install --fix"
+    "update": "npm i expo @emotion/native@latest react-native-big-list@latest apexcharts@latest file-saver@latest fs-extra@latest google-libphonenumber@latest @pchmn/expo-material3-theme@latest @gorhom/portal@latest @emotion/native@latest @fto-consult/common@latest react-native-blob-util react-native-gesture-handler@latest react-native-iphone-x-helper@latest react-native-mime-types@latest react-native-paper@latest react-native-safe-area-context@latest react-native-paper-dates@latest @react-navigation/native@latest @react-navigation/native-stack@latest react-native-screens@latest react-virtuoso@latest tippy.js@latest websql@latest xlsx@latest && npx expo install --fix"
   },
   "bin": {
     "expo-ui": "./bin/index.js"
@@ -115,8 +115,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "@expo/metro-config": "^0.10.6",
-    "@expo/webpack-config": "^18.1.2",
+    "@expo/metro-config": "latest",
     "babel-plugin-inline-dotenv": "^1.7.0",
     "babel-plugin-module-resolver": "^5.0.0"
   }

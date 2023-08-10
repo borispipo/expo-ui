@@ -50,8 +50,10 @@ export default function registerApp (opts){
 
 registerRootComponent(MainAppEntry);
 
+/***    
 registerApp({
     init : ()=>{
         return Promise.resolve("test ted")
     }
 })
+*/

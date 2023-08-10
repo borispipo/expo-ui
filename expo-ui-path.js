@@ -15,7 +15,9 @@ module.exports = function (){
     })
     const expoUIPath = path.resolve(process.cwd(),"node_modules","@fto-consult","expo-ui");
     const sep = path.sep;
-    //return path.resolve(__dirname,suffix).replace(sep,(sep+sep));///pour la résolution du module expo-ui en mode test
+    if(path.resove(process.cwd()) === path.resolve(__dirname)){//le programme s'exécute en environnement fix bugs sur electron
+        return path.resolve(__dirname,suffix).replace(sep,(sep+sep));///pour la résolution du module expo-ui en mode test
+    }
     const rootPath = process.cwd();
     const src = path.resolve(rootPath,"src");
     try {

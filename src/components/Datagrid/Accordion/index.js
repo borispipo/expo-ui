@@ -35,11 +35,17 @@ const DatagridFactory = (Factory)=>{
             super(props);
             this.autobind();
             this.frozenItems = 0;
-            this.listRef = React.createRef(null);
+            Object.defineProperties(this,{
+                listRef : {
+                    value : React.createRef(),
+                },
+                backToTopRef : {
+                    value : React.createRef(),
+                },
+            });
             this.state.refreshing = false;
             //this.state.isReady = !this.bindResizeEvents();
             this.updateLayout = this.updateLayout.bind(this);
-            this.backToTopRef = React.createRef(null);
         }
         isDatagrid(){
             return true;

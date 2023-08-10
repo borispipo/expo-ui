@@ -5,7 +5,7 @@
 import Container from "$cauth/Container";
 import ScreenWithoutAuthContainer from "./ScreenWithoutAuthContainer";
 import ProfilAvatar from "$elayouts/ProfilAvatar";
-import {defaultObj,defaultBool,defaultArray,defaultStr} from "$cutils";
+import {defaultObj,defaultBool} from "$cutils";
 import View from "$components/View";
 import theme from "$theme";
 

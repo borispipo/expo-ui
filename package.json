@@ -118,6 +118,7 @@
   },
   "devDependencies": {
     "@expo/metro-config": "latest",
+    "@faker-js/faker": "^8.0.2",
     "babel-plugin-inline-dotenv": "^1.7.0",
     "babel-plugin-module-resolver": "^5.0.0"
   }

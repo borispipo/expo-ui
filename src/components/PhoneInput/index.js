@@ -1,6 +1,6 @@
 import React from "$react";
 import {defaultObj,defaultStr,isNonNullString} from "$cutils";
-import TextField from "$ecomponents/TextField";
+import TextField,{inputModes} from "$ecomponents/TextField";
 import { StyleSheet,Image,Pressable} from 'react-native';
 import PropTypes from "prop-types";
 import theme,{DISABLED_OPACITY} from "$theme";
@@ -175,7 +175,7 @@ export default function PhoneInputComponent(props){
                             </>
                         </Pressable>
                     }
-                    inputMode ={keyboardTypes.number}
+                    inputMode ={inputModes.number}
                     defaultValue = {state.displayValue}
                     onChange = {(args)=>{
                         const {value:nValue} = args;

@@ -42,6 +42,6 @@ DialogTitleComponent.displayName = "DialogTitleComponent";
 const styles = StyleSheet.create({
     container : {
         marginTop:10,fontSize:16,marginHorizontal:10,lineHeight:25,marginBottom:10,
-        fontWeight : '550',
+        fontWeight : '500',
     }
 })

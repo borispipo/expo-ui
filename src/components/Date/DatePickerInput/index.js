@@ -7,7 +7,7 @@ import i18n from "$i18n";
 import {defaultStr} from "$cutils";
 import DateLib from "$lib/date";
 import PropTypes from "prop-types";
-import TextField from "$ecomponents/TextField";
+import TextField,{inputModes} from "$ecomponents/TextField";
 import Icon from "$ecomponents/Icon";
 import {StyleSheet,View} from "react-native";
 import DatePickerModal from '../DatePickerModal'
@@ -183,7 +183,7 @@ const DatePickerInput = React.forwardRef(({
           label={labelText}
           defaultValue={formattedValue}
           placeholder={inputFormatLabel}
-          inputMode={'number-pad'}
+          inputMode={inputModes.number}
           mask={inputFormat}
           keyboardAppearance={theme.dark ? 'dark' : 'default'}
           error={hasError}

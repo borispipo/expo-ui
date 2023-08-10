@@ -7,6 +7,7 @@ import {isObj,isNonNullString} from "$cutils";
 import eMainScreens from "$escreens/mainScreens";
 import {ExpoUIContext} from "./hooks";
 import Login from "$eauth/Login";
+import {modes} from "$ecomponents/TextField";
 
 /*****
     les utilitaires disponibles à passer au provider : 
@@ -75,7 +76,17 @@ const Provider = ({children,getTableData,navigation,components,convertFiltersToS
           }
         }
         theme.fonts = newTheme.fonts;
-        return typeof extendAppTheme == 'function'? extendAppTheme(theme)  : theme;
+        const r = typeof extendAppTheme == 'function'? extendAppTheme(theme2)  : theme2;
+        return {
+          ...r,
+          get textFieldMode (){
+            /***** possibilité de charger le mode d'affichage par défaut des champs textuels dans le theme de l'application */
+            if(typeof Theme.current.textFieldMode =='string' && Theme.current.textFieldMode && modes[Theme.current.textFieldMode]){
+                return modes[Theme.current.textFieldMode];
+            }
+            return isMobileMedia()? modes.shadow : modes.flat;
+          }
+        }
     }
     return <ExpoUIContext.Provider 
       value={{

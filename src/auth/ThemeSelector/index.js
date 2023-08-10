@@ -15,6 +15,7 @@ import {defaultObj} from "$cutils";
 import Icon from "$ecomponents/Icon";
 import {open,close} from "$preloader";
 import {fields,getThemeData} from "$theme/utils";
+import {modes} from "$ecomponents/TextField/utils";
 
 const getStyle = (color)=>{
     if(!Colors.isValid(color)) return {};
@@ -47,6 +48,11 @@ export const getThemeFieldProps = (props,ref)=>{
     const isDark = theme.isDark() || theme.isDarkUI();
     const defTheme = isDark ? {...defaultDarkTheme.colors,dark:true} : {...defaultLightTheme.colors,dark:false};
     const itemsRef = React.useRef({...defaultObj(user.customThemes),...getColors()});
+    fields.textFieldMode = {
+        type : 'select',
+        items : {...modes,none:{code:'',label:'Dynamique'}},
+        text : 'Mode d\'affichage des champs de texte'
+    }
     const showThemeExplorer = (data)=>{
         data = defaultObj(data,defTheme);
         fields.name.disabled = ({data})=> data && isNonNullString(data.name);

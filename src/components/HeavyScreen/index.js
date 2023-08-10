@@ -1,8 +1,7 @@
 import React from '$react';
 import {useAfterInteractions }  from "./utils";
-import { Transition } from 'react-native-reanimated'
-import PropTypes from "prop-types";
-import {Animated} from "react-native";
+import PropTypes from "prop-types"
+import Animated,{ FadeIn, FadeOut } from 'react-native-reanimated';
 import { StylePropTypes } from '$theme';
 import {isNumber,defaultStr} from "$cutils";
 
@@ -25,7 +24,8 @@ const OptimizedHeavyScreen = React.forwardRef(({
   return (
     <Animated.View
       testID={defaultStr(testID,'RN_OptimizedHeavyScreen')}
-      //transition={transition}
+      entering={FadeIn} 
+      exiting={FadeOut}
       style={[{flex:1},style]}
       ref={React.useMergeRefs(transitionRef,ref)}
     >

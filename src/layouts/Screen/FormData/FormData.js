@@ -67,7 +67,7 @@ export default class FormDataLayout extends FormDataActions {
         return <HeavyScreen {...wProps} 
             testID={testID+"_HeavyScreen"} 
             placeholder={React.isValidElement(preloader)? preloader : <FormLoader {...defaultObj(preloaderProps)}/>} 
-            enabled={(withHeavyScreen === false)?false:isLoading} 
+            enabled={(withHeavyScreen === false)?false:true} 
             isLoading={isLoading}
         >{content}</HeavyScreen>
     }

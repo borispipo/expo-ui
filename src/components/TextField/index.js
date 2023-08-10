@@ -9,7 +9,7 @@ import Icon,{COPY_ICON} from "$ecomponents/Icon";
 import Label from "$ecomponents/Label";
 import {isAndroid as _isAndroid,isIos as _isIos,isWeb as _isWeb} from "$cplatform";
 import {isMobileMedia,isDesktopMedia} from "$cplatform/dimensions";
-import {keyboardTypes,FONT_SIZE,parseDecimal,HEIGHT,outlinedMode,modes,flatMode,normalMode,shadowMode} from "./utils";
+import {keyboardTypes,inputModes,FONT_SIZE,parseDecimal,HEIGHT,outlinedMode,modes,flatMode,normalMode,shadowMode} from "./utils";
 import {copyTextToClipboard} from "$clipboard/utils";
 import Surface from "$ecomponents/Surface";
 import View from "$ecomponents/View";
@@ -17,8 +17,6 @@ const PADDING_HORIZONTAL_FLAT_MODE = 2;
 
 export const LINE_HEIGHT = 10;
 
-const EnterKey = "Enter".toLowerCase();
-const BackSpaceKey = "Backspace".toLowerCase();
 
 export * from "./utils";
 
@@ -100,27 +98,23 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
     readOnly = defaultBool(readOnly,false);
 
     const isEditable = !disabled && !readOnly;
-    inputMode = defaultStr(inputMode).toLowerCase();
-    let hasFountKeyboardType = false;
-    if(isNonNullString(inputMode)){
-        if(!keyboardTypes[inputMode]){
-            for(let i in keyboardTypes){
-                if(inputMode === keyboardTypes[i]){
-                    hasFountKeyboardType = true;
-                }
-            }
-        }
+    inputMode = defaultStr(inputMode,inputModes.default).toLowerCase();
+    if(type === "phone" || type =="email"){
+        inputMode = inputModes.phone;
     }
-    if(!hasFountKeyboardType && (!inputMode || !keyboardTypes[inputMode])){
+    const hasFountKeyboardType = inputModes[inputMode.toLowerCase().trim()];
+    if(!hasFountKeyboardType && (!inputMode || !inputModes[inputMode])){
         if(canValueBeDecimal){
-            inputMode = keyboardTypes.decimal;
+            inputMode = inputModes.decimal;
         } else if(type == "email"){
-            inputMode = keyboardTypes.email;
+            inputMode = inputModes.email;
         } else if(type =="phone" || type =="tel"){
-            inputMode = keyboardTypes.phone;
-        } else if(!keyboardTypes[type]){
-            inputMode = keyboardTypes.default;
-        }
+            inputMode = inputModes.phone;
+        } if(inputModes[type]){
+            inputMode = inputModes[type];
+        }  else {
+            inputMode = inputModes.default;
+        } 
     }
     const isSecureText = type =="password"?true : false;
     const [secureTextEntry,setSecureTextEntry] = React.useState(isSecureText);
@@ -350,7 +344,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
                 backgroundColor : 'transparent',
                 color : !error && !isFocused && Colors.isValid(flattenStyle.color)?flattenStyle.color : inputColor,
                 fontSize,
-                verticalAlign: 'center',//multiline ? 'top' : 'center',
+                verticalAlign: 'middle',
                 overflow : 'hidden',
             },
             isWeb && { outline: 'none'},
@@ -366,6 +360,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
         ],
         secureTextEntry,
         inputMode,
+        keyboardType : inputMode in inputModes ? keyboardTypes[inputMode] : keyboardTypes.default,
         autoCapitalize : upper?(isAndroid?'characters':"none"):autoCapitalize,
         value : currentDefaultValue,
         realValue : text,

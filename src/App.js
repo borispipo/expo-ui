@@ -1,7 +1,6 @@
 import '$session';
 import React from 'react';
 import {SWRConfig} from "$swr";
-import {defaultObj} from "$cutils";
 import Index from './index';
 import notify  from "$notify";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -130,7 +129,10 @@ export default function getIndex({onMount,onUnmount,render,onRender,init}){
               subscription?.remove()
             }
           },
-          initReconnect(callback) {
+          initReconnect(cb) {
+            const callback = ()=>{
+              cb();
+            }
             /* Register the listener with your state provider */
             APP.on(APP.EVENTS.GO_ONLINE,callback);
             return ()=>{

@@ -10,8 +10,6 @@ const path = require("path");
 module.exports = async function(env, argv,opts) {
   const nodeModulePath = `${process.cwd()}/node_modules`;
   const wConfigPath = fs.existsSync(`${nodeModulePath}/@expo/webpack-config`) && `${nodeModulePath}/@expo/webpack-config` || "@expo/webpack-config";
-  const webpackPath = fs.existsSync(`${nodeModulePath}/webpack`) && `${nodeModulePath}/webpack` || "webpack";
-  const webpack = require(`${webpackPath}`);
   const createExpoWebpackConfigAsync = require(wConfigPath);
     env = env || {};
     opts = typeof opts =="object" && opts ? opts : {};

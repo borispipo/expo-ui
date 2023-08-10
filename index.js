@@ -1,8 +1,12 @@
 import { registerRootComponent } from "expo";
-import {Platform } from 'react-native';
 import App from "./src/App";
 import Provider from "$econtext/Provider";
-const isWeb = Platform.OS === "web";
+const REGISTER_EVENT = "REGISTER-APP-COMPONENT-ROOT";
+import {useState,useEffect} from "react";
+const propsRef = {current:null};
+import APP from "$capp/instance";
+import {isObj} from "$cutils";
+
 
 /****
  * les options sont de la forme : 
@@ -16,11 +20,38 @@ const isWeb = Platform.OS === "web";
  *   les écrans d'initialisation doivent garder la propriété Start à true ou doivent avoir le groupe INTALL, pour spécifier que ce sont es écrans qui apparaissent lorsque l'application n'est pas initialisée
  * }
  */
-export default function registerApp ({onMount,onUnmount,onRender,render,swrConfig,init,...rest}){
-    return registerRootComponent(function(props){
-        return <Provider {...props} {...rest} swrConfig={isObj(swrConfig) && swrConfig || {}} children={<App init={init} render={render} onMount={onMount} onUnmount={onUnmount} onRender={onRender}/>}/>
-    });
+
+
+const MainAppEntry = function(mProps){
+    const [props,setProps] = useState(propsRef.current);
+    const onRegisterProps = (props)=>{
+        if(isObj(propsRef.current) || !isObj(props)) return;
+        propsRef.current = props;
+        setProps({...props});
+    }
+    useEffect(()=>{
+        APP.on(REGISTER_EVENT,onRegisterProps);
+        return ()=>{
+            APP.off(REGISTER_EVENT,onRegisterProps);
+        }
+    },[]);
+    const cProps = isObj(props) ? props : propsRef.current;
+    if(!isObj(cProps)) {
+        return null;
+    }
+    const {onMount,onUnmount,onRender,render,swrConfig,init,...rest} = {...mProps,...cProps};
+    return  <Provider {...rest} swrConfig={isObj(swrConfig) && swrConfig || {}} children={<App init={init} render={render} onMount={onMount} onUnmount={onUnmount} onRender={onRender}/>}/>
+};
+
+export default function registerApp (opts){
+    propsRef.current = opts;
+    APP.trigger(REGISTER_EVENT,opts);
 }
 
-///fix bug lié au fait que l'application stuck on splashscreen en environnement mobile
-!isWeb && registerRootComponent(x=>null);
+registerRootComponent(MainAppEntry);
+
+registerApp({
+    init : ()=>{
+        return Promise.resolve("test ted")
+    }
+})

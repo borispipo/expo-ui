@@ -42,7 +42,6 @@ export const _dynamicLogoStyle = (
 export const _dynamicCustomComponentStyle = (
   logoScale,
   logoOpacity,
-  logoWidth,
   logoHeight
 ) => [
   logoScale,

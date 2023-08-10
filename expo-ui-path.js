@@ -15,6 +15,7 @@ module.exports = function (){
     })
     const expoUIPath = path.resolve(process.cwd(),"node_modules","@fto-consult","expo-ui");
     const sep = path.sep;
+    //return path.resolve(__dirname,suffix).replace(sep,(sep+sep));///pour la résolution du module expo-ui en mode test
     const rootPath = process.cwd();
     const src = path.resolve(rootPath,"src");
     try {

@@ -1,0 +1,1 @@
+module.exports = {"@FTO-CONSULT/EXPO-UI":{"name":"@FTO-CONSULT/EXPO-UI","version":"6.21.23","homepage":"https://github.com/borispipo/expo-ui#readme"}};

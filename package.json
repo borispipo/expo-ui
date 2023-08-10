@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "6.20.17",
+  "version": "6.22.0",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "index.js",
   "scripts": {
@@ -40,9 +40,10 @@
     "update-app-version": "node ./update-app-version.js",
     "find-licenses": "node ./find-licenses.js",
     "fix-dependencies": "expo-cli doctor --fix-dependencies",
+    "expo-fix": "npx expo install --fix",
     "delete-node-modules": "rimraf ./**/node_modules",
     "modifier-url-remote-git": "git remote set-url origin 'https://borispipo@github.com/borispipo/smart-eneo.git'",
-    "update": "npm i expo @emotion/native@latest react-native-big-list@latest apexcharts@latest file-saver@latest fs-extra@latest google-libphonenumber@latest @pchmn/expo-material3-theme@latest @gorhom/portal@latest @emotion/native@latest @fto-consult/common@latest react-native-blob-util react-native-gesture-handler@latest react-native-iphone-x-helper@latest react-native-mime-types@latest react-native-paper@latest react-native-safe-area-context@latest react-native-paper-dates@latest @react-navigation/native@latest @react-navigation/native-stack@latest react-native-screens@latest react-virtuoso@latest tippy.js@latest websql@latest xlsx@latest && npx expo install --fix"
+    "update": "npm i expo @emotion/native@latest @react-native-community/netinfo@latest react-native-big-list@latest apexcharts@latest file-saver@latest fs-extra@latest google-libphonenumber@latest @pchmn/expo-material3-theme@latest @gorhom/portal@latest @emotion/native@latest @fto-consult/common@latest react-native-blob-util react-native-gesture-handler@latest react-native-iphone-x-helper@latest react-native-mime-types@latest react-native-paper@latest react-native-safe-area-context@latest react-native-paper-dates@latest @react-navigation/native@latest @react-navigation/native-stack@latest react-native-screens@latest react-virtuoso@latest tippy.js@latest websql@latest xlsx@latest && npx expo install --fix"
   },
   "bin": {
     "expo-ui": "./bin/index.js"
@@ -65,7 +66,7 @@
     "@emotion/native": "^11.11.0",
     "@expo/html-elements": "^0.5.1",
     "@expo/vector-icons": "^13.0.0",
-    "@fto-consult/common": "^3.23.13",
+    "@fto-consult/common": "^3.25.0",
     "@gorhom/portal": "^1.0.14",
     "@pchmn/expo-material3-theme": "^1.3.1",
     "@react-native-async-storage/async-storage": "1.18.2",
@@ -76,9 +77,9 @@
     "@react-navigation/native-stack": "^6.9.13",
     "@shopify/flash-list": "1.4.3",
     "apexcharts": "^3.41.1",
-    "expo": "^49.0.6",
+    "expo": "^49.0.7",
     "expo-camera": "~13.4.2",
-    "expo-clipboard": "~4.3.0",
+    "expo-clipboard": "~4.3.1",
     "expo-font": "~11.4.0",
     "expo-image-picker": "~14.3.2",
     "expo-linking": "~5.0.2",
@@ -88,7 +89,7 @@
     "expo-web-browser": "~12.3.2",
     "file-saver": "^2.0.5",
     "fs-extra": "^11.1.1",
-    "google-libphonenumber": "^3.2.32",
+    "google-libphonenumber": "^3.2.33",
     "htmlparser2-without-node-native": "^3.9.2",
     "process": "^0.11.10",
     "prop-types": "^15.8.1",
@@ -101,7 +102,7 @@
     "react-native-gesture-handler": "^2.12.1",
     "react-native-iphone-x-helper": "^1.3.1",
     "react-native-mime-types": "^2.4.0",
-    "react-native-paper": "^5.10.0",
+    "react-native-paper": "^5.10.1",
     "react-native-paper-dates": "^0.18.13",
     "react-native-reanimated": "~3.3.0",
     "react-native-safe-area-context": "4.6.3",
@@ -109,7 +110,7 @@
     "react-native-svg": "13.9.0",
     "react-native-web": "~0.19.6",
     "react-native-webview": "13.2.2",
-    "react-virtuoso": "^4.4.2",
+    "react-virtuoso": "^4.5.0",
     "sharp-cli": "^4.1.1",
     "tippy.js": "^6.3.7",
     "websql": "^2.0.3",

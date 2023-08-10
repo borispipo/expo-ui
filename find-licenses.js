@@ -82,7 +82,15 @@ module.exports = (options)=>{
             if (a.toLowerCase() > b.toLowerCase()) return 1;
             return 0;
         });
-        const content = {};
+        const packageJSON = require("./package.json");
+        const content = {
+            [packageJSON.name] : {
+                name : packageJSON.name,
+                version : packageJSON.version,
+                repository : packageJSON.repository,
+                homepage : packageJSON.homepage,
+            }
+        };
         for(let i in  s){
             content[s[i]] = openLibraries[s[i]]
         }

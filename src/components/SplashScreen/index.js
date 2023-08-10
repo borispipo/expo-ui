@@ -102,32 +102,15 @@ const SplashScreenComponent = ({isLoaded,children , duration, delay,logoWidth,lo
   const child = (animationDone && isLoaded)? React.isValidElement(children) && children : null;
   return (
     <View style={[styles.container]} testID={testID} id={testID}>
-      {!animationDone && <View style={StyleSheet.absoluteFill} testID={testID+"_Animation"}/>}
-      <View style={styles.containerGlue}>
+      {!animationDone ? <View style={StyleSheet.absoluteFill} testID={testID+"_Animation"}/> : null}
+      <View style={styles.containerGlue} testID={testID+"_ContainerGlue"}>
         {!animationDone && (
           <Animated.View
             style={_staticBackground(logoOpacity, backgroundColor)}
             testID={testID+"_AnimationDone"}
           />
         )}
-        {(animationDone || isNative) && <Component style={[!disableAppScale && appScale, opacityClearToVisible, styles.flex]}>
-          {child}
-        </Component>}
-        {!animationDone && (
-          <Animated.Image
-            testID={testID+"AnimateImage"}
-            resizeMode={imageBackgroundResizeMode || "cover"}
-            source={imageBackgroundSource}
-            style={[disableImageBackgroundAnimation && _staticBackground(
-              logoOpacity,
-              backgroundColor
-            ), disableImageBackgroundAnimation && _dynamicImageBackground(
-              imageScale,
-              logoOpacity,
-              backgroundColor
-            )]}
-          />
-        )}
+        {(animationDone || isNative) && child}
         {!animationDone && (
           <PortalProvider>
             <PaperProvider>

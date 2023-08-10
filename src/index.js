@@ -175,7 +175,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,render,onMount})
       })
     };
     const unsubscribeNetInfo = NetInfo.addEventListener(state => {
-       APP.setOnlineState(state);
+        APP.setOnlineState(state);
     });
     NetInfo.fetch().catch((e)=>{
       console.log(e," is net info heinn")
@@ -189,8 +189,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,render,onMount})
           ...state,hasGetStarted:true,...defaultObj(args && args?.state),isInitialized:true,isLoading : false,
         });  
       }).catch((e)=>{
-          console.error(e," initializing app");
-          return;
+          console.error(e," loading resources for app initialization");
           setState({...state,isInitialized:true,isLoading : false,hasGetStarted:false});
       })
     });

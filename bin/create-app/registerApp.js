@@ -1,6 +1,7 @@
 import registerApp from "$expo-ui-root-path"; 
 import screens from "./src/screens";
 import drawerItems from "./src/navigation/drawerItems";
+import Logo from "./src/components/Logo";
 
 registerApp({
     /**** application navigation */
@@ -11,7 +12,7 @@ registerApp({
     },
     /**application components */
     components : {
-        logo : null,//logo component's properties
+        logo : Logo,//logo component's properties
         loginPropsMutator : {},//login props mutator
     },
     /*** //for application initialization

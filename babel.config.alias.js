@@ -3,12 +3,12 @@ const fs = require("fs");
 const writeFile = require("./electron/utils/writeFile");
 module.exports = (opts)=>{
     const dir = path.resolve(__dirname);
-    const base = opts.base || process.cwd();
+    const projectRoot = typeof opts.projectRoot =='string' && fs.existsSync(opts.projectRoot.trim()) && opts.projectRoot.trim() || process.cwd();
     const assets = path.resolve(dir,"assets");
     opts = typeof opts =='object' && opts ? opts : {};
     opts.platform = "expo";
     opts.assets = opts.assets || opts.alias && typeof opts.alias =='object' && opts.alias.$assets || assets;
-    opts.base = opts.base || base;
+    opts.projectRoot = opts.projectRoot || projectRoot;
     opts.withPouchDB = opts.withPouchDB !== false && opts.withPouchdb !== false ? true : false;
     delete opts.withPouchdb;
     const expoUI = require("./expo-ui-path")();
@@ -77,7 +77,7 @@ module.exports = (opts)=>{
     const HelpScreen = path.resolve(r["$escreens"],"Help");
     ///on génère les librairies open sources utilisées par l'application
     const root = path.resolve(r.$src,"..");
-    const nModulePath = fs.existsSync(path.resolve(root,"node_modules")) && path.resolve(root,"node_modules") || fs.existsSync(path.resolve(r.$src,"node_modules")) && path.resolve(r.$src,"node_modules") || path.resolve(base,"node_modules");
+    const nModulePath = fs.existsSync(path.resolve(root,"node_modules")) && path.resolve(root,"node_modules") || fs.existsSync(path.resolve(r.$src,"node_modules")) && path.resolve(r.$src,"node_modules") || path.resolve(projectRoot,"node_modules");
     const nodeModulesPath = fs.existsSync(nModulePath) ? nModulePath : path.resolve(process.cwd(),"node_modules");
     const outputPath = path.resolve(HelpScreen,"openLibraries.js");
     r.$nodeModulesPath = r.$enodeModulesPath= nodeModulesPath;
@@ -93,12 +93,13 @@ module.exports = (opts)=>{
         sourceCode : r.$src,
         assets : $assets,
         images : r.$images,
-        projectRoot : base,//la racine au projet
+        projectRoot : projectRoot,//la racine au projet
         electron : $electron,//le chemin racine electron
     };
     //le chemin ver le repertoire electron
     r.$eelectron = r["$e-electron"] = $electron;
     r.$electron = r.$electron || r.$eelectron;
+    r.$projectRoot = r.$eprojectRoot = projectRoot;
     r.$econtext = path.resolve(expo,"context");
     if(!r.$context){
         r.$context = r.$econtext;
@@ -113,7 +114,7 @@ module.exports = (opts)=>{
             electronPaths.logo = logoPath;
         }
     }
-    const jsonPath = path.resolve(base,'package.json');
+    const jsonPath = path.resolve(projectRoot,'package.json');
     if(fs.existsSync(jsonPath)){
         require("./electron/utils/copy")(jsonPath,path.resolve(dir,"electron","package.app.json"));
     }

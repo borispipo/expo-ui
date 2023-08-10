@@ -1,5 +1,12 @@
+const path = require("path");
 module.exports = function(api) {
+    const projectRoot = process.cwd();
+    const $src = path.resolve(projectRoot,"src");
     const alias = {
+      $src,
+      $component : path.resolve($src,"component"),
+      $navigation : path.relative($src,"navigation"),
+      $screens : path.resolve($src,"screens"),
       //your custom module resolver alias, @see : https://www.npmjs.com/package/babel-plugin-module-resolver
     }
     return require("@fto-consult/expo-ui/babel.config")(api,{

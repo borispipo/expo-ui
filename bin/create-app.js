@@ -1,4 +1,4 @@
-const {exec,thowError,copy,writeFile,createDirSync} = require("./utils");
+const {exec,thowError,copy,writeFile,createDirSync,getDependencyVersion} = require("./utils");
 const fs = require("fs"), path = require("path");
 const createAppDir = path.resolve(__dirname,"create-app");
 module.exports = function(parsedArgs,{projectRoot:root}){
@@ -12,7 +12,7 @@ module.exports = function(parsedArgs,{projectRoot:root}){
     }
     const devDependencies = packageObj.devDependencies;
     const inSameFolder = typeof mainPackage?.name =="string" && mainPackage?.name.trim().toLowerCase() === name?.toLowerCase().trim();
-    const projectRoot = path.join(`${root}/${inSameFolder && name || ""}`);
+    const projectRoot = path.join(`${root}/${!inSameFolder && name || ""}`);
     createDirSync(projectRoot);
     const mainPackagePath = path.join(projectRoot,"package.json");
     mainPackage = fs.existsSync(mainPackagePath) && require(`${mainPackagePath}`) || null;
@@ -21,6 +21,8 @@ module.exports = function(parsedArgs,{projectRoot:root}){
       ...defaultDevDependencies,
       ...(devDependencies && typeof devDependencies ==='object'? devDependencies : {}),
     };
+    const reactNativeVersion = getDependencyVersion(packageObj,"react-native");
+    const expoVersion = getDependencyVersion(packageObj,"expo");
     const euModule = "@fto-consult/expo-ui";
     let hasUpdateDeps = false;
     if(!hasPackage){
@@ -31,15 +33,21 @@ module.exports = function(parsedArgs,{projectRoot:root}){
           "main": "index.js",
           "scripts" : {
             start : "npx expo start -c",
+            "serve-web" : "npx serve web-build --single",
+            "build-web" : "npx expo export:web",
           },
           "dependencies" : {
             [euModule] : "latest",
+            //"expo" : expoVersion,
+            //"react-native" : reactNativeVersion,
           },
           devDependencies : devDeps
         }
      } else {
       mainPackage.devDependencies = typeof mainPackage.devDependencies =='object' && mainPackage.devDependencies || {};
       mainPackage.dependencies = typeof mainPackage.dependencies ==="object" && mainPackage.dependencies || {};
+      mainPackage.dependencies["react-native"] = reactNativeVersion;
+      mainPackage.dependencies["expo"] = expoVersion;
       for(let i in devDeps){
         if(!(i in mainPackage.devDependencies)){
             hasUpdateDeps = true;
@@ -88,6 +96,7 @@ const createEntryFile = (projectRoot)=>{
 const createAPPJSONFile = (projectRoot,{name,version})=>{
     version = version ||"1.0.0";
     copy(path.join(createAppDir,"assets"),path.resolve(projectRoot,"assets"),{overwrite:false});
+    copy(path.join(createAppDir,".gitignore"),path.resolve(projectRoot,".gitignore"),{overwrite:false});
     const appJSONPath = path.join(projectRoot,"app.json");
         if(!fs.existsSync(appJSONPath)){
             writeFile(appJSONPath,`
@@ -117,7 +126,8 @@ const createAPPJSONFile = (projectRoot,{name,version})=>{
         }
       },
       "web": {
-        "favicon": "./assets/favicon.png"
+        "favicon": "./assets/favicon.png",
+        "bundler": "metro"
       }
     }
   }

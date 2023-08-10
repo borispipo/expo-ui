@@ -10,7 +10,7 @@ const defaultSelectable = canTextBeSelectable();
 
 export const EllipsizeMode = {'head':'head','middle':'middle', 'tail':'tail' , 'clip':'clip'}
 
-const LabelComponent = React.forwardRef(({ children,color,upperCase,fontSize,testID,wrap,id,wrapText,error,underlined,splitText,secondary,primary,bold,textBold,disabled,text,style,...rest},ref)=> {
+const LabelComponent = React.forwardRef(({ children,role,color,upperCase,fontSize,testID,wrap,id,wrapText,error,underlined,splitText,secondary,primary,bold,textBold,disabled,text,style,...rest},ref)=> {
     children = defaultVal(children,text);
     let isText = false;
     if(!React.isValidElement(children) && Array.isArray(children) && children.length){
@@ -64,7 +64,10 @@ const LabelComponent = React.forwardRef(({ children,color,upperCase,fontSize,tes
         if(fontSize){
             r1.fontSize = fontSize;
         }
-        return (<Text allowFontScaling = {true} ref = {ref} selectable={defaultSelectable} {...rest} {...restProps} testID={testID} disabled={disabled} style={[styles.label,splitText?styles.wrap:null,splitText?styles.w100:null,bold?styles.bold:null,r2,style,r1,styles.webFontFamilly]}>{children}</Text>)
+        return (<Text  allowFontScaling = {true} ref = {ref} selectable={defaultSelectable} 
+            {...rest} {...restProps} testID={testID} disabled={disabled} 
+            role={typeof role =='string' && role && supportedRoles.includes(role.trim()) && role.trim() || undefined}
+            style={[styles.label,splitText?styles.wrap:null,splitText?styles.w100:null,bold?styles.bold:null,r2,style,r1,styles.webFontFamilly]}>{children}</Text>)
     }
     let hasP = false;
     if(isObj(rest)){
@@ -140,3 +143,6 @@ LabelComponentExported.withRef = React.forwardRef((props,ref)=>{
 LabelComponentExported.withRef.displayName = "LabelComponent.Dynamic";
 
 LabelComponentExported.WithRef = LabelComponentExported.withRef;
+
+
+export const supportedRoles = ["alert","alertdialog","application","article","banner","button","cell","checkbox","columnheader","combobox","complementary","contentinfo","definition","dialog","directory","document","feed","figure","form","grid","group","heading","img","link","list","listitem","log","main","marquee","math","menu","menubar","menuitem","meter","navigation","none","note","option","presentation","progressbar","radio","radiogroup","region","row","rowgroup","rowheader","scrollbar","searchbox","separator","slider","spinbutton","status","summary","switch","tab","table","tablist","tabpanel","term","timer","toolbar","tooltip","tree","treegrid","treeitem"];

@@ -60,7 +60,7 @@ export const keyboardTypes = {
 
 export const inputModes = {
     default : 'none',
-    number : "numberic",
+    number : "numeric",
     decimal : "decimal",
     numeric : "numeric",
     email : "email",

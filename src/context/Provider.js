@@ -8,6 +8,7 @@ import eMainScreens from "$escreens/mainScreens";
 import {ExpoUIContext} from "./hooks";
 import Login from "$eauth/Login";
 import {modes} from "$ecomponents/TextField";
+import {isMobileMedia} from "$cdimensions";
 
 /*****
     les utilitaires disponibles à passer au provider : 
@@ -81,8 +82,8 @@ const Provider = ({children,getTableData,navigation,components,convertFiltersToS
           ...(isObj(r) ? r : theme),
           get textFieldMode (){
             /***** possibilité de charger le mode d'affichage par défaut des champs textuels dans le theme de l'application */
-            if(typeof Theme.current.textFieldMode =='string' && Theme.current.textFieldMode && modes[Theme.current.textFieldMode]){
-                return modes[Theme.current.textFieldMode];
+            if(typeof theme.textFieldMode =='string' && theme.textFieldMode && modes[theme.textFieldMode]){
+                return modes[theme.textFieldMode];
             }
             return isMobileMedia()? modes.shadow : modes.flat;
           }

@@ -18,6 +18,7 @@ import {isTouchDevice} from "$platform";
 import * as Utils from "$cutils";
 import {useContext} from "$econtext/hooks";
 import appConfig from "$capp/config";
+import { useKeepAwake } from 'expo-keep-awake';
 
 Object.map(Utils,(v,i)=>{
   if(typeof v =='function' && typeof window !='undefined' && window && !window[i]){
@@ -28,6 +29,7 @@ Object.map(Utils,(v,i)=>{
 export default function getIndex({onMount,onUnmount,render,onRender,init}){
     const {swrConfig} = useContext();
     const isScreenFocusedRef = React.useRef(true);
+    useKeepAwake();
     ///garde pour chaque écran sa date de dernière activité
     const screensRef = React.useRef({});//la liste des écrans actifs
     const activeScreenRef = React.useRef('');

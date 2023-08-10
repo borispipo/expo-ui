@@ -59,7 +59,8 @@ export const keyboardTypes = {
 }
 
 export const inputModes = {
-    default : 'none',
+    default : 'text',
+    none : "none",
     number : "numeric",
     decimal : "decimal",
     numeric : "numeric",

@@ -106,10 +106,11 @@ const SwitchComponent = React.forwardRef((props,ref)=>{
         disabled = {disabled}
         readOnly = {readOnly || !isEditable}
         pointerEvents={pointerEvents}
-        style = {[{paddingHorizontal:0,['margin'+(isLeftPosition?'Right':'Left')]:10},style,disabledStyle]}
+        style = {[{['margin'+(isLeftPosition?'Right':'Left')]:10},style,styles.switch,disabledStyle]}
         value = {isSwitchOn}
         onValueChange = {setIsSwitchOn}
         color = {Colors.isValid(p.color)? p.color : theme.colors.primaryOnSurface}
+        testID={testID+"_MainSwitchComponent"}
     />
    return <Tooltip 
                 {...p} 
@@ -164,6 +165,10 @@ const styles = StyleSheet.create({
       flexShrink: 1,
       flexGrow: 1,
     },
+    switch : {
+        backgroundColor : "transparent",
+        paddingHorizontal:0,
+    }
   });
 
   export default SwitchComponent;

@@ -12,6 +12,7 @@ import {Portal as RNPortal} from "react-native-paper";
 import theme,{StyleProp} from "$theme";
 import StatusBar from "$ecomponents/StatusBar";
 import ScrollView from "$ecomponents/ScrollView";
+import KeyboardAvoidingView from "$ecomponents/KeyboardAvoidingView";
 
 const getDefaultTitle = (nTitle,returnStr)=>{
   let titleStr = React.getTextContent(nTitle);
@@ -105,7 +106,7 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
   const WrapperProps = modal? {screenName} : {};
   const portalId = uniqid("screeen-container-"+screenName);
   return <Wrapper {...WrapperProps}>
-      <View testID={testID} id={portalId} {...containerProps}   style={[styles.container,{backgroundColor},modal && styles.modal,containerProps.style]}>
+      <KeyboardAvoidingView testID={testID} id={portalId} {...containerProps}   style={[styles.container,{backgroundColor},modal && styles.modal,containerProps.style]}>
           {withStatusBar !== false ? <StatusBar/> : null}
           {appBar === false ? null : React.isValidElement(appBar)? state.AppBar :  <AppBar 
               testID={testID+'_AppBar'} {...appBarProps} 
@@ -132,7 +133,7 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
               {fab}
             </View>
           )}
-      </View>
+      </KeyboardAvoidingView>
   </Wrapper>
 }
 

@@ -3,7 +3,6 @@ import React from "$react";
 import {classExtends,isFunction,isNonNullString,defaultStr,defaultObj,defaultVal,extendObj} from "$cutils";
 import {warning,Forms} from "./utils";
 import Action from "./Action";
-import View from "$ecomponents/View";
 import KeyboardAvoidingView from "$ecomponents/KeyboardAvoidingView";
 import { StyleSheet } from "react-native";
 import APP from "$capp/instance";
@@ -106,11 +105,9 @@ export default class FormComponent extends React.AppComponent {
             ...rest
         } = this.props;
         testID = defaultStr(testID,"RN_FormComponent");
-        return (<KeyboardAvoidingView testID={testID+"_KeyboardAvoidingView"}>
-            <View  {...rest} testID={testID} style={[styles.container,rest.style]}>
-                {this.props.children}
-            </View>
-        </KeyboardAvoidingView>);
+        return <KeyboardAvoidingView  {...rest} testID={testID+"_FormKeyboardAvoidingView"} style={[styles.container,rest.style]}>
+            {this.props.children}
+        </KeyboardAvoidingView>
     }
 }
 const isField  = (Component)=>{

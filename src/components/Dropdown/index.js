@@ -902,8 +902,7 @@ class DropdownComponent extends AppComponent {
                         label = {labelTextField}
                         style = {[inputProps.style,textInputProps.style,{pointerEvents:"none"}]}
                         disabled = {disabled}
-                        readOnly = {readOnly}
-                        //divider = {canHandle}
+                        readOnly = {true}
                         alwaysUseLabel = {renderTag?true : false}
                         contentContainerProps = {{
                             ...contentContainerProps,

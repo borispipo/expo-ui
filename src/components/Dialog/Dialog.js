@@ -3,7 +3,7 @@ import {defaultStr,isObj} from "$cutils";
 import {Dialog} from "react-native-paper";
 import {isNonNullString,defaultVal,defaultNumber,defaultObj,defaultBool } from "$cutils";
 import {StyleSheet,ScrollView} from "react-native";
-//import ScrollView  from "$ecomponents/ScrollView";
+import View from "$ecomponents/View";
 import Modal from "$ecomponents/Modal";
 import PropTypes from "prop-types";
 import React from "$react";
@@ -20,6 +20,7 @@ import {ACTION_ICON_SIZE} from "$ecomponents/AppBar";
 import DialogFooter from "./DialogFooter";
 import { Dimensions } from "react-native";
 import Surface from "$ecomponents/Surface";
+import KeyboardAvoidingView from "$ecomponents/KeyboardAvoidingView";
 
 export const FOOTER_HEIGHT = 50;
 export const HEADER_HEIGHT = 50;
@@ -172,9 +173,9 @@ const DialogComponent = React.forwardRef((props,ref)=>{
         paddingVertical : borderRadius?10:0,
     };
     const alertContentStyle = isAlert ? {paddingHorizontal:15} : null;
-    content = <Surface ref={contentRef} testID = {testID+"_Content11"} {...contentProps} style={[fullScreen? {flex:1}:{maxWidth,maxHeight:maxHeight-Math.min(SCREEN_INDENT*2+50,100)},isPreloader && {paddingHorizontal:10},{backgroundColor},alertContentStyle,contentProps.style]}>
+    content = <View ref={contentRef} testID = {testID+"_Content11"} {...contentProps} style={[fullScreen? {flex:1}:{maxWidth,maxHeight:maxHeight-Math.min(SCREEN_INDENT*2+50,100)},isPreloader && {paddingHorizontal:10},{backgroundColor},alertContentStyle,contentProps.style]}>
         {content}
-    </Surface>
+    </View>
     if(withScrollView){
         content = <ScrollView centerContent 
             contentContainerStyle={{ flexGrow: 0, justifyContent: 'flex-start' }}
@@ -197,78 +198,80 @@ const DialogComponent = React.forwardRef((props,ref)=>{
                 testID = {testID}
                 contentContainerProps = {contentContainerProps}
             >
-                <Surface 
-                    testID = {testID+"_Overlay"}
-                    ref={overlayRef}
-                    {...overlayProps} 
-                    style={[styles.overlay,isAlert && styles.overlayAlert,{backgroundColor},overlayProps.style,fullScreenStyle]}
-                >
-                    {(!isAlert && (actions || title || subtitle)) ? <AppBarDialog
-                        actionsProps = {actionsProps}
-                        testID = {testID+"_AppBar"}
-                        {...appBarProps}
-                        actions = {actions}
-                        actionMutator = {actionMutator}
-                        ref = {appBarRef}
-                        responsive = {isResponsive}
-                        isFullScreen = {isFullScreenDialog}
-                        fullScreen = {customFullScreen}
-                        backAction = {backAction}
-                        backActionProps = {{...backActionProps,onPress:(a)=>{
-                            handleBack(a,true);
-                        }}}
-                        title = {title}
-                        subtitle = {subtitle}
-                        titleProps = {titleProps}
-                    />:null}
-                    <DialogTitle 
-                        testID = {testID+"_Title"}
-                        {...titleProps} 
-                        ref = {titleRef}
-                        title = {title}
-                        responsive = {isResponsive}
-                        isFullScreen = {isFullScreenDialog}
-                        fullScreen = {customFullScreen}
-                    />
-                    {content}
-                    {actions ? <DialogActions
-                        testID = {testID+"_Footer"}
-                        {...footerProps}
-                        ref = {footerRef}
-                        isAlert = {isAlert}
-                        onAlertRequestClose = {onAlertRequestClose}
-                        actionsProps = {actionsProps}
-                        responsive = {isResponsive}
-                        isFullScreen = {isFullScreenDialog}
-                        fullScreen = {customFullScreen}
-                        actions = {actions}
-                        style = {[{backgroundColor},footerProps.style]}
-                        actionMutator = {actionMutator}
-                        cancelButton = {isAlert || !cancelButton || isPreloader ? null : {
-                            icon : 'cancel',
-                            mode : 'contained',
-                            error : true,
-                            canSave : false,
-                            ...cancelButton,
-                            text : undefined,
-                            label : defaultVal(cancelButton.label,cancelButton.text,"Annuler"),
-                            onPress : (a1,a2)=>{
-                                return handleBack(a1,true);
-                            }
-                        }}
-                        menuProps = {defaultObj(appBarProps.menuProps)}
-                     /> : null}
-                     {(!isAlert && footer) ? <DialogFooter
-                        {...footerProps}
-                        style = {[{backgroundColor},footerProps.style]}
-                        testID = {testID+"_FullPageFooter"}
-                        ref = {footerContentRef}
-                        responsive = {isResponsive}
-                        isFullScreen = {isFullScreenDialog}
-                        fullScreen = {customFullScreen}
-                        children = {footer}
-                     /> : null}
-                </Surface>
+                <KeyboardAvoidingView>
+                    <Surface 
+                        testID = {testID+"_Overlay"}
+                        ref={overlayRef}
+                        {...overlayProps} 
+                        style={[styles.overlay,isAlert && styles.overlayAlert,{backgroundColor},overlayProps.style,fullScreenStyle]}
+                    >
+                        {(!isAlert && (actions || title || subtitle)) ? <AppBarDialog
+                            actionsProps = {actionsProps}
+                            testID = {testID+"_AppBar"}
+                            {...appBarProps}
+                            actions = {actions}
+                            actionMutator = {actionMutator}
+                            ref = {appBarRef}
+                            responsive = {isResponsive}
+                            isFullScreen = {isFullScreenDialog}
+                            fullScreen = {customFullScreen}
+                            backAction = {backAction}
+                            backActionProps = {{...backActionProps,onPress:(a)=>{
+                                handleBack(a,true);
+                            }}}
+                            title = {title}
+                            subtitle = {subtitle}
+                            titleProps = {titleProps}
+                        />:null}
+                        <DialogTitle 
+                            testID = {testID+"_Title"}
+                            {...titleProps} 
+                            ref = {titleRef}
+                            title = {title}
+                            responsive = {isResponsive}
+                            isFullScreen = {isFullScreenDialog}
+                            fullScreen = {customFullScreen}
+                        />
+                        {content}
+                        {actions ? <DialogActions
+                            testID = {testID+"_Footer"}
+                            {...footerProps}
+                            ref = {footerRef}
+                            isAlert = {isAlert}
+                            onAlertRequestClose = {onAlertRequestClose}
+                            actionsProps = {actionsProps}
+                            responsive = {isResponsive}
+                            isFullScreen = {isFullScreenDialog}
+                            fullScreen = {customFullScreen}
+                            actions = {actions}
+                            style = {[{backgroundColor},footerProps.style]}
+                            actionMutator = {actionMutator}
+                            cancelButton = {isAlert || !cancelButton || isPreloader ? null : {
+                                icon : 'cancel',
+                                mode : 'contained',
+                                error : true,
+                                canSave : false,
+                                ...cancelButton,
+                                text : undefined,
+                                label : defaultVal(cancelButton.label,cancelButton.text,"Annuler"),
+                                onPress : (a1,a2)=>{
+                                    return handleBack(a1,true);
+                                }
+                            }}
+                            menuProps = {defaultObj(appBarProps.menuProps)}
+                         /> : null}
+                         {(!isAlert && footer) ? <DialogFooter
+                            {...footerProps}
+                            style = {[{backgroundColor},footerProps.style]}
+                            testID = {testID+"_FullPageFooter"}
+                            ref = {footerContentRef}
+                            responsive = {isResponsive}
+                            isFullScreen = {isFullScreenDialog}
+                            fullScreen = {customFullScreen}
+                            children = {footer}
+                         /> : null}
+                    </Surface>
+                </KeyboardAvoidingView>
             </ModalComponent>
         </Portal>
 });

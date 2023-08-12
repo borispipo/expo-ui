@@ -8,6 +8,7 @@ import {useMediaQueryUpdateStyle} from "$context/hooks";
 
 const ViewComponent = React.forwardRef(({onRender,onLayoutTimeout,pointerEvents,onLayout,autoHeight,autoWidth,elevation,...props},ref)=>{
     const style = useMediaQueryUpdateStyle(props);
+    ref = ref ? ref: x=>x;
     const autoSize = autoHeight||autoWidth ? true : false;
     const [state,setState] = autoSize ? React.useState({}) : [{}];
     const {width,height} = state;

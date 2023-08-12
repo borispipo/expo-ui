@@ -2,15 +2,7 @@ import React from "$react";
 import {Vertical as AutoSizeVertical} from "$ecomponents/AutoSizer";
 import List from "$ecomponents/List/Virtuoso";
 import {defaultStr,isObj,defaultObj} from "$cutils";
-const normalize = (size)=>{
-    if(isObj(size)){
-        ["padding","paddingBottom","paddingTop","paddingLeft","paddingRight"].map(p=>{
-            delete size[p];
-        })
-        return size;
-    }
-    return {};
-}
+
 const AutoSizeVerticalList = React.forwardRef(({testID,autoSizerProps,...props},ref)=>{
     testID = defaultStr(testID,"RN_AutoSizeVerticalListComponent")
     autoSizerProps = defaultObj(autoSizerProps);

@@ -1,10 +1,11 @@
-import {KeyboardAvoidingView,StyleSheet} from 'react-native';
+import {KeyboardAvoidingView,Platform,StyleSheet} from 'react-native';
+import {isAndroid} from "$platform";
 
 export default function KeyboardAvoidingViewComponent({ children,...rest }){
     return (
       <KeyboardAvoidingView
-        behavior="padding"
-        keyboardVerticalOffset={80}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={isAndroid()?0:80}
         {...rest}
         style = {[styles.wrapper,rest.style]}
       >

@@ -8,7 +8,7 @@ import React from "$react";
 import { faker } from '@faker-js/faker';
 export default function TestDatagridComponent({count,...props}){
     const data = React.useMemo(()=>{
-        count = typeof count =='number' && count > 10 ? count : 4000;
+        count = typeof count =='number' && count > 10 ? count : 5000;
         return faker.helpers.multiple(createRandomUser, {
             count,
         });

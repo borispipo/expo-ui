@@ -1,6 +1,6 @@
 import {defaultStr,defaultObj,defaultBool,isNumber,isDecimal,isFunction,defaultVal,defaultNumber,isNonNullString} from "$cutils";
 import { TextInput} from "react-native-paper";
-import { TextInput as RNTextInput,KeyboardAvoidingView,StyleSheet} from "react-native";
+import { TextInput as RNTextInput,StyleSheet} from "react-native";
 import React from "$react";
 import theme,{Colors,DISABLED_OPACITY,READONLY_OPACITY} from "$theme";
 import PropTypes from "prop-types";
@@ -541,11 +541,11 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
                 {label}
             </Label> : null}
             <>
-                <Surface testID={testID+"_ContentContainer"}  {...contentContainerProps} elevation={elevation}  style={[styles.contentContainer,{pointerEvents},!left? styles.paddingLeft:null,styles.row,contentContainerStyle,contentContainerProps.style]}>
+                <Surface testID={testID+"_ContentContainer"}  {...contentContainerProps} elevation={0}  style={[styles.contentContainer,{pointerEvents},!left? styles.paddingLeft:null,styles.row,contentContainerStyle,contentContainerProps.style]}>
                     {left ? (<View testID={testID+"_Left"} {...leftContainerProps} style={[styles.AdornmentContainer,styles.leftAdornment,leftContainerProps.style,disabledStyle]}>
                         {left}
                     </View>) : null}
-                    <KeyboardAvoidingView testID={testID+"_Content"} {...contentProps} style={[styles.inputWrapper,contentProps.style,disabledStyle]}>
+                    <View testID={testID+"_Content"} {...contentProps} style={[styles.inputWrapper,contentProps.style,disabledStyle]}>
                         {
                             typeof render ==="function"? render(inputProps):
                              <RNTextInput 
@@ -553,7 +553,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
                                 ref = {componentRef}
                             /> 
                         }
-                    </KeyboardAvoidingView>
+                    </View>
                     {right ? (<View testID={testID+"_Right"} {...rightContainerProps} style={[styles.AdornmentContainer,styles.rightAdornment,rightContainerProps.style,disabledStyle]}>
                         {right}
                     </View>) : null}

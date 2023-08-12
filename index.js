@@ -51,6 +51,7 @@ export default function registerApp (opts){
 registerRootComponent(MainAppEntry);
 
   
+/**
 registerApp({
     navigation : {
         screens : require("./src/test-screens").default
@@ -61,3 +62,4 @@ registerApp({
         return Promise.resolve("test ted")
     }
 });
+*/

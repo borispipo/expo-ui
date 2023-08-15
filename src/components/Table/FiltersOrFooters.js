@@ -4,13 +4,21 @@
 import React from "$react";
 import { View } from "react-native";
 import PropTypes from "prop-types";
-export default function TableFiltersComponent({visible,children:cChildren,...rest}){
+import { StyleSheet } from "react-native";
+import {isMobileNative} from "$cplatform";
+import {classNames} from "$cutils";
+const isNative = isMobileNative();
+const Component = isNative ? View : "tr";
+
+export default function TableFiltersComponent({visible,className,children:cChildren,...rest}){
     const children = React.useMemo(()=>{
         return cChildren;
     },[cChildren]);
-    return <View {...rest} style={[rest.style,!visible && {height:0,opacity:0,display:'none'}]}>
+    const rP = isNative ? rest : {className:classNames(className,"table-footer-or-header-row")}
+    if(!isNative && !visible) return null;
+    return <Component {...rP} style={StyleSheet.flatten([rest.style,!visible && {height:0,opacity:0,display:'none'}])}>
         {children}
-    </View>
+    </Component>
 }
 
 TableFiltersComponent.propTypes = {

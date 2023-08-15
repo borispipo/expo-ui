@@ -8,8 +8,10 @@ const path = require("path");
 
 // Expo CLI will await this method so you can optionally return a promise.
 module.exports = async function(env, argv,opts) {
-  const nodeModulePath = `${process.cwd()}/node_modules`;
-  const wConfigPath = fs.existsSync(`${nodeModulePath}/@expo/webpack-config`) && `${nodeModulePath}/@expo/webpack-config` || "@expo/webpack-config";
+  const isLocalDev = require("./is-local-dev")();//si l'application est en developpement local
+  const nodeModulePath = path.resolve(`${process.cwd()}`,"node_modules");
+  const localNodeEuiP = path.resolve(nodeModulePath,"@expo/webpack-config");
+  const wConfigPath = fs.existsSync(localNodeEuiP) && localNodeEuiP || "@expo/webpack-config";
   const createExpoWebpackConfigAsync = require(wConfigPath);
     env = env || {};
     opts = typeof opts =="object" && opts ? opts : {};

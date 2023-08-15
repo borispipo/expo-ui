@@ -2,6 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const writeFile = require("./electron/utils/writeFile");
 module.exports = (opts)=>{
+    const isLocalDev = require("./is-local-dev")();
     const dir = path.resolve(__dirname);
     const projectRoot = typeof opts.projectRoot =='string' && fs.existsSync(opts.projectRoot.trim()) && opts.projectRoot.trim() || process.cwd();
     const assets = path.resolve(dir,"assets");
@@ -77,7 +78,7 @@ module.exports = (opts)=>{
     const HelpScreen = path.resolve(r["$escreens"],"Help");
     ///on génère les librairies open sources utilisées par l'application
     const root = path.resolve(r.$src,"..");
-    const nModulePath = fs.existsSync(path.resolve(root,"node_modules")) && path.resolve(root,"node_modules") || fs.existsSync(path.resolve(r.$src,"node_modules")) && path.resolve(r.$src,"node_modules") || path.resolve(projectRoot,"node_modules");
+    const nModulePath = isLocalDev ? path.resolve(__dirname,"node_modules") : fs.existsSync(path.resolve(root,"node_modules")) && path.resolve(root,"node_modules") || fs.existsSync(path.resolve(r.$src,"node_modules")) && path.resolve(r.$src,"node_modules") || path.resolve(projectRoot,"node_modules");
     const nodeModulesPath = fs.existsSync(nModulePath) ? nModulePath : path.resolve(process.cwd(),"node_modules");
     const outputPath = path.resolve(HelpScreen,"openLibraries.js");
     r.$nodeModulesPath = r.$enodeModulesPath= nodeModulesPath;

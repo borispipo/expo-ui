@@ -27,6 +27,7 @@ import {getRowStyle,styles as rStyles} from "../utils";
 import Avatar from "$ecomponents/Avatar";
 import {defaultObj,isOb,isNonNullString} from "$cutils";
 import PropTypes from "prop-types";
+import DatagridProvider from "../hooks/Provider";
 
 const DatagridFactory = (Factory)=>{
     Factory = Factory || CommonDatagrid;
@@ -44,7 +45,6 @@ const DatagridFactory = (Factory)=>{
                 },
             });
             this.state.refreshing = false;
-            //this.state.isReady = !this.bindResizeEvents();
             this.updateLayout = this.updateLayout.bind(this);
         }
         isDatagrid(){
@@ -67,7 +67,7 @@ const DatagridFactory = (Factory)=>{
             const {render,key,style} = super.renderRowCell(arg);
             if(render===null || !React.isValidElement(render)) return null;
             return <Label style={[style,{paddingTop:10,paddingBottom:10}]} key={key}>
-                    {render}
+                 {render}
             </Label>
         }
         rangeChanged(state){
@@ -95,19 +95,17 @@ const DatagridFactory = (Factory)=>{
             return {...this.getActionsArgs(),valueFormatter:formatValue,formatValue,abreviateValues:this.state.abreviateValues,row:item,items:this.state.data,item,rowData:item,index,rowIndex:index,rowCounterIndex:rowIndexCount,rowIndexCount};
         }
         getRenderingItemProps ({item,rowKey,numColumns,index}){
-            const rKey = rowKey;
             this.renderingItemsProps = isObj(this.renderingItemsProps)? this.renderingItemsProps : {};
             const wrapperStyle = getRowStyle({row:item,index,numColumns,isAccordion:true,rowIndex:index});
-            if(isObj(this.renderingItemsProps) && isObj(this.renderingItemsProps[rKey]) && this.renderingItemsProps[rKey].title){
-                const it = this.renderingItemsProps[rKey];
-                it.numColumns = numColumns;
+            if(this.renderingItemsProps[rowKey]){
+                const it = this.renderingItemsProps[rowKey];
                 it.wrapperStyle = wrapperStyle;
                 return it;
             }
             const callArgs = this.getItemCallArgs({item,index});
             const accordion = this.props.accordion;
             const accordionProps = defaultObj(this.props.accordionProps);
-            const testID = "RN_DatagridAccordionRow_"+rKey;
+            const testID = "RN_DatagridAccordionRow_"+rowKey;
             let renderedContent = isFunction(accordion) ? accordion(callArgs) : isFunction(accordionProps.accordion) ? accordionProps.accordion(callArgs) : isObj(accordion) && accordion ? accordion : isObj(accordionProps.accordion) ? accordionProps.accordion : undefined;;
             let title = null, avatarContent = null,right = null,rightProps={},description = null,rowProps = {},avatarProps = {};
             let descriptionProps = Object.assign({},this.accordionDescriptionProps)
@@ -131,7 +129,6 @@ const DatagridFactory = (Factory)=>{
                 } else if(isObj(renderedContent.contentProps)){
                     descriptionProps = {...descriptionProps,...renderedContent.contentProps,style:[descriptionProps.style,renderedContent.contentProps.style]}
                 }
-                //
                 rowProps = defaultObj(renderedContent.rowProps);
                 avatarProps.color = color;
                 if(typeof avatarContent =='function'){
@@ -170,16 +167,15 @@ const DatagridFactory = (Factory)=>{
             } else if(!React.isValidElement(title)){
                 title = null;
             }
-            this.renderingItemsProps[rKey] = {
+            this.renderingItemsProps[rowKey] = {
                 testID,
-                numColumns,
                 wrapperStyle,title,right,rightProps,description,avatarContent,rowProps,avatarProps,
                 bottomSheetTitlePrefix : defaultStr(renderedContent?.bottomSheetTitlePrefix,accordionProps.bottomSheetTitlePrefix,accordion?.bottomSheetTitlePrefix)
             }
-            return this.renderingItemsProps[rKey];
+            return this.renderingItemsProps[rowKey];
         }
         renderItem(args){
-            const {index,numColumns,item,isSectionListHeader,isScrolling:_isScrolling,style,setSize} = args;
+            const {index,numColumns,item,isSectionListHeader,isScrolling:_isScrolling,style} = args;
             args.isAccordion = true;
             if(isSectionListHeader || item.isSectionListHeader){
                 const rowStyle = style ? [style] : [];
@@ -194,18 +190,19 @@ const DatagridFactory = (Factory)=>{
                 </View>;
             }
             if(!(item) || typeof item !== 'object') return null;
-            const rowKey = this.getRowKey(item,index);
+            const canHandleRow = typeof this.props.filter =='function' ? this.props.filter(this.getItemCallArgs({item,index})) : true;
+            if(canHandleRow === false || canHandleRow === null) return null;
+            const rowKey = this.getRowKeyByIndex(index);
             return <DatagridAccordionRow 
                 item = {item}
                 index = {index}
-                context = {this}
                 rowKey = {rowKey}
-                isScrolling = {defaultBool(this.isScrolling(),_isScrolling)}
                 selectable = {this.props.selectable}
-                isRowSelected = {this.isRowSelected.bind(this)}
                 {...defaultObj(this.props.accordionProps)}
+                accordion = {this.props.accordion}
+                numColumns = {numColumns}
                 {...this.getRenderingItemProps({item,numColumns,index,rowKey})}
-                key = {rowKey}
+                key = {index}
                 ref = {(el)=>{
                     if(isObj(this.renderingItemsProps) && isObj(this.renderingItemsProps[rowKey]) ){
                         this.renderingItemsProps[rowKey].ref = el;
@@ -253,6 +250,7 @@ const DatagridFactory = (Factory)=>{
             return null;
         }
         getItem(index){
+            return this.getRowByIndex(index);
             if(typeof index !=='number') return null;
             return isObj(this.state.data[index])? this.state.data[index] : null;
         }
@@ -507,16 +505,13 @@ const DatagridFactory = (Factory)=>{
                     </View>
             </ScrollView>
         </View>  
-        return <View testID={testID+"_Container"} pointerEvents={pointerEvents} style={[styles.container]} collapsable={false}>
-                { <View testID={testID+"_ContentContainer"}> 
-                    <View testID={testID+"_AccordionHeader"} style={[styles.accordionHeader]} ref={this.layoutRef} onLayout={this.updateLayout.bind(this)}>
+        return <DatagridProvider context={this}>
+                <View testID={testID+"_Container"} pointerEvents={pointerEvents} style={[styles.container,this.props.style]} collapsable={false}>
+                     <View testID={testID+"_AccordionHeader"} style={[styles.accordionHeader]} ref={this.layoutRef} onLayout={this.updateLayout.bind(this)}>
                         {this.props.showActions !== false ? <DatagridActions 
                             testID={testID+"_Actions"}
                             pointerEvents = {pointerEvents}
                             title = {this.renderDataSourceSelector()}
-                            context = {this}
-                            selectedRows = {Object.assign({},this.selectedRows)}
-                            selectedRowsActions = {this.renderSelectedRowsActions.bind(this)}
                             actions = {actions}
                         /> : null}
                         {datagridHeader}
@@ -545,9 +540,9 @@ const DatagridFactory = (Factory)=>{
                     </View>
                     {hasData && !canRenderChart ? <List
                         estimatedItemSize = {150}
-                        prepareItems = {false}
                         {...rest}
                         {...accordionProps}
+                        prepareItems = {false}
                         onRender = {this.onRender.bind(this)}
                         testID = {testID}
                         extraData = {this.state.refresh}
@@ -569,18 +564,17 @@ const DatagridFactory = (Factory)=>{
                     </View> :  <View onRender = {this.onRender.bind(this)} style={styles.hasNotData}>
                         {this.renderEmpty()}
                     </View>}
-                </View>}
-                {!canRenderChart && backToTopRef ? <BackToTop testID={testID+"_BackToTop"} {...backToTopProps} ref={this.backToTopRef} style={[styles.backToTop,backToTopProps.style]} onPress={this.scrollToTop.bind(this)}/>:null}
-                <BottomSheet
-                    testID = {testID+"_BottomSheet"}
-                    renderMenuContent = {false}
-                    ref = {(el)=>{
-                        this.bottomSheetContext = el;
-                    }}
-                />
-            </View>
+                    {!canRenderChart && backToTopRef ? <BackToTop testID={testID+"_BackToTop"} {...backToTopProps} ref={this.backToTopRef} style={[styles.backToTop,backToTopProps.style]} onPress={this.scrollToTop.bind(this)}/>:null}
+                    <BottomSheet
+                        testID = {testID+"_BottomSheet"}
+                        renderMenuContent = {false}
+                        ref = {(el)=>{
+                            this.bottomSheetContext = el;
+                        }}
+                    />
+                </View>
+            </DatagridProvider>
         }
-        
     }
     clx.propTypes = {
         ...Factory.propTypes,
@@ -619,6 +613,7 @@ const styles = StyleSheet.create({
         flexDirection :'column',
         justifyContent : 'flex-start',
         width : '100%',
+        flex : 1,
         paddingHorizontal : isNativeMobile()? 5:1,
     },
     accordionHeader : {

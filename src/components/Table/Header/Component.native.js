@@ -4,10 +4,10 @@
 import React from "$react";
 import { View } from "react-native";
 import PropTypes from "prop-types";
-export default function TableRowComponent({cells,columns,...rest}){
+export default function TableHeaderComponent({cells,columns,...rest}){
     const children = React.useMemo(()=>{
         if(Array.isArray(cells)){
-            return cells.map((cell,index)=>columns[index]? <React.Fragment key={index}>{cell}</React.Fragment> : null )
+            return null;
         }
         return cells;
     },[cells,columns]);
@@ -16,6 +16,6 @@ export default function TableRowComponent({cells,columns,...rest}){
     </View>
 }
 
-TableRowComponent.propTypes = {
+TableHeaderComponent.propTypes = {
     columns : PropTypes.arrayOf(PropTypes.bool)
 }

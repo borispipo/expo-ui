@@ -63,7 +63,7 @@ export default function HelpScreen(props){
     const borderStyle = {borderColor:theme.colors.divider,borderWidth:1,justifyContent:'space-between'};
     const testID = defaultStr(props.testID,"RN_HelpAboutScreenComponent")
     return <Screen  withScrollView title={title} {...props} testID={testID+"_Screen"} contentContainerStyle={[{flex:1},theme.styles.alignItemsCenter,theme.styles.justifyContentCenter]}>
-        <View testID={testID+"_Container"} style={[theme.styles.alignItemsCenter,theme.styles.justifyContentCenter,theme.styles.flex1,theme.styles.w100,theme.styles.p1]}>
+        <View testID={testID+"_Container"} style={[theme.styles.alignItemsCenter,theme.styles.justifyContentCenter,theme.styles.w100,theme.styles.p1]}>
             <Logo  testID={testID+"_Logo"} style={{marginRight:10}}/>
             {getReleaseText()}
             <Divider testID={testID+"_Divider1"} style={[theme.styles.mv1]}/>

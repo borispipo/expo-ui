@@ -3,7 +3,6 @@
 // license that can be found in the LICENSE file.
 
 import Accordion,{ TableData as TableDataAccordion} from "./Accordion";
-import Dashboard  from "./Dashboard";
 import Table,{TableData as DatagridTableData} from "./Table";
 import {isDesktopMedia,isMobileMedia} from "$cplatform/dimensions";
 import {isFunction,defaultVal} from "$cutils";
@@ -14,19 +13,15 @@ import {getRenderType} from "./utils";
 const DatagridMainComponent = React.forwardRef((props,ref)=>{
     const isDesk = isDesktopMedia();
     const isMob = isMobileMedia();
-    const isTableDataRef = React.useRef(defaultVal(props.isTableData,defaultStr(props.tableName,props.table) || typeof props.fetchData ==='function'?true : false));
-    const TableComponent = isTableDataRef.current ? DatagridTableData : Table;
-    const AccordionComponent = isTableDataRef.current ? TableDataAccordion : Accordion;
-    let Component = TableComponent;
+    const isTableData = typeof props.isTableData =='boolean'? props.isTableData  : defaultStr(props.tableName,props.table).trim() || typeof props.fetchData ==='function'?true : false;
+    const renderType = defaultStr(getRenderType(),isDesk? "table":'accordion').trim().toLowerCase();
     const canRenderAccordion = (isFunction(props.accordion) || (isObj(props.accordionProps) && isFunction(props.accordionProps.accordion)) || props.accordion === true);
-    let renderType = defaultStr(getRenderType(),isDesk? "table":'accordion').trim().toLowerCase()
-    if(renderType == 'accordion' && canRenderAccordion){
-        Component = AccordionComponent;
-    } else if(renderType =='table'){
-        Component = TableComponent;
-    } else if(isMob && canRenderAccordion){
-        Component = AccordionComponent;
-    }
+    const Component = React.useMemo(()=>{
+        if((renderType == 'accordion' || (renderType !=='table' && isMob)) && canRenderAccordion){
+            return isTableData ? TableDataAccordion : Accordion;
+        }
+        return isTableData ? DatagridTableData : Table;
+    },[isTableData,renderType,canRenderAccordion,isMob])
     return <Component
         {...props}
         ref = {ref}

@@ -50,16 +50,17 @@ export default function registerApp (opts){
 
 registerRootComponent(MainAppEntry);
 
-  
-/**
-registerApp({
-    navigation : {
-        screens : require("./src/test-screens").default
-    },
-    init : ({appConfig})=>{
-        appConfig.set("isAuthSingleUserAllowed",true);
-        appConfig.set("authDefaultUser",{code:"root",password:"admin123",label:"Master admin"})
-        return Promise.resolve("test ted")
-    }
-});
-*/
+const isLocalMode = true;
+//si après 5 secondes, l'application n'a pas été registrer, alors il s'agit d'un test en mode local
+if(isLocalMode){
+    registerApp({
+        navigation : {
+            screens : require("./src/test-screens").default
+        },
+        init : ({appConfig})=>{
+            appConfig.set("isAuthSingleUserAllowed",true);
+            appConfig.set("authDefaultUser",{code:"root",password:"admin123",label:"Master admin"})
+            return Promise.resolve("test ted")
+        }
+    });
+}

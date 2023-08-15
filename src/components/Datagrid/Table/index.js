@@ -14,6 +14,7 @@ import RenderType from "../RenderType";
 import Footer from "../Footer/Footer";
 import theme from "$theme";
 import Table from "$ecomponents/Table";
+import DatagridProvider from "../hooks/Provider";
 
 
 const DatagridFactory = (Factory)=>{
@@ -276,57 +277,58 @@ const DatagridFactory = (Factory)=>{
                     </View>
                 </ScrollView>
             </View> : null;
-            return <View style={[styles.container,{flex:1}]} testID={testID+"_TableContainer"} pointerEvents={pointerEvents}>
-                <View ref={this.layoutRef} testID={testID+"_LayoutContainer"}>
-                    {this.props.showActions !== false ? <DatagridActions 
-                        pointerEvents = {pointerEvents}
-                        title = {this.renderDataSourceSelector()}
-                        context = {this}
-                        selectedRows = {Object.assign({},this.selectedRows)}
-                        selectedRowsActions = {this.renderSelectedRowsActions.bind(this)}
-                        actions = {actions}
-                    /> : null}
-                    {rPagination}
-                    {progressBar}  
-                </View>
-                {canRenderChart ?
-                    <View testID={testID+"_ChartContainer"} {...chartContainerProps} style={[theme.styles.w100,chartContainerProps.style]}>
-                        {this.renderChart()}
-                    </View> : 
-                <Table
-                    ref = {this.listRef}
-                    {...rest}
-                    sortedColumn = {sortedColumn}
-                    onRender = {this.onRender.bind(this)}
-                    getItemType = {this.getFlashListItemType.bind(this)}
-                    renderItem = {this.renderFlashListItem.bind(this)}
-                    hasFooters = {hasFootersFields && !canRenderChart ? true : false}
-                    showFilters = {showFilters}
-                    showFooters = {showFooters && !canRenderChart ? true : false}
-                    showHeaders = { canRenderChart ? !!showFilters : true}
-                    headerContainerProps = {{}}
-                    headerCellContainerProps = {{
-                        style : showFilters?{justifyContent:'flex-start'}:null
-                    }}
-                    isRowSelected = {this.isRowSelected.bind(this)}
-                    columns = {this.state.columns}
-                    //renderRow={this.renderRow.bind(this)}
-                    getRowKey = {this.getRowKey.bind(this)}
-                    columnsWidths = {widths}
-                    renderCell={this.renderRowCell.bind(this)}
-                    rowContainerProps = {(props)=>{
-                        return {
-                            style : getRowStyle(props,{selected:this.isRowSelected.bind(this)}),
-                        }
-                    }}
-                    data = {this.state.data}
-                    footers = {this.getFooterValues()}
-                    renderHeaderCell={this.renderHeaderCell.bind(this)}
-                    renderFilterCell={this.renderFilterCell.bind(this)}
-                    renderFooterCell={this.renderFooterCell.bind(this)}
-                    renderEmpty = {this.renderEmpty.bind(this)}
-                />}
-            </View>
+            return <DatagridProvider context={this}>
+                     <View style={[styles.container,{flex:1}]} testID={testID+"_TableContainer"} pointerEvents={pointerEvents}>
+                        <View ref={this.layoutRef} testID={testID+"_LayoutContainer"}>
+                            {this.props.showActions !== false ? <DatagridActions 
+                                pointerEvents = {pointerEvents}
+                                title = {this.renderDataSourceSelector()}
+                                actions = {actions}
+                            /> : null}
+                            {rPagination}
+                            {progressBar}  
+                        </View>
+                        {canRenderChart ?
+                            <View testID={testID+"_ChartContainer"} {...chartContainerProps} style={[theme.styles.w100,chartContainerProps.style]}>
+                                {this.renderChart()}
+                            </View> : 
+                        <Table
+                            ref = {this.listRef}
+                            {...rest}
+                            withDatagridContext
+                            sortedColumn = {sortedColumn}
+                            onRender = {this.onRender.bind(this)}
+                            getItemType = {this.getFlashListItemType.bind(this)}
+                            renderItem = {this.renderFlashListItem.bind(this)}
+                            renderSectionHeader = {this.renderFlashListItem.bind(this)}
+                            hasFooters = {hasFootersFields && !canRenderChart ? true : false}
+                            showFilters = {showFilters}
+                            showFooters = {showFooters && !canRenderChart ? true : false}
+                            showHeaders = { canRenderChart ? !!showFilters : true}
+                            headerCellContainerProps = {{
+                                style : showFilters?{justifyContent:'flex-start'}:null
+                            }}
+                            isRowSelected = {this.isRowSelected.bind(this)}
+                            columns = {this.state.columns}
+                            //renderRow={this.renderRow.bind(this)}
+                            getRowKey = {this.getRowKey.bind(this)}
+                            columnsWidths = {widths}
+                            renderCell={this.renderRowCell.bind(this)}
+                            rowContainerProps = {(props)=>{
+                                return {
+                                    style : getRowStyle(props,{selected:this.isRowSelected.bind(this)}),
+                                }
+                            }}
+                            data = {this.state.data}
+                            footers = {this.getFooterValues()}
+                            renderHeaderCell={this.renderHeaderCell.bind(this)}
+                            renderFilterCell={this.renderFilterCell.bind(this)}
+                            renderFooterCell={this.renderFooterCell.bind(this)}
+                            renderEmpty = {this.renderEmpty.bind(this)}
+                        />}
+                    </View>
+                    
+            </DatagridProvider>
         }
     }
     clx.propTypes = {

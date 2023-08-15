@@ -36,7 +36,7 @@ export default class DatagridDashboard extends TableData {
         const testID = this.getTestID();
         const {filterOrOperator,filterAndOperator,} = this.props;
         const {
-            visibleColumnsNames,
+            columnsVisibilities,
             filteredColumns,
             filters :headerFilters,
         } = this.preparedColumns;
@@ -50,7 +50,7 @@ export default class DatagridDashboard extends TableData {
                 testID={testID+"_HeaderFilters"}
                 isLoading = {this.isLoading()}
                 filters = {headerFilters}
-                visibleColumns = {visibleColumnsNames}
+                visibleColumns = {columnsVisibilities}
                 filteredColumns = {filteredColumns}
                 orOperator = {filterOrOperator}
                 andOperator = {filterAndOperator}

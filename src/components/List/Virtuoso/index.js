@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-import {Virtuoso,VirtuosoGrid} from "react-virtuoso/dist/index.mjs";
+import {Virtuoso,VirtuosoGrid,TableVirtuoso} from "react-virtuoso/dist/index.mjs";
 import React from "$react";
 import PropTypes from "prop-types";
 import {defaultObj,classNames,defaultNumber,isObj,isDOMElement,isNumber,uniqid,isNonNullString,defaultStr} from "$cutils";
@@ -10,6 +10,8 @@ import { View } from "react-native";
 import {useList} from "../hooks";
 import theme,{grid} from "$theme";
 import Dimensions from "$cdimensions";
+import { StyleSheet } from "react-native";
+import {isMobileNative} from "$cplatform";
 
 const propTypes = {
     ...defaultObj(Virtuoso.propTypes),
@@ -29,12 +31,19 @@ const propTypes = {
     isScrolling : PropTypes.func,
 };
 /***@see : https://virtuoso.dev/virtuoso-api-reference/ */
-const VirtuosoListComponent = React.forwardRef(({onRender,listClassName,components,itemProps,windowWidth,numColumns,responsive,testID,renderItem,onEndReached,onLayout,onContentSizeChange,onScroll,isScrolling,estimatedItemSize,onEndReachedThreshold,containerProps,style,autoSizedStyle,...props},ref)=>{
-    const Component = React.useMemo(()=>responsive?VirtuosoGrid:Virtuoso,[responsive])
+const VirtuosoListComponent = React.forwardRef(({onRender,fixedHeaderContent,rowProps,renderTable,listClassName,components,itemProps,windowWidth,numColumns,responsive,testID,renderItem,onEndReached,onLayout,onContentSizeChange,onScroll,isScrolling,estimatedItemSize,onEndReachedThreshold,containerProps,style,autoSizedStyle,...props},ref)=>{
+    if(renderTable){
+        responsive = false;
+    }
+    const Component = React.useMemo(()=>renderTable ? TableVirtuoso : responsive?VirtuosoGrid:Virtuoso,[responsive,renderTable]);
     const context = useList(props);
     itemProps = defaultObj(itemProps);
     const items = context.items;
+    renderTable ? rowProps = defaultObj(rowProps) : null;
     const r2 = {};
+    if(renderTable){
+        r2.fixedHeaderContent = fixedHeaderContent;
+    }
     Object.map(Component.propTypes,(_,i)=>{
         if(i in props){
             r2[i] = props[i];
@@ -48,7 +57,7 @@ const VirtuosoListComponent = React.forwardRef(({onRender,listClassName,componen
     const sizeRef = React.useRef({width:0,height:0});
     const listSize = sizeRef.current;
     const isValid = ()=> listRef.current;
-    const listStyle = {height:'100%',width:"100%",overflowX:'hidden'};
+    const listStyle = {height:'100%',width:"100%",overflowX:renderTable?"auto":"hidden",maxWidth:"100%"};
     r2["data-test-id"] = testID+"_ListContent";
     if(isObj(estimatedItemSize)){
         if(isNumber(estimatedItemSize.width)){
@@ -137,8 +146,10 @@ const VirtuosoListComponent = React.forwardRef(({onRender,listClassName,componen
                 }
             }}
             components = {{
-                Item : responsive ? function(props){return <ItemContainer {...props} style={[itemProps.style,props.style]} numColumns={numColumns}/>} : undefined,
-                //List : responsive ? ResponsiveVirtuosoListItemContainer: undefined,
+                Item : renderTable ? undefined : responsive ? function(props){return <ItemContainer {...props} style={[itemProps.style,props.style]} numColumns={numColumns}/>} : undefined,
+                ...(renderTable ? {
+                    TableRow: TableRowComponent,
+                }:{}),
                 ...defaultObj(components),
             }}
         />
@@ -147,7 +158,10 @@ const VirtuosoListComponent = React.forwardRef(({onRender,listClassName,componen
 
 VirtuosoListComponent.propTypes = {
     ...propTypes,
+    fixedHeaderContent : PropTypes.func,//la fonction rendant le contenu fixe du tableau
+    renderTable : PropTypes.bool,//si le composant Table sera rendu
     numColumns : PropTypes.number,
+    rowProps : PropTypes.object,//les props du TableRow, lorsque le rendu est de type table
     items : PropTypes.oneOfType([
         PropTypes.object,
         PropTypes.array,
@@ -202,7 +216,7 @@ const normalizeEvent = (e)=>{
     },[windowWidth,numColumns]);
     const style = width && {width} || grid.col(windowWidth);
     const dataIntex  = "index" in props ? props.index : "data-index" in props ? props["data-index"] : ""
-    const dataItemIndex = props["data-item-index"];
+    const dataItemIndex = "data-item-index" in props ? props["data-item-index"] : "";
     if(isObj(style)){
         style.paddingRight = style.paddingLeft = style.paddingHorizontal = undefined;
     }
@@ -232,4 +246,11 @@ const normalizeEvent = (e)=>{
         .${gridClassName}{display:flex;flex-direction:row;align-items:flex-start;flex-wrap:wrap;justify-content:flex-start;};
     `;
     document.body.appendChild(style);
-  } 
+}
+
+export const TableRowComponent = ({testID,style,...props}) => {
+    const index = props['data-index'];
+    const isOdd = typeof index =='number' ? index%2 > 0 : false;
+    testID = defaultStr(testID,"_VirtuosoTableRow_"+index);
+    return <tr data-test-id={testID} {...props} style={StyleSheet.flatten(style)} className={classNames(props.className,"virtuoso-table-row",`table-row-${isOdd?"odd":"even"}`)}/>
+};

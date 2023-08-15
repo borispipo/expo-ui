@@ -1,4 +1,4 @@
-import theme,{LINE_HEIGHT} from "$theme";
+import theme,{Colors,LINE_HEIGHT} from "$theme";
 import { StyleSheet } from "react-native";
 import {get as getSession} from "./Common/session";
 import appConfig from "$capp/config";
@@ -98,7 +98,9 @@ export const ROW_EVEN_STYLE = {
 }
 
 export const ROW_SELECTED_STYLE = {
-    backgroundColor : ROW_SELECTED_BACKGROUND_COLOR
+    get backgroundColor(){
+        return theme.isDark()? Colors.lighten(theme.colors.surface) : Colors.darken(theme.colors.surface); 
+    }
 }
 
 export const ROW_BORDER_STYLE = {
@@ -119,7 +121,7 @@ export const DATE_COLUMN_WIDTH = 200;
 
 export {LINE_HEIGHT}
 
-export const styles = StyleSheet.create({
+export const styles = ({
     approved : ROW_APPROVED_STYLE,
     archived : ROW_ARCHIVED_STYLE,
     selected : ROW_SELECTED_STYLE,
@@ -167,7 +169,7 @@ export const getRowStyle = ({row,bordered,numColumns,rowData,isAccordion,isTable
     if(rowIndex !== undefined){
         style.push(rowIndex%2===0?styles.even : theme.isDark()?styles.oddDark : styles.odd)
     }
-    if(false && selected){
+    if(selected){
         style.push(styles.selected,{borderBottomWidth:1,borderBottomColor:theme.colors.primary})
     }
     if(paid || row.paid){

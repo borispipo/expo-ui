@@ -30,7 +30,7 @@ Object.map(Utils,(v,i)=>{
 export default function getIndex({onMount,onUnmount,render,onRender,init}){
     const {swrConfig} = useContext();
     const isScreenFocusedRef = React.useRef(true);
-    useKeepAwake();
+    isMobileNative() && useKeepAwake();
     ///garde pour chaque écran sa date de dernière activité
     const screensRef = React.useRef({});//la liste des écrans actifs
     const activeScreenRef = React.useRef('');
@@ -145,8 +145,8 @@ export default function getIndex({onMount,onUnmount,render,onRender,init}){
         }}
       >
         <GestureHandlerRootView style={{ flex: 1,flexGrow:1,flexShrink:1}} testID={"RN_GestureHandlerRootView"}>
-          <KeyboardAvoidingViewComponent>
-            <SafeAreaProvider>
+          <KeyboardAvoidingViewComponent testID={"RN_AppKeyboardAvoidingView"}>
+            <SafeAreaProvider testID={"RN_AppSafeAreaProvider"}>
               <Index onMount={onMount} render={render} onUnmount={onUnmount} onRender={onRender} init={init}/>
             </SafeAreaProvider>
           </KeyboardAvoidingViewComponent>

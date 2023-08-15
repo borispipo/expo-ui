@@ -5,6 +5,7 @@ import React from "$react";
 import DrawerNavigator from "./Drawer";
 import useContext from "$econtext/hooks";
 import { MainNavigationProvider } from "./hooks";
+import {isWeb,isAndroid} from "$cplatform";
 
 export * from "./hooks";
 
@@ -29,13 +30,19 @@ export default function NavigationComponent (props){
     const opts = {
         headerShown : false,
         header : ()=> null,
+        presentation : isAndroid()? "card":"default",
+        animationEnabled : true,
+    }
+    const cardStyle = { backgroundColor: 'transparent' };
+    if(isWeb()){
+        cardStyle.flex = 1;
     }
     return <MainNavigationProvider {...rest} onGetStart={onGetStart} state={state} initialRouteName={initialRouteName}>
         <DrawerNavigator {...props}>
             {<Stack.Navigator 
-                    initialRouteName={initialRouteName} 
-                    screenOptions={opts}
-                >
+                initialRouteName={initialRouteName} 
+                screenOptions={opts}
+            >
                     {<Stack.Group screenOptions={{...opts}}>
                         {drawerScreens}
                     </Stack.Group>}
@@ -44,6 +51,7 @@ export default function NavigationComponent (props){
                         screenOptions={{
                             ...opts,
                             presentation: 'transparentModal', 
+                            cardStyle
                         }}
                     >
                         {stackScreens}

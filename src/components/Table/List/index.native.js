@@ -1,1 +1,2 @@
-export {default} from "$ecomponents/List/FlashList";
+export {default} from "$ecomponents/List/Virtuoso";
+export * from "$ecomponents/List/Virtuoso";

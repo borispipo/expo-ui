@@ -51,9 +51,11 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
     containerProps,
     testID,
     right,
+    keyboardAvoidingViewProps,
     ...rest
   } = props;
   const insets = useSafeAreaInsets();
+  keyboardAvoidingViewProps = defaultObj(keyboardAvoidingViewProps);
   testID = defaultStr(testID,"RN_MainScreenScreenWithoutAuthContainer")
   containerProps = defaultObj(containerProps);
   const backgroundColor = theme.colors.background;
@@ -106,7 +108,8 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
   const WrapperProps = modal? {screenName} : {};
   const portalId = uniqid("screeen-container-"+screenName);
   return <Wrapper {...WrapperProps}>
-      <KeyboardAvoidingView testID={testID} id={portalId} {...containerProps}   style={[styles.container,{backgroundColor},modal && styles.modal,containerProps.style]}>
+    <View testID={testID+"_ScreenContentContainer"} id={portalId} style={[containerStyle,{backgroundColor},modal && styles.modal,containerProps.style]} {...containerProps}>
+      <KeyboardAvoidingView testID={testID} {...keyboardAvoidingViewProps} style={[styles.keyboardAvoidingView,keyboardAvoidingViewProps.style]}>
           {withStatusBar !== false ? <StatusBar/> : null}
           {appBar === false ? null : React.isValidElement(appBar)? state.AppBar :  <AppBar 
               testID={testID+'_AppBar'} {...appBarProps} 
@@ -121,19 +124,20 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
             <ScrollView
               testID = {testID+'_ScreenContentScrollView'}
               {...rest}
-              contentContainerStyle={[contentContainerStyle]}
-              style={[containerStyle,styles.container, style]}
+              contentContainerStyle={[contentContainerStyle,styles.container]}
+              style={[style]}
             >
               {children}
               {fab}
             </ScrollView>
           ) : (
-            <View  testID={testID+'_ScreenContent'} {...rest} style={[containerStyle,styles.wrapper,styles.container, style]}>
+            <View  testID={testID+'_ScreenContent'} {...rest} style={[styles.container, style]}>
               {children}
               {fab}
             </View>
           )}
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+    </View>
   </Wrapper>
 }
 
@@ -147,8 +151,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  keyboardAvoidingView : {
+    flex : 1,
+    backgroundColor : "transparent",
+  },
   wrapper : {
-    flexDirection:'column',
+    flex : 1,
     /*flex : 1,
     flexGrow : 1,
     alignItems:'center'*/

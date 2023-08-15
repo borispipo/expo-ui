@@ -2,7 +2,7 @@ import theme from "$theme";
 import APP from "$capp";
 import {isMobileOrTabletMedia} from "$cplatform/dimensions";
 import PropTypes from "prop-types";
-import {Component as AppComponent} from "$react"
+import {ObservableComponent as AppComponent} from "$react"
 import $session from "$session";
 import Auth from "$cauth";
 import Tooltip from "$ecomponents/Tooltip";
@@ -41,6 +41,7 @@ import stableHash from "stable-hash";
 import * as XLSX from "xlsx";
 import {convertToSQL} from "$ecomponents/Filter";
 import appConfig from "$capp/config";
+import events from "../events";
 
 export const TIMEOUT = 100;
 
@@ -185,16 +186,11 @@ export default class CommonDatagridComponent extends AppComponent {
         this._pagination = defaultObj(rest.pagination);
         this.hasLocalFilters = false;
         data = (data && typeof data == 'object')? Object.toArray(data):[];
-        let sRows = {}
-        Object.map(selectedRows,(row,i)=>{
-            if(this.canSelectRow(row)){
-                sRows[this.getRowKey(row,i)] = {...row};
-            }
-        });
-        selectedRows = sRows;
         let sData = this.getSessionData()
         sData.showFooters = defaultVal(sData.showFooters,this.isTableData());
         sData.fixedTable = defaultBool(sData.fixedTable,false);
+        this.rowsByKeys = {};
+        this.rowsKeysIndexes = [];
         extendObj(this.state, {
             data,
             showFilters : this.isFilterable() && defaultBool(props.showFilters,(sData.showFilters? true : this.isPivotDatagrid())) || false,
@@ -236,12 +232,7 @@ export default class CommonDatagridComponent extends AppComponent {
             preparedColumns : {
                 value : {},override:false, writable:false,
             },
-            selectedRows : {
-                value : selectedRows, override : false, writable : false,
-            },
-            selectedRowsRefs : {
-                value : {},override : false, writable : false,
-            },
+            selectedRowsKeys : {value : new Set()},
             [footerFieldName] : {
                 value : uniqid(footerFieldName),override:false, writable: false
             },
@@ -259,9 +250,8 @@ export default class CommonDatagridComponent extends AppComponent {
             emptySectionListHeaderValue : {value : uniqid("empty-section-list-header-val").toUpperCase()},
             getSectionListHeaderProp : {value : typeof this.props.getSectionListHeader =='function'? this.props.getSectionListHeader : undefined},
             sectionListData : {value : {}},//l'ensemble des données de sectionList
-            hasFoundSectionData : {value : {current: false}},
             sectionListHeaderFooters : {value : {}},
-            sectionListDataSize : {value : {current : 0}},
+            sectionListDataKeys  : {value : new Set()},
             enablePointerEventsRef : {value : {current:false}},
             chartIdPrefix : {value : uniqid("datagrid-chart-id-prefix")},
             ///la liste des fonctions d'aggregations supportées
@@ -275,7 +265,8 @@ export default class CommonDatagridComponent extends AppComponent {
             hidePreloaderOnRenderKey : {value : uniqid("hide-preloader-on-render")},
             isRenderingRef : {value : {current:false}},
             chartSeriesNamesColumnsMapping : {value : {}},//le mappage entre les index des series et les colonnes coorespondantes
-        }) 
+        });
+        this.setSelectedRows(selectedRows);
         const config = extendObj(true,{},this.getSessionData("config"),this.props.chartConfig);
         Object.map(config,(v,k)=>{
             if(typeof v =='function'){
@@ -339,7 +330,6 @@ export default class CommonDatagridComponent extends AppComponent {
             windowWidth,
             windowHeight,
         }
-        this.selectableColumnRef = React.createRef(null);
         this.currentDataSources = Object.toArray(this.getSessionData().selectedDataSources);
         this.setSessionData({selectedDataSources:this.currentDataSources});
         this.persistDisplayType(this.state.displayType);
@@ -499,10 +489,10 @@ export default class CommonDatagridComponent extends AppComponent {
     archive(args){
         args = defaultObj(args);
         let archive = defaultFunc(this.props.archive);
-        let d = [];
+        const d = [];
         Object.map(args.selectedRows,(doc)=>{
-            if(isDocUpdate(doc)){
-                d.push(doc)
+            if(isObj(doc)){
+                d.push(doc);
             }
         });
         args.data = d;
@@ -539,9 +529,9 @@ export default class CommonDatagridComponent extends AppComponent {
         return !!this.props.isSWRDatagrid;
     }
     callSRowCallback({selected,row,rowIndex,key,cb}){
-        let count = Object.size(this.selectedRows);
-        let sArg = this.getActionsArgs(selected);
-        sArg.count = sArg.selectedRowsCount = count;
+        const count = this.getSelectedRowsCount();
+        const sArg = this.getActionsArgs(selected);
+        sArg.count = this.getSelectedRowsCount();
         sArg.rowIndex = sArg.index = rowIndex;
         sArg.rowKey = key;
         if(count >0){
@@ -568,72 +558,58 @@ export default class CommonDatagridComponent extends AppComponent {
             cb(selected,row,rowIndex,{...sArg,context:this})
         }
     }
-    toggleSelectableColumnCheckbox(update){
-        if(isObj(this.selectableColumnRef) && isObj(this.selectableColumnRef.current) && typeof this.selectableColumnRef.current.check =='function' && typeof this.selectableColumnRef.current.uncheck =='function'){
-            if(typeof update !=='boolean'){
-                update = this.selectedRowsCount && this.selectedRowsCount === this.getMaxSelectableRows() ? true : false;
-            }
-            if(update){
-                this.selectableColumnRef.current.check(false);
-            } else {
-                this.selectableColumnRef.current.uncheck(false);
-            }
-        }
-    }
-    getSelectedRowsCount(){
-        return isDecimal(this.selectedRowsCount) ? this.selectedRowsCount: 0;
+    getSelectedRowsCount (){
+        return this.selectedRowsKeys.size;
     }
 
     //si la ligne peut être sélectionnée
     canSelectCheckedRow(){
         if(!this.isSelectable()) return false;
         if(this.isSelectableMultiple()) return true;
-        return this.selectedRowsCount <= 1 ? true : false;
+        return this.getSelectedRowsCount() <= 1 ? true : false;
+    }
+    getSelectedRowsKeys(){
+        return Array.from(this.selectedRowsKeys);   
+    }
+    getSelectedRows(){
+        const ret = {};
+        this.selectedRowsKeys.forEach((rowKey)=>{
+            ret[rowKey] = this.getRowByKey(rowKey);
+        });
+        return ret;
     }
     /**** fonction appelée lorsque l'on clique sur la checkbox permettant de sélectionner la ligne */
-    handleRowToggle ({rowIndex,rowKey,index, selected,cb,callback},cb2){
+    handleRowToggle ({rowIndex,rowKey,index,cb,callback},cb2){
         if(!this.isValidRowKey(rowKey)) return false;
         const row = this.getRowByKey(rowKey);
         if(!isObj(row) || !this.canSelectRow(row)) return false;
+        const selected = !!!this.isRowSelected(rowKey);
         let selectableMultiple = this.isSelectableMultiple();
         rowIndex = defaultNumber(rowIndex,index);
         cb = defaultFunc(cb,callback,cb2)
-        const size = this.selectedRowsCount;
+        const size = this.getSelectedRowsCount();
         if(selected && !this.canSelectCheckedRow()){
             notify.warning("Vous ne pouvez sélectionner plus d'un élément");
             return false;
         }
-        if(!selectableMultiple){
-            this.setSelectedRows();
-        }
-        let selectedRows = this.selectedRows;
-        const sRowRef = this.selectedRowsRefs[rowKey];
-        this.selectedRowsCount = isDecimal(this.selectedRowsCount)? this.selectedRowsCount : 0;
-        if(isObj(sRowRef) && typeof sRowRef.check =='function' && typeof sRowRef.uncheck =='function'){
-            selected ? sRowRef.check() : sRowRef.uncheck();
-            sRowRef.checked = !!selected;
-        }
         if(selected){
-            this.selectedRowsCount +=1;
             let max = this.getMaxSelectedRows();
             if(max && size>= max){
                 notify.warning("Vous avez atteint le nombre maximum d'éléments sélectionnable, qui est de "+max.formatNumber())
                 return false;
             }
-            selectedRows[rowKey] = row;
-        } else {
-            this.selectedRowsCount = Math.max(this.selectedRowsCount-1,0);
-            delete selectedRows[rowKey];
         }
-        this.toggleSelectableColumnCheckbox();
-        if(isObj(this.datagridActionsContext) && isFunction(this.datagridActionsContext.setSelectedRows)){
-            this.datagridActionsContext.setSelectedRows(selectedRows,x =>{
-                this.callSRowCallback({selected,row,rowIndex,rowKey,cb})
-            });
-        } else {
-            this.callSRowCallback({selected,rowData:row,row,rowIndex,rowKey,cb});
+        if(!selectableMultiple){
+            this.setSelectedRows();
         }
-        return true;
+        if(selected){
+            this.selectedRowsKeys.add(rowKey);
+        } else {
+            this.selectedRowsKeys.delete(rowKey);
+        }
+        this.trigger(events.ON_ROW_TOGGLE,{selected,rowData:row,row,rowIndex,rowKey});
+        this.callSRowCallback({selected,rowData:row,row,rowIndex,rowKey,cb});
+        return !!selected;
     }
     canExportAskDisplayMainContent(){
         return false;
@@ -653,8 +629,11 @@ export default class CommonDatagridComponent extends AppComponent {
         return exportTableProps;
     }
     onAllRowsToggle(){}
+    updateDatagridActions(cb){
+        this.trigger(events.ON_ROW_TOGGLE,null);
+    }
     handleAllRowsToggle(update){
-        if(!defaultVal(this.props.selectableMultiple,true) && this.selectedRowsCount && this.getPaginatedData().length){
+        if(!defaultVal(this.props.selectableMultiple,true) && this.getSelectedRowsCount() && this.getPaginatedData().length){
             notify.warning("Vous ne pouvez sélectionner qu'un seul élément à la fois");
             return;
         }
@@ -675,9 +654,7 @@ export default class CommonDatagridComponent extends AppComponent {
             data = _d;
         }
         this.setSelectedRows(data);
-        if(isObj(this.datagridActionsContext) && isFunction(this.datagridActionsContext.setSelectedRows)){
-            this.datagridActionsContext.setSelectedRows(this.selectedRows);
-        }
+        this.trigger(events.ON_ALL_ROWS_TOGGLE,{selectedRows:data});
     }
     isAccordion(){
         return false;
@@ -792,11 +769,12 @@ export default class CommonDatagridComponent extends AppComponent {
     getFooters(){
         return this.getFootersFields();
     }
-    getActionsArgs(selected){
+    getActionsArgs (selected){
         const r = isObj(selected)? selected : {};
         const ret = {
             ...dataSourceArgs,
             rowsByKeys : this.rowsByKeys,
+            rowsKeysIndexes : this.getRowsKeysIndexes(),
             showConfirm,
             Preloader,
             notify,
@@ -808,8 +786,8 @@ export default class CommonDatagridComponent extends AppComponent {
             rows : this.state.data,
             allData : this.INITIAL_STATE.data,
             props : this.props,
-            selectedRows : this.selectedRows,
-            selectedRowsCount : this.selectedRowsCount,
+            selectedRows : this.getSelectedRows(),
+            selectedRowsCount : this.getSelectedRowsCount(),
             context:this,
             isMobile : isMobileOrTabletMedia(),
             Auth,
@@ -823,13 +801,13 @@ export default class CommonDatagridComponent extends AppComponent {
         return ret;
     }
 
-    copyToClipboard({selectedRows}){
+    copyToClipboard({selectedRows,...rest}){
         let keys = Object.keys(selectedRows);
         let row = selectedRows[keys[0]];
         if(!isObj(row)){
             return notify.error("Impossible de copier le premier élément sélectionné du tableau car il est invalide");
         }
-        return copyToClipboard({data:row,fields : this.props.columns,sessionName:defaultStr(this.props.sessionName,"datagrid")});
+        return copyToClipboard({...rest,isDatagrid:true,data:row,fields : this.props.columns,sessionName:defaultStr(this.props.sessionName,"datagrid")});
     }
     
     /*** les actions représentes les différents menus apparaissant lorsqu'une ligne est sélectionnée
@@ -837,7 +815,7 @@ export default class CommonDatagridComponent extends AppComponent {
      */
     renderSelectedRowsActions(sActions){
         let {printOptions,makePhoneCallProps,printable,print,archive,canMakePhoneCall,archivable} = this.props;
-        const {size} = sActions;
+        const size = this.getSelectedRowsCount();
         let r = [];
         let endActs = [];
         if(size <=0) {
@@ -845,8 +823,9 @@ export default class CommonDatagridComponent extends AppComponent {
         };
         let selectedR = this.props.selectedRowsActions;
         const sArgs = this.getActionsArgs(true);
-        sArgs.size = sArgs.selectedRowsCount = Object.size(sArgs.selectedRows);
-        sArgs.selectedRowsKeys = Object.keys(sArgs.selectedRows);
+        sArgs.size = sArgs.selectedRowsCount = this.getSelectedRowsCount();
+        sArgs.selectedRowsKeys = this.getSelectedRowsKeys();
+        sArgs.selectedRows = this.getSelectedRows();
         if(isFunction(selectedR)) {
             selectedR = selectedR.call(this,sArgs)
         }
@@ -857,16 +836,9 @@ export default class CommonDatagridComponent extends AppComponent {
             if(printable !== false){
                 r.push({
                     icon : defaultVal(this.props.printIcon,'printer'),
-                    text : defaultVal(this.props.printButton,this.props.printText,'Imprimer'),
+                    text : defaultVal(this.props.printButtonText,this.props.printText,'Imprimer'),
                     onPress : ()=>{
-                        let {selectedRows}= sArgs;
-                        let d = [];
-                        for(let i in selectedRows){
-                            if(isDocUpdate(selectedRows[i])){
-                                d.push(selectedRows[i])
-                            }
-                        }
-                        print({title:defaultStr(this.props.title),...defaultObj(printOptions),data:d});
+                        print({title:defaultStr(this.props.title),...defaultObj(printOptions),...sArgs});
                     },
                 })
             }
@@ -903,7 +875,7 @@ export default class CommonDatagridComponent extends AppComponent {
             r.push(a);
         })
         if(size === 1 && canMakePhoneCall === true && canMakeCall()){
-            const rowKey = Object.keys(this.selectedRows)[0], rowData = defaultObj(this.selectedRows[rowKey]);
+            const rowKey = this.getRowKeyByIndex(0), rowData = defaultObj(this.getRowByKey(rowKey));
             const table = defaultStr(this.props.table,this.props.tableName).trim();
             let callProps = typeof makePhoneCallProps == 'function'? makePhoneCallProps({rowData,rowKey,table,tableName:table,data:rowData,key:rowKey,context:this,props:this.props}) : makePhoneCallProps;
             if(callProps !== false){
@@ -984,9 +956,11 @@ export default class CommonDatagridComponent extends AppComponent {
         if(typeof this.props.onSort =='function' && this.props.onSort({context:this,sort,data:this.INITIAL_STATE.data,fields:this.state.columns,columns:this.state.columns}) === false){
             return;
         }
-        this.prepareData({data:this.INITIAL_STATE.data,updateFooters:false},(state)=>{
-            this.setState(state);
-        });
+        this.setIsLoading(true,()=>{
+            this.prepareData({data:this.INITIAL_STATE.data,updateFooters:false},(state)=>{
+                this.setState(state);
+            });
+        },true);
     }
 
    /**** pagine l'objet data passé en parmètre de manière a retourner un objet satisfaisant aux paramètres
@@ -1848,8 +1822,6 @@ export default class CommonDatagridComponent extends AppComponent {
                                     data.push(d);
                                 }
                             }
-                            
-                            
                         } else if(!canExportOnlyTotal) {
                             Object.map(cols,(col,i)=>{
                                 const isDateField = defaultStr(col.type).toLowerCase().contains("date");
@@ -2653,13 +2625,6 @@ export default class CommonDatagridComponent extends AppComponent {
         this.preparedColumns.filterableColumnsNames = filterableColumnsNames;
         return this.preparedColumns;
    }
-   getPaginatedSelectedRows(data){
-        data = isArray(data)? data : this.INITIAL_STATE.data;
-        if(JSON.stringify(this._previousSortObj) !== JSON.stringify(this.sortRef.current) || JSON.stringify(this._previousPagination) !== JSON.stringify(this._pagination) && this.getPaginatedData().length !== data.length){
-            return {};
-        }
-        return this.selectedRows;
-   }
    getFooterValues(){
         return defaultObj(this.___evaluatedFootersValues);
    }
@@ -2671,7 +2636,7 @@ export default class CommonDatagridComponent extends AppComponent {
    }
    /**** si le datagrid admet les sectionDatas */
    hasSectionListData(){
-    return this.hasFoundSectionData.current;
+    return !!this.getSectionListDataSize();
    }
    /*** vérifie si l'on a la colonne passée en paramètre */
    hasColumn(column){
@@ -2687,7 +2652,7 @@ export default class CommonDatagridComponent extends AppComponent {
         return sectionListHeader.trim();
     }
     getSectionListDataSize(){
-        return defaultNumber(this.sectionListDataSize.current)
+        return this.sectionListDataKeys.size;
     }
     isValidRowKey(rowKey){
         return !!(isNonNullString(rowKey) || typeof rowKey =='number');
@@ -2705,9 +2670,9 @@ export default class CommonDatagridComponent extends AppComponent {
         const hasLocalFilter = this.props.filters !== false && this.hasLocalFilters;
         const footersColumns = this.getFootersFields(),hasFootersFields = this.hasFootersFields();
         const canUpdateFooters = !!(updateFooters !== false && hasFootersFields);
-        this.hasFoundSectionData.current = false;
-        this.sectionListDataSize.current = 0;
+        this.sectionListDataKeys.clear();
         this.rowsByKeys = {};
+        this.rowsKeysIndexes = [];
         const isSList = this.isSectionList(sectionListColumns);
         const sortingField = isNonNullString(this.sortRef.current.column) && isObj(this.state.columns) && this.state.columns[this.sortRef.current.column] || {};
         const hasSortField = Object.size(sortingField,true);
@@ -2722,7 +2687,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 return getItem(item,columnName);
             }
             data = sortBy(data,sortConfig);//on trie tout d'abord les données
-        }
+        } 
         if(hasLocalFilter || !isArr || canUpdateFooters || isSList) {
             if(canUpdateFooters){
                 this.___evaluatedFootersValues = {}
@@ -2751,6 +2716,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 const rKey = this.getRowKey(d,i);
                 if(!this.isValidRowKey(rKey)) return;
                 this.rowsByKeys[rKey] = d;
+                this.rowsKeysIndexes.push(rKey);
                 if(hasSectionColumns  && this.renderSectionListIsAllowed){
                     let sHeader = this.getSectionListHeader({config,data:d,columnsLength : sectionListColumnsSize,fieldsSize:sectionListColumnsSize,sectionListColumnsLength:sectionListColumnsSize,sectionListColumnsSize,allData:data,rowData:d,index:i,rowIndex,context:this,columns,fields:columns});
                     if(sHeader === false) return;//on omet la donnée si la fonction de récupération de son header retourne false
@@ -2759,10 +2725,10 @@ export default class CommonDatagridComponent extends AppComponent {
                             sHeader = this.emptySectionListHeaderValue;
                         } else return;
                     }
-                    let r  = this.formatSectionListHeader(sHeader);
+                    const r  = this.formatSectionListHeader(sHeader);
+                    this.sectionListDataKeys.add(r);
                     if(!Array.isArray(sectionListData[r])){
                         sectionListData[r] = [];
-                        this.sectionListDataSize.current++;
                     }
                     sectionListData[r].push(d); 
                     if(canUpdateFooters){
@@ -2770,7 +2736,6 @@ export default class CommonDatagridComponent extends AppComponent {
                         this.sectionListHeaderFooters[r] = defaultObj(this.sectionListHeaderFooters[r]);
                         currentSectionListFooter = this.sectionListHeaderFooters[r];
                     }
-                    this.hasFoundSectionData.current = true;
                 }
 
                 if(canUpdateFooters){
@@ -2785,7 +2750,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 newData.push(d);
                 //push(d,i);
             });
-            if(this.hasFoundSectionData.current && hasSortField && defaultStr(sortingField.type).toLowerCase().contains("date")){
+            if(this.getSectionListDataSize() && hasSortField && defaultStr(sortingField.type).toLowerCase().contains("date")){
                 DateLib.sort(Object.keys(sectionListData)).map((k)=>{
                     this.sectionListData[k] = sectionListData[k];
                     return k;
@@ -2803,23 +2768,22 @@ export default class CommonDatagridComponent extends AppComponent {
                 const rowKey = this.getRowKey(d,i,rowIndex);
                 if(!this.isValidRowKey(rowKey)) return;
                 this.rowsByKeys[rowKey] = d;
+                this.rowsKeysIndexes.push(rowKey);
                 newData.push(d);
             });
             data = newData;
         }
         this.INITIAL_STATE.data = data;
-        if(this.hasFoundSectionData.current){
+        if(this.getSectionListDataSize()){
             data = [];
-            for(let i in this.sectionListData){
-                //this.sectionListData[i] = sortConfig ? sortBy(this.sectionListData[i],sortConfig):this.sectionListData[i];
-                //const v = i;// === this.emptySectionListHeaderValue ? "" : i;
-                data.push({isSectionListHeader:true,sectionListHeaderKey:i});
+            this.sectionListDataKeys.forEach((sectionListHeaderKey)=>{
+                data.push({isSectionListHeader:true,sectionListHeaderKey});
                 if(!displayOnlySectionListHeaders){
-                    this.sectionListData[i].map((d)=>{
+                    this.sectionListData[sectionListHeaderKey].map((d)=>{
                         data.push(d);
                     })
                 }
-            }
+            });
         } 
         if(!this.hasSectionListData() && this.canPaginateData()){
             pagination = this.initPagination(pagination);
@@ -2889,7 +2853,7 @@ export default class CommonDatagridComponent extends AppComponent {
     renderFlashListItem(args){
         if(!this.hasSectionListData()) return null;
         args = defaultObj(args);
-        let {item,rowProps,rowStyle} = args;
+        let {item,rowStyle} = args;
         if(!isObj(item) || item.isSectionListHeader !== true || !isNonNullString(item.sectionListHeaderKey)) return null;
         args.isAccordion = this.isAccordion();
         args.columns = this.preparedColumns.visibleColumns;
@@ -2899,10 +2863,8 @@ export default class CommonDatagridComponent extends AppComponent {
         const style = typeof this.props.getSectionListHeaderStyle =='function' ? this.props.getSectionListHeaderStyle(args) : null;
         const cStyle = typeof this.props.getSectionListHeaderContentContainerStyle =="function" ?this.props.getSectionListHeaderContentContainerStyle(args) : undefined;
         const lStyle = typeof this.props.getSectionListHeaderLabelStyle =='function' ? this.props.getSectionListHeaderLabelStyle(args) : null;
-        
-        rowProps = defaultObj(rowProps);
         const rowKey = defaultVal(args.rowIndex,args.index,args.rowCounterIndex);
-        const testID  = rowProps.testID = defaultStr(args.testID,"RN_DatagridSectionListHeader")+"_"+rowKey;
+        const testID  = defaultStr(args.testID,"RN_DatagridSectionListHeader")+"_"+rowKey;
         if(Array.isArray(rowStyle)){
             if(style){
                 rowStyle.push(style);
@@ -2965,37 +2927,26 @@ export default class CommonDatagridComponent extends AppComponent {
         if(isObj(rowKey)){
             rowKey = this.getRowKey(rowKey,rowIndex);
         }
-        if(!this.isValidRowKey(rowKey) || !isObj(this.selectedRowsRefs[rowKey])) return false;
-        return !!(isObj(this.selectedRows[rowKey]) && this.selectedRowsRefs[rowKey].checked);
+        if(!this.isValidRowKey(rowKey)){
+            rowKey = this.getRowKeyByIndex(rowIndex);
+        }
+        if(!this.isValidRowKey(rowKey)) return false;
+        return this.selectedRowsKeys.has(rowKey);
     }
    /*** permet de définir les lignes sélectionnées du datagrid */
    setSelectedRows (rows){
-       let obj = this.selectedRows;
-       this.selectedRowsCount = 0;
-       Object.getOwnPropertyNames(obj).forEach((prop)=> {
-            delete obj[prop];
-            const sRowRef = this.selectedRowsRefs[prop];
-            if(isObj(sRowRef) && sRowRef.check && sRowRef.uncheck){
-                sRowRef.uncheck(false);
-            }
-       });
+       this.selectedRowsKeys.clear();
+       const sRows = {};
        Object.map(rows,(row,i)=>{
-            if(this.canSelectRow(row)) {
-                const rowKey = this.getRowKey(row,i);
-                this.rowsByKeys[rowKey] = row;
-                this.selectedRowsCount++;
-                this.selectedRows[rowKey] = row;
-                const sRowRef = this.selectedRowsRefs[rowKey];
-                if(isObj(sRowRef) && sRowRef.check && sRowRef.uncheck){
-                    sRowRef.check(false);
-                }
+            const rowKey = this.getRowKey(row,i);
+            if(this.canSelectRow(row) && this.isValidRowKey(rowKey)) {
+                this.selectedRowsKeys.add(rowKey);
+                sRows[rowKey] = row;
             }
         });
-        this.toggleSelectableColumnCheckbox();
-       return this.selectedRows;
-   }
+       return sRows;
+    }
    
-
     getProgressBar(props){
         if(typeof props !=='object' || !props){
             props = {};
@@ -3576,8 +3527,9 @@ export default class CommonDatagridComponent extends AppComponent {
             cb();
         }, 200);
     }
-    isAllRowsSelected(update){
-        return this.selectedRowsCount && this.selectedRowsCount === this.getMaxSelectableRows()? true : false;
+    isAllRowsSelected(){
+        const count = this.getSelectedRowsCount() - this.getSectionListDataSize();
+        return count >=0 && count >= this.getMaxSelectableRows()? true : false;
     }
     getDefaultPaginationRowsPerPageItems (){
         return [5,10,15,20,25,30,40,50,60,80,100];
@@ -3676,11 +3628,10 @@ export default class CommonDatagridComponent extends AppComponent {
             }
             return <Checkbox
                 testID = "RN_SelectColumnHeaderCell"
-                checked  ={this.isAllRowsSelected()?true:false}
+                toggleAll
                 key = {this.getSelectableColumName()}
                 secondaryOnCheck
                 style = {style}
-                ref = {this.selectableColumnRef}
                 onPress = {({checked})=>{
                     this.handleAllRowsToggle(!checked);  
                     return;
@@ -3751,6 +3702,21 @@ export default class CommonDatagridComponent extends AppComponent {
     getRowByKey(rowKey){
         return (this.isValidRowKey(rowKey))  && isObj(this.rowsByKeys[rowKey]) && this.rowsByKeys[rowKey] || null;
     }
+    getRowsKeysIndexes(){
+        return Array.isArray(this.rowsKeysIndexes) ? this.rowsKeysIndexes : [];
+    }
+    getRowKeyByIndex(rowIndex){
+        if(typeof rowIndex !='number') return undefined;
+        const idx = this.getRowsKeysIndexes();
+        if(rowIndex < idx.length-1 && rowIndex>=0){
+            return idx[rowIndex];
+        }
+        return undefined;
+    }
+    getRowByIndex(rowIndex){
+        const rowKey = this.getRowKeyByIndex(rowIndex);
+        return rowKey !== undefined ? this.getRowByKey(rowIndex) : null;
+    }
     /*** retourne le rendu d'une cellule de la ligne du tableau 
     @parm, rowData, object, la ligne à afficher le rendu du contenu
     @param , rowInidex, l'indice de la ligne dont on affiche le rendu en cours
@@ -3777,7 +3743,6 @@ export default class CommonDatagridComponent extends AppComponent {
             rowKey,
             rowData,
             checked : this.isRowSelected(rowKey,rowIndex),
-            rowsRefs : this.selectedRowsRefs,
             onPress : ({checked})=>{
                 return this.handleRowToggle({rowIndex,rowKey,selected:!checked});
             }
@@ -3844,7 +3809,7 @@ CommonDatagridComponent.propTypes = {
     selectedRowsActions : PropTypes.oneOfType([PropTypes.object,PropTypes.array,PropTypes.func]),
     /** Les actions de la barre d'outil du datagrid : il peut s'agit d'une fonction qui lorsqu'elle est appelée retourne l'ensemble des actions du datagrid
      *  La fonction prend en paramètre : 
-     *  selectedRows : this.selectedRows : les lignes sélectionnées
+     *  selectedRows :  : les lignes sélectionnées
         data : this.state.data : les données du datagrid
         rows : this.state.data : les données du datagrid
         allData : this.INITIAL_STATE.data : l'ensemble des données du datagrid
@@ -3959,7 +3924,6 @@ CommonDatagridComponent.propTypes = {
      *   title : PropTypes.node , //le titre du header
      *   avatar : PropTypes.string(dataUrl,src,other) || PropTypes.node, ///l'avatar,
      *   rowClassName : la class à appliquer à la ligne
-     *   rowProps : les props à appliquer à la ligne de la liste
      *   headerClassName : la class à appliquer au header de la ligne
      *   primaryText : //
      *   primaryTextRigth : 

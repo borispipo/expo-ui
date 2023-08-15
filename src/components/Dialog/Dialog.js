@@ -20,7 +20,7 @@ import {ACTION_ICON_SIZE} from "$ecomponents/AppBar";
 import DialogFooter from "./DialogFooter";
 import { Dimensions } from "react-native";
 import Surface from "$ecomponents/Surface";
-import KeyboardAvoidingView from "$ecomponents/KeyboardAvoidingView";
+import DialogContent from "./DialogContent";
 
 export const FOOTER_HEIGHT = 50;
 export const HEADER_HEIGHT = 50;
@@ -198,14 +198,14 @@ const DialogComponent = React.forwardRef((props,ref)=>{
                 testID = {testID}
                 contentContainerProps = {contentContainerProps}
             >
-                <KeyboardAvoidingView>
+                <DialogContent isFullScreen={isFullScreenDialog} isPreloader={isPreloader}>
                     <Surface 
                         testID = {testID+"_Overlay"}
                         ref={overlayRef}
                         {...overlayProps} 
                         style={[styles.overlay,isAlert && styles.overlayAlert,{backgroundColor},overlayProps.style,fullScreenStyle]}
-                    >
-                        {(!isAlert && (actions || title || subtitle)) ? <AppBarDialog
+                    >   
+                     {(!isAlert && (actions || title || subtitle)) ? <AppBarDialog
                             actionsProps = {actionsProps}
                             testID = {testID+"_AppBar"}
                             {...appBarProps}
@@ -269,13 +269,14 @@ const DialogComponent = React.forwardRef((props,ref)=>{
                             isFullScreen = {isFullScreenDialog}
                             fullScreen = {customFullScreen}
                             children = {footer}
-                         /> : null}
+                         /> : null}    
                     </Surface>
-                </KeyboardAvoidingView>
+                </DialogContent>
             </ModalComponent>
         </Portal>
 });
 export default DialogComponent;
+
 
 DialogComponent.propTypes= {
     ...Modal.propTypes,

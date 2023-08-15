@@ -11,7 +11,7 @@ module.exports = function(opts){
   let {assetExts,sourceExts} = opts;
   assetExts = Array.isArray(assetExts)? assetExts: [];
   sourceExts= Array.isArray(sourceExts)?sourceExts : [];
-  const projectRoot = process.cwd();
+  const projectRoot = path.resolve(process.cwd());
   const localDir = path.resolve(__dirname);
   //@see : https://docs.expo.dev/versions/latest/config/metro/
   const config = getDefaultConfig(projectRoot,{
@@ -19,7 +19,8 @@ module.exports = function(opts){
     isCSSEnabled: true,
   });
   config.watchFolders = Array.isArray(config.watchFolders) && config.watchFolders || [];
-  if(projectRoot !== localDir){
+  const isLocalTest = require("./is-local-dev")();
+  if(!isLocalTest){
     config.watchFolders.push(localDir);
   }
   config.projectRoot = projectRoot;

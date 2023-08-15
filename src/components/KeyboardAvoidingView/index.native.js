@@ -1,19 +1,22 @@
 import {KeyboardAvoidingView,Platform,StyleSheet} from 'react-native';
 import {isAndroid} from "$platform";
+import React from "$react";
 
-export default function KeyboardAvoidingViewComponent({ children,...rest }){
+const KeyboardAvoidingViewComponent = React.forwardRef(({children,isPreloader,...rest },ref)=>{
     return (
       <KeyboardAvoidingView
+        ref={ref ? ref: x=>x}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={isAndroid()?0:80}
         {...rest}
-        style = {[styles.wrapper,rest.style]}
+        style = {[!isPreloader && styles.wrapper,rest.style]}
       >
         {children}
       </KeyboardAvoidingView>
     );
-};
-
+});
+KeyboardAvoidingViewComponent.displayName = "KeyboardAvoidingViewComponent";
+export default KeyboardAvoidingViewComponent;
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,

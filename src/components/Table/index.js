@@ -1,19 +1,26 @@
 import View from "$ecomponents/View";
-import {defaultObj,defaultStr,debounce,defaultNumber,defaultVal} from "$cutils";
+import {defaultObj,defaultStr,debounce,defaultNumber,isObj,defaultVal} from "$cutils";
 import PropTypes from "prop-types";
-export const DEFAULT_COLUMN_WIDTH = 60;
 import React from "$react";
-import Label from "$ecomponents/Label";
 import { StyleSheet,View as RNView,ScrollView,Dimensions} from "react-native";
-import { getRowStyle } from "$ecomponents/Datagrid/utils";
 import {isMobileNative} from "$cplatform";
 import theme from "$theme";
 import AbsoluteScrollView from "./AbsoluteScrollView";
-import Cell from "./Cell";
 import Row from "./Row";
-import List from "./List";
+import List,{TableRowComponent} from "./List";
 import FiltersOrFooters from "./FiltersOrFooters";
+import { usePrepareColumns,TableContext,useTable} from "./hooks";
+import styles from "./styles";
+import {useIsRowSelected} from "$ecomponents/Datagrid/hooks";
+import {getRowStyle} from "$ecomponents/Datagrid/utils";
+import ScrollNative from "./ScrollNative";
+import VituosoTableComonent from "./VirtuosoTable";
+export {styles};
+
 const isSCrollingRef = React.createRef();
+const isNative = isMobileNative();
+
+export * from "./utils";
 const scrollLists = (opts,refs)=>{
     refs.map((ref)=>{
         if(ref && ref.current && ref.current.scrollTo){
@@ -44,99 +51,24 @@ const getOnScrollCb = (refs,pos,cb2)=>{
     return isMobileNative()? cb : debounce(cb,200);
 }
 
-const TableComponent = React.forwardRef(({containerProps,sortedColumn,listContainerStyle,onRender,height,progressBar,filter:customFilter,renderListContent,children,renderEmpty,renderItem,isRowSelected,headerScrollViewProps,footerScrollViewProps,scrollViewProps,showFooters,renderFooterCell,footerCellContainerProps,filterCellContainerProps,headerContainerProps,headerCellContainerProps,headerProps,rowProps:customRowProps,renderCell,cellContainerProps,hasFooters,renderHeaderCell,renderFilterCell,columnProps,getRowKey,columnsWidths,colsWidths,footerContainerProps,showHeaders,showFilters,columns,data,testID,...props},tableRef)=>{
+const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRender,height,progressBar,renderListContent,children,renderEmpty,renderItem,isRowSelected,headerScrollViewProps,footerScrollViewProps,scrollViewProps,showFooters,renderFooterCell,footerCellContainerProps,filterCellContainerProps,headerContainerProps,headerCellContainerProps,headerProps,rowProps:customRowProps,cellContainerProps,hasFooters,renderHeaderCell,renderFilterCell,columnProps,getRowKey,columnsWidths,colsWidths,footerContainerProps,showHeaders,showFilters,columns,...props},tableRef)=>{
     containerProps = defaultObj(containerProps);
-    testID = defaultStr(testID,"RN_TableComponent");
     cellContainerProps = defaultObj(cellContainerProps);
     scrollViewProps = defaultObj(scrollViewProps);
     headerScrollViewProps = defaultObj(headerScrollViewProps);
     footerScrollViewProps = defaultObj(footerScrollViewProps);
-    renderCell = typeof renderCell ==="function"? renderCell : undefined;
-    const getRowProps = typeof rowProps ==='function'? rowProps : undefined;
-    let rowProps = isObj(customRowProps)? customRowProps:{};
     const listRef = React.useRef(null),scrollViewRef = React.useRef(null),headerScrollViewRef = React.useRef(null);
-    const emptyData = renderListContent === false ?null : typeof renderEmpty =='function' && !Object.size(data,true)? renderEmpty() : null;
-    const hasEmptyData = emptyData && React.isValidElement(emptyData);
     const layoutRef = React.useRef({});
-    
-    const preparedColumns = React.useMemo(()=>{
-        const cols = {},headers = {},footers = {},filters = {},vColumnsMapping = [],visibleColumns = [],columnsNames = [];
-        let hasFooters = false;
-        columnProps = defaultObj(columnProps);
-        let columnIndex = 0;
-        const widths = defaultObj(columnsWidths,colsWidths);
-        headerCellContainerProps = defaultObj(headerCellContainerProps);
-        footerCellContainerProps = defaultObj(footerCellContainerProps);
-        filterCellContainerProps = defaultObj(filterCellContainerProps);
-        Object.map(columns,(columnDef,field)=>{
-            if(!isObj(columnDef)) return;
-            const columnField = defaultStr(columnDef.field,field);
-            let {visible,width,type,...colProps} = columnDef;
-            visible = typeof visible =='boolean'? visible : true;
-            type = defaultStr(type,"text").toLowerCase().trim();
-            colProps = defaultObj(colProps);
-            width = defaultDecimal(widths[columnField],width,DEFAULT_COLUMN_WIDTH);
-            const style = StyleSheet.flatten([colProps.style,{width}]);
-            const colArgs = {width,type,style,columnDef,containerProps:{},columnField,index:columnIndex,columnIndex};
-            const content = typeof renderHeaderCell =='function'? renderHeaderCell(colArgs) : defaultVal(columnDef.text,columnDef.label,columnField);
-            const hContainerProps = defaultObj(colArgs.containerProps);
-            if(!React.isValidElement(content,true)){
-                console.error(content," is not valid element of header ",columnDef," it could not be render on table");
-                return null;
-            }
-            headers[columnField] = <View testID={testID+"_HeaderCell_"+columnField} {...headerCellContainerProps} {...hContainerProps} key={columnField} style={[styles.headerItem,styles.headerItemOrCell,headerCellContainerProps.style,hContainerProps.style,style]}>
-                <Label splitText numberOfLines={2} style={[theme.styles.w100,theme.styles.h100,{maxHeight:70}]} textBold primary>{content}</Label>
-            </View>;
-            if(typeof renderFilterCell =='function'){
-                const filterCell = renderFilterCell(colArgs);
-                filters[columnField] = <View testID={testID+"_Filter_Cell_"+columnField} {...filterCellContainerProps} key={columnField} style={[styles.headerItem,styles.headerItemOrCell,styles.filterCell,filterCellContainerProps.style,style]}>
-                    {React.isValidElement(filterCell)? filterCell : null}
-                </View>
-            }
-            if(typeof renderFooterCell ==='function') {
-                const footerProps = {...colArgs,containerProps:{}};
-                let cellFooter = renderFooterCell(footerProps);
-                let fContainerProps = {};
-                if(!React.isValidElement(cellFooter,true) && isObj(cellFooter)){
-                    fContainerProps = isObj(cellFooter.containerProps)? cellFooter.containerProps : {};
-                    cellFooter = React.isValidElement(cellFooter.children)? cellFooter.children : React.isValidElement(cellFooter.content)? cellFooter.content : null;
-                } else if(isObj(footerProps.containerProps)){
-                    fContainerProps = footerProps.containerProps;
-                }
-                cellFooter = React.isValidElement(cellFooter,true)? cellFooter : null;
-                if(!hasFooters && cellFooter){
-                    hasFooters = true;
-                }
-                footers[columnField] = <View testID={testID+"_Footer_Cell_"+columnField}  key={columnField} style={[styles.headerItem,styles.headerItemOrCell,footerCellContainerProps.style,style]}>
-                    <Label primary children={cellFooter}/>
-                </View>
-          }
-          vColumnsMapping.push(visible);
-          if(visible){
-            visibleColumns.push(columnField);
-          }
-          columnsNames.push(columnField);
-          cols[columnField] = {
-            ...columnDef,
-            width,
-            index : columnIndex,
-            field : columnField,
-            visible,
-            columnField,
-          };
-          columnIndex++;
-        });
-        return {columns:cols,columnsNames,headers,visibleColumns,vColumnsMapping,hasFooters,footers,filters};
-      },[columns,sortedColumn,props.footers]);
-    const {columns:cols,headers,footers,filters,hasFooters:stateHasFooters,columnsNames,vColumnsMapping,visibleColumns} =  preparedColumns;
+    const {columns:cols,testID,headers,footers,getItem,withDatagridContext,filters,getRowByIndex,itemsChanged,hasFooters:stateHasFooters,visibleColsNames,keyExtractor,items,data} = useTable();
     headerContainerProps = defaultObj(headerContainerProps);
     footerContainerProps = defaultObj(footerContainerProps);
-    const dimensions = Dimensions.get("window");
-    const maxHWidth = dimensions.width - defaultNumber(layoutRef.current.left,layoutRef.current.x);
+    const emptyData = renderListContent === false ?null : typeof renderEmpty =='function' && !Object.size(data,true)? renderEmpty() : null;
+    const hasEmptyData = emptyData && React.isValidElement(emptyData);
+    
     const {fFilters,headersContent,footersContent,totalWidths} = React.useMemo(()=>{
         const headersContent = [],footersContent = [],fFilters = [];
         let totalWidths = 0;
-        visibleColumns.map((i,index)=>{
+        visibleColsNames.map((i,index)=>{
             headersContent.push(headers[i]);
             totalWidths+=cols[i].width;
             if(showFooters && stateHasFooters){
@@ -148,50 +80,9 @@ const TableComponent = React.forwardRef(({containerProps,sortedColumn,listContai
         });
         
         return {headersContent,totalWidths,footersContent,fFilters};
-    },[visibleColumns,showFilters,showFooters,layoutRef.current]);
-    const prevData = React.usePrevious(data);
-    const prevColumns = React.usePrevious(columns);
-    const itemsRef = React.useRef(null);
-    const hasChangedDataRef = React.useRef(false);
-    hasChangedDataRef.current = false;
-    const items = React.useMemo(()=>{
-        if(data === prevData && prevColumns == columns && Array.isArray(itemsRef.current)){
-            hasChangedDataRef.current = false;
-            return itemsRef.current;
-        }
-        hasChangedDataRef.current = true;
-        const items = [];
-        const filter = typeof customFilter =='function'? customFilter : x=>true;
-        data.map((item,index)=>{
-            const rowIndex = index;
-            if(!isObj(item) || filter({item,index,_index:rowIndex}) ===false) return null;
-            const rowArgs = {data:item,isTable:true,isAccordion:false,item,row:item,rowData:item,rowIndex,index};
-            const rProps = defaultObj(getRowProps ? getRowProps(rowArgs) : {});
-            rowArgs.rowProps = rProps;
-            rowArgs.rowStyle = rProps.style = StyleSheet.flatten([rowProps.style,getRowStyle(rowArgs),styles.rowNoPadding,rProps.style]);
-            if(item.isSectionListHeader){
-                rowArgs.isSectionListHeader = true;
-            }
-            const sItem = typeof renderItem == 'function'? renderItem(rowArgs) : undefined;
-            const cells = React.isValidElement(sItem) ? sItem : columnsNames.map((columnField,columnIndex)=>{
-                const columnDef = cols[columnField];
-                return <Cell
-                    rowArgs = {rowArgs}
-                    style = {StyleSheet.flatten([styles.headerItemOrCell,{width:columnDef.width}])}
-                    //key = {"_Cell_"+columnField+"_"+index}
-                    cellArgs={{columnIndex,columnDef,columnField:columnField}}
-                    renderCell = {renderCell}
-                    rowIndex = {index}
-                    children = {item[columnField]}
-                    testID={testID+"_Cell_"+columnField+"_"+index}
-                />
-            });
-            if(!Array.isArray(cells) && !React.isValidElement(cells)) return null;
-            items.push(<Row cells={cells} columns={vColumnsMapping} testID={testID+"_Row_"+index} {...rowProps} {...rProps} style={[styles.row,rProps.style]}/>);
-        });
-        itemsRef.current = items;
-        return items;
-    },[data,columns]);
+    },[visibleColsNames,showFilters,showFooters,layoutRef.current]);
+
+    
     const scrollContentContainerStyle = {flex:1,width:listWidth,minWidth:totalWidths,height:'100%'};
     const scrollEventThrottle = isMobileNative()?200:50;
     const scrollViewFlexGrow = {flexGrow:0};
@@ -255,7 +146,7 @@ const TableComponent = React.forwardRef(({containerProps,sortedColumn,listContai
             onRender(a,b,c);
         }
         //au paravant il était possible de faire scroller le composant Table lorsque les données sont raffraichies, ce qui n'avait pas un bon impact sur le rendu de la table de données
-        if(false && hasChangedDataRef.current){
+        if(false && itemsChanged){
             //permet de restaurer la position scrollé où scroll initial à chaque fois que le composant est re render
             //ce qui n'est pas très interessant
             if(headerScrollViewRef.current && headerScrollViewRef.current.scrollTo){
@@ -267,14 +158,25 @@ const TableComponent = React.forwardRef(({containerProps,sortedColumn,listContai
             }
         }
     };
+    const headerFootersFilters = <>
+        <FiltersOrFooters visible={!!(showTableHeaders &&  headersContent.length)} testID={testID+"_Header"} {...headerContainerProps} style={[styles.header,headerContainerProps.style,footersContent.length]}>
+            {headersContent}
+        </FiltersOrFooters>
+        <FiltersOrFooters visible = {!!fFilters.length} testID={testID+"_Filters"} style={[styles.header,styles.footers,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}>
+            {fFilters}
+        </FiltersOrFooters>
+        <FiltersOrFooters visible={!!(showTableHeaders && footersContent.length)} testID={testID+"_Footer"} {...footerContainerProps} style={[styles.header,styles.footers,footerContainerProps.style,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}>
+            {footersContent}
+        </FiltersOrFooters>
+    </>
     return <View testID= {testID+"_Container"}  {...containerProps} onLayout={(e)=>{
         layoutRef.current = e.nativeEvent.layout;
         if(containerProps.onLayout){
             containerProps.onLayout(e);
         }
     }} style={[styles.container,{alignItems:'stretch'},containerProps.style]}>
-            <RNView style={[cStyle]} testID={testID+"_Headers_ScrollViewContainer"}>
-                <ScrollView
+            {isNative && <RNView style={[cStyle]} testID={testID+"_Headers_ScrollViewContainer"}>
+            <ScrollView
                     testID={testID+"_HeaderScrollView"}
                     {...headerScrollViewProps} 
                     contentContainerStyle = {[allScrollViewProps.contentContainerStyle,headerScrollViewProps.contentContainerStyle,{flex:1,flexWrap: 'wrap'}]}
@@ -285,21 +187,13 @@ const TableComponent = React.forwardRef(({containerProps,sortedColumn,listContai
                     showsHorizontalScrollIndicator
             >
                     <View testID={testID+"Header2FootersWrapper"} style={[theme.styles.w100]}>
-                        <FiltersOrFooters visible={!!(showTableHeaders &&  headersContent.length)} testID={testID+"_Header"} {...headerContainerProps} style={[styles.header,headerContainerProps.style,footersContent.length]}>
-                            {headersContent}
-                        </FiltersOrFooters>
-                        <FiltersOrFooters visible = {!!fFilters.length} testID={testID+"_Filters"} style={[styles.header,styles.footers,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}>
-                            {fFilters}
-                        </FiltersOrFooters>
-                        <FiltersOrFooters visible={!!(showTableHeaders && footersContent.length)} testID={testID+"_Footer"} {...footerContainerProps} style={[styles.header,styles.footers,footerContainerProps.style,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}>
-                            {footersContent}
-                        </FiltersOrFooters>
+                        {headerFootersFilters}
                     </View>
                 </ScrollView>
-            </RNView>
+            </RNView>}
             {hasEmptyData ? <View onRender={onComponentRender} testID={testID+"_Empty"} style={styles.hasNotData}>
                     {emptyData}
-            </View> : <ScrollView {...scrollViewProps} scrollEventThrottle = {scrollEventThrottle} horizontal contentContainerStyle={[scrollContentContainerStyle,scrollViewProps.contentContainerStyle,{height:'100%'}]} showsVerticalScrollIndicator={false}  
+            </View> : <ScrollNative {...scrollViewProps} scrollEventThrottle = {scrollEventThrottle} horizontal contentContainerStyle={[scrollContentContainerStyle,scrollViewProps.contentContainerStyle,{height:'100%'}]} showsVerticalScrollIndicator={false}  
                     onScroll = {getOnScrollCb([headerScrollViewRef,footerScrollViewRef],null,(args)=>{
                         const nativeEvent = args.nativeEvent;
                         if(absoluteScrollViewRef.current && absoluteScrollViewRef.current.checkVisibility){
@@ -325,6 +219,8 @@ const TableComponent = React.forwardRef(({containerProps,sortedColumn,listContai
                     <List
                         containerProps = {{style:[cStyle,listContainerStyle]}}
                         estimatedItemSize = {200}
+                        renderTable
+                        columns = {columns}
                         {...props}
                         onContentSizeChange = {(width,height)=>{
                             if(props.onContentSizeChange){
@@ -357,7 +253,7 @@ const TableComponent = React.forwardRef(({containerProps,sortedColumn,listContai
                         items = {items}
                         contentContainerStyle = {[styles.contentContainer,{width:listWidth,minWidth:totalWidths}]}
                         style = {[styles.datagrid,{width:listWidth,minWidth:totalWidths}]}
-                        keyExtractor = {typeof getRowKey =='function'? getRowKey : React.getKey}
+                        keyExtractor = {keyExtractor}
                         onScroll = {getOnScrollCb([absoluteScrollViewRef],(args)=>{
                             if(!absoluteScrollViewRef.current) return;
                             const offset = args?.nativeEvent?.contentOffset.y;
@@ -370,26 +266,37 @@ const TableComponent = React.forwardRef(({containerProps,sortedColumn,listContai
                                 },500);
                             }
                         })}
-                        renderItem = {({index})=>items[index]}
+                        renderItem = {({item,index})=>{
+                            return <Row rowData={item} index={index} testID={testID+"_Row_"+index}/>
+                        }}
+                        fixedHeaderContent={(index, user) => {
+                            return headerFootersFilters;
+                        }}
+                        components = {{
+                            TableRow: (props) => {
+                                const index = props['data-index'];
+                                const item = getRowByIndex(index) || props?.item || null;
+                                if(!item) return null;
+                                const args = {rowData:item,rowIndex:index,bordered:true,isTable:true};
+                                args.isSelected = withDatagridContext ? isRowSelected(args) : false;
+                                return <TableRowComponent {...props} style={[getRowStyle(args),props.style]}/>
+                            },
+                            Table: VituosoTableComonent,
+                        }}
                     />
-                    <AbsoluteScrollView
+                    {isNative ? <AbsoluteScrollView
                         ref={absoluteScrollViewRef}
                         listRef = {listRef}
                         scrollEventThrottle = {scrollEventThrottle} 
                         onScroll = {(args)=>{
                             if(!absoluteScrollViewRefCanScroll.current || absoluteScrollingRef.current) return;
-                            //clearTimeout(absoluteScrollTimeout.current);
-                            //absoluteScrollTimeout.current = setTimeout(()=>{
-                                //absoluteScrollingRef.current = true;
-                                const offset = args?.nativeEvent?.contentOffset.y;
-                                if(typeof offset =='number' && listRef.current && listRef.current.scrollToOffset){
-                                    listRef.current.scrollToOffset({animated:true,offset});
-                                }
-                                //absoluteScrollingRef.current = false;
-                            //},100);
+                            const offset = args?.nativeEvent?.contentOffset.y;
+                            if(typeof offset =='number' && listRef.current && listRef.current.scrollToOffset){
+                                listRef.current.scrollToOffset({animated:true,offset});
+                            }
                         }}
-                    />
-            </ScrollView>}
+                    />:null}
+            </ScrollNative>}
             
     </View>
 });
@@ -403,96 +310,11 @@ const RowType = PropTypes.shape({
 
 });
 
-export const styles = StyleSheet.create({
-    datagrid : {
-        flex:1,
-    },
-    contentContainer : {
-        flex:1,
-    },
-    container : {
-        width : '100%',
-        minHeight : 300,
-        paddingBottom : 10,
-        paddingLeft : 10,
-        paddingRight : 0,
-        flex : 1,
-        position : 'relative',
-    },
-    header2footerContainer:{
-        flexDirection : 'column',
-        width : '100%',
-        height : '100%',
-        minHeight : 50,
-    },
-    headerContainer : {
-        width : '100%',
-        flexDirection : 'row',
-    },
-    header: {
-        flexDirection: 'row',
-        paddingVertical : 7,
-        alignItems : 'center',
-        width : '100%',
-    },
-    footerContainer : {
-        width : '100%',
-        flexDirection : 'row',
-        flexWrap : 'wrap',
-    },
-    footers : {
-        minHeight : 40,
-    },
-    headerItemOrCell : {
-        alignItems: 'flex-start',
-        alignSelf : 'center',
-        height : '100%',
-        justifyContent: 'center',
-        textAlign : 'left',
-        flexWrap : 'wrap',
-        paddingHorizontal:5,
-        paddingVertical : 0,
-    },
-    filterCell : {
-        alignSelf : "flex-start",
-        textAlign : "left",
-        paddingHorizontal : 2,
-        paddingVertical : 0,
-        marginVertical : 0,
-        marginHorizontal : 0,
-        justifyContent : 'flex-start',
-    },
-    headerItem: {
-        minHeight: 30,
-    },
-    column : {
-        flexDirection : 'row',
-        justifyContent : 'center',
-        alignItems : 'flex-start',
-    },
-    row : {
-        flexDirection : "row",
-        justifyContent : "flex-start",
-        alignItems : 'flex-start',
-        width : '100%',
-    },
-    rowNoPadding : {
-        paddingHorizontal:0,
-        marginHorizontal : 0,
-        marginVertical : 0,
-    },
-    hasNotData : {
-        flexDirection : 'column',
-        width : '100%',
-        justifyContent : 'center',
-        alignItems : 'center'
-    }
-})
+
 TableComponent.popTypes = {
     containerProps : PropTypes.object,
      renderHeaderCell : PropTypes.func,
      renderFilterCell : PropTypes.func,
-     renderRow : PropTypes.func,
      renderCell : PropTypes.func,
      renderFooterCell : PropTypes.func,///la fonction appelée pour le rendu des entêtes du footer
      footerCellContainerProps : PropTypes.object,
@@ -510,7 +332,7 @@ TableComponent.popTypes = {
         PropTypes.objectOf(ColumnType),
         PropTypes.arrayOf(ColumnType)
     ]).isRequired,
-    data : PropTypes.arrayOf(RowType),
+    data : PropTypes.array,
     columnsWidths : PropTypes.object,
     colsWidths : PropTypes.object,//alias à columnsWidths
     columnWidth: PropTypes.number,
@@ -537,4 +359,23 @@ TableComponent.popTypes = {
 
 TableComponent.displayName = "TableComponent";
 
-export default TableComponent;
+const TableComponentProvider = React.forwardRef(({children,renderCell,testID,withDatagridContext,getRowKey,filter,data,...props},ref)=>{
+    testID = props.testID = defaultStr(testID,"RN_TableComponent");
+    const prepatedColumns = usePrepareColumns(props);
+    const keyExtractor = typeof getRowKey =='function'? getRowKey : React.getKey;
+    const items = React.useMemo(()=>{
+        filter = typeof filter =='function'? filter : x=>true;
+        return data.filter((i,...rest)=>isObj(i) && !!filter(i,...rest));
+    },[data]);
+    const getItem = (index)=>items[index]||null;
+    return <TableContext.Provider value={{...props,...prepatedColumns,getItem,getRowByIndex:getItem,testID,data,withDatagridContext,keyExtractor,
+        renderCell,
+        items
+    }}>
+        <TableComponent {...props} ref={ref}/>
+    </TableContext.Provider>
+});
+TableComponentProvider.displayName = "TableComponentProvider";
+TableComponentProvider.propTypes = TableComponent.propTypes;
+
+export default TableComponentProvider;

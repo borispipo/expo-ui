@@ -23,17 +23,18 @@ const AppBarLayout = React.forwardRef(({backActionProps,withDrawer,backAction,ba
                 goBack();
                 return false;
             }
-            if(drawerRef && drawerRef?.current){
-                if(drawerRef?.current?.isMinimized() && drawerRef?.current?.isOpen()){
-                    drawerRef?.current?.restore();
-                    return false;
-                }
-                if(!drawerRef?.current?.isPermanent()){
-                    drawerRef?.current?.toggle();
-                } else if(!drawerRef?.current?.isOpen()){
-                    drawerRef?.current?.open();
-                }
+            if(!drawerRef || !drawerRef?.current) return false;
+            if(!drawerRef?.current?.isOpen()){
+                drawerRef.current.toggle();
+                return false;
             }
+            if(drawerRef?.current?.isMinimized()){
+                drawerRef?.current?.restore();
+                return false;
+            }
+            if(!drawerRef?.current?.isPermanent()){
+                drawerRef?.current?.toggle();
+            } 
             return false;
         }}
         ref = {mergedRef}

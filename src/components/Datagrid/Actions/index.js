@@ -10,35 +10,13 @@ import Button from "$ecomponents/Button";
 import { StyleSheet } from "react-native";
 import Label from "$ecomponents/Label";
 import { useWindowDimensions } from "react-native";
-
-export default function DatagridActions (_props){
-  let {actions,actionProps,selectedRowsActions,bindResizeEvent,context,selectedRows:_selectedRows,...props} = _props;
-  props = defaultObj(props);
-  context = defaultObj(context);
-  const [state,setState] = React.useState({
-    selectedRows : defaultObj(_selectedRows),
-  });
-  const selectedRowsCallBackRef = React.useRef(null);
-  const setSelectedRows = (selectedRows,cb)=>{
-    if(isObj(selectedRows)){
-      selectedRowsCallBackRef.current = cb;
-      setState({...state,selectedRows:Object.assign({},selectedRows)})
-    }
-  }
-  const dimensions = bindResizeEvent !== false ? useWindowDimensions() : {};
-  React.useEffect(()=>{
-    setSelectedRows(_selectedRows,null);
-  },[_selectedRows]);
-  const selectedRows = state.selectedRows;
-  React.useEffect(()=>{
-    if(typeof selectedRowsCallBackRef.current =='function'){
-      selectedRowsCallBackRef.current({});
-    }
-    selectedRowsCallBackRef.current = null;
-  },[selectedRows]);
-  let sCounts = Object.size(selectedRows);
-  const selected = sCounts > 0 ? true : false;
-  actions = selected ? selectedRowsActions : actions;
+import {useDatagrid,useGetSelectedRowsCount} from "../hooks";
+export default function DatagridActions ({actions,actionProps,...props}){
+  const {context} = useDatagrid();
+  const selectedRowsCount = useGetSelectedRowsCount();
+  useWindowDimensions();
+  const selected = !!selectedRowsCount;
+  actions = selected ? context?.renderSelectedRowsActions.call(context,actions) : actions;
   if(selected){
     actionProps = Object.assign({},actionProps);
     actionProps.style = Object.assign({},StyleSheet.flatten(actionProps.style));
@@ -51,18 +29,17 @@ export default function DatagridActions (_props){
       if(!sArg || typeof sArg !=='object'){
         sArg = {};
       }
-      sArg.selectedRows = selectedRows;
-      sArg.size = sArg.selectedRowsCount = sCounts;
+      sArg.selectedRows = context.getSelectedRows();
+      sArg.size = sArg.selectedRowsCount = selectedRowsCount;
       sArg.context = context;
       actions = actions.call(context,sArg);
   }
   const splitedActions = isObjOrArray(actions)? splitActions({...props,...sArg,actionProps,actions,isAppBarAction:false,alwaysSplitOnMobile:true}) : undefined;
   let contextualTitle = "";
-  if(sCounts > 0){
-    let sLetter = (sCounts>1?'s':'');
-    contextualTitle = (sCounts<10?'0':'')+sCounts+(' ligne'+sLetter+' sélectionnée'+sLetter),1;
+  if(selectedRowsCount > 0){
+    let sLetter = (selectedRowsCount>1?'s':'');
+    contextualTitle = (selectedRowsCount<10?'0':'')+selectedRowsCount+(' ligne'+sLetter+' sélectionnée'+sLetter),1;
   }
-  context.datagridActionsContext = {setSelectedRows};
   const children = renderSplitedActions(splitedActions,{
       anchor : (props)=>{
         return <Button
@@ -75,10 +52,6 @@ export default function DatagridActions (_props){
         />
       }
   });
-  ///la fonction updateDatagridActions est définies dans les actions du datagrid
-  context.updateDatagridActions = ()=>{
-      return setSelectedRows({...selectedRows});
-  }
   return <Header
         {...props}
         title = {contextualTitle}
@@ -95,9 +68,4 @@ DatagridActions.propTypes = {
   /*** le tire du menu contextuel */
   title : PropTypes.node,
   visible: PropTypes.bool,
-  selectedRowsActions : PropTypes.oneOfType([
-    PropTypes.func, PropTypes.object, PropTypes.array,
-  ]),
-  bindResizeEvent : PropTypes.bool,
-  context : PropTypes.object.isRequired,///le context d'exécution du datagridAction
 };

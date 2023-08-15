@@ -13,11 +13,11 @@ module.exports = function (){
             suffix = path.join(suffix,p);
         }
     })
-    const expoUIPath = path.resolve(process.cwd(),"node_modules","@fto-consult","expo-ui");
     const sep = path.sep;
-    if(path.resolve(process.cwd()) === path.resolve(__dirname)){//le programme s'exécute en environnement fix bugs sur electron
+    if(require("./is-local-dev")()){//le programme s'exécute en environnement fix bugs sur electron
         return path.resolve(__dirname,suffix).replace(sep,(sep+sep));///pour la résolution du module expo-ui en mode test
     }
+    const expoUIPath = path.resolve(process.cwd(),"node_modules","@fto-consult","expo-ui");
     const rootPath = process.cwd();
     const src = path.resolve(rootPath,"src");
     try {

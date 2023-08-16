@@ -3,7 +3,7 @@ import appConfig from "$capp/config";
 import {MD3LightTheme,MD3DarkTheme} from "react-native-paper";
 import { useMaterial3Theme } from '@pchmn/expo-material3-theme';
 import {colorsAlias,Colors} from "$theme";
-import {isObj,isNonNullString} from "$cutils";
+import {isObj,isNonNullString,defaultStr} from "$cutils";
 import eMainScreens from "$escreens/mainScreens";
 import {ExpoUIContext} from "./hooks";
 import Login from "$eauth/Login";
@@ -78,8 +78,22 @@ const Provider = ({children,getTableData,navigation,components,convertFiltersToS
         }
         theme.fonts = newTheme.fonts;
         const r = typeof extendAppTheme == 'function'? extendAppTheme(theme)  : theme;
+        const _theme = (isObj(r) ? r : theme);
+        const customCSS = _theme.customCSS;
         return {
-          ...(isObj(r) ? r : theme),
+          ..._theme,
+          get customCSS(){
+             const prevCSS = defaultStr(typeof customCSS ==='function'? customCSS(theme) : customCSS);
+             return `
+                .virtuoso-table-component,
+                .virtuoso-table-component th,
+                .virtuoso-table-component tr,
+                .virtuoso-table-component td{
+                  border-collapse : collapse!important;
+                }
+                ${prevCSS}
+             `;
+          },
           get textFieldMode (){
             /***** possibilité de charger le mode d'affichage par défaut des champs textuels dans le theme de l'application */
             if(typeof theme.textFieldMode =='string' && theme.textFieldMode && modes[theme.textFieldMode]){

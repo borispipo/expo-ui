@@ -6,3 +6,6 @@ Les valeurs pouvant appartenir au séries groupées des charts peuvent être uni
 lorsque les colonnes sont grouépes
 
 Configure git credentialHelper http : credential.useHttpPath true, @see : https://microsoft.github.io/Git-Credential-Manager-for-Windows/Docs/Configuration.html#:~:text=useHttpPath,changes%20the%20behavior%20of%20Git.
+
+
+il est possible d'ajouter les propriétés css valide en environnemnet web, dans le theme, en utilisant la props customCSS de type fonction ou chaine de caractère

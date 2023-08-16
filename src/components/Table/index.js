@@ -14,7 +14,7 @@ import styles from "./styles";
 import {useIsRowSelected} from "$ecomponents/Datagrid/hooks";
 import {getRowStyle} from "$ecomponents/Datagrid/utils";
 import ScrollNative from "./ScrollNative";
-import VituosoTableComonent from "./VirtuosoTable";
+import VirtuosoTableComponent from "./VirtuosoTable";
 export {styles};
 
 const isSCrollingRef = React.createRef();
@@ -62,9 +62,12 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
     const {columns:cols,testID,headers,footers,getItem,withDatagridContext,filters,getRowByIndex,itemsChanged,hasFooters:stateHasFooters,visibleColsNames,keyExtractor,items,data} = useTable();
     headerContainerProps = defaultObj(headerContainerProps);
     footerContainerProps = defaultObj(footerContainerProps);
-    const emptyData = renderListContent === false ?null : typeof renderEmpty =='function' && !Object.size(data,true)? renderEmpty() : null;
+    const hasData = !!Object.size(data,true);
+    const emptyData = !hasData && renderListContent === false ?null : typeof renderEmpty =='function' ? renderEmpty() : null;
     const hasEmptyData = emptyData && React.isValidElement(emptyData);
-    
+    const emptyContent = <View onRender={onComponentRender} testID={testID+"_EmptyData"} style={styles.hasNotData}>
+        {emptyData}
+    </View> 
     const {fFilters,headersContent,footersContent,totalWidths} = React.useMemo(()=>{
         const headersContent = [],footersContent = [],fFilters = [];
         let totalWidths = 0;
@@ -162,10 +165,10 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
         <Header visible={!!(showTableHeaders &&  headersContent.length)} testID={testID+"_Header"} {...headerContainerProps} style={[styles.header,headerContainerProps.style,footersContent.length]}>
             {headersContent}
         </Header>
-        <Header visible = {!!fFilters.length} testID={testID+"_Filters"} style={[styles.header,styles.footers,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}>
+        <Header visible = {!!fFilters.length} {...headerContainerProps} testID={testID+"_Filters"} style={[styles.header,styles.footers,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0,headerContainerProps.style]}>
             {fFilters}
         </Header>
-        <Header visible={!!(showTableHeaders && footersContent.length)} testID={testID+"_Footer"} {...footerContainerProps} style={[styles.header,styles.footers,footerContainerProps.style,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}>
+        <Header visible={!!(showTableHeaders && footersContent.length)} testID={testID+"_Footer"} {...footerContainerProps} style={[styles.header,styles.footers,headerContainerProps.style,footerContainerProps.style,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}>
             {footersContent}
         </Header>
     </>
@@ -191,9 +194,7 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
                     </View>
                 </ScrollView>
             </RNView>}
-            {hasEmptyData ? <View onRender={onComponentRender} testID={testID+"_Empty"} style={styles.hasNotData}>
-                    {emptyData}
-            </View> : <ScrollNative {...scrollViewProps} scrollEventThrottle = {scrollEventThrottle} horizontal contentContainerStyle={[scrollContentContainerStyle,scrollViewProps.contentContainerStyle,{height:'100%'}]} showsVerticalScrollIndicator={false}  
+            {hasEmptyData && isNative ? emptyContent : <ScrollNative {...scrollViewProps} scrollEventThrottle = {scrollEventThrottle} horizontal contentContainerStyle={[scrollContentContainerStyle,scrollViewProps.contentContainerStyle,{height:'100%'}]} showsVerticalScrollIndicator={false}  
                     onScroll = {getOnScrollCb([headerScrollViewRef,footerScrollViewRef],null,(args)=>{
                         const nativeEvent = args.nativeEvent;
                         if(absoluteScrollViewRef.current && absoluteScrollViewRef.current.checkVisibility){
@@ -281,7 +282,7 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
                                 args.isSelected = withDatagridContext ? isRowSelected(args) : false;
                                 return <TableRowComponent {...props} style={[getRowStyle(args),props.style]}/>
                             },
-                            Table: VituosoTableComonent,
+                            Table: VirtuosoTableComponent,
                         }}
                     />
                     {isNative ? <AbsoluteScrollView

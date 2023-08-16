@@ -956,11 +956,16 @@ export default class CommonDatagridComponent extends AppComponent {
         if(typeof this.props.onSort =='function' && this.props.onSort({context:this,sort,data:this.INITIAL_STATE.data,fields:this.state.columns,columns:this.state.columns}) === false){
             return;
         }
-        this.setIsLoading(true,()=>{
+        const call = ()=>{
             this.prepareData({data:this.INITIAL_STATE.data,updateFooters:false},(state)=>{
                 this.setState(state);
             });
-        },true);
+        };
+        const max = isMobileOrTabletMedia()? 1000 : 5000;
+        if(this.INITIAL_STATE.data.length > max){
+            return this.setIsLoading(true,call,true);
+        }
+        return call();
     }
 
    /**** pagine l'objet data passé en parmètre de manière a retourner un objet satisfaisant aux paramètres

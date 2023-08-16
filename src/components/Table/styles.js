@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
         width : '100%',
         minHeight : 300,
         paddingBottom : 10,
-        paddingLeft : 10,
+        paddingLeft : 0,
         paddingRight : 0,
         flex : 1,
         position : 'relative',

@@ -113,7 +113,8 @@ export const ROW_BORDER_STYLE = {
     borderRightColor : ROW_BORDER_COLOR,
     borderRightWidth : 0,
     borderTopColor : ROW_BORDER_COLOR,
-    borderTopWidth : 0
+    borderTopWidth : 0,
+    borderStyle : "solid",
 }
 
 

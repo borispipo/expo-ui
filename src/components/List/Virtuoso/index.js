@@ -12,6 +12,7 @@ import theme,{grid} from "$theme";
 import Dimensions from "$cdimensions";
 import { StyleSheet } from "react-native";
 import {isMobileNative} from "$cplatform";
+import {addClassName,removeClassName} from "$cutils/dom";
 
 const propTypes = {
     ...defaultObj(Virtuoso.propTypes),
@@ -31,7 +32,7 @@ const propTypes = {
     isScrolling : PropTypes.func,
 };
 /***@see : https://virtuoso.dev/virtuoso-api-reference/ */
-const VirtuosoListComponent = React.forwardRef(({onRender,fixedHeaderContent,rowProps,renderTable,listClassName,components,itemProps,windowWidth,numColumns,responsive,testID,renderItem,onEndReached,onLayout,onContentSizeChange,onScroll,isScrolling,estimatedItemSize,onEndReachedThreshold,containerProps,style,autoSizedStyle,...props},ref)=>{
+const VirtuosoListComponent = React.forwardRef(({onRender,id,fixedHeaderContent,rowProps,renderTable,listClassName,components,itemProps,windowWidth,numColumns,responsive,testID,renderItem,onEndReached,onLayout,onContentSizeChange,onScroll,isScrolling,estimatedItemSize,onEndReachedThreshold,containerProps,style,autoSizedStyle,...props},ref)=>{
     if(renderTable){
         responsive = false;
     }
@@ -50,6 +51,10 @@ const VirtuosoListComponent = React.forwardRef(({onRender,fixedHeaderContent,row
         }
     });
     containerProps = defaultObj(containerProps);
+    const idRef = React.useRef(defaultStr(id,uniqid("virtuoso-list-id")));
+    id = idRef.current; 
+    const containerId = `${id}-container`;
+    const headId = `${id}-table-head`;
     testID = defaultStr(testID,containerProps.testID,"RN_VirtuosoListComponent");
     const listIdRef = React.useRef(uniqid("virtuoso-list-id"));
     const listId = listIdRef.current;
@@ -58,6 +63,9 @@ const VirtuosoListComponent = React.forwardRef(({onRender,fixedHeaderContent,row
     const listSize = sizeRef.current;
     const isValid = ()=> listRef.current;
     const listStyle = {height:'100%',width:"100%",overflowX:renderTable?"auto":"hidden",maxWidth:"100%"};
+    if(renderTable){
+        listStyle.borderCollapse ="collapse";
+    }
     r2["data-test-id"] = testID+"_ListContent";
     if(isObj(estimatedItemSize)){
         if(isNumber(estimatedItemSize.width)){
@@ -104,12 +112,34 @@ const VirtuosoListComponent = React.forwardRef(({onRender,fixedHeaderContent,row
             },100)
         }
     }
+    const scrolledTopRef = React.useRef(0);
+    const updateTableHeadCss = ()=>{
+        const newScrollTop = scrolledTopRef.current;
+        const head = document.querySelector(`#${headId}`);
+        if(!head || typeof newScrollTop !='number') return;
+        const scrolled = newScrollTop > 50
+        head.style.background = !scrolled ? "transparent":theme.isDark()? theme.Colors.lighten(theme.surfaceBackgroundColor):theme.Colors.darken(theme.surfaceBackgroundColor);
+        head.style.border = !scrolled ? "none" : `1px solid ${theme.colors.divider}`
+    }
     React.useEffect(()=>{
+        const handleScroll = (e)=>{
+            if(!isDOMElement(e?.target)) return;
+            const target = e?.target;
+            const container = document.querySelector(`#${containerId}`);
+            if(!container) return;
+            if(container !== target && !container.contains(target)) return;
+            if(!target.hasAttribute("data-virtuoso-scroller")) return;
+            scrolledTopRef.current = typeof target?.scrollTop =="number"? target.scrollTop : undefined;
+            updateTableHeadCss();
+        }
+        window.addEventListener('scroll', handleScroll,true);
         return ()=>{
             React.setRef(ref,null);
+            window.removeEventListener('scroll', handleScroll,true);
         }
     },[]);
     React.useOnRender((a,b,c)=>{
+        updateTableHeadCss();
         if(onRender && onRender(a,b,c));
     },Math.max(Array.isArray(items) && items.length/10 || 0,500));
     const listP = responsive ? {
@@ -121,7 +151,7 @@ const VirtuosoListComponent = React.forwardRef(({onRender,fixedHeaderContent,row
         },
         defaultItemHeight : typeof estimatedItemSize=='number' && estimatedItemSize || undefined,
     };
-    return <View {...containerProps} {...props} style={[{flex:1},containerProps.style,style,autoSizedStyle,{minWidth:'100%',height:'100%',maxWidth:'100%'}]} onLayout={onLayout} testID={testID}>
+    return <View {...containerProps} {...props} id={containerId} className={classNames("virtuoso-list-container",renderTable&& "virtuoso-list-container-render-table")} style={[{flex:1},containerProps.style,style,autoSizedStyle,{minWidth:'100%',height:'100%',maxWidth:'100%'}]} onLayout={onLayout} testID={testID}>
         <Component
             {...r2}
             {...listP}
@@ -140,10 +170,11 @@ const VirtuosoListComponent = React.forwardRef(({onRender,fixedHeaderContent,row
                 }
             }}
             onScroll={(e) => onScroll && onScroll(normalizeEvent(e))}
-            isScrolling = {(isC,a)=>{
+            isScrolling = {(isC,)=>{
                 if(typeof isScrolling =='function'){
                     return isScrolling(isC);
                 }
+                if(!renderTable) return;
             }}
             components = {{
                 Item : renderTable ? undefined : responsive ? function(props){return <ItemContainer {...props} style={[itemProps.style,props.style]} numColumns={numColumns}/>} : undefined,
@@ -151,6 +182,12 @@ const VirtuosoListComponent = React.forwardRef(({onRender,fixedHeaderContent,row
                     TableRow: TableRowComponent,
                 }:{}),
                 ...defaultObj(components),
+                ...(renderTable ? {
+                    TableHead : React.forwardRef((props,ref)=>{
+                        const restProps = {id:headId,className:classNames(props.className,"virtuoso-list-render-table-thead")};
+                        return <thead ref={ref} {...props} {...restProps}/>
+                    })
+                } : {})
             }}
         />
     </View>

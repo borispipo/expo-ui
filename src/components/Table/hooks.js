@@ -34,11 +34,11 @@ export const usePrepareColumns = ({columns,sortedColumn,forceRender,testID,rende
             }
             const rArgs = {columnDef,width};
             headers[columnField] = <HeaderCell {...rArgs} testID={testID+"_HeaderCell_"+columnField} {...headerCellContainerProps} {...hContainerProps} key={columnField} style={[styles.headerItem,styles.headerItemOrCell,headerCellContainerProps.style,hContainerProps.style,style]}>
-                <Label splitText numberOfLines={2} style={[theme.styles.w100,theme.styles.h100,{maxHeight:70}]} textBold primary>{content}</Label>
+                <Label splitText numberOfLines={1} style={[theme.styles.w100,theme.styles.h100,{maxHeight:70},width&&{width}]} textBold primary>{content}</Label>
             </HeaderCell>;
             if(typeof renderFilterCell =='function'){
                 const filterCell = renderFilterCell(colArgs);
-                filters[columnField] = <HeaderCell {...rArgs} testID={testID+"_Filter_Cell_"+columnField} {...filterCellContainerProps} key={columnField} style={[styles.headerItem,styles.headerItemOrCell,styles.filterCell,filterCellContainerProps.style,style]}>
+                filters[columnField] = <HeaderCell {...rArgs} testID={testID+"_Filter_Cell_"+columnField} {...filterCellContainerProps} key={columnField} style={[styles.headerItem,styles.headerItemOrCell,styles.filterCell,filterCellContainerProps.style,styles.cell,style]}>
                     {React.isValidElement(filterCell)? filterCell : null}
                 </HeaderCell>
             }

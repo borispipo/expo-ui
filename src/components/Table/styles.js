@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import {isMobileNative} from "$cplatform";
 
 const styles = StyleSheet.create({
     datagrid : {
@@ -83,6 +84,21 @@ const styles = StyleSheet.create({
         width : '100%',
         justifyContent : 'center',
         alignItems : 'center'
+    },
+    cell : isMobileNative()? {
+        paddingLeft:10,
+        paddingRight : 5,
+        paddingBottom : 5,
+        paddingTop : 5,
+    } : {
+        paddingLeft: 10,
+        paddingTop:5,
+        paddingBottom:5,
+        paddingRight: 10
+    },
+    sectionListHeader : {
+        paddingVertical : 10,
+        paddingHorizontal : 10,
     }
 });
 export default styles;

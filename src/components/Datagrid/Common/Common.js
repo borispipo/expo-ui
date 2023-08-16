@@ -3631,7 +3631,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 toggleAll
                 key = {this.getSelectableColumName()}
                 secondaryOnCheck
-                style = {style}
+                style = {[style]}
                 onPress = {({checked})=>{
                     this.handleAllRowsToggle(!checked);  
                     return;
@@ -3647,7 +3647,7 @@ export default class CommonDatagridComponent extends AppComponent {
             this.sort(columnField);
         };
         return <TouchableRipple disabled={!sortable} style={styles.sortableColumn} onPress={sortMe}>
-            <>
+            <View testID={"RN_DatagridHeaderCellContainer_"+columnField} style={[tableStyles.cell,theme.styles.row,theme.styles.flex1,theme.styles.justifyContentFlexStart,theme.styles.alignItemsCenter]}>
                 {isColumnSorted ? <Icon
                     {...sortedColumn}
                     size = {24}
@@ -3656,8 +3656,8 @@ export default class CommonDatagridComponent extends AppComponent {
                     onPress = {sortMe}
                     primary
                 />: null}
-                <Label textBold style={[{fontSize:13}]} primary={isColumnSorted}>{ret}</Label>
-            </>
+                <Label testID={"RN_DatagridHeaderCellLabel_"+columnField} textBold style={[{fontSize:13}]} primary={isColumnSorted}>{ret}</Label>
+            </View>
         </TouchableRipple>
     }
     canScrollTo(){

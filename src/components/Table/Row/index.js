@@ -21,7 +21,7 @@ export default function TableRowComponent({cells,rowKey,rowData,index,...rest}){
         return visibleColsNames.map((columnField,cIndex)=>{
             const columnDef = columns[columnField];
             if(!isObj(columnDef)) return null;
-            return <Cell rowData={rowData} rowKey={rowKey} children={columnDef[columnField]} rowIndex={index} columnDef={columnDef} index={cIndex} key={columnField} columnField={columnField}/>
+            return <Cell rowData={rowData} rowKey={rowKey} children={rowData[columnField]} rowIndex={index} columnDef={columnDef} index={cIndex} key={columnField} columnField={columnField}/>
         });
     },[rowKey,index,JSON.stringify(visibleColsNames)]);
     return <RowWrapper style={[styles.row]}>

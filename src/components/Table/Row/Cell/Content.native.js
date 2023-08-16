@@ -6,7 +6,7 @@ import View from "$ecomponents/View";
 import { StyleSheet } from "react-native";
 
 function TableCellContentComponent({children,style,colSpan,...rest}){
-    return (<View testID={"RN_TableRowCellContentComponent"} {...rest} style={StyleSheet.flatten(style)}>
+    return (<View testID={"RN_TableRowCellContentComponent"} {...rest} style={style}>
         {children}
     </View>);
 }

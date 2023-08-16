@@ -42,6 +42,7 @@ const LabelComponent = React.forwardRef(({ children,role,color,upperCase,fontSiz
     }
     
     style = Object.assign({},StyleSheet.flatten(style));
+    let hasP = Object.size(style,true);
     testID = defaultStr(testID,"RN_LabelComponent");
     const restProps = {id};
     if(splitText){
@@ -53,6 +54,9 @@ const LabelComponent = React.forwardRef(({ children,role,color,upperCase,fontSiz
     }
     if(wrap){
         r1.flexWrap = "wrap";
+    }
+    if(disabled){
+        r1.pointerEvents = "none";
     }
     if(isNonNullString(children) || isText || typeof children ==='number'){
         if(!isText){
@@ -69,7 +73,6 @@ const LabelComponent = React.forwardRef(({ children,role,color,upperCase,fontSiz
             role={typeof role =='string' && role && supportedRoles.includes(role.trim()) && role.trim() || undefined}
             style={[styles.label,splitText?styles.wrap:null,splitText?styles.w100:null,bold?styles.bold:null,r2,style,r1,styles.webFontFamilly]}>{children}</Text>)
     }
-    let hasP = false;
     if(isObj(rest)){
         for(let i in rest){
             if(rest[i]!== undefined) {
@@ -81,14 +84,15 @@ const LabelComponent = React.forwardRef(({ children,role,color,upperCase,fontSiz
     if(children == undefined){
         return null;
     }
+    const viewStyle = [bold?styles.bold:null,r2,style,r1];
     if(React.isValidElement(children)){
         if(!hasP) {
             if(id || ref){
-                return <View ref = {ref} testID = {testID} id={id}>{children}</View>
+                return <View ref = {ref} testID = {testID} id={id} style={viewStyle}>{children}</View>
             }
-            return <>{children}</>
+            return children;
         }
-        return <View ref = {ref} selectable={defaultSelectable} {...rest} {...restProps} testID = {testID} style={[bold?styles.bold:null,r2,style,r1]} disabled={disabled} pointerEvents={disabled?'none':'auto'}>{children}</View>
+        return <View ref = {ref} selectable={defaultSelectable} {...rest} {...restProps} testID = {testID} style={viewStyle} disabled={disabled}>{children}</View>
     }
     return null;
 })

@@ -4,7 +4,7 @@
 import React from "react";
 import {classNames} from "$cutils";
 import { StyleSheet } from "react-native";
-import theme from "$theme";
+import Label from "$ecomponents/Label";
 
 function TableCellContentComponent({children,style,...rest}){
     return (<td  {...rest} className={classNames(rest.className,"table-row-cell")} style={StyleSheet.flatten([style])}>
@@ -14,4 +14,3 @@ function TableCellContentComponent({children,style,...rest}){
 //const TableCellContentComponent = React.memo(TableCellContentComponent);;
 export default TableCellContentComponent;
 TableCellContentComponent.displayName = "TableCellContentComponent";
-const styles = {paddingLeft:"10px",paddingTop:"5px",paddingBottom:"5px",paddingRight:"10px"};

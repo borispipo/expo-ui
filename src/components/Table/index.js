@@ -8,7 +8,7 @@ import theme from "$theme";
 import AbsoluteScrollView from "./AbsoluteScrollView";
 import Row from "./Row";
 import List,{TableRowComponent} from "./List";
-import FiltersOrFooters from "./FiltersOrFooters";
+import Header from "./Header";
 import { usePrepareColumns,TableContext,useTable} from "./hooks";
 import styles from "./styles";
 import {useIsRowSelected} from "$ecomponents/Datagrid/hooks";
@@ -159,15 +159,15 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
         }
     };
     const headerFootersFilters = <>
-        <FiltersOrFooters visible={!!(showTableHeaders &&  headersContent.length)} testID={testID+"_Header"} {...headerContainerProps} style={[styles.header,headerContainerProps.style,footersContent.length]}>
+        <Header visible={!!(showTableHeaders &&  headersContent.length)} testID={testID+"_Header"} {...headerContainerProps} style={[styles.header,headerContainerProps.style,footersContent.length]}>
             {headersContent}
-        </FiltersOrFooters>
-        <FiltersOrFooters visible = {!!fFilters.length} testID={testID+"_Filters"} style={[styles.header,styles.footers,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}>
+        </Header>
+        <Header visible = {!!fFilters.length} testID={testID+"_Filters"} style={[styles.header,styles.footers,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}>
             {fFilters}
-        </FiltersOrFooters>
-        <FiltersOrFooters visible={!!(showTableHeaders && footersContent.length)} testID={testID+"_Footer"} {...footerContainerProps} style={[styles.header,styles.footers,footerContainerProps.style,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}>
+        </Header>
+        <Header visible={!!(showTableHeaders && footersContent.length)} testID={testID+"_Footer"} {...footerContainerProps} style={[styles.header,styles.footers,footerContainerProps.style,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}>
             {footersContent}
-        </FiltersOrFooters>
+        </Header>
     </>
     return <View testID= {testID+"_Container"}  {...containerProps} onLayout={(e)=>{
         layoutRef.current = e.nativeEvent.layout;

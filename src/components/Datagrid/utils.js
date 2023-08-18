@@ -103,6 +103,8 @@ export const ROW_SELECTED_STYLE = {
     }
 }
 
+export const SELECTED_BORDER_COLOR = "rgb(251, 207, 232)";
+
 export const ROW_BORDER_STYLE = {
     marginHorizontal : 0,
     marginVertical : 0,
@@ -171,7 +173,9 @@ export const getRowStyle = ({row,bordered,numColumns,rowData,isAccordion,isTable
         style.push(rowIndex%2===0?styles.even : theme.isDark()?styles.oddDark : styles.odd)
     }
     if(selected){
-        style.push(styles.selected,{borderBottomWidth:1,borderBottomColor:theme.colors.primary})
+        const selectedBcolor = theme.isDark()? SELECTED_BORDER_COLOR : theme.colors.primary;
+        const bordered = isAccordion ? null : {borderBottomWidth:1,borderBottomColor:selectedBcolor,borderTopWidth:1,borderTopColor:selectedBcolor};
+        style.push(styles.selected,bordered);
     }
     if(paid || row.paid){
         style.push(styles.paid);

@@ -51,7 +51,7 @@ const getOnScrollCb = (refs,pos,cb2)=>{
     return isMobileNative()? cb : debounce(cb,200);
 }
 
-const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRender,height,progressBar,renderListContent,children,renderEmpty,renderItem,isRowSelected,headerScrollViewProps,footerScrollViewProps,scrollViewProps,renderFooterCell,footerCellContainerProps,filterCellContainerProps,headerCellContainerProps,headerProps,rowProps:customRowProps,cellContainerProps,hasFooters,renderHeaderCell,renderFilterCell,columnProps,getRowKey,columnsWidths,colsWidths,columns,...props},tableRef)=>{
+const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRender,height,progressBar,renderListContent,children,renderEmpty,renderItem,headerScrollViewProps,footerScrollViewProps,scrollViewProps,renderFooterCell,footerCellContainerProps,filterCellContainerProps,headerCellContainerProps,headerProps,rowProps:customRowProps,cellContainerProps,hasFooters,renderHeaderCell,renderFilterCell,columnProps,getRowKey,columnsWidths,colsWidths,columns,...props},tableRef)=>{
     containerProps = defaultObj(containerProps);
     cellContainerProps = defaultObj(cellContainerProps);
     scrollViewProps = defaultObj(scrollViewProps);
@@ -252,8 +252,8 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
                                 const index = props['data-index'];
                                 const item = getRowByIndex(index) || props?.item || null;
                                 if(!item) return null;
-                                const args = {rowData:item,rowIndex:index,bordered,isTable:true};
-                                args.isSelected = withDatagridContext ? isRowSelected(args) : false;
+                                const args = {rowData:item,rowIndex:index,index,bordered,isTable:true};
+                                args.selected = withDatagridContext ? useIsRowSelected(item,index) : false;
                                 return <TableRowComponent {...props} style={[getRowStyle(args),props.style]}/>
                             },
                             Table: VirtuosoTableComponent,

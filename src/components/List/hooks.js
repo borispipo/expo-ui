@@ -1,7 +1,8 @@
 import React from "$react";
 import { prepareItems as customPrepareItems} from "./utils";
-import {defaultFunc} from "$cutils";
-
+import {defaultFunc,defaultBool,defaultDecimal} from "$cutils";
+import Dimensions,{isMobileMedia,useWindowDimensions} from "$cdimensions";
+import {grid} from "$theme";
 /**** retourne le contexte associé au composant List
     
 */
@@ -20,4 +21,16 @@ export const useList = ({items,filter,prepareItems,...props})=>{
         return r;
     },[items,canPrepareItems]);
     return context;
+}
+
+export const useGetNumColumns = ({windowWidth,numColumns,responsive})=>{
+    responsive = defaultBool(responsive,false);
+    const dimensions = responsive ? useWindowDimensions() : Dimensions.get("window");
+    if(responsive){
+        numColumns = grid.numColumns(windowWidth);
+    } else {
+        numColumns = defaultDecimal(numColumns,1);
+    }
+    const itemWindowWidth = dimensions.width/numColumns;
+    return {numColumns,itemWindowWidth,responsive};
 }

@@ -13,6 +13,7 @@ import Dimensions from "$cdimensions";
 import { StyleSheet } from "react-native";
 import {isMobileNative} from "$cplatform";
 import {addClassName,removeClassName} from "$cutils/dom";
+import { useGetNumColumns } from "../hooks";
 
 const propTypes = {
     ...defaultObj(Virtuoso.propTypes),
@@ -32,10 +33,11 @@ const propTypes = {
     isScrolling : PropTypes.func,
 };
 /***@see : https://virtuoso.dev/virtuoso-api-reference/ */
-const VirtuosoListComponent = React.forwardRef(({onRender,id,fixedHeaderContent,rowProps,renderTable,listClassName,components,itemProps,windowWidth,numColumns,responsive,testID,renderItem,onEndReached,onLayout,onContentSizeChange,onScroll,isScrolling,estimatedItemSize,onEndReachedThreshold,containerProps,style,autoSizedStyle,...props},ref)=>{
+const VirtuosoListComponent = React.forwardRef(({onRender,id,fixedHeaderContent,numColumns:cNumCol,rowProps,renderTable,listClassName,components,itemProps,windowWidth,responsive,testID,renderItem,onEndReached,onLayout,onContentSizeChange,onScroll,isScrolling,estimatedItemSize,onEndReachedThreshold,containerProps,style,autoSizedStyle,...props},ref)=>{
     if(renderTable){
         responsive = false;
     }
+    const {numColumns} = useGetNumColumns({responsive,numColumns:cNumCol,windowWidth})
     const Component = React.useMemo(()=>renderTable ? TableVirtuoso : responsive?VirtuosoGrid:Virtuoso,[responsive,renderTable]);
     const context = useList(props);
     itemProps = defaultObj(itemProps);
@@ -162,7 +164,7 @@ const VirtuosoListComponent = React.forwardRef(({onRender,id,fixedHeaderContent,
             useWindowScroll = {false}
             totalCount = {items.length}
             itemContent = {(index)=>{
-                return renderItem({index,item:items[index],items})
+                return renderItem({index,numColumns,item:items[index],items})
             }}
             atBottomStateChange = {()=>{
                 if(typeof onEndReached =='function'){

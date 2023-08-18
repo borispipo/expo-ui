@@ -23,7 +23,7 @@ import RenderType from "../RenderType";
 import { flatMode} from "$ecomponents/TextField";
 import List from "$ecomponents/Table/List";
 import theme,{Colors} from "$theme";
-import {getRowStyle,styles as rStyles} from "../utils";
+import {styles as rStyles} from "../utils";
 import Avatar from "$ecomponents/Avatar";
 import {defaultObj,isOb,isNonNullString} from "$cutils";
 import PropTypes from "prop-types";
@@ -94,13 +94,10 @@ const DatagridFactory = (Factory)=>{
             const formatValue = this.formatValue.bind(this);
             return {...this.getActionsArgs(),valueFormatter:formatValue,formatValue,abreviateValues:this.state.abreviateValues,row:item,items:this.state.data,item,rowData:item,index,rowIndex:index,rowCounterIndex:rowIndexCount,rowIndexCount};
         }
-        getRenderingItemProps ({item,rowKey,numColumns,index}){
+        getRenderingItemProps ({item,rowKey,index}){
             this.renderingItemsProps = isObj(this.renderingItemsProps)? this.renderingItemsProps : {};
-            const wrapperStyle = getRowStyle({row:item,index,numColumns,isAccordion:true,rowIndex:index});
             if(this.renderingItemsProps[rowKey]){
-                const it = this.renderingItemsProps[rowKey];
-                it.wrapperStyle = wrapperStyle;
-                return it;
+                return this.renderingItemsProps[rowKey];
             }
             const callArgs = this.getItemCallArgs({item,index});
             const accordion = this.props.accordion;
@@ -169,7 +166,7 @@ const DatagridFactory = (Factory)=>{
             }
             this.renderingItemsProps[rowKey] = {
                 testID,
-                wrapperStyle,title,right,rightProps,description,avatarContent,rowProps,avatarProps,
+                title,right,rightProps,description,avatarContent,rowProps,avatarProps,
                 bottomSheetTitlePrefix : defaultStr(renderedContent?.bottomSheetTitlePrefix,accordionProps.bottomSheetTitlePrefix,accordion?.bottomSheetTitlePrefix)
             }
             return this.renderingItemsProps[rowKey];
@@ -200,8 +197,8 @@ const DatagridFactory = (Factory)=>{
                 selectable = {this.props.selectable}
                 {...defaultObj(this.props.accordionProps)}
                 accordion = {this.props.accordion}
+                {...this.getRenderingItemProps({item,index,rowKey})}
                 numColumns = {numColumns}
-                {...this.getRenderingItemProps({item,numColumns,index,rowKey})}
                 key = {index}
                 ref = {(el)=>{
                     if(isObj(this.renderingItemsProps) && isObj(this.renderingItemsProps[rowKey]) ){

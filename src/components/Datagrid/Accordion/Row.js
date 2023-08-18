@@ -64,7 +64,6 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
     let rowIndex = defaultDecimal(index);
     let rowIndexCount = index+1;
     const testID = defaultStr(props.testID,"RN_DatagridAccordionRow"+(rowKey||rowIndex))
-    let _rP = {}
     const hasAvatar = React.isValidElement(avatarContent);
     const handleRowToggle = (event)=>{
         if(selectable === false) return;
@@ -75,8 +74,8 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
     }
     const wrapStyle = React.useMemo(()=>{
         return getRowStyle({row:item,index,selected,numColumns,isAccordion:true,rowIndex:index});
-    },[selected])
-    let viewWrapperStyle = {};
+    },[selected,numColumns]);
+    const viewWrapperStyle = [];
     if(selected) {
         const handleAvatarRowToggle = (event)=>{
             React.stopEventPropagation(event);
@@ -93,7 +92,8 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
             title = {sTtitle}
         ></Avatar> : null;
         if(!hasAvatar){
-            viewWrapperStyle = [styles.hasNotAvatar,{borderLeftColor:theme.colors.primaryOnSurface}]
+            viewWrapperStyle.push(styles.hasNotAvatar);
+            viewWrapperStyle.push({borderLeftColor:theme.colors.primaryOnSurface})
         }
     }
 
@@ -105,26 +105,24 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
                 icon = {"information-outline"}
             ></Avatar>
         }
-    } else if(selectable === false){
-        _rP.disabled = true;
     } 
     right = typeof right === 'function'? right ({color:theme.colors.primaryOnSurface,selectable:true,style:[rStyles.lineHeight,styles.right]}) : right;
     const swipeableRef = React.useRef(null);
     return  <Pressable
-                {..._rP}    
+                disabled = {selectable===false?true : false}
                 {...rowProps}
                 testID={testID}
                 children = {null}
                 onPress = {toggleExpander}
                 onLongPress={handleRowToggle}
                 style = {[
-                    _rP.style,rowProps.style,
                     styles.container,
-                    numColumns > 1 && {width:'99%'},
                     styles.bordered,
-                    wrapperStyle,
                     wrapStyle,
-                    style,
+                    rowProps.style,
+                    numColumns > 1 && styles.multiColumns,
+                    selected && styles.selected,
+                    //style,
                 ]}
                 ref = {React.useMergeRefs(ref,innerRef)}
         >
@@ -221,11 +219,17 @@ const styles = StyleSheet.create({
     bordered : {
         //borderColor: "#ced4da",
         //borderWidth : 1,
+        //paddingHorizontal:10,
+    },
+    multiColumns : {
+        paddingHorizontal : 5,
+        width : "98%"
     },
     renderedContent : {
         flexDirection : 'row',
         alignItems : 'center',
-        justifyContent : 'center'
+        justifyContent : 'center',
+        paddingVertical : 10,
     },
     right : {
         marginHorizontal : 0,
@@ -244,25 +248,25 @@ const styles = StyleSheet.create({
         alignSelf : 'flex-start',
     },
     container : {
-        marginVertical : 10,
-        paddingVertical : 5,
-        paddingHorizontal : isMobileNative()? 10 : 0,
+        paddingVertical : 0,
+        paddingHorizontal : 0,
         marginHorizontal : 5,
         flexWrap : 'nowrap',
         justifyContent : 'center',
         width : '100%',
-    },
-    containerSelected : {
-        paddingLeft : 2,
     },
     avatarContent : {
         marginRight : 5,
     },
     hasNotAvatar : {
         borderLeftWidth : 5,
-        paddingLeft : 2,
+        paddingLeft : 0,
         height : "100%"
-    }
+    },
+    selected : {
+        paddingHorizontal : 0,
+        paddingVertical : 0,
+    },
 });
 
 DatagridAccordionRow.displayName = 'DatagridAccordionRow';

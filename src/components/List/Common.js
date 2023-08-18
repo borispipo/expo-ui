@@ -9,22 +9,15 @@ import BackToTop from "$ecomponents/BackToTop";
 import {FlatList,StyleSheet,View} from "react-native";
 import Label from "$ecomponents/Label";
 import { useWindowDimensions,Dimensions } from "react-native";
-import { useList } from "./hooks";
+import { useList,useGetNumColumns } from "./hooks";
 
 const CommonListComponent = React.forwardRef((props,ref)=>{
     const context = useList(props);
-    let {responsive,testID,defaultItemHeight,itemHeight,windowWidth,onRender,componentProps,columnWrapperStyle,onViewableItemsChanged,withFlatListItem,Component,withBackToTop,backToTopRef:customBackToTopRef,withBackToTopButton,onScroll,onScrollEnd,onMount,onUnmount,renderScrollViewWrapper,prepareItems,getItemKey,getKey,keyExtractor,items,filter,renderItem,numColumns,containerProps,bindResizeEvents,...rest} = props;
+    let {testID,defaultItemHeight,itemHeight,onRender,componentProps,columnWrapperStyle,onViewableItemsChanged,withFlatListItem,Component,withBackToTop,backToTopRef:customBackToTopRef,withBackToTopButton,onScroll,onScrollEnd,onMount,onUnmount,renderScrollViewWrapper,prepareItems,getItemKey,getKey,keyExtractor,items,filter,renderItem,numColumns,containerProps,bindResizeEvents,...rest} = props;
     withBackToTopButton = withBackToTop === true || withBackToTopButton == true || isMobileMedia()? true : false;
     rest = defaultObj(rest);
     containerProps = defaultObj(containerProps);
-    responsive = defaultBool(responsive,false);
-    const dimensions = responsive ? useWindowDimensions() : Dimensions.get("window");
-    if(responsive){
-        numColumns = grid.numColumns(windowWidth);
-    } else {
-        numColumns = defaultDecimal(numColumns,1);
-    }
-    const itemWindowWidth = dimensions.width/numColumns;
+    const {itemWindowWidth} = useGetNumColumns(props);  
     let scrollEndTimeout = React.useRef(null);
     const listRef = React.useRef(null);
     const hasCustomBackToTop = typeof customBackToTopRef == 'function'? true : false;

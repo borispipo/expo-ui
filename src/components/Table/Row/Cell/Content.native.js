@@ -3,10 +3,11 @@
 // license that can be found in the LICENSE file.
 import React from "react";
 import View from "$ecomponents/View";
-import { StyleSheet } from "react-native";
-
-function TableCellContentComponent({children,style,colSpan,...rest}){
-    return (<View testID={"RN_TableRowCellContentComponent"} {...rest} style={style}>
+import {useTable} from "../../hooks";
+function TableCellContentComponent({children,columnField,style,colSpan,...rest}){
+    const {colsWidths} = useTable();
+    const width = columnField ? colsWidths[columnField] : 0;
+    return (<View testID={"RN_TableRowCellContentComponent"} {...rest} style={[style,width && {width}]}>
         {children}
     </View>);
 }

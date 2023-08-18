@@ -961,7 +961,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 this.setState(state);
             });
         };
-        const max = isMobileOrTabletMedia()? 1000 : 5000;
+        const max = isMobileOrTabletMedia()? 200 : 5000;
         if(this.INITIAL_STATE.data.length > max){
             return this.setIsLoading(true,call,true);
         }

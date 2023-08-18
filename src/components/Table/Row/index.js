@@ -11,7 +11,8 @@ import RowWrapper from "./RowWrapper";
 import React from "$react";
 import theme from "$theme";
 export default function TableRowComponent({cells,rowKey,rowData,index,...rest}){
-    const {visibleColsNames,renderItem,renderSectionHeader,columns} = useTable();
+    const {visibleColsNames,visibleColsNamesStr,renderSectionHeader,columns} = useTable();
+    if(!isObj(rowData)) return null;
     const content = React.useMemo(()=>{
         if(rowData.isSectionListHeader && typeof renderSectionHeader ==='function'){
             return <RowWrapper style={[styles.row,theme.styles.pv1]}>
@@ -23,8 +24,8 @@ export default function TableRowComponent({cells,rowKey,rowData,index,...rest}){
             if(!isObj(columnDef)) return null;
             return <Cell rowData={rowData} rowKey={rowKey} children={rowData[columnField]} rowIndex={index} columnDef={columnDef} index={cIndex} key={columnField} columnField={columnField}/>
         });
-    },[rowKey,index,JSON.stringify(visibleColsNames)]);
-    return <RowWrapper style={[styles.row]}>
+    },[rowKey,index,visibleColsNamesStr]);
+    return <RowWrapper {...rest} rowKey={rowKey} rowData={rowData} rowIndex={index} style={[styles.row]}>
         {content}
     </RowWrapper>;
 }

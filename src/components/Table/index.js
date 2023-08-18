@@ -51,7 +51,7 @@ const getOnScrollCb = (refs,pos,cb2)=>{
     return isMobileNative()? cb : debounce(cb,200);
 }
 
-const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRender,height,progressBar,renderListContent,children,renderEmpty,renderItem,isRowSelected,headerScrollViewProps,footerScrollViewProps,scrollViewProps,showFooters,renderFooterCell,footerCellContainerProps,filterCellContainerProps,headerContainerProps,headerCellContainerProps,headerProps,rowProps:customRowProps,cellContainerProps,hasFooters,renderHeaderCell,renderFilterCell,columnProps,getRowKey,columnsWidths,colsWidths,footerContainerProps,showHeaders,showFilters,columns,...props},tableRef)=>{
+const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRender,height,progressBar,renderListContent,children,renderEmpty,renderItem,isRowSelected,headerScrollViewProps,footerScrollViewProps,scrollViewProps,renderFooterCell,footerCellContainerProps,filterCellContainerProps,headerCellContainerProps,headerProps,rowProps:customRowProps,cellContainerProps,hasFooters,renderHeaderCell,renderFilterCell,columnProps,getRowKey,columnsWidths,colsWidths,columns,...props},tableRef)=>{
     containerProps = defaultObj(containerProps);
     cellContainerProps = defaultObj(cellContainerProps);
     scrollViewProps = defaultObj(scrollViewProps);
@@ -59,42 +59,23 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
     footerScrollViewProps = defaultObj(footerScrollViewProps);
     const listRef = React.useRef(null),scrollViewRef = React.useRef(null),headerScrollViewRef = React.useRef(null);
     const layoutRef = React.useRef({});
-    const {columns:cols,testID,headers,footers,getItem,withDatagridContext,filters,getRowByIndex,itemsChanged,hasFooters:stateHasFooters,visibleColsNames,keyExtractor,items,data} = useTable();
-    headerContainerProps = defaultObj(headerContainerProps);
-    footerContainerProps = defaultObj(footerContainerProps);
+    const {testID,withDatagridContext,filters,getRowByIndex,itemsChanged,hasFooters:stateHasFooters,bordered,totalWidths,keyExtractor,items,data} = useTable();
     const hasData = !!Object.size(data,true);
     const emptyData = !hasData && renderListContent === false ?null : typeof renderEmpty =='function' ? renderEmpty() : null;
     const hasEmptyData = emptyData && React.isValidElement(emptyData);
     const emptyContent = <View onRender={onComponentRender} testID={testID+"_EmptyData"} style={styles.hasNotData}>
         {emptyData}
     </View> 
-    const {fFilters,headersContent,footersContent,totalWidths} = React.useMemo(()=>{
-        const headersContent = [],footersContent = [],fFilters = [];
-        let totalWidths = 0;
-        visibleColsNames.map((i,index)=>{
-            headersContent.push(headers[i]);
-            totalWidths+=cols[i].width;
-            if(showFooters && stateHasFooters){
-                footersContent.push(footers[i]);
-            }
-            if(showFilters && filters[i]){
-                fFilters.push(filters[i]);
-            }
-        });
-        
-        return {headersContent,totalWidths,footersContent,fFilters};
-    },[visibleColsNames,showFilters,showFooters,layoutRef.current]);
-
-    
     const scrollContentContainerStyle = {flex:1,width:listWidth,minWidth:totalWidths,height:'100%'};
     const scrollEventThrottle = isMobileNative()?200:50;
     const scrollViewFlexGrow = {flexGrow:0};
-    const maxScrollheight = footersContent.length && fFilters.length ? 170  : footersContent.length ?120 :  fFilters.length ? 140 : 80;
+    const maxScrollheight = 170;//footersContent.length && fFilters.length ? 170  : footersContent.length ?120 :  fFilters.length ? 140 : 80;
     const allScrollViewProps = {
         scrollEventThrottle,
         horizontal : true,
         ...scrollViewProps,
-        style : [{maxHeight:maxScrollheight},scrollViewProps.style],
+        style : [{maxHeight:maxScrollheight},
+        scrollViewProps.style],
         contentContainerStyle : [styles.scrollView,scrollViewProps.contentContainerStyle,scrollViewFlexGrow,scrollContentContainerStyle]
     }
     const listWidth = '100%';
@@ -128,7 +109,6 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
         get scrollViewContext(){ return scrollViewRef.current},
         get headerScrollViewContext(){return headerScrollViewRef.current},
     }
-    const showTableHeaders = showHeaders !== false || showFilters ;
     const absoluteScrollViewRefCanScroll = React.useRef(true);
     React.setRef(tableRef,context);
     const cStyle = {width:listWidth}
@@ -162,15 +142,9 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
         }
     };
     const headerFootersFilters = <>
-        <Header visible={!!(showTableHeaders &&  headersContent.length)} testID={testID+"_Header"} {...headerContainerProps} style={[styles.header,headerContainerProps.style,footersContent.length]}>
-            {headersContent}
-        </Header>
-        <Header visible = {!!fFilters.length} {...headerContainerProps} testID={testID+"_Filters"} style={[styles.header,styles.footers,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0,headerContainerProps.style]}>
-            {fFilters}
-        </Header>
-        <Header visible={!!(showTableHeaders && footersContent.length)} testID={testID+"_Footer"} {...footerContainerProps} style={[styles.header,styles.footers,headerContainerProps.style,footerContainerProps.style,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}>
-            {footersContent}
-        </Header>
+        <Header isHeader={true} testID={testID+"_Header"}/>
+        <Header isFilter={true} testID={testID+"_Filters"} style={[styles.header,styles.footers,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}/>
+        <Header isFooter testID={testID+"_Footer"}  style={[styles.header,styles.footers,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}/>
     </>
     return <View testID= {testID+"_Container"}  {...containerProps} onLayout={(e)=>{
         layoutRef.current = e.nativeEvent.layout;
@@ -278,7 +252,7 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
                                 const index = props['data-index'];
                                 const item = getRowByIndex(index) || props?.item || null;
                                 if(!item) return null;
-                                const args = {rowData:item,rowIndex:index,bordered:true,isTable:true};
+                                const args = {rowData:item,rowIndex:index,bordered,isTable:true};
                                 args.isSelected = withDatagridContext ? isRowSelected(args) : false;
                                 return <TableRowComponent {...props} style={[getRowStyle(args),props.style]}/>
                             },

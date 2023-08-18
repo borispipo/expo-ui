@@ -32,6 +32,13 @@ const styles = StyleSheet.create({
         paddingVertical : 7,
         alignItems : 'center',
         width : '100%',
+        minHeight : 40,
+    },
+    filters : {
+       height : 50,
+    },
+    footers : {
+        minHeight : 40,
     },
     footerContainer : {
         width : '100%',
@@ -71,7 +78,7 @@ const styles = StyleSheet.create({
     row : {
         flexDirection : "row",
         justifyContent : "flex-start",
-        alignItems : 'flex-start',
+        alignItems : 'center',
         width : '100%',
     },
     rowNoPadding : {
@@ -88,8 +95,8 @@ const styles = StyleSheet.create({
     cell : isMobileNative()? {
         paddingLeft:10,
         paddingRight : 5,
-        paddingBottom : 5,
-        paddingTop : 5,
+        paddingBottom : 2,
+        paddingTop : 2,
     } : {
         paddingLeft: 10,
         paddingTop:5,

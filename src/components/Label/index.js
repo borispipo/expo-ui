@@ -10,7 +10,7 @@ const defaultSelectable = canTextBeSelectable();
 
 export const EllipsizeMode = {'head':'head','middle':'middle', 'tail':'tail' , 'clip':'clip'}
 
-const LabelComponent = React.forwardRef(({ children,role,color,upperCase,fontSize,testID,wrap,id,wrapText,error,underlined,splitText,secondary,primary,bold,textBold,disabled,text,style,...rest},ref)=> {
+const LabelComponent = React.forwardRef(({ children,selectable,role,color,upperCase,fontSize,testID,wrap,id,wrapText,error,underlined,splitText,secondary,primary,bold,textBold,disabled,text,style,...rest},ref)=> {
     children = defaultVal(children,text);
     let isText = false;
     if(!React.isValidElement(children) && Array.isArray(children) && children.length){
@@ -58,6 +58,8 @@ const LabelComponent = React.forwardRef(({ children,role,color,upperCase,fontSiz
     if(disabled){
         r1.pointerEvents = "none";
     }
+    selectable = !!(selectable || defaultSelectable);
+    r2.userSelect = selectable?"none":"all";
     if(isNonNullString(children) || isText || typeof children ==='number'){
         if(!isText){
             children +="";
@@ -68,7 +70,10 @@ const LabelComponent = React.forwardRef(({ children,role,color,upperCase,fontSiz
         if(fontSize){
             r1.fontSize = fontSize;
         }
-        return (<Text  allowFontScaling = {true} ref = {ref} selectable={defaultSelectable} 
+        if(selectable){
+            r2.userSelect = "text";
+        }
+        return (<Text  allowFontScaling = {true} ref = {ref} 
             {...rest} {...restProps} testID={testID} disabled={disabled} 
             role={typeof role =='string' && role && supportedRoles.includes(role.trim()) && role.trim() || undefined}
             style={[styles.label,splitText?styles.wrap:null,splitText?styles.w100:null,bold?styles.bold:null,r2,style,r1,styles.webFontFamilly]}>{children}</Text>)
@@ -92,7 +97,7 @@ const LabelComponent = React.forwardRef(({ children,role,color,upperCase,fontSiz
             }
             return children;
         }
-        return <View ref = {ref} selectable={defaultSelectable} {...rest} {...restProps} testID = {testID} style={viewStyle} disabled={disabled}>{children}</View>
+        return <View ref = {ref}  {...rest} {...restProps} testID = {testID} style={viewStyle} disabled={disabled}>{children}</View>
     }
     return null;
 })
@@ -114,7 +119,10 @@ LabelComponentExported.propTypes = {
     color : PropTypes.string,
     selectable : PropTypes.bool, //si le texte est sélectionnable
     underlined : PropTypes.bool,//si le style underlined sera appliqué au label
-    splitText : PropTypes.bool,///si le texte lorsqu'il est long sera splité
+    splitText : PropTypes.bool,///si le texte lorsqu'il est long sera splité,
+    /*useSelect : PropTypes.oneOfType([
+        'auto', 'text', 'none', 'contain', 'all'
+    ])*/
 }
 
 export default LabelComponentExported;

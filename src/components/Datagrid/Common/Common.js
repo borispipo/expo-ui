@@ -1706,6 +1706,15 @@ export default class CommonDatagridComponent extends AppComponent {
                 label : "Exporter les entêtes des groupes",
                 defaultValue :1,
             },
+            fields : {
+                text : "Champs à exporter",
+                items : this.state.columns,
+                type : "select",
+                itemValue : ({item,index})=>index,
+                filter : ({item,index})=> isObj(item) && item.exportable !== false,
+                renderItem : ({item,index})=> item?.label || item?.text || index,
+                multiple : true,
+            },
             /*abreviateValues : {
                 text : "Abréger les valeurs numériques",
                 type : "switch",
@@ -1718,147 +1727,164 @@ export default class CommonDatagridComponent extends AppComponent {
             },
         }
    }
+   SetExportOptions({excel}){
+        const skey = excel ? "export-to-excel":"export-to-other";
+        const isOnlytotal = this.state.displayOnlySectionListHeaders;
+        const displayOnlyHeader = this.canDisplayOnlySectionListHeaders() && isOnlytotal;
+        const sData = defaultObj(this.getSessionData(skey));
+        return new Promise((resolve,reject)=>{
+            return DialogProvider.open({
+                title : `Paramètre d'export ${excel?"excel":"pdf"}`,
+                data : sData,
+                fields : {
+                    ...this.getExportableFields(),
+                    sheetName : excel && {
+                        label : 'Nom de la feuille excel',
+                        format : "hashtag",
+                        required : true,
+                    },
+                    exportOnlyTotal : displayOnlyHeader && {
+                        label : "Exporter uniquemnt les totaux",
+                        defaultValue : 0,
+                        type : "switch",
+                    },
+                    aggregatedValues : displayOnlyHeader ? {
+                        label : "Exporter uniquement les totaux aggrégées",
+                        defaultValue : 0,
+                        type : "switch",
+                    }  : null,
+                },
+                actions : [{text:'Exporter',icon : "check"}],
+                onSuccess: (args)=>{
+                    args.sessionKeyName = skey;   
+                    args.displayOnlyHeader = displayOnlyHeader;
+                    args.isOnlytotal = isOnlytotal;
+                    args.sessionData = sData;
+                    DialogProvider.close();
+                    resolve(args);
+                    return args;
+                },
+                onCancel : reject,
+            })
+        })
+   }
    /***@see : https://docs.sheetjs.com/docs/api/utilities */
    exportToExcel(){
-        const skey = "export-to-excel";
-        const isOnlytotal = this.state.displayOnlySectionListHeaders;
-        let displayOnlyHeader = this.canDisplayOnlySectionListHeaders() && isOnlytotal;
-        const sData = defaultObj(this.getSessionData(skey));
-        return DialogProvider.open({
-            title : "Paramètre d'export excel",
-            data : sData,
-            fields : {
-                ...this.getExportableFields(),
-                sheetName : {
-                    label : 'Nom de la feuille excel',
-                    format : "hashtag",
-                    required : true,
-                },
-                exportOnlyTotal : displayOnlyHeader && {
-                    label : "Exporter uniquemnt les totaux",
-                    defaultValue : 0,
-                    type : "switch",
-                },
-                aggregatedValues : displayOnlyHeader ? {
-                    label : "Exporter uniquement les totaux aggrégées",
-                    defaultValue : 0,
-                    type : "switch",
-                }  : null,
-            },
-            actions : [{text:'Exporter',icon : "check"}],
-            onSuccess:({data:config})=>{
-                this.setSessionData(skey,config);
-                config.fileName = sprintf(config.fileName);
-                config.sheetName = sanitizeSheetName(config.sheetName);
-                const data = [];
-                let totalColumns = 0;
-                const cols = {};
-                DialogProvider.close();
-                Preloader.open("préparation des données...");
-                const footers = this.getFooters();
-                if(displayOnlyHeader && config.aggregatedValues){
-                    const fValues = this.getFooterValues();
-                    const headers = ["Fonction d'agrégation"];
-                    const aggregatorFunctions = this.aggregatorFunctions;
-                    Object.map(footers,(f,i)=>{
-                        const col = this.state.columns[i];
-                        if(!col || col.visible === false) return;
-                        headers.push(defaultStr(col.label,col.text));
-                        cols[i] = col;
+        return this.SetExportOptions({excel:true}).then(({sessionKeyName,isOnlytotal,displayOnlyHeader,data:config})=>{
+            this.setSessionData(sessionKeyName,config);
+            config.fileName = sprintf(config.fileName);
+            config.sheetName = sanitizeSheetName(config.sheetName);
+            const data = [];
+            let totalColumns = 0;
+            const cols = {};
+            Preloader.open("préparation des données...");
+            const footers = this.getFooters();
+            const hasFields = !!config.fields.length;
+            const fields = config.fields;
+            if(displayOnlyHeader && config.aggregatedValues){
+                const fValues = this.getFooterValues();
+                const headers = ["Fonction d'agrégation"];
+                const aggregatorFunctions = this.aggregatorFunctions;
+                Object.map(footers,(f,i)=>{
+                    if(hasFields && !fields.includes(i)) return;
+                    const col = this.state.columns[i];
+                    if(!col || col.visible === false) return;
+                    headers.push(defaultStr(col.label,col.text));
+                    cols[i] = col;
+                });
+                data.push(headers);
+                Object.map(aggregatorFunctions,(ag,i)=>{
+                    const d = [defaultStr(ag.label,ag.text,i)];
+                    Object.map(fValues,(footer,field)=>{
+                        if(!cols[field]) return;
+                        d.push(defaultNumber(footer[i]))
                     });
-                    data.push(headers);
-                    Object.map(aggregatorFunctions,(ag,i)=>{
-                        const d = [defaultStr(ag.label,ag.text,i)];
-                        Object.map(fValues,(footer,field)=>{
-                            if(!cols[field]) return;
-                            d.push(defaultNumber(footer[i]))
-                        });
-                        data.push(d);
-                    })
-                } else {
-                    const headers = [];
-                    const hFooters = defaultObj(this.sectionListHeaderFooters);
-                    const agFunc = this.state.aggregatorFunction;
-                    const canExportOnlyTotal = isOnlytotal || (config.exportOnlyTotal && displayOnlyHeader);
-                    if(canExportOnlyTotal){
-                        headers.push("");
-                    }
-                    Object.map(this.state.columns,(col,i)=>{
-                        if(!isObj(col) || col.visible === false || this.isSelectableColumn(col,i) || i === this.getIndexColumnName()) return;
-                        if(canExportOnlyTotal && !(i in footers)) return;
-                        cols[i] = col;
-                        headers.push(defaultStr(col.label,col.text));
-                        totalColumns++;
-                    })
-                    data.push(headers);
-                    Object.map(this.state.data,(dat,index)=>{
-                        ///si l'on a a faire à une colonne de type entete
-                        const d = [];
-                        if(dat.isSectionListHeader){
-                            if(!config.displayTotals && !canExportOnlyTotal) return;
-                            const {sectionListHeaderKey:key} = dat;
-                            const val = key === this.emptySectionListHeaderValue ? this.getEmptySectionListHeaderValue() : key;
-                            d.push(val);
-                            if(!canExportOnlyTotal){
-                                for(let i = 1;i<totalColumns;i++){
-                                    d.push(null);
-                                }
-                                data.push(d);
-                            } else {
-                                const hF = hFooters[key];
-                                if(isObj(hF) && isNonNullString(agFunc)){
-                                    const dd = [];
-                                    Object.map(cols,(col,i)=>{
-                                        if(i in hF){
-                                                const ff = hF[i];
-                                                dd.push(defaultNumber(ff[agFunc]));
-                                            } else {
-                                                dd.push(null);
-                                            }
-                                    });
-                                    if(canExportOnlyTotal){
-                                        dd.unshift(val);
-                                        data.push(dd);
-                                    } else {
-                                        data.push(d);
-                                        data.push(dd);
-                                    }
+                    data.push(d);
+                })
+            } else {
+                const headers = [];
+                const hFooters = defaultObj(this.sectionListHeaderFooters);
+                const agFunc = this.state.aggregatorFunction;
+                const canExportOnlyTotal = isOnlytotal || (config.exportOnlyTotal && displayOnlyHeader);
+                if(canExportOnlyTotal){
+                    headers.push("");
+                }
+                Object.map(this.state.columns,(col,i)=>{
+                    if(hasFields && !fields.includes(i)) return;
+                    if(!isObj(col) || col.visible === false || this.isSelectableColumn(col,i) || i === this.getIndexColumnName()) return;
+                    if(canExportOnlyTotal && !(i in footers)) return;
+                    cols[i] = col;
+                    headers.push(defaultStr(col.label,col.text));
+                    totalColumns++;
+                })
+                data.push(headers);
+                Object.map(this.state.data,(dat,index)=>{
+                    ///si l'on a a faire à une colonne de type entete
+                    const d = [];
+                    if(dat.isSectionListHeader){
+                        if(!config.displayTotals && !canExportOnlyTotal) return;
+                        const {sectionListHeaderKey:key} = dat;
+                        const val = key === this.emptySectionListHeaderValue ? this.getEmptySectionListHeaderValue() : key;
+                        d.push(val);
+                        if(!canExportOnlyTotal){
+                            for(let i = 1;i<totalColumns;i++){
+                                d.push(null);
+                            }
+                            data.push(d);
+                        } else {
+                            const hF = hFooters[key];
+                            if(isObj(hF) && isNonNullString(agFunc)){
+                                const dd = [];
+                                Object.map(cols,(col,i)=>{
+                                    if(i in hF){
+                                            const ff = hF[i];
+                                            dd.push(defaultNumber(ff[agFunc]));
+                                        } else {
+                                            dd.push(null);
+                                        }
+                                });
+                                if(canExportOnlyTotal){
+                                    dd.unshift(val);
+                                    data.push(dd);
                                 } else {
                                     data.push(d);
+                                    data.push(dd);
                                 }
+                            } else {
+                                data.push(d);
                             }
-                        } else if(!canExportOnlyTotal) {
-                            Object.map(cols,(col,i)=>{
-                                const isDateField = defaultStr(col.type).toLowerCase().contains("date");
-                                d.push(this.renderRowCell({
-                                    data : dat,
-                                    rowData : dat,
-                                    rowCounterIndex : index,
-                                    rowIndex : index,
-                                    formatValue : false,
-                                    renderRowCell : false,
-                                    columnField : defaultStr(col.field,i),
-                                    columnDef :{
-                                        ...col,
-                                        ...(isDateField?{format:config.dateFormat}:{})
-                                    }
-                                }));
-                            })   
-                            data.push(d);
                         }
-                    });
-                }
-                const wb = XLSX.utils.book_new();
-                const ws = XLSX.utils.aoa_to_sheet(data);
-                XLSX.utils.book_append_sheet(wb, ws, config.sheetName);
-                FileSystem.writeExcel({...config,workbook:wb}).then(({path})=>{
-                    if(isNonNullString(path)){
-                        notify.success("Fichier enregistré dans le répertoire {0}".sprintf(path))
+                    } else if(!canExportOnlyTotal) {
+                        Object.map(cols,(col,i)=>{
+                            const isDateField = defaultStr(col.type).toLowerCase().contains("date");
+                            d.push(this.renderRowCell({
+                                data : dat,
+                                rowData : dat,
+                                rowCounterIndex : index,
+                                rowIndex : index,
+                                formatValue : false,
+                                renderRowCell : false,
+                                columnField : defaultStr(col.field,i),
+                                columnDef :{
+                                    ...col,
+                                    ...(isDateField?{format:config.dateFormat}:{})
+                                }
+                            }));
+                        })   
+                        data.push(d);
                     }
-                 }).finally(()=>{
-                    Preloader.close();
-                })
+                });
             }
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            XLSX.utils.book_append_sheet(wb, ws, config.sheetName);
+            FileSystem.writeExcel({...config,workbook:wb}).then(({path})=>{
+                if(isNonNullString(path)){
+                    notify.success("Fichier enregistré dans le répertoire {0}".sprintf(path))
+                }
+             }).finally(()=>{
+                Preloader.close();
+            })
         })
    }
    exportToPdf(){

@@ -6,8 +6,8 @@ import {classNames} from "$cutils";
 import { StyleSheet } from "react-native";
 import Label from "$ecomponents/Label";
 
-function TableCellContentComponent({children,style,...rest}){
-    return (<td  {...rest} className={classNames(rest.className,"table-row-cell")} style={StyleSheet.flatten([style])}>
+function TableCellContentComponent({children,columnDef,testID,columnField,style,...rest}){
+    return (<td  data-test-id={testID||"RN_TableCellComoponent"} className={classNames(rest.className,"table-row-cell")} style={StyleSheet.flatten([style])}>
         {children}
     </td>);
 }

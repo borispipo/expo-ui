@@ -967,7 +967,6 @@ class DropdownComponent extends AppComponent {
         const renderingItems = this.getItems();
         const isDisabled = readOnly || disabled?true:false;
         const isBigList = this.isBigList;
-        const ListComponent = isBigList ? BigList : List;
         const autoFocus = canAutoFocusSearchField({visible,items:renderingItems});
         dialogProps = defaultObj(dialogProps);
         if(this.props.name =="RG_Compta"){
@@ -1063,7 +1062,7 @@ class DropdownComponent extends AppComponent {
                     {isMob && helperText ? <View testID = {testID+"_HelperText"} style={[styles.helperText]}>
                         {helperText}
                     </View>: null}
-                    <ListComponent
+                    <BigList
                         testID = {testID+"_List"}
                         {...listProps}
                         ref = {this.listRef}

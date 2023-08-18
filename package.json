@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "6.25.2",
+  "version": "6.25.3",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "index.js",
   "scripts": {
@@ -92,6 +92,7 @@
     "fs-extra": "^11.1.1",
     "google-libphonenumber": "^3.2.33",
     "htmlparser2-without-node-native": "^3.9.2",
+    "pdfmake": "^0.2.7",
     "process": "^0.11.10",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",

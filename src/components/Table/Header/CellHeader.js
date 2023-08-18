@@ -9,7 +9,6 @@ import styles from "../styles";
 export default function TableCellMainHeaderComponent({columnField,columnDef,style,colArgs,...props}){
     const {sortedColumn,renderHeaderCell,colsWidths} = useTable();
     const width = colsWidths[columnField];
-    const isSelectableColumnName = columnDef.isSelectableColumnName;
     const children = React.useMemo(()=>{
         const content = typeof renderHeaderCell =='function'? renderHeaderCell(colArgs) : defaultVal(columnDef.text,columnDef.label,columnField);
         if(!React.isValidElement(content,true)){

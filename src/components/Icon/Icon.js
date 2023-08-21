@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import Tooltip from "$ecomponents/Tooltip";
 import theme,{flattenStyle,Colors} from "$theme";
 import React from "$react";
-import {IconButton} from "react-native-paper"
+import {IconButton} from "react-native-paper";
 
 const IconComponentRef = React.forwardRef((props,ref)=>{
     let {icon,style,Component,button,color,name,containerColor,...rest} = props;

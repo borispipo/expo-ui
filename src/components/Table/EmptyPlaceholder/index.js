@@ -7,20 +7,20 @@ import {useTable} from "../hooks";
 
 export default function EmptyPlaceholderComponent({testID,content}){
     testID = defaultStr(testID,"RN_VirtuosoTableEmptyPlaceholder");
-    const {id : tableId} = useTable();
+    const {id : tableId,visibleColsNames} = useTable();
     const id = `${tableId}-empty-placeholder`;
     const listID = `${tableId}-list`;
     const clx = "virtuoso-table-empty-placehoder";
-    const {width:dimW,height:dimH} = useWindowDimensions();
+    const {width:dimW} = useWindowDimensions();
     useEffect(()=>{
         const list = document.querySelector(`#${listID}`),content = document.querySelector(`#${id}-content`);
         if(!list || !content || !list.offsetWidth) return;
         const width = list.offsetWidth || list.clientWidth;
         content.style.width = `${width}px`;
-    },[dimW,dimH])
+    },[dimW]);
     return <tbody id={`${id}-tbody`} data-test-id={`${testID}-tbody`} className={`${clx}-tbody`} style={wStyle}>
         <tr id={`${id}-tr`} data-test-id={`${testID}-tr`} className={`${clx}-tr`} style={wStyle}>
-            <td id={`${id}-td`} width={"100%"} height={"100%"}  data-test-id={`${testID}-td`} style={wStyle}>
+            <td colSpan={visibleColsNames.length} id={`${id}-td`} width={"100%"} height={"100%"}  data-test-id={`${testID}-td`} style={wStyle}>
                 <View testID={testID} id={`${id}-content`} style={styles.content}>{content}</View>
             </td>
         </tr>

@@ -16,7 +16,7 @@ export default function DatagridActions ({actions,actionProps,...props}){
   const selectedRowsCount = useGetSelectedRowsCount();
   useWindowDimensions();
   const selected = !!selectedRowsCount;
-  actions = selected ? context?.renderSelectedRowsActions.call(context,actions) : actions;
+  actions = selected ? context?.renderSelectedRowsActions.call(context,{}) : actions;
   if(selected){
     actionProps = Object.assign({},actionProps);
     actionProps.style = Object.assign({},StyleSheet.flatten(actionProps.style));

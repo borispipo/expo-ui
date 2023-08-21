@@ -85,6 +85,13 @@ const Provider = ({children,getTableData,navigation,components,convertFiltersToS
           get customCSS(){
              const prevCSS = defaultStr(typeof customCSS ==='function'? customCSS(theme) : customCSS);
              return `
+                #root {
+                  overflow:hidden!important;
+                  width : 100%!important;
+                  height : 100%important;
+                  left : 0!important;
+                  top : 0!important;
+                }
                 .virtuoso-table-component,
                 .virtuoso-table-component th,
                 .virtuoso-table-component tr,

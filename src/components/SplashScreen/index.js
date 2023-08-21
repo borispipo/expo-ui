@@ -7,8 +7,6 @@ import View from "$ecomponents/View";
 import {isNativeMobile} from "$cplatform";
 import {defaultDecimal} from "$cutils";
 import {LogoProgress} from "$ecomponents/Logo";
-import { Provider as PaperProvider,Portal as PaperPortal} from "react-native-paper";
-import {PortalProvider } from '$ecomponents/Portal';
 import {defaultStr} from "$cutils";
 import styles, {
   _solidBackground,
@@ -100,8 +98,8 @@ const SplashScreenComponent = ({isLoaded,children , duration, delay,logoWidth,lo
     ],
   }
   const child = (animationDone && isLoaded)? React.isValidElement(children) && children : null;
-  return (
-    <View style={[styles.container]} testID={testID} id={testID}>
+  if(animationDone && isLoaded) return child;
+  return <View style={[styles.container]} testID={testID} id={testID}>
       {!animationDone ? <View style={StyleSheet.absoluteFill} testID={testID+"_Animation"}/> : null}
       <View style={styles.containerGlue} testID={testID+"_ContainerGlue"}>
         {!animationDone && (
@@ -110,32 +108,25 @@ const SplashScreenComponent = ({isLoaded,children , duration, delay,logoWidth,lo
             testID={testID+"_AnimationDone"}
           />
         )}
-        {(animationDone || isNative) && child}
+        {false && (animationDone || isNative) && child}
         {!animationDone && (
-          <PortalProvider>
-            <PaperProvider>
-              <PaperPortal.Host>
-                  <View testID={testID+"_LogoContainer"} style={[StyleSheet.absoluteFill, styles.logoStyle]}>
-                  {(
-                    <Animated.View
-                      testID={testID+"_Logo"}
-                      style={_dynamicCustomComponentStyle(
-                            logoScale,
-                            logoOpacity,
-                            logoWidth,
-                            logoHeight
-                        )}>
-                      {<LogoProgress/>}
-                    </Animated.View>
-                  )}
-                </View>
-              </PaperPortal.Host>
-            </PaperProvider>
-          </PortalProvider>
+            <View testID={testID+"_LogoContainer"} style={[StyleSheet.absoluteFill, styles.logoStyle]}>
+            {(
+              <Animated.View
+                testID={testID+"_Logo"}
+                style={_dynamicCustomComponentStyle(
+                      logoScale,
+                      logoOpacity,
+                      logoWidth,
+                      logoHeight
+                  )}>
+                {<LogoProgress/>}
+              </Animated.View>
+            )}
+          </View>
         )}
       </View>
     </View>
-  )
 }
 
 

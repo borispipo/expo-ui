@@ -28,7 +28,7 @@ import SimpleSelect from '$ecomponents/SimpleSelect';
 import {Provider as AlertProvider} from '$ecomponents/Dialog/confirm/Alert';
 import { DialogProvider as FormDataDialogProvider } from '$eform/FormData';
 import {Portal } from 'react-native-paper';
-import {PortalProvider} from '$ecomponents/Portal';
+import {PortalProvider,CustomPortal} from '$ecomponents/Portal';
 import ErrorBoundaryProvider from "$ecomponents/ErrorBoundary/Provider";
 import notify, {notificationRef} from "$notify";
 import DropdownAlert from '$ecomponents/Dialog/DropdownAlert';
@@ -261,15 +261,6 @@ function App({init:initApp,initialRouteName:appInitialRouteName,render,onMount})
     }
   }
   >
-    <PortalProvider>
-      <Portal.Host>
-        <PreloaderProvider/>   
-        <DialogProvider responsive/>
-        <AlertProvider SimpleSelect={SimpleSelect}/>
-        <FormDataDialogProvider/>  
-        <BottomSheetProvider/>
-        <DropdownAlert ref={notificationRef}/>
-        <ErrorBoundaryProvider/>  
         <Navigation
           initialRouteName = {defaultStr(hasGetStarted ? appInitialRouteName : getStartedRouteName,"Home")}
           state = {state}
@@ -279,12 +270,9 @@ function App({init:initApp,initialRouteName:appInitialRouteName,render,onMount})
             setState({...state,hasGetStarted:true})
           }}
         />
-      </Portal.Host>
-    </PortalProvider>
   </NavigationContainer>  : null;
   const content = isLoaded ? typeof render == 'function'? render({children:child,appConfig,config:appConfig}) : child : null;
-  return (<SplashScreen isLoaded={isLoaded}>
-      <AuthProvider>
+  return <AuthProvider>
         <PaperProvider 
           theme={theme}
           settings={{
@@ -293,15 +281,27 @@ function App({init:initApp,initialRouteName:appInitialRouteName,render,onMount})
             },
           }}
         >
-          <ErrorBoundary>
-          <StatusBar/>
-          <PreferencesContext.Provider value={preferences}>
-            {React.isValidElement(content) && content || child}
-          </PreferencesContext.Provider>  
-        </ErrorBoundary>
+          <PortalProvider>
+            <ErrorBoundaryProvider/>  
+            <PreloaderProvider/>   
+            <DialogProvider responsive testID={"RN_MainAppDialogProvider"}/>
+            <AlertProvider SimpleSelect={SimpleSelect}/>
+            <FormDataDialogProvider/>  
+            <BottomSheetProvider/>
+            <DropdownAlert ref={notificationRef}/>
+            <Portal.Host testID="RN_NativePaperPortalHost">
+              <ErrorBoundary>
+                <StatusBar/>
+                <SplashScreen isLoaded={isLoaded}>
+                  <PreferencesContext.Provider value={preferences}>
+                    {React.isValidElement(content) && content || child}
+                  </PreferencesContext.Provider>  
+                </SplashScreen>
+              </ErrorBoundary>
+            </Portal.Host>
+          </PortalProvider>
       </PaperProvider>
-      </AuthProvider>
-  </SplashScreen>);
+  </AuthProvider>;
 }
 
 export default App;

@@ -53,7 +53,6 @@ export default function StatusBarComponent(props){
         }
     },[]);
     return null;
-    return <StatusBar {...styles} {...props}></StatusBar>
 }
 const updateThemeName = (theme)=>{
     if(typeof document ==="undefined" || !document || !isDOMElement(document.body)) return null;

@@ -158,7 +158,7 @@ export function PreloaderProvider({ children }) {
         return ()=>{ unlinkPreloader();}
     },[])
     return (<PreloaderContext.Provider value={{subscribe,unsubscribe}}>
-        <PreloaderComponent id={MAIN_PRELOADER_ID} visible = {false}/>
+        <PreloaderComponent id={MAIN_PRELOADER_ID} testID={"RN_MainPreloaderProviderComponent"} visible = {false}/>
         {children}
     </PreloaderContext.Provider>);
 }

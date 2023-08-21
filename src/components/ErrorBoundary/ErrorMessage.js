@@ -13,6 +13,7 @@ import {isWeb} from "$cplatform";
 
 const ErrorMessage = React.forwardRef(function(props,ref){
   const { error,resetError,onGoBack, info } = props
+  const testID = defaultStr(props.testID,"RN_ErrorBoundaryMessage");
     const goToHome = ()=> {
       if(navigationRef){
         navigationRef.navigate(homeRoute);
@@ -26,8 +27,8 @@ const ErrorMessage = React.forwardRef(function(props,ref){
     const pointerEvents = 'auto';
     const {width,height} = useWindowDimensions();
     return <Portal>
-          <View ref={ref} testID='RN_ErrorBoundary_Container' pointerEvents={pointerEvents} style={[styles.container,isWeb()?{position:'fixed'}:null,{backgroundColor:theme.colors.surface,width,height}]}>
-            <View style={styles.content} pointerEvents={pointerEvents}>
+          <View ref={ref} testID={`${testID}_ErrorMessageContainer`} pointerEvents={pointerEvents} style={[styles.container,isWeb()?{position:'fixed'}:null,{backgroundColor:theme.colors.surface,width,height}]}>
+            <View style={styles.content} testID={`${testID}_ErrorMessageContentContainer`} pointerEvents={pointerEvents}>
               <Label style={styles.title}>Oops!</Label>
               <Label style={styles.subtitle}>{'Une erreur est survenue'}</Label>
               <Label style={styles.error}>{error.toString()}</Label>

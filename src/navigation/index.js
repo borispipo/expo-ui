@@ -15,7 +15,8 @@ export * from "./utils";
  *  lorsque hasGetStarted est à false, celle-ci rend l'écran Start permettant de rendre le contenu GetStarted
 */
 export default function NavigationComponent (props){
-    let {state,hasGetStarted,onGetStart,initialRouteName,...rest} = props;
+    let {state,hasGetStarted,isLoading,onGetStart,initialRouteName,...rest} = props;
+    if(isLoading) return null;
     const {navigation:{screens}} = useContext();
     const allScreens = initScreens({Factory:Stack,screens,ModalFactory:Stack,filter:({name})=>{
         return true;

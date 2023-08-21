@@ -4,6 +4,7 @@ let providerRef = null;
 import * as React from "react";
 import useForceRender from "$react/useForceRender";
 import setRef from "$react/setRef";
+import {defaultStr} from "$cutils";
 
 const providerState = {};
 
@@ -38,9 +39,9 @@ const Provider = React.forwardRef((_props,innerRef)=>{
         },
     });
     setRef(ref,context);        
-
-    return <Portal>
-        <ErrorMessage {...propRef.current} ref={el=>{
+    const testID = defaultStr(propRef.current?.testID,_props.testID,"RN_ErrorBoundaryProvider");
+    return <Portal testID={testID}>
+        <ErrorMessage {...propRef.current} testID={testID+"_ErrorBoundaryPortalContent"}  ref={el=>{
             messageRef.current = el;
             setRef(propRef.current.messageRef);
         }}/>

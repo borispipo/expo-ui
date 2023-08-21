@@ -472,7 +472,7 @@ class _Menu extends AppComponent {
         {true ? (
           <Portal>
             {rendered ? <TouchableWithoutFeedback
-              testID={testID+"_TouchableWithoutFeedBack"}
+              testID={testID+"_Menu_TouchableWithoutFeedBack"}
               accessibilityLabel={overlayAccessibilityLabel}
               role="button"
               onPress={onDismiss}
@@ -481,7 +481,7 @@ class _Menu extends AppComponent {
               <View style={[StyleSheet.absoluteFill,{flex:1,backgroundColor:'transparent'}]} testID={testID+"_Backdrop"} />
             </TouchableWithoutFeedback>:null}
             <View
-              testID = {testID+"_ContentContainer"}
+              testID = {testID+"_MenuContentContainer"}
               ref={(ref) => {
                 this.menu = ref;
               }}
@@ -494,7 +494,7 @@ class _Menu extends AppComponent {
               {rendered?<Animated.View style={{ transform: positionTransforms }} testID={testID+"_Animated"}>
                 <Surface
                   elevation = {5}
-                  testID= {testID+"_Content"}
+                  testID= {testID+"_MenuContent"}
                   style={
                     [
                       styles.shadowMenuContainer,

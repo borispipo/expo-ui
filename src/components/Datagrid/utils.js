@@ -173,9 +173,9 @@ export const getRowStyle = ({row,bordered,numColumns,rowData,isAccordion,isTable
         style.push(rowIndex%2===0?styles.even : theme.isDark()?styles.oddDark : styles.odd)
     }
     if(selected){
-        const selectedBcolor = theme.isDark()? SELECTED_BORDER_COLOR : theme.colors.primary;
-        const bordered = isAccordion ? null : {borderBottomWidth:1,borderBottomColor:selectedBcolor,borderTopWidth:1,borderTopColor:selectedBcolor};
-        style.push(styles.selected,bordered);
+        //const selectedBcolor = theme.isDark()? SELECTED_BORDER_COLOR : theme.colors.primary;
+        //const bordered = null;//isAccordion ? null : {borderBottomWidth:1,borderBottomColor:selectedBcolor,borderTopWidth:1,borderTopColor:selectedBcolor};
+        style.push(styles.selected);
     }
     if(paid || row.paid){
         style.push(styles.paid);

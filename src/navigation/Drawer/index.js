@@ -25,9 +25,11 @@ const DrawerNavigator = React.forwardRef(({content,children:customChildren,state
             setIsLoggedIn(false);
         }
         const refreshItems = ()=>{
-            refreshItemsRef.current = true;
-            forceRender();
-            refreshItemsRef.current = false;
+            setTimeout(()=>{
+                refreshItemsRef.current = true;
+                forceRender();
+                refreshItemsRef.current = false;
+            },100)
         };
         APP.on(APP.EVENTS.AUTH_LOGOUT_USER,onLogoutUser);
         APP.on(APP.EVENTS.UPDATE_THEME,refreshItems);

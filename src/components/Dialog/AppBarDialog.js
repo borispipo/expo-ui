@@ -9,8 +9,9 @@ const AppBarDialogComponent = React.forwardRef((props,ref)=>{
     const forceRender = React.useForceRender();
     React.useEffect(()=>{
         const onResize = ()=>{
+            return;
             forceRender();
-         }
+        }
         if(responsive){
             APP.on(APP.EVENTS.RESIZE_PAGE,onResize);
         }

@@ -38,6 +38,7 @@ class ErrorBoundary extends React.Component {
       } else {
         return (
           <ErrorMessage
+            testID={"RN_ErrorBoundaryErrorMessage"}
             error={error}
             info={info}
             resetError={this.resetError}
@@ -46,7 +47,6 @@ class ErrorBoundary extends React.Component {
         )
       }
     }
-
     return this.props.children
   }
 }

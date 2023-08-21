@@ -29,12 +29,12 @@ const useGetItems = (options)=>{
         APP.on(APP.EVENTS.REFRESH_MAIN_DRAWER,refreshItems);
         APP.on(APP.EVENTS.AUTH_LOGIN_USER,refreshItems);
         APP.on(APP.EVENTS.AUTH_LOGOUT_USER,refreshItems);
-        APP.on(APP.EVENTS.UPDATE_THEME,refreshItems);
+        //APP.on(APP.EVENTS.UPDATE_THEME,refreshItems);
         return ()=>{
             APP.off(APP.EVENTS.REFRESH_MAIN_DRAWER,refreshItems);
             APP.off(APP.EVENTS.AUTH_LOGIN_USER,refreshItems);
             APP.off(APP.EVENTS.AUTH_LOGOUT_USER,refreshItems);
-            APP.off(APP.EVENTS.UPDATE_THEME,refreshItems);
+            //APP.off(APP.EVENTS.UPDATE_THEME,refreshItems);
         }
     },[])
     return useMemo(()=>{

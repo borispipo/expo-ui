@@ -3560,7 +3560,8 @@ export default class CommonDatagridComponent extends AppComponent {
     }
     isAllRowsSelected(){
         const count = this.getSelectedRowsCount() - this.getSectionListDataSize();
-        return count >=0 && count >= this.getMaxSelectableRows()? true : false;
+        if(count <= 0) return false;
+        return count >= this.getMaxSelectableRows();
     }
     getDefaultPaginationRowsPerPageItems (){
         return [5,10,15,20,25,30,40,50,60,80,100];

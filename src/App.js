@@ -3,9 +3,6 @@ import React from 'react';
 import {SWRConfig} from "$swr";
 import Index from './index';
 import notify  from "$notify";
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import {GestureHandlerRootView} from "react-native-gesture-handler";
-import KeyboardAvoidingViewComponent from '$ecomponents/KeyboardAvoidingView';
 import APP from "$app";
 import {isMobileNative} from "$cplatform";
 import {setDeviceIdRef} from "$capp";
@@ -144,13 +141,7 @@ export default function getIndex({onMount,onUnmount,render,onRender,init}){
           }
         }}
       >
-        <GestureHandlerRootView style={{ flex: 1,flexGrow:1,flexShrink:1}} testID={"RN_GestureHandlerRootView"}>
-          <KeyboardAvoidingViewComponent testID={"RN_AppKeyboardAvoidingView"}>
-            <SafeAreaProvider testID={"RN_AppSafeAreaProvider"}>
-              <Index onMount={onMount} render={render} onUnmount={onUnmount} onRender={onRender} init={init}/>
-            </SafeAreaProvider>
-          </KeyboardAvoidingViewComponent>
-        </GestureHandlerRootView>
+       <Index onMount={onMount} render={render} onUnmount={onUnmount} onRender={onRender} init={init}/>
       </SWRConfig>
     );
 };

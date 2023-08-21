@@ -1,5 +1,5 @@
 import React,{useMemo} from "$react";
-import {defaultStr,isObj} from "$cutils";
+import {defaultStr,isObj,uniqid} from "$cutils";
 import {DEFAULT_COLUMN_WIDTH} from "./utils";
 import Label from "$ecomponents/Label";
 import HeaderCell from "./Header/Cell";

@@ -1,5 +1,5 @@
 import View from "$ecomponents/View";
-import {defaultObj,defaultStr,debounce,defaultNumber,isObj,defaultVal} from "$cutils";
+import {defaultObj,defaultStr,debounce,defaultNumber,uniqid,isObj,defaultVal} from "$cutils";
 import PropTypes from "prop-types";
 import React from "$react";
 import { StyleSheet,View as RNView,ScrollView,Dimensions} from "react-native";
@@ -15,6 +15,7 @@ import {useIsRowSelected} from "$ecomponents/Datagrid/hooks";
 import {getRowStyle} from "$ecomponents/Datagrid/utils";
 import ScrollNative from "./ScrollNative";
 import VirtuosoTableComponent from "./VirtuosoTable";
+import EmptyPlaceholder from "./EmptyPlaceholder";
 export {styles};
 
 const isSCrollingRef = React.createRef();
@@ -257,6 +258,9 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
                                 return <TableRowComponent {...props} style={[getRowStyle(args),props.style]}/>
                             },
                             Table: VirtuosoTableComponent,
+                            EmptyPlaceholder : (props)=>{
+                                return <EmptyPlaceholder testID={testID+"_VirtuosoEmptyPlaceholder"} {...props} content={emptyContent}/>
+                            }
                         }}
                     />
                     {isNative ? <AbsoluteScrollView
@@ -334,20 +338,22 @@ TableComponent.popTypes = {
 
 TableComponent.displayName = "TableComponent";
 
-const TableComponentProvider = React.forwardRef(({children,renderCell,testID,withDatagridContext,getRowKey,filter,data,...props},ref)=>{
+const TableComponentProvider = React.forwardRef(({children,id,renderCell,testID,withDatagridContext,getRowKey,filter,data,...props},ref)=>{
     testID = props.testID = defaultStr(testID,"RN_TableComponent");
-    const prepatedColumns = usePrepareColumns(props);
+    const idRef = React.useRef(defaultStr(id,uniqid("virtuoso-table-list-id")));
+    id = idRef.current;
+    const prepatedColumns = usePrepareColumns({...props,id});
     const keyExtractor = typeof getRowKey =='function'? getRowKey : React.getKey;
     const items = React.useMemo(()=>{
         filter = typeof filter =='function'? filter : x=>true;
         return data.filter((i,...rest)=>isObj(i) && !!filter(i,...rest));
     },[data]);
     const getItem = (index)=>items[index]||null;
-    return <TableContext.Provider value={{...props,...prepatedColumns,getItem,getRowByIndex:getItem,testID,data,withDatagridContext,keyExtractor,
+    return <TableContext.Provider value={{...props,...prepatedColumns,id,getItem,getRowByIndex:getItem,testID,data,withDatagridContext,keyExtractor,
         renderCell,
         items
     }}>
-        <TableComponent {...props} ref={ref}/>
+        <TableComponent {...props} id={id} ref={ref}/>
     </TableContext.Provider>
 });
 TableComponentProvider.displayName = "TableComponentProvider";

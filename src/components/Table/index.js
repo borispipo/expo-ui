@@ -125,9 +125,9 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
             }
         }
     }
-    const onComponentRender = (a,b,c)=>{
+    const onComponentRender = (...args)=>{
         if(onRender){
-            onRender(a,b,c);
+            onRender(...args);
         }
         //au paravant il était possible de faire scroller le composant Table lorsque les données sont raffraichies, ce qui n'avait pas un bon impact sur le rendu de la table de données
         if(false && itemsChanged){

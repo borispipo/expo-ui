@@ -151,7 +151,6 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         title
     },rest.exportTableProps.pdf);
     const fetchOptionsRef = React.useRef(defaultObj(customFetchOptions));
-    const refreshCBRef = React.useRef(null);
     const fPathRef = React.useRef(defaultStr(fetchPathKey,uniqid("fetchPath")));
     fetchPath = defaultStr(fetchPath,table.queryPath,tableName.toLowerCase()).trim();
     if(fetchPath){
@@ -160,23 +159,16 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     const sortRef = React.useRef({});
     const innerRef = React.useRef(null);
     const showProgressRef = React.useRef(true);
-    const dataRef = React.useRef([]);
-    const hasResultRef = React.useRef(false);
-    const totalRef = React.useRef(0);
-    const isFetchingRef = React.useRef(false);
     const pageRef = React.useRef(1);
     const canHandlePagination = handlePagination !== false ? true : false;
     const canHandleLimit = handleQueryLimit !== false && canHandlePagination ? true : false;
     const limitRef = React.useRef(!canHandleLimit ?0 : defaultNumber(getSessionData("limit"),500));
     const isInitializedRef = React.useRef(false);
     testID = defaultStr(testID,"RNSWRDatagridComponent");
-    const isLoadingRef = React.useRef(true);
-    const {error, isValidating,isLoading:customIsLoading,refresh} = useSWR(fetchPath,{
+    const {error, isValidating,isLoading,data:result,refresh} = useSWR(fetchPath,{
         fetcher : (url,opts)=>{
             if(!isInitializedRef.current) {
-                isFetchingRef.current = false;
-                isLoadingRef.current = false;
-                return;
+                return Promise.resolve({data:[],total:0});
             }
             opts = defaultObj(opts);
             opts.fetchOptions = isObj(opts.fetchOptions)? Object.clone(opts.fetchOptions) : {};
@@ -195,35 +187,14 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                 delete opts.page;
                 delete opts.offset;
             }
-            const fetchCB = (fArgs)=>{
-                let {data,total} = (Array.isArray(fArgs) ? {data:fArgs,total:fArgs.length} : isObj(fArgs)? fArgs : {data:[],total:0});
-                totalRef.current = total;
-                dataRef.current = data;
-                const dd = Object.size(data);
-                if(dd>total){
-                    total = dd;
-                }
-                hasResultRef.current = true;
-                if(onFetchData && typeof onFetchData =='function'){
-                    onFetchData({allData:data,total,data,context:innerRef.current})
-                }
-                return data;
-            };
-            hasResultRef.current = false;
-            isFetchingRef.current = true;
             if(typeof fetcher =='function'){
-                return fetcher(url,opts).then(fetchCB).finally(()=>{
-                    isFetchingRef.current = false;
-                    isLoadingRef.current = false;
-                });
+                return fetcher(url,opts);
             }
             const {url:fUrl,fetcher:cFetcher,...rest} = getFetcherOptions(url,opts);
             if(showProgressRef.current ===false){
                 rest.showError = false;
             }
-            return cFetcher(fUrl,rest).then(fetchCB).finally(()=>{
-                isFetchingRef.current = false;
-            }).catch((e)=>{
+            return cFetcher(fUrl,rest).catch((e)=>{
                 console.log(e," is swr fetching data");
                 throw e;
             });
@@ -231,39 +202,38 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         showError  : false,
         swrOptions : getSWROptions(swrConfig.refreshTimeout)
     });
-    const isLoading = isLoadingRef.current  && customIsLoading || false;
-    /*React.useEffect(()=>{
-        innerRef.current && innerRef.current.setIsLoading && innerRef.current.setIsLoading(isLoading);
-    },[isLoading])*/
-    React.useEffect(()=>{
-        const cb = refreshCBRef.current;
-        refreshCBRef.current = null;
-        if(!isValidating && !customIsLoading && typeof cb =='function'){
-            cb();
+    const {data,total} = React.useMemo(()=>{
+        const {data,total} = (Array.isArray(result) ? {data:result,total:result.length} : isObj(result)? result : {data:[],total:0});
+        const dd = Object.size(data);
+        if(dd>total){
+            total = dd;
         }
-    },[isValidating,customIsLoading])
+        if(onFetchData && typeof onFetchData =='function'){
+            onFetchData({allData:data,total,data,context:innerRef.current})
+        }
+        return {data,total};
+    },[result])
+    const loading = (isLoading || isValidating);
     React.useEffect(()=>{
         setTimeout(x=>{
             if(error && innerRef.current && innerRef.current.isLoading && innerRef.current.isLoading()){
                 innerRef.current.setIsLoading(false,false);
             }
-        },500)
-    },[error])
+        },500);
+    },[error]);
     const doRefresh = (showProgress)=>{
         showProgressRef.current = showProgress ? typeof showProgress ==='boolean' : false;
-        if(isFetchingRef.current) return;
-        isLoadingRef.current = true;
         refresh();
     }
     const canPaginate = ()=>{
         if(!canHandlePagination) return false;
-        if(canHandleLimit && typeof totalRef.current !=='number' || typeof pageRef.current !='number' || typeof limitRef.current !='number') return false;
+        if(canHandleLimit && typeof total !=='number' || typeof pageRef.current !='number' || typeof limitRef.current !='number') return false;
         if(limitRef.current <= 0) return false;
         return true;
     }
     const getTotalPages = ()=>{
         if(!canPaginate()) return false;
-        return Math.ceil(totalRef.current / limitRef.current);;
+        return Math.ceil(total / limitRef.current);;
     };
     const getNextPage = ()=>{
         if(!canPaginate()) return false;
@@ -289,9 +259,8 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     }, canSortRemotely = ()=>{
         if(!canPaginate() || autoSort === true) return false;
         ///si le nombre total d'élements est inférieur au nombre limite alors le trie peut être fait localement
-        return totalRef.current > limitRef.current && true || false;
+        return total > limitRef.current && true || false;
     }
-    const loading = (isLoadingRef.current && (isLoading|| isValidating));
     const pointerEvents = loading ?"node" : "auto";
     const itLimits = [{
         text : "Limite nbre elts par page",
@@ -378,7 +347,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                         />
                         <View testID={testID+"_PaginationLabel"}>
                             <Label style={{fontSize:15}}>
-                                {(totalRef.current?page:0).formatNumber()}-{totalPages.formatNumber()}{" / "}{totalRef.current.formatNumber()}
+                                {(total?page:0).formatNumber()}-{totalPages.formatNumber()}{" / "}{total.formatNumber()}
                             </Label>
                         </View>
                         <Icon
@@ -433,7 +402,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             isSWRDatagrid
             isTableData
             fetchData = {undefined}
-            data = {dataRef.current}
+            data = {data}
             canMakePhoneCall={canMakePhoneCall} 
             key={tableName} 
             sessionName={defaultStr(sessionName,'list-data')} 

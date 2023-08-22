@@ -2,7 +2,7 @@ import {Content} from "$ecomponents/BottomSheet";
 import Icon from "$ecomponents/Icon";
 import React from "$react";
 import {defaultStr,defaultBool,defaultObj} from "$cutils";
-import Filter, {canHandleFilter,getFilterStateValues} from "$ecomponents/Filter";
+import Filter, {canHandleFilter} from "$ecomponents/Filter";
 import PropTypes from "prop-types";
 import { StyleSheet,View } from "react-native";
 import Menu from "$ecomponents/Menu";
@@ -18,16 +18,14 @@ const MIN_WIDTH = 250;
 let windowWidth = Dimensions.get("window").width;
 
 const FiltersAccordionComponent = React.forwardRef((props,ref)=>{
-    const {filters,isLoading,filteredColumns,children,label,filterTitle:customFilterTitle,visible:customVisible,orOperator,andOperator,onToggleFilters,context:customContext,...restProps} = props;
+    const {filters,isLoading,filteredColumns,children,label,testID:cTestID,filterTitle:customFilterTitle,visible:customVisible,orOperator,andOperator,onToggleFilters,context:customContext,...restProps} = props;
     const context = defaultObj(customContext);
-    const [state,setState] = React.useState({
-        visible : defaultBool(customVisible,false),
-        visibleColumns : defaultObj(filteredColumns),
-    });
+    const testID = defaultStr(testID,"RN_AccordionFilters");
+    const [visibleColumns,setVisibleColumns] = React.useState(filteredColumns);
+    const [visible,setVisible] = React.useState(defaultBool(customVisible,false));
     const valuesRefs = React.useRef({});
     windowWidth = Dimensions.get("window").width;
     const innerRef = React.useRef(null);
-    const {visible,visibleColumns} = state;
     const rest = defaultObj(restProps);
     const filterTitle = defaultStr(customFilterTitle,'Filtres');
     const canHandlerFilterRef = React.useRef(0);
@@ -50,8 +48,8 @@ const FiltersAccordionComponent = React.forwardRef((props,ref)=>{
             if(React.isValidElement(filter)){
                 content.push(<Grid.Cell {...cellProps} key={index}>{filter}</Grid.Cell>)
             } else if(isObj(filter)){ 
-                const {onChange} = filter;
-                const key = defaultStr(filter.key,filter.field,filter.index,index+"");
+                const {onChange,visible:cVisible,...rest} = filter;
+                const key = defaultStr(filter.key,filter.field,filter.columnField,filter.index,index+"");
                 const visible = !!visibleColumns[key];
                 colMenus.push(<Menu.Item
                     key = {key}
@@ -61,7 +59,7 @@ const FiltersAccordionComponent = React.forwardRef((props,ref)=>{
                         if(context.toggleFilterColumnVisibility){
                             context.toggleFilterColumnVisibility(key,!visible);
                         }
-                        setState({...state,visibleColumns:{...visibleColumns,[key]:!visible}})
+                        setVisibleColumns({...visibleColumns,[key]:!visible});
                     }}
                 />)
                 if(!visible) {
@@ -72,32 +70,32 @@ const FiltersAccordionComponent = React.forwardRef((props,ref)=>{
                 if(renderMenusOnly) return null;
                 content.push(
                     <Grid.Cell {...cellProps} key={key}>
-                    <Filter
-                        {...filter}
-                        {...(isObj(valuesRefs.current[key]) ? valuesRefs.current[key] : {})}
-                        dynamicRendered
-                        //isLoading = {isLoading && filteredRef.current[key] ? true : false}
-                        orOperator = {defaultBool(orOperator,filter.orOperator,true)}
-                        andOperator = {defaultBool(andOperator,filter.andOperator,true)}
-                        onChange = {(arg)=>{
-                            if(!arg.action && !arg.operator || !arg.field) return;
-                            const canHandle = canHandleFilter(arg);
-                            valuesRefs.current[key] = arg;
-                            if(filteredRef.current[key] !== canHandle){
-                                if(canHandle){
-                                    canHandlerFilterRef.current++;
-                                } else {
-                                    canHandlerFilterRef.current = Math.max(0,canHandlerFilterRef.current-1);
+                        <Filter
+                            {...rest}
+                            {...(isObj(valuesRefs.current[key]) ? valuesRefs.current[key] : {})}
+                            dynamicRendered
+                            //isLoading = {isLoading && filteredRef.current[key] ? true : false}
+                            orOperator = {defaultBool(orOperator,filter.orOperator,true)}
+                            andOperator = {defaultBool(andOperator,filter.andOperator,true)}
+                            onChange = {(arg)=>{
+                                if(!arg.action && !arg.operator || !arg.field) return;
+                                const canHandle = canHandleFilter(arg);
+                                valuesRefs.current[key] = arg;
+                                if(filteredRef.current[key] !== canHandle){
+                                    if(canHandle){
+                                        canHandlerFilterRef.current++;
+                                    } else {
+                                        canHandlerFilterRef.current = Math.max(0,canHandlerFilterRef.current-1);
+                                    }
                                 }
-                            }
-                            filteredRef.current[key] = canHandle;
-                            if(onChange){
-                                onChange(arg);
-                            }
-                        }}
-                        withBottomSheet
-                        containerProps = {{...containerProps}}
-                        inputProps = {{containerProps}}
+                                filteredRef.current[key] = canHandle;
+                                if(onChange){
+                                    onChange(arg);
+                                }
+                            }}
+                            withBottomSheet
+                            containerProps = {{...containerProps}}
+                            inputProps = {{containerProps}}
                     /></Grid.Cell>)
             }
         })
@@ -115,7 +113,7 @@ const FiltersAccordionComponent = React.forwardRef((props,ref)=>{
         title = {null}
         visible = {visible}
         onDissmiss = {()=>{
-            setState({...state,visible:false})
+            setVisible(false);
         }}
         anchor = {(props)=><Tooltip title = {mainFilterTitle}Component={Pressable} {...props} style={[theme.styles.row]}>
              <Icon 
@@ -132,8 +130,8 @@ const FiltersAccordionComponent = React.forwardRef((props,ref)=>{
     >
          {({open,close})=>{
             const {content,colMenus} = prepareContent(filters);
-            return <View style={[styles.wrapper]}>
-                <View style = {[styles.menuWrapper]}>
+            return <View style={[styles.wrapper]} testID={testID+"_AccordionFiltersWrapper"}>
+                <View style = {[styles.menuWrapper]} testID={testID+"_AccordionFilterWraperContent"}>
                     <Expandable
                         left = {(props)=><Icon {...props} icon={content.length?'filter-plus':'filter-menu'}/>}
                         style = {styles.expandable}

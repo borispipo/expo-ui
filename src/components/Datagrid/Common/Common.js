@@ -2560,7 +2560,6 @@ export default class CommonDatagridComponent extends AppComponent {
                     sortedProps,
                     width,
                     columnField : field,
-                    //columnDef : header,
                     index : headerIndex,
                     visible,
                     key : header.field,
@@ -3617,9 +3616,13 @@ export default class CommonDatagridComponent extends AppComponent {
         return false;
     }
     UNSAFE_componentWillReceiveProps(nextProps){
-        if(React.areEquals(nextProps.data,this.props.data) || (stableHash(nextProps.data) === stableHash(this.props.data))) {
+        if(nextProps.data === this.props.data || React.areEquals(nextProps.data,this.props.data)) {
             return false;
         }
+        const newStableHash = stableHash(nextProps.data);
+        this.prevStableDataHash = this.prevStableDataHash !== undefined ? this.prevStableDataHash : stableHash(this.props.data);
+        if(newStableHash == this.prevStableDataHash) return false;
+        this.prevStableDataHash = newStableHash;
         this.setIsLoading(true,true);
         this.prepareData({...nextProps,force:true},(state)=>{
             this.setState(state)

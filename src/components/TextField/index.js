@@ -424,6 +424,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
             {valueToCopy?<Icon
                 {...iconProps}
                 title = {"Copier la valeur ["+valueToCopy+"] dans le presse papier"}
+                style = {[iconProps.style,{pointerEvents:"auto"}]}
                 icon = {COPY_ICON}
                 onPress = {(e)=>{
                     /*if(selectFieldToCopy){

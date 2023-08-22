@@ -425,6 +425,7 @@ export default class Filter extends AppComponent {
       dynamicRendered,
       tooltipLabel,
       andOperator,
+      orOperator,
       searchIcon,
       field,
       style,

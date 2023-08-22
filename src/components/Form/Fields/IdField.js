@@ -29,6 +29,9 @@ export default class FormIDField extends TextField {
 
     /*** met à jour la données du numéro de piece */
     fetchNewId(focus){
+        if(this.isFilter()){
+            return Promise.resolve("");
+        }
         const data = defaultObj(this.props.data);
         if(!isNonNullString(this.name)) return undefined;
         const cb = (value)=>{
@@ -66,41 +69,48 @@ export default class FormIDField extends TextField {
         return false;
     }
     componentDidUpdate(){
-        if(!isNonNullString(this.newFieldIdValue)){
+        if(!this.isFilter() && !isNonNullString(this.newFieldIdValue)){
             this.fetchNewId();
         }
     }
     _render(props,setRef){
         delete props.validType;
-        const upper = props.upper !== false ? UPPER_CASE : "";
-        if(isNonNullString(this.name) && isObj(props.data) && isNonNullString(props.data[this.name])){
-            props.disabled = true;         
-            props.validType = upper;
-            props.defaultValue = props.data[this.name];
-        } else {
-            props.validType = 'required|'+upper;
-        }
-        if(typeof props.minLength !=='number'){
-            props.minLength = 2;
-        }
-        const defValue = props.defaultValue = isNonNullString(props.defaultValue)? props.defaultValue : isNonNullString(this.newFieldIdValue)? this.newFieldIdValue : undefined;
-        props.validRule = props.validType;
-        props.contentContainerProps = Object.assign({},props.contentContainerProps)
-        props.contentContainerProps.pointerEvents = defaultStr(props.contentContainerProps.pointerEvents,"auto");
-        props.enableCopy = typeof props.enableCopy ==='boolean'? props.enableCopy : (props.defaultValue || this.newFieldIdValue ? true : false);
-        const {right} = props;
-        props.readOnly = typeof props.disabled ==='boolean' ? !!!props.disabled : typeof props.readOnly =="boolean"? !!!props.disabled : false;
-        props.right = (props)=>{
-            const r = typeof right =='function'? right (props) : React.isValidElement(right)? right : null;
-            if(!defValue){
-                return <>{r}<ActivityIndicator
-                    {...props}
-                    style = {[props.style,{marginRight:10}]}
-                /></>
+        if(!this.isFilter()){
+            const upper = props.upper !== false ? UPPER_CASE : "";
+            if(isNonNullString(this.name) && isObj(props.data) && isNonNullString(props.data[this.name])){
+                props.disabled = true;         
+                props.validType = upper;
+                props.defaultValue = props.data[this.name];
+            } else {
+                props.validType = 'required|'+upper;
             }
-            return r;
+            if(typeof props.minLength !=='number'){
+                props.minLength = 2;
+            }
+            const defValue = props.defaultValue = isNonNullString(props.defaultValue)? props.defaultValue : isNonNullString(this.newFieldIdValue)? this.newFieldIdValue : undefined;
+            props.validRule = props.validType;
+            props.contentContainerProps = Object.assign({},props.contentContainerProps)
+            props.contentContainerProps.pointerEvents = defaultStr(props.contentContainerProps.pointerEvents,"auto");
+            props.enableCopy = typeof props.enableCopy ==='boolean'? props.enableCopy : (props.defaultValue || this.newFieldIdValue ? true : false);
+            props.readOnly = typeof props.disabled ==='boolean' ? !!!props.disabled : typeof props.readOnly =="boolean"? !!!props.disabled : false;
+            
+            const {right} = props;
+            props.right = (props)=>{
+                const r = typeof right =='function'? right (props) : React.isValidElement(right)? right : null;
+                if(!defValue){
+                    return <>{r}<ActivityIndicator
+                        {...props}
+                        style = {[props.style,{marginRight:10}]}
+                    /></>
+                }
+                return r;
+            }
+                
+            this.setValidRule(props.validType);
+        } else {
+            props.enableCopy = false;
+            props.disabled = props.readOnly = false;
         }
-        this.setValidRule(props.validType);
         return  super._render(props,setRef);
     }
 }

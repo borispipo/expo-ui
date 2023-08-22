@@ -245,6 +245,7 @@ export default class Field extends AppComponent {
         return false;
     }
     callOnChange(args){
+        args.isFilter = this.isFilter();
         if(typeof this.props.onChange === "function" && this.hasValueChanged(args.value)){
             this.props.onChange(args);
         }
@@ -278,7 +279,7 @@ export default class Field extends AppComponent {
                     actions[k][action]();
                 }
                 let form = Forms.getForm(this.formName);
-                this.INITIAL_STATE.onValidate.call(this,{...defaultObj(rest),props:this.props,formName:this.formName,form,name:this.name,field:this.name,value,event,context:this});
+                this.INITIAL_STATE.onValidate.call(this,{...defaultObj(rest),isFilter:this.isFilter(),props:this.props,formName:this.formName,form,name:this.name,field:this.name,value,event,context:this});
                 this.callOnChange({value,event,isValid:true,...rest});
                 if(form && form.props){
                     if(canEnable){
@@ -351,7 +352,7 @@ export default class Field extends AppComponent {
                 for(var k in actions){
                     actions[k].disable();
                 }
-                this.INITIAL_STATE.onNoValidate.call(this,{...defaultObj(rest),props:this.props,msg,value,formName:this.formName,field:this.name,name:this.name,context:this,event,validRule,validType:validRule,validParams,context:this});
+                this.INITIAL_STATE.onNoValidate.call(this,{...defaultObj(rest),isFilter:this.isFilter(),props:this.props,msg,value,formName:this.formName,field:this.name,name:this.name,context:this,event,validRule,validType:validRule,validParams,context:this});
                 let form = Forms.getForm(this.formName);
                 this.callOnChange({value,validRule,validParams,event,isValid:false,...rest});
                 if(form){

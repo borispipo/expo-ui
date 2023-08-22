@@ -5,7 +5,6 @@ import useStableMemo  from "$react/useStableMemo";
 import { useWindowDimensions } from "$cdimensions";
 import {isObj,isNonNullString} from "$cutils";
 import { StyleSheet } from "react-native";
-
 import { createContext,useContext as useReactContext } from "react";
 
 export const ExpoUIContext = createContext(null);

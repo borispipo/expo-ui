@@ -70,13 +70,19 @@ export const getFilterComponentProps = (_props)=>{
         errorText,
         label,text,
         primary,
-        onValidate,
         checkPiece,
         check,
         width,
         type,
+        visible,
         jsType,
         filterType,
+        getValidValue,
+        validate,
+        onValidate,
+        onValidatorValid,///il s'agit de la fonction de rappel appelée immédiatement après que le validateur ait réuissie la validation
+        onValidateField,
+        onNoValidate,
         ...props
     } = _props;
     props = defaultObj(props);
@@ -86,13 +92,13 @@ export const getFilterComponentProps = (_props)=>{
     const sanitizedType = type.replaceAll("_","").toLowerCase().trim();
     props = defaultObj(props);
     props.label = defaultStr(label,text);
-    if(type.startsWith("select")){
+    if(sanitizedType.startsWith("select")){
         props.inputProps = Object.assign({},props.inputProps);
         props.inputProps.placeholder = defaultStr(props.inputProps.placeholder,i18n.lang("search.."))
         component = componentTypes.SelectField;
-        if(type =='select_country' || type =='selectcountry'){
+        if(sanitizedType ==='selectcountry'){
             component = componentTypes.SelectCountry;
-        } else if(type =='select_tabledata' || type =='selecttabledata'){
+        } else if(sanitizedType ==='selecttabledata'){
             component = componentTypes.SelectTableData;
         } else if(React.isComponent(componentTypes[type])){
             component = componentTypes[type];
@@ -133,6 +139,7 @@ export const getFilterComponentProps = (_props)=>{
         props.multiple = true;
     }
     props.renderFilter = true;
+    props.isFilter = true;
     if(type.contains("date") || type.contains("time")){
         delete props.right;
     }

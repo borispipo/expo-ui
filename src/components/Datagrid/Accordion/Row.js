@@ -127,10 +127,10 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
                 ref = {React.useMergeRefs(ref,innerRef)}
         >
         <Swipeable
-             ref = {swipeableRef}
-             testID={testID+'_ContentContainerSwipeable'}
-             friction={2}
-             containerStyle = {{overflow:'hidden'}}
+            ref = {swipeableRef}
+            testID={testID+'_ContentContainerSwipeable'}
+            friction={2}
+            containerStyle = {{overflow:'hidden'}}
             leftThreshold={80}
             enableTrackpadTwoFingerGesture
             renderLeftActions={selectable === false? undefined : (_progress,dragX) => {

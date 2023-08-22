@@ -3743,7 +3743,7 @@ export default class CommonDatagridComponent extends AppComponent {
     getRowKeyByIndex(rowIndex){
         if(typeof rowIndex !='number') return undefined;
         const idx = this.getRowsKeysIndexes();
-        if(rowIndex < idx.length-1 && rowIndex>=0){
+        if(rowIndex < idx.length && rowIndex>=0){
             return idx[rowIndex];
         }
         return undefined;

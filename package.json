@@ -43,7 +43,7 @@
     "expo-fix": "npx expo install --fix",
     "delete-node-modules": "rimraf ./**/node_modules",
     "modifier-url-remote-git": "git remote set-url origin 'https://borispipo@github.com/borispipo/smart-eneo.git'",
-    "update": "npm i expo @emotion/native@latest @react-native-community/netinfo@latest react-native-big-list@latest apexcharts@latest file-saver@latest fs-extra@latest google-libphonenumber@latest @pchmn/expo-material3-theme@latest @gorhom/portal@latest @emotion/native@latest @fto-consult/common@latest react-native-blob-util react-native-gesture-handler@latest react-native-iphone-x-helper@latest react-native-mime-types@latest react-native-paper@latest react-native-safe-area-context@latest react-native-paper-dates@latest @react-navigation/native@latest @react-navigation/native-stack@latest react-native-screens@latest react-virtuoso@latest tippy.js@latest websql@latest xlsx@latest && npx expo install --fix"
+    "update": "npm i expo @emotion/native@latest @react-native-community/netinfo@latest react-native-big-list@latest apexcharts@latest file-saver@latest fs-extra@latest google-libphonenumber@latest @pchmn/expo-material3-theme@latest @emotion/native@latest @fto-consult/common@latest react-native-blob-util react-native-gesture-handler@latest react-native-iphone-x-helper@latest react-native-mime-types@latest react-native-paper@latest react-native-safe-area-context@latest react-native-paper-dates@latest @react-navigation/native@latest @react-navigation/native-stack@latest react-native-screens@latest react-virtuoso@latest tippy.js@latest websql@latest xlsx@latest && npx expo install --fix"
   },
   "bin": {
     "expo-ui": "./bin/index.js"
@@ -69,7 +69,6 @@
     "@expo/vector-icons": "^13.0.0",
     "@faker-js/faker": "^8.0.2",
     "@fto-consult/common": "^3.29.1",
-    "@gorhom/portal": "^1.0.14",
     "@pchmn/expo-material3-theme": "^1.3.1",
     "@react-native-async-storage/async-storage": "1.18.2",
     "@react-native-community/datetimepicker": "7.2.0",

@@ -8,6 +8,7 @@ const styles = StyleSheet.create({
     contentContainer : {
         flex:1,
     },
+    headerCellLabel : {maxHeight:70},
     container : {
         width : '100%',
         minHeight : 300,
@@ -35,7 +36,7 @@ const styles = StyleSheet.create({
         minHeight : 40,
     },
     filters : {
-       height : 50,
+       maxHeight : 50,
     },
     footers : {
         minHeight : 40,
@@ -44,9 +45,6 @@ const styles = StyleSheet.create({
         width : '100%',
         flexDirection : 'row',
         flexWrap : 'wrap',
-    },
-    footers : {
-        minHeight : 40,
     },
     headerItemOrCell : {
         alignItems: 'flex-start',
@@ -65,7 +63,11 @@ const styles = StyleSheet.create({
         paddingVertical : 0,
         marginVertical : 0,
         marginHorizontal : 0,
+        maxHeight : 40,
         justifyContent : 'flex-start',
+    },
+    filter : {
+        minHeight : 30,
     },
     headerItem: {
         minHeight: 30,

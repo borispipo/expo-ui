@@ -13,7 +13,7 @@ import {Menu as BottomSheetMenu} from "$ecomponents/BottomSheet"
 import RenderType from "../RenderType";
 import Footer from "../Footer/Footer";
 import theme from "$theme";
-import Table from "$ecomponents/Table";
+import Table,{styles as tableStyles} from "$ecomponents/Table";
 import DatagridProvider from "../hooks/Provider";
 
 
@@ -64,17 +64,25 @@ const DatagridFactory = (Factory)=>{
             return null;
         }
         renderFilterCell(props){
-            const {columnField,style} = props;
+            const {columnField,style,...rest} = props;
             const filterC = this.currentFilteringColumns[columnField];
+            const rest2 = {};
+            ["defaultValue","action","operator"].map((i)=>{
+               if(i in rest){
+                 rest2[i] = rest[i];
+               }
+            });
             if(isObj(filterC)){
-                return <Filter 
+                return <Filter
+                    {...rest}
                     {...filterC}
+                    {...rest2}
                     withLabel = {false}
-                    style = {[styles.filter,theme.styles.pv0,theme.styles.mv0]}
+                    style = {[styles.filter,tableStyles.filter,theme.styles.pv0,theme.styles.mv0]}
                     anchorProps  ={{size:20}}
                     mode = "flat"
                     inputProps = {{
-                        style : [styles.filter],
+                        style : [styles.filter,tableStyles.filter],
                         mode : "flat",
                     }}
                 />
@@ -406,12 +414,9 @@ const styles = StyleSheet.create({
     filter : {
         marginHorizontal:0,
         paddingHorizontal:0,
-        maxHeight : 40,
-        height : 40,
         width : "100%",
         alignSelf : 'flex-start',
         flexGrow : 1,
-        minHeight : 40,
         backgroundColor : 'transparent'
     },
     layoutContent : {

@@ -845,7 +845,7 @@ class DropdownComponent extends AppComponent {
         textInputProps.style.backgroundColor = backgroundColor;
         progressBarProps = defaultObj(progressBarProps);
 
-        const loadingElement = !canHandle ? (<View testID={testID+"_DropdownActivityIndicatorContainer"} style = {[{paddingRight : 20}]}>
+        const loadingElement = !canHandle && !this.props.isFilter ? (<View testID={testID+"_DropdownActivityIndicatorContainer"} style = {[{paddingRight : 20}]}>
             <ActivityIndicator 
                 color={error?theme.colors.error:theme.colors.secondary} 
                 animating={true} 

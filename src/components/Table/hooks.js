@@ -1,19 +1,16 @@
-import React,{useMemo} from "$react";
-import {defaultStr,isObj,uniqid} from "$cutils";
+import {useMemo,useRef,useStableMemo} from "$react";
+import {defaultStr,isObj} from "$cutils";
 import {DEFAULT_COLUMN_WIDTH} from "./utils";
-import Label from "$ecomponents/Label";
-import HeaderCell from "./Header/Cell";
-import MainHeaderCell from "./Header/CellHeader";
-import styles from "./styles";
 
-export const usePrepareColumns = ({columns,forceRender,testID,renderFooterCell,renderHeaderCell,renderFilterCell,columnsWidths,headerCellContainerProps,colsWidths,columnProps,footers,footerCellContainerProps,filterCellContainerProps})=>{
+export const usePrepareColumns = ({columns,testID,columnsWidths,headerCellContainerProps,colsWidths:cColsWidths,columnProps,footerCellContainerProps,filterCellContainerProps})=>{
+   const filtersValuesRef = useRef({});
    return useMemo(()=>{
         testID = defaultStr(testID,"RN_TableColumns")
-        const cols = {},headers = {},footers = {},filters = {},visibleColsNames = [],columnsVisibilities=[],columnsNames = [],colsWidths={};
-        let hasFooters = false;
+        const cols = {},visibleColsNames = [],columnsVisibilities=[],columnsNames = [],colsWidths={};
         columnProps = defaultObj(columnProps);
+        //const colsNames=[];
         let columnIndex = 0;
-        const widths = defaultObj(columnsWidths,colsWidths);
+        const widths = defaultObj(columnsWidths,cColsWidths);
         headerCellContainerProps = defaultObj(headerCellContainerProps);
         footerCellContainerProps = defaultObj(footerCellContainerProps);
         filterCellContainerProps = defaultObj(filterCellContainerProps);
@@ -21,59 +18,62 @@ export const usePrepareColumns = ({columns,forceRender,testID,renderFooterCell,r
         Object.map(columns,(columnDef,field)=>{
             if(!isObj(columnDef)) return;
             const columnField = defaultStr(columnDef.field,field);
-            let {visible,width,type,style} = columnDef;
+            let {visible,width,type} = columnDef;
             visible = typeof visible =='boolean'? visible : true;
             type = defaultStr(type,"text").toLowerCase().trim();
             width = colsWidths[columnField] = defaultDecimal(widths[columnField],width,DEFAULT_COLUMN_WIDTH);
-            const colArgs = {width,type,columnDef,containerProps:{},columnField,index:columnIndex,columnIndex};
-            const hContainerProps = defaultObj(colArgs.containerProps);
             totalWidths+=width;
-            const rArgs = {columnDef,width};
-            headers[columnField] = <MainHeaderCell colArgs={colArgs} {...rArgs} columnField={columnField} width={width} testID={testID+"_HeaderCell_"+columnField} {...headerCellContainerProps} {...hContainerProps} key={columnField} style={[styles.headerItem,styles.headerItemOrCell,headerCellContainerProps.style,hContainerProps.style,style]}/>
-            if(typeof renderFilterCell =='function'){
-                const filterCell = renderFilterCell(colArgs);
-                filters[columnField] = <HeaderCell {...rArgs} width={width} testID={testID+"_Filter_Cell_"+columnField} {...filterCellContainerProps} key={columnField} style={[styles.headerItem,styles.headerItemOrCell,styles.filterCell,filterCellContainerProps.style,styles.cell,style]}>
-                    {React.isValidElement(filterCell)? filterCell : null}
-                </HeaderCell>
+            columnsVisibilities.push(visible);
+            //colsNames.push(columnField);
+            if(visible){
+              visibleColsNames.push(columnField);
             }
-            if(typeof renderFooterCell ==='function') {
-                const footerProps = {...colArgs,containerProps:{}};
-                let cellFooter = renderFooterCell(footerProps);
-                let fContainerProps = {};
-                if(!React.isValidElement(cellFooter,true) && isObj(cellFooter)){
-                    fContainerProps = isObj(cellFooter.containerProps)? cellFooter.containerProps : {};
-                    cellFooter = React.isValidElement(cellFooter.children)? cellFooter.children : React.isValidElement(cellFooter.content)? cellFooter.content : null;
-                } else if(isObj(footerProps.containerProps)){
-                    fContainerProps = footerProps.containerProps;
-                }
-                cellFooter = React.isValidElement(cellFooter,true)? cellFooter : null;
-                if(!hasFooters && cellFooter){
-                    hasFooters = true;
-                }
-                footers[columnField] = <HeaderCell {...rArgs} width={width} testID={testID+"_Footer_Cell_"+columnField}  key={columnField} style={[styles.headerItem,styles.headerItemOrCell,footerCellContainerProps.style,style]}>
-                    <Label primary children={cellFooter}/>
-                </HeaderCell>
-          }
-          columnsVisibilities.push(visible);
-          if(visible){
-            visibleColsNames.push(columnField);
-          }
-          columnsNames.push(columnField);
-          cols[columnField] = {
-            ...columnDef,
-            width,
-            index : columnIndex,
-            field : columnField,
-            visible,
-            columnField,
-          };
-          columnIndex++;
+            columnsNames.push(columnField);
+            cols[columnField] = {
+              ...columnDef,
+              width,
+              index : columnIndex,
+              field : columnField,
+              visible,
+              columnField,
+            };
+            columnIndex++;
         });
-        return {columns:cols,columnsNames,headers,colsWidths,columnsVisibilities,totalWidths,totalColsWidths:totalWidths,visibleColsNamesStr:JSON.stringify(visibleColsNames),visibleColsNames,hasFooters,footers,filters};
-      },[columns,footers,forceRender]);
+        return {columns:cols,columnsNames,filtersValues:filtersValuesRef.current,colsWidths,columnsVisibilities,totalWidths,totalColsWidths:totalWidths,visibleColsNamesStr:visibleColsNames.join(","),visibleColsNames};
+      },[columns]);
+}
+import useTable from "./useTable";
+
+export const useGetColumnProps = ({columnField,isFilter,isFooter})=>{
+  const {renderFilterCell,renderFooterCell,filtersValues,renderHeaderCell,sortedColumn,columns,filterCellContainerProps,footerCellContainerProps,headerCellContainerProps,testID,colsWidths} = useTable();
+  const columnDef = columns[columnField];
+  const props = isFilter ? {
+    containerProps : defaultObj(filterCellContainerProps),
+    render : renderFilterCell,
+  } : isFooter ? {
+    containerProps : defaultObj(footerCellContainerProps),
+    render : renderFooterCell,
+  } : {
+    containerProps : defaultObj(headerCellContainerProps),
+    render : renderHeaderCell
+  }
+  props.width = colsWidths[columnField];
+  props.columnField = columnField;
+  props.columnDef = columnDef;
+  props.type = defaultStr(columnDef?.type,"text").toLowerCase().trim();
+  props.sortedColumn = sortedColumn;
+  props.testID = `${testID}-HeaderCell${isFilter?"Filter":isFooter?"Footer":"Header"}_${columnField}`;
+  if(isFilter){
+    props.onValidate = ({action,defaultValue,operator})=>{
+      filtersValues[columnField] = {action,defaultValue,operator};
+    }
+    Object.map(filtersValues[columnField],(v,i)=>{
+      props[i] = v;
+    });
+  }
+  return props;
 }
 
-
-export {default as useTable} from "./useTable";
+export {useTable};
 
 export * from "./useTable";

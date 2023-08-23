@@ -187,17 +187,10 @@ export default class Filter extends AppComponent {
           value = undefined;
         }
       }
-      const prev = JSON.stringify(defaultObj(this.previousRef.current)), current = {value,operator,action,ignoreCase};
-          let tV = isArray(value) && value.length <= 0 ? undefined : value;
-      
-      this.isInitializedRef.current = this.props.dynamicRendered || this.isInitializedRef.current;
-      if(prev == "{}" && (isNullOrEmpty(tV) || value === 0) && (!this.isInitializedRef.current) && (force !== true))  {
-        return this;
-      }
+      const prev = JSON.stringify(this.previousRef.current), current = {value,operator,action,ignoreCase};
       if(prev == JSON.stringify(current) && (force !== true)){
           return this;
       }
-      this.isInitializedRef.current = true;
       this.previousRef.current = current;
       if(isFunction(this.props.onChange)){
           let selector = {};
@@ -414,6 +407,23 @@ export default class Filter extends AppComponent {
           return value.formatNumber();
       }
       return value;
+  }
+  UNSAFE_componentWillReceiveProps(nexProps){
+    const state = {};
+    const defaultValue = nexProps.defaultValue == null || nexProps.defaultValue =="" ? undefined : nexProps.defaultValue;
+    const stateValue = this.state.defaultValue == null || this.state.defaultValue ==""? undefined : this.state.defaultValue;
+    if('defaultValue' in nexProps && defaultValue != stateValue){
+      state.defaultValue = defaultValue;
+    }
+    if(isNonNullString(nexProps.operator) && nexProps.operator in this.state.operators){
+      state.operator = nexProps.operator;
+    }
+    if(isNonNullString(nexProps.action) in nexProps && nexProps.action in this.state.actions){
+      state.action = nexProps.action;
+    }
+    if(Object.size(state,true)){
+      this.setState(state,()=>{});
+    }
   }
   render (){
     let {

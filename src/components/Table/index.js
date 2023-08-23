@@ -60,7 +60,7 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
     footerScrollViewProps = defaultObj(footerScrollViewProps);
     const listRef = React.useRef(null),scrollViewRef = React.useRef(null),headerScrollViewRef = React.useRef(null);
     const layoutRef = React.useRef({});
-    const {testID,withDatagridContext,filters,getRowByIndex,itemsChanged,hasFooters:stateHasFooters,bordered,totalWidths,keyExtractor,items,data} = useTable();
+    const {testID,withDatagridContext,getRowByIndex,itemsChanged,hasFooters:stateHasFooters,bordered,totalWidths,keyExtractor,items,data} = useTable();
     const hasData = !!Object.size(data,true);
     const emptyData = !hasData && renderListContent === false ?null : typeof renderEmpty =='function' ? renderEmpty() : null;
     const hasEmptyData = emptyData && React.isValidElement(emptyData);
@@ -70,7 +70,7 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
     const scrollContentContainerStyle = {flex:1,width:listWidth,minWidth:totalWidths,height:'100%'};
     const scrollEventThrottle = isMobileNative()?200:50;
     const scrollViewFlexGrow = {flexGrow:0};
-    const maxScrollheight = 170;//footersContent.length && fFilters.length ? 170  : footersContent.length ?120 :  fFilters.length ? 140 : 80;
+    const maxScrollheight = 170;
     const allScrollViewProps = {
         scrollEventThrottle,
         horizontal : true,
@@ -142,11 +142,13 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
             }
         }
     };
-    const headerFootersFilters = <>
-        <Header isHeader={true} testID={testID+"_Header"}/>
-        <Header isFilter={true} testID={testID+"_Filters"} style={[styles.header,styles.footers,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}/>
-        <Header isFooter testID={testID+"_Footer"}  style={[styles.header,styles.footers,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}/>
-    </>
+    const headerFootersFilters = React.useMemo(()=>{
+        return <>
+            <Header isHeader={true} testID={testID+"_TableHeader"}/>
+            <Header isFilter={true} testID={testID+"_TableFilters"} style={[styles.header,styles.filters,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}/>
+            <Header isFooter testID={testID+"_TableFooter"}  style={[styles.header,styles.footers,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}/>
+        </>
+    },[])
     return <View testID= {testID+"_Container"}  {...containerProps} onLayout={(e)=>{
         layoutRef.current = e.nativeEvent.layout;
         if(containerProps.onLayout){
@@ -284,9 +286,6 @@ const ColumnType = PropTypes.shape({
     field : PropTypes.string,
     label : PropTypes.text,
     text : PropTypes.string,
-});
-const RowType = PropTypes.shape({
-
 });
 
 

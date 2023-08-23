@@ -79,7 +79,6 @@ export const getFilterComponentProps = (_props)=>{
         filterType,
         getValidValue,
         validate,
-        onValidate,
         onValidatorValid,///il s'agit de la fonction de rappel appelée immédiatement après que le validateur ait réuissie la validation
         onValidateField,
         onNoValidate,

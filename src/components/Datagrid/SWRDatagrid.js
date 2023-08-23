@@ -202,7 +202,13 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         showError  : false,
         swrOptions : getSWROptions(swrConfig.refreshTimeout)
     });
+    const dataRef = React.useRef(null);
+    const totalRef = React.useRef(0);
+    const loading = (isLoading || isValidating);
     const {data,total} = React.useMemo(()=>{
+        if(loading){
+            return {data:dataRef.current,total:totalRef.current};
+        }
         const {data,total} = (Array.isArray(result) ? {data:result,total:result.length} : isObj(result)? result : {data:[],total:0});
         const dd = Object.size(data);
         if(dd>total){
@@ -211,9 +217,10 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         if(onFetchData && typeof onFetchData =='function'){
             onFetchData({allData:data,total,data,context:innerRef.current})
         }
+        dataRef.current = data;
+        totalRef.current = total;
         return {data,total};
-    },[result])
-    const loading = (isLoading || isValidating);
+    },[result,loading])
     React.useEffect(()=>{
         setTimeout(x=>{
             if(error && innerRef.current && innerRef.current.isLoading && innerRef.current.isLoading()){

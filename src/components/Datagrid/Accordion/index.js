@@ -401,7 +401,7 @@ const DatagridFactory = (Factory)=>{
             const hasFootersFields = this.hasFootersFields();
             const datagridHeader = <View testID={testID+"_HeaderContainer"} pointerEvents={pointerEvents} style={[styles.datagridHeader]}>
                 <ScrollView testID={testID+"_HeaderScrollView"} horizontal  contentContainerStyle={StyleSheet.flatten([styles.contentContainerStyle,styles.minW100])}>
-                    <View testID={testID+"_HeaderContentCntainer"} style={[styles.table,styles.pullRight]}>
+                    <View testID={testID+"_HeaderContentContainer"} style={[styles.table,styles.pullRight]}>
                         {/*this.renderDataSourceSelector()*/}
                         <View testID={testID+"_HeaderQueryLimit"} style={[styles.paginationItem]}>
                             {this.renderQueryLimit(this.getStateDataSize().formatNumber())}
@@ -552,6 +552,7 @@ const DatagridFactory = (Factory)=>{
                         items = {this.state.data}
                         isLoading = {isLoading}
                         ref = {this.listRef}
+                        style = {styles.list}
                         backToTopRef = {backToTopRef?(e)=>{
                             return this.backToTopRef.current;
                         }:false}
@@ -605,13 +606,15 @@ const styles = StyleSheet.create({
         alignItems : 'center',
         maxHeight : 60
     },
+    list : {
+        paddingHorizontal : 5,
+    },
     container : {
         position : 'relative',
         flexDirection :'column',
         justifyContent : 'flex-start',
         width : '100%',
         flex : 1,
-        paddingHorizontal : isNativeMobile()? 5:1,
     },
     accordionHeader : {
         paddingTop : 0,

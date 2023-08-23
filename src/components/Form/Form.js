@@ -7,6 +7,7 @@ import KeyboardAvoidingView from "$ecomponents/KeyboardAvoidingView";
 import { StyleSheet } from "react-native";
 import APP from "$capp/instance";
 import PropTypes from "prop-types";
+import View from "$ecomponents/View";
 
 /**** règles d'utilisation : 
     1. les forms doivent toujours avoir un nom : chaine de caractère unique pour l'application et non null
@@ -105,9 +106,9 @@ export default class FormComponent extends React.AppComponent {
             ...rest
         } = this.props;
         testID = defaultStr(testID,"RN_FormComponent");
-        return <KeyboardAvoidingView  {...rest} testID={testID+"_FormKeyboardAvoidingView"} style={[styles.container,rest.style]}>
+        return <View  {...rest} testID={testID+"_FormKeyboardAvoidingView"} style={[styles.container,rest.style]}>
             {this.props.children}
-        </KeyboardAvoidingView>
+        </View>
     }
 }
 const isField  = (Component)=>{

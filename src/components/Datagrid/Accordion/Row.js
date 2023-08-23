@@ -75,7 +75,7 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
     const wrapStyle = React.useMemo(()=>{
         return getRowStyle({row:item,index,selected,numColumns,isAccordion:true,rowIndex:index});
     },[selected,numColumns]);
-    const viewWrapperStyle = [];
+    const viewWrapperStyle = [selectable !== false && theme.styles.cursorPointer];
     if(selected) {
         const handleAvatarRowToggle = (event)=>{
             React.stopEventPropagation(event);
@@ -122,6 +122,7 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
                     rowProps.style,
                     numColumns > 1 && styles.multiColumns,
                     selected && styles.selected,
+                    selectable !== false && theme.styles.cursorPointer,
                     //style,
                 ]}
                 ref = {React.useMergeRefs(ref,innerRef)}
@@ -230,6 +231,7 @@ const styles = StyleSheet.create({
         alignItems : 'center',
         justifyContent : 'center',
         paddingVertical : 10,
+        width : "100%",
     },
     right : {
         marginHorizontal : 0,

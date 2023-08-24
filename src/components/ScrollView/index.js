@@ -3,6 +3,7 @@ import { ScrollView} from 'react-native';
 import PropTypes from "prop-types";
 import {defaultStr,defaultObj} from "$cutils";
 import {Vertical as AutoSizeVertical} from "$ecomponents/AutoSizer";
+import {isWeb} from "$cplatform";
 
 const ScrollViewComponent = React.forwardRef(({withAutoSizer,autoSizerProps,testID,...rest},ref) => {
   return <ScrollView testID={testID} {...rest} ref={ref}/>

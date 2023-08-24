@@ -63,6 +63,7 @@ export const handleScreen = ({Screen,Factory,ModalFactory,result,filter,index})=
                 const options = typeof Screen.options === 'function'? Screen.options(args) : typeof screenOptions ==='function'? screenOptions(args) : defaultObj(Screen.options,screenOptions);
                 options.screenName = screenName;
                 options.Screen = Screen;
+                options.groupName = groupName;
                 options.authRequired = authRequired;
                 SCREEN_OPTIONS[sanitizedName] = options;
                 options.withAppBar = Screen.isModalScreen ? true : false;

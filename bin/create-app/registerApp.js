@@ -14,6 +14,7 @@ registerApp({
     components : {
         logo : Logo,//logo component's properties
         loginPropsMutator : {},//login props mutator
+        authEnabled : true,//si le module d'authentification sera requis
     },
     /*** //for application initialization
         @param {

@@ -12,7 +12,7 @@ export default function ScreenWrapperNavComponent(_props){
     const {navigation,route,...props} = getScreenProps(_props);
     const sanitizedName = route.name;
     const options = defaultObj(SCREEN_OPTIONS[sanitizedName]);
-    const {screenName,Screen,authRequired,isModal,...rest} = options;
+    const {screenName,groupName,Screen,authRequired,isModal,...rest} = options;
     const {drawerRef} = useDrawer()
     setActiveNavigation(navigation);
     setRoute(route);
@@ -66,6 +66,7 @@ export default function ScreenWrapperNavComponent(_props){
     const withFab = typeof options.withFab ==='boolean' ? options.withFab : typeof Screen.withFab =='boolean'? Screen.withFab : allowDrawer;
     return <Screen 
         withFab = {withFab}
+        groupName = {groupName}
         {...rest}
         key = {sanitizedName}
         authRequired={authRequired === false ? false : authRequired || allowDrawer} 

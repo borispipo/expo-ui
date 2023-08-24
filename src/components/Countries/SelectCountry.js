@@ -3,7 +3,7 @@ import SimpleSelect from "$ecomponents/SimpleSelect";
 import { countries,styles} from "./utils";
 import View from "$ecomponents/View";
 import {StyleSheet,Image} from "react-native";
-import {defaultObj} from "$cutils";
+import {defaultObj,defaultVal} from "$cutils";
 import PropTypes from "prop-types";
 import {isNonNullString,isNumber,defaultStr} from "$cutils";
 import Label from "$ecomponents/Label";
@@ -12,7 +12,8 @@ import appConfig from "$capp/config";
 /**** retourne les props du champ de type countrie */
 export const getCountryFieldProps = (props)=>{
     props = defaultObj(props);
-    let {imageProps,defaultValue,...rest} = props;
+    let {imageProps,defaultValue,label,text,...rest} = props;
+    label = defaultVal(label,text,'Pays');
     const countryStr = defaultStr(appConfig.countryCode).toUpperCase();
     imageProps = defaultObj(imageProps);
     if(rest.multiple){
@@ -26,7 +27,8 @@ export const getCountryFieldProps = (props)=>{
         defaultValue = defaultStr(defaultValue,countryStr);
     }
     return {
-        label : defaultStr(props.label,props.text,'Pays'),
+        label,
+        text : label,
         type : 'select',
         items : countries,
         upper : true,

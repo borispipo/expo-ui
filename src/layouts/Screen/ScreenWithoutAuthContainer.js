@@ -108,7 +108,7 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
   const WrapperProps = modal? {screenName} : {};
   const portalId = uniqid("screeen-container-"+screenName);
   return <Wrapper {...WrapperProps}>
-    <View testID={testID+"_ScreenContentContainer"} id={portalId} style={[containerStyle,{backgroundColor},modal && styles.modal,containerProps.style]} {...containerProps}>
+    <View testID={testID+"_ScreenContentContainer"} id={portalId} {...containerProps} style={[containerStyle,{backgroundColor},modal && styles.modal,containerProps.style]} >
       <KeyboardAvoidingView testID={testID} {...keyboardAvoidingViewProps} style={[styles.keyboardAvoidingView,keyboardAvoidingViewProps.style]}>
           {withStatusBar !== false ? <StatusBar/> : null}
           {appBar === false ? null : React.isValidElement(appBar)? state.AppBar :  <AppBar 

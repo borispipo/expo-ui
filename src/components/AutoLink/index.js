@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 import * as Linking from 'expo-linking';
-import { Pressable } from 'react-native';
+import { Pressable,StyleSheet } from 'react-native';
 import {isValidUrl,isValidEmail,defaultStr,isSms} from "$cutils";
 import PropTypes from "prop-types";
 import Browser from "$ecomponents/Browser";
@@ -12,12 +12,14 @@ export default function AutolinkComponent({onPress,withBrowser,mailto,email,tel,
     url = defaultStr(url,href);
     phone = defaultStr(phone,tel).trim(); 
     const isPhone = phone ? true : false;
-    const isUrl = isValidUrl(url);
+    const isUrl = url && isValidUrl(url);
     email = defaultStr(email,mailto);
-    const isEmail = isValidEmail(email);
+    const isEmail = email && isValidEmail(email);
+    const hasContent = isUrl || isEmail || isPhone;
     return <Pressable 
         testID={"RN_AutoLinkComponent"}
         {...props}
+        style = {[hasContent && styles.textDecorationUnderline,props.style]}
         onPress = {(e)=>{
             if(onPress && onPress(e) === false) return;
             if(isUrl){
@@ -36,6 +38,12 @@ export default function AutolinkComponent({onPress,withBrowser,mailto,email,tel,
     />
 }
 
+
+const styles = StyleSheet.create({
+    textDecorationUnderline : {
+        textDecorationLine:'underline',
+    },
+})
 AutolinkComponent.propTypes = {
     onPress : PropTypes.func,
     phone : PropTypes.string,//le numéro à utiliser

@@ -230,7 +230,7 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
                         prepareItems = {false}
                         items = {items}
                         contentContainerStyle = {[styles.contentContainer,{width:listWidth,minWidth:totalWidths}]}
-                        style = {[styles.datagrid,{width:listWidth,minWidth:totalWidths}]}
+                        style = {[styles.datagrid,{width:listWidth,minWidth:totalWidths},props.style]}
                         keyExtractor = {keyExtractor}
                         onScroll = {getOnScrollCb([absoluteScrollViewRef],(args)=>{
                             if(!absoluteScrollViewRef.current) return;

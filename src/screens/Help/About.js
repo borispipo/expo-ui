@@ -5,7 +5,6 @@ import Divider from "$ecomponents/Divider";
 import PrivacyPolicyLink from "./PrivacyPolicy/Link";
 import TermsOfUsesLink from "./TermsOfUses/Link";
 import {isNativeDesktop,isAndroid,isIos} from "$platform";
-import Expandable from "$ecomponents/Expandable";
 import React from "$react";
 import Screen from "$screen";
 import getDevicesInfos from "./getDevicesInfos";
@@ -15,15 +14,10 @@ import {defaultStr} from "$cutils";
 import theme from "$theme";
 import APP from "$app";
 import AutoLink from "$ecomponents/AutoLink";
-import Grid from "$ecomponents/Grid";
 import getReleaseText from "./getReleaseText";
 import appConfig from "$capp/config";
-let openLibraries = null;
-try {
-    openLibraries = require("./openLibraries");
-} catch{
-    openLibraries = null;
-}
+import OpenLibraries from "./OpenLibraryScreen";
+
 export default function HelpScreen(props){
     const deviceInfo = getDevicesInfos();
     let icon = undefined, iconText = undefined;
@@ -58,9 +52,6 @@ export default function HelpScreen(props){
             iconText += " Mac os";
         }
     }
-    const gridPadding = 5;
-    const gridStyles = [{width:40,padding:gridPadding},{width:'60%',padding:gridPadding},{width:60,padding:gridPadding},{width:60,padding:gridPadding}];
-    const borderStyle = {borderColor:theme.colors.divider,borderWidth:1,justifyContent:'space-between'};
     const testID = defaultStr(props.testID,"RN_HelpAboutScreenComponent")
     return <Screen  withScrollView title={title} {...props} testID={testID+"_Screen"} contentContainerStyle={[{flex:1},theme.styles.alignItemsCenter,theme.styles.justifyContentCenter]}>
         <View testID={testID+"_Container"} style={[theme.styles.alignItemsCenter,theme.styles.justifyContentCenter,theme.styles.w100,theme.styles.p1]}>
@@ -87,44 +78,8 @@ export default function HelpScreen(props){
                     <Label primary textBold style={theme.styles.mv05} >{appConfig.name+", Notes de mise à jour."}</Label>
                 </Link>
             </View>
-            <View style={theme.styles.w100}>
-                {Object.size(openLibraries,true) ? <View style={[theme.styles.w100]}>
-                    <Expandable
-                        testID={testID+"_OpenLibraries"}
-                        title = {"A propos des librairies tiers"}
-                        titleProps = {{style:theme.styles.ph1}}
-                        style = {{backgroundColor:'transparent'}}
-                    >
-                        <View testID={testID+"_OpenLibraries_Header"} style={[theme.styles.row,theme.styles.flexWrap]}>
-                            <Label testID={testID+"_OpenLibraries_HeaderLabel"} primary textBold>{appConfig.name+"   "}</Label>
-                            <Label>est bâti sur un ensemble d'outils et librairies open Source</Label>
-                        </View>
-                        <View testID={testID+"_OpenLibrariesContent"} style={[theme.styles.w100,theme.styles.pv1]}>
-                            <Grid.Row style={borderStyle}>
-                                <Label style={gridStyles[0]} textBold>#</Label>
-                                <Label style={gridStyles[1]} textBold>Librairie/Outil</Label>
-                                <Label style={gridStyles[2]} textBold>Version</Label>
-                                <Label style={gridStyles[3]} textBold>Licence</Label>
-                            </Grid.Row>
-                            {Object.mapToArray(openLibraries,(lib,i,_i)=>{
-                                return <Grid.Row key={i} style={borderStyle}>
-                                    <Label style={gridStyles[0]}>
-                                        {_i.formatNumber()}
-                                    </Label>
-                                    <AutoLink style={gridStyles[1]} url={lib.url}>
-                                        <Label splitText>{i}</Label>
-                                    </AutoLink>
-                                    <AutoLink style={gridStyles[2]}>
-                                        <Label splitText numberOfLines={2}>{defaultStr(lib.version)}</Label>
-                                    </AutoLink>
-                                    <AutoLink url={lib.licenseUrl} style={gridStyles[3]}>
-                                        <Label splitText>{lib.license}</Label>
-                                    </AutoLink>
-                                </Grid.Row>
-                            })}
-                        </View>
-                    </Expandable>
-                </View>: null}
+            <View testID={testID+"_OpenLibrariesLinkContainer"} style={[theme.styles.w100,theme.styles.justifyContentCenter,theme.styles.alignItemsCenter]}>
+                <OpenLibraries.Link testID={testID+"_OpenLibrariesLink"}/>
             </View>
         </View>
     </Screen>  
@@ -134,6 +89,6 @@ export const title = HelpScreen.title = "A propos";
 
 export const screenName = HelpScreen.screenName = "Help/About";
 
-HelpScreen.AuthRequired = false;
+HelpScreen.authRequired = false;
 
 HelpScreen.Modal = true;

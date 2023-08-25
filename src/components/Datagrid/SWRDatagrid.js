@@ -206,12 +206,14 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     const totalRef = React.useRef(0);
     const loading = (isLoading || isValidating);
     const {data,total} = React.useMemo(()=>{
-        if(loading){
+        if(loading || !isObjOrArray(result)){
             return {data:dataRef.current,total:totalRef.current};
         }
-        const {data,total} = (Array.isArray(result) ? {data:result,total:result.length} : isObj(result)? result : {data:[],total:0});
+        let {data,total} = (Array.isArray(result) ? {data:result,total:result.length} : isObj(result)? result : {data:[],total:0});
         const dd = Object.size(data);
-        if(dd>total){
+        if(typeof total !=='number'){
+            total = dd;
+        } else if(dd>total){
             total = dd;
         }
         if(onFetchData && typeof onFetchData =='function'){

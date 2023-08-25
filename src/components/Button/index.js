@@ -205,7 +205,7 @@ const ButtonComponent = React.forwardRef((prs,ref) => {
   return <Tooltip ref={ref} {...rest}>
         {(tProps,tRef)=>{
            return <View 
-              testID = {testID+"_Container"} {...containerProps} ref={(el)=>{
+              testID = {testID+"_Container"}  {...containerProps} ref={(el)=>{
                 if(el){
                   el.setIsLoading = setIsLoading;
                   el.setIsDisabled = setIsDisabled;

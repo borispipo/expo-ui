@@ -47,22 +47,25 @@ const DrawerItem = ({icon,iconProps,borderRadius,color,minimized,contentContaine
   
   borderRadius = typeof borderRadius =='number'? borderRadius : 18;
   accessibilityLabel = defaultStr(accessibilityLabel);
-  const lProps = {
-    testID:testID+"_DrawerItemLabel",
-    selectable:false,
-    numberOfLines:1,
-    ...labelProps,
-    style : [{
-        color: contentColor,
-        ...font,
-        fontWeight,
-      },labelProps.style,rProps
-    ],
-  }
-  label = typeof label =='function'? label(lProps) : label;
-  label = React.isValidElement(label,true)? <Label testID={testID+"_Label"} {...lProps}>
-    {label}
-  </Label> : null;
+  const labelContent = React.useStableMemo(()=>{
+    const lProps = {
+      testID:testID+"_DrawerItemLabel",
+      selectable:false,
+      numberOfLines:1,
+      ...labelProps,
+      style : [{
+          color: contentColor,
+          ...font,
+          fontWeight,
+        },labelProps.style,rProps,
+        minimized && styles.hidden,
+      ],
+    }
+    const labelContent = typeof label =='function'? label(lProps) : label;
+    return React.isValidElement(labelContent,true)? <Label testID={testID+"_Label"} {...lProps}>
+      {labelContent}
+    </Label> : null;
+  },[labelProps,typeof label =='function'?true:label,theme.name,theme.colors.primary,minimized]);
   return (
     <View {...rest} testID={testID} style={[rest.style,{paddingVertical:0,marginVertical:0},minimized?styles.containerMinimized:null]}>
       <TouchableRipple
@@ -96,7 +99,7 @@ const DrawerItem = ({icon,iconProps,borderRadius,color,minimized,contentContaine
               position={minimized?'top':"right"} 
               size={minimized ?MINIMIZED_ICON_SIZE : ICON_SIZE} onPress={minimized?onPress:undefined} color={contentColor} />
             ) : null}
-            {!minimized ? label : null}
+            {labelContent}
           </View>
           {right}
         </View>
@@ -144,6 +147,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  hidden : {
+    opacity : 0,
+    display : "none",
+  }
 });
 
 export default DrawerItem;

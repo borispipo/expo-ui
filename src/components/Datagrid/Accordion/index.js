@@ -96,7 +96,7 @@ const DatagridFactory = (Factory)=>{
         }
         getRenderingItemProps ({item,rowKey,index}){
             this.renderingItemsProps = isObj(this.renderingItemsProps)? this.renderingItemsProps : {};
-            if(this.renderingItemsProps[rowKey]){
+            if(this.renderingItemsProps[rowKey] && isObj(this.renderingItemsProps[rowKey].rowProps)){
                 return this.renderingItemsProps[rowKey];
             }
             const callArgs = this.getItemCallArgs({item,index});

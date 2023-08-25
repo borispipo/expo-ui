@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
     labelContainer : {
         flexDirection : 'column',
         paddingRight : 5,
-        maxWidth : 150,
+        maxWidth : 140,
         minWidth : 100,
     },
     pseudo : {

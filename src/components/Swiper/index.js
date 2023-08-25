@@ -440,11 +440,12 @@ const styles = {
   },
   // Fix web vertical scaling (like expo v33-34)
   container: (positionFixed, x, y, width, height,autoHeight) => addAutoHeight(({
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
     // Fix safari vertical bounces
     position: positionFixed ? 'fixed' : 'relative',
     overflow: 'hidden',
     flexGrow: 1,
+    //flex : 1,
     top: positionFixed ? y : 0,
     left: positionFixed ? x : 0,
     width,
@@ -457,6 +458,7 @@ const styles = {
     left: 0,
     width:vertical ? width : width * count,
     flexDirection: vertical ? 'column' : 'row',
+    height : '100%',
   }),typeof height ==='number'? (vertical ? height * count : height) : undefiend,autoHeight),
   scrollViewContentContainer : {
     paddingBottom : 40,

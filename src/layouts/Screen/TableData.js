@@ -385,10 +385,10 @@ export default class TableDataScreenComponent extends FormDataScreen{
         if(hasTabs){
             if(isMobOrTab){
                 renderingTabsProps.firstTab = <Tab.Item testID={testID+"_MainTab"} label={"Principal"} {...firstTabProps} key={tabKey}>
-                    <Surface testID={testID+"_MainTab_Content"} elevation={5} {...contentProps} style={[styles.noMarging,contentProps.style,styles.h100,styles.noPadding]}>
+                    <View testID={testID+"_MainTab_Content"} {...contentProps} style={[styles.noMarging,contentProps.style,styles.h100,styles.noPadding]}>
                         {header}
                         {content}
-                    </Surface>
+                    </View>
                 </Tab.Item>
             } else {
                 //tabsProps.tabItemsProps.elevation = 0;
@@ -400,25 +400,23 @@ export default class TableDataScreenComponent extends FormDataScreen{
             } else {
                 mainContent = <View  {...contentProps} testID={testID+"_ContentContainer"} style={[styles.container,styles.noPadding,contentProps.style]}>
                     <ScrollView  withAutoSizer testID={testID+"_MainContentScrollView"} contentProps={{style:theme.styles.p1}}>
-                        <Surface elevation={elevation} testID={testID+"_ContentHeader"} style={[styles.screenContent,theme.styles.p1,header?styles.screenContentWithHeader:null]}>
+                        <View testID={testID+"_ContentHeader"} style={[styles.screenContent,theme.styles.p1,header?styles.screenContentWithHeader:null]}>
                             {header}
                             {content}
-                        </Surface>
-                        {ct ? <Surface {...contentProps} testID={testID+"_DesktopContentTabs"} elevation={elevation} style={[contentProps.style]}>
+                        </View>
+                        {ct ? <View {...contentProps} testID={testID+"_DesktopContentTabs"} style={[contentProps.style]}>
                             {ct}
-                        </Surface> : null}
+                        </View> : null}
                     </ScrollView>
                 </View>
             }
         } else {
-            mainContent = <View  {...contentProps} testID={testID+"_MainContentContainer"} elevation={elevation} style={[styles.container,{backgroundColor:theme.colors[theme.isDark()?"background":"surface"]},styles.noPadding,{paddingTop:0,marginTop:0},contentProps.style]}>
-                <ScrollView withAutoSizer testID={testID+"_MainContentScrollViewWithoutTab"}>
-                    <View testID={testID+"_MainContent"} style={[styles.screenContent,!isMobOrTab && theme.styles.p1,header?styles.screenContentWithHeader:null]}>
-                        {header}
-                        {content}
-                    </View>
-                </ScrollView>
-            </View>
+            mainContent = <ScrollView testID={testID+"_MainContentScrollViewWithoutTab"}>
+                <View testID={testID+"_MainContent"} style={[styles.screenContent,!isMobOrTab && theme.styles.p1,header?styles.screenContentWithHeader:null]}>
+                    {header}
+                    {content}
+                </View>
+            </ScrollView>
         }
         const appBarProps = this.getAppBarActionsProps(restProps);
         if(hasTabs && isMobOrTab){

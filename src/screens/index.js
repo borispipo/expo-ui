@@ -46,6 +46,7 @@ export const handleScreen = ({Screen,Factory,ModalFactory,result,filter,index})=
                     groupName = GROUP_NAMES.PRIVATE;
                     authRequired = true;
                 }
+                authRequired = authRequired || groupName === GROUP_NAMES.PRIVATE;
             } else {
                 authRequired = false;
             }

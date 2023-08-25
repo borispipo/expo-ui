@@ -37,6 +37,7 @@ const navigateToTableOrStructData = function(tableName,params,actionType){
     if(!isAllowed){
         return Auth.showError();
     }
+    params.tableName = tableName;
     params.routeName = buildScreenRoute(tableName,actionType =='structdata'? structDataRouteName : tableDataRouteName);
     return navigate(params)
 }

@@ -9,6 +9,8 @@ import {ExpoUIContext} from "./hooks";
 import Login from "$eauth/Login";
 import {modes} from "$ecomponents/TextField";
 import {isMobileMedia} from "$cdimensions";
+import { prepareScreens } from "./TableData";
+
 
 /*****
     les utilitaires disponibles à passer au provider : 
@@ -27,7 +29,9 @@ import {isMobileMedia} from "$cdimensions";
             ReactComponent
         },
         loginPropsMutator : ({object})=><{object}>, la fonction permettant de muter les props du composant Login,
-        tableLinkPropsMutator : ({object})=><{object}>, la fonction permettant de muter les props du composant TableLink
+        tableLinkPropsMutator : ({object})=><{object}>, la fonction permettant de muter les props du composant TableLink,
+        TableDataScreen | TableDataScreenItem : {ReactComponent}, le composant TableDataScreenItem, à utiliser pour le rendu des écrans
+        TableDataScreenList | TableDataListScreen {ReactComponent}, le composant TableDataList à utiliser pour le rendu des écrans listants les éléments du table data
     },
     navigation : {
       screens : {Array}, les écrans de navigation,
@@ -39,8 +43,6 @@ const Provider = ({children,getTableData,navigation,components,convertFiltersToS
     const { theme : pTheme } = useMaterial3Theme();
     navigation = defaultObj(navigation);
     components = defaultObj(components);
-    const {screens} = navigation;
-    navigation.screens = [...(Array.isArray(screens)? screens : []),...eMainScreens];
     structsData = isObj(structsData)? structsData : null;
     appConfig.tablesData = tablesData;
     appConfig.structsData = appConfig.structsData = isObj(structsData)? structsData : null;
@@ -110,6 +112,16 @@ const Provider = ({children,getTableData,navigation,components,convertFiltersToS
           }
         }
     }
+    const {screens} = navigation;
+    navigation.screens = React.useMemo(()=>{
+       const r = prepareScreens({
+        tables:tablesData,
+        screens,
+        TableDataScreen:components.TableDataScreen || components.TableDataScreenItem,
+        TableDataScreenList:components.TableDataScreenList||components.TableDataListScreen
+      });
+      return [...r,...eMainScreens];
+    },[]);
     return <ExpoUIContext.Provider 
       value={{
         ...props,

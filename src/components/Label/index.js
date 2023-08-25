@@ -58,8 +58,8 @@ const LabelComponent = React.forwardRef(({ children,selectable,role,color,upperC
     if(disabled){
         r1.pointerEvents = "none";
     }
-    selectable = !!(selectable || defaultSelectable);
-    r2.userSelect = selectable?"none":"all";
+    selectable = selectable === false || defaultSelectable === false ? false : true;
+    r2.userSelect = !selectable?"none":"all";
     if(isNonNullString(children) || isText || typeof children ==='number'){
         if(!isText){
             children +="";

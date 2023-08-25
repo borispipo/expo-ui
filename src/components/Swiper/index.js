@@ -458,7 +458,6 @@ const styles = {
     left: 0,
     width:vertical ? width : width * count,
     flexDirection: vertical ? 'column' : 'row',
-    height : '100%',
   }),typeof height ==='number'? (vertical ? height * count : height) : undefiend,autoHeight),
   scrollViewContentContainer : {
     paddingBottom : 40,

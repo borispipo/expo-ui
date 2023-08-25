@@ -201,9 +201,9 @@ const DatagridFactory = (Factory)=>{
                 numColumns = {numColumns}
                 key = {index}
                 ref = {(el)=>{
-                    if(isObj(this.renderingItemsProps) && isObj(this.renderingItemsProps[rowKey]) ){
-                        this.renderingItemsProps[rowKey].ref = el;
-                    }
+                    this.renderingItemsProps = defaultObj(this.renderingItemsProps);
+                    this.renderingItemsProps[rowKey] = defaultObj(this.renderingItemsProps[rowKey]);
+                    this.renderingItemsProps[rowKey].ref = el;
                 }}
                 style = {style}
                 callArgs = {this.getItemCallArgs({item,index})}
@@ -263,9 +263,14 @@ const DatagridFactory = (Factory)=>{
         /*** affiche les infos de l'item */
         onToggleExpandItem({item,index,rowIndex,rowKey,...rest}){
             if(!isObj(this.bottomSheetContext) || typeof this.bottomSheetContext.open !=='function') return;
+            if(!isObj(this.renderingItemsProps) || !isObj(this.renderingItemsProps[rowKey])) return;
             const callArgs = this.getItemCallArgs({item,index})
             return this.bottomSheetContext.open({
                 ...rest,
+                onDismiss : ()=>{
+                    const ref = this.renderingItemsProps[rowKey].ref;
+                    ref?.toggleExpand && ref?.toggleExpand(false);
+                },
                 children : <View style={[styles.expandedItemContent]} testID={'RN_DatagridAccordionExpanded'}>
                     {Object.mapToArray(this.state.columns,(columnDef,columnField,index)=>{
                         callArgs.columnDef = columnDef;
@@ -552,7 +557,7 @@ const DatagridFactory = (Factory)=>{
                         items = {this.state.data}
                         isLoading = {isLoading}
                         ref = {this.listRef}
-                        style = {styles.list}
+                        style = {[styles.list,rest.style]}
                         backToTopRef = {backToTopRef?(e)=>{
                             return this.backToTopRef.current;
                         }:false}
@@ -607,7 +612,7 @@ const styles = StyleSheet.create({
         maxHeight : 60
     },
     list : {
-        paddingHorizontal : 5,
+        paddingHorizontal : isNativeMobile()?10:0,
     },
     container : {
         position : 'relative',
@@ -628,7 +633,7 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         alignItems : 'center',
         flex:1,
-        paddingHorizontal : 10,
+        paddingHorizontal : 0,
     },
     pullRight : {
         flexDirection : 'row',

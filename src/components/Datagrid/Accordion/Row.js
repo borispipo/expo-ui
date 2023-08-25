@@ -6,7 +6,6 @@ import Label from "$ecomponents/Label";
 import PropTypes from "prop-types";
 import React from "$react";
 import theme from "$theme"
-import {isMobileNative} from "$cplatform";
 import {styles as rStyles,getRowStyle} from "../utils";
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { useIsRowSelected,useDatagrid} from "../hooks";
@@ -30,7 +29,7 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
         callArgs,
     } = props;
     const {context} = useDatagrid();
-    let {wrapperStyle,title,right,rightProps,description,avatarContent,rowProps} = props;
+    let {title,right,rightProps,description,avatarContent,rowProps} = props;
     rightProps = defaultObj(rightProps);
     if(!isObj(item)) {
         return null;
@@ -108,6 +107,11 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
     } 
     right = typeof right === 'function'? right ({color:theme.colors.primaryOnSurface,selectable:true,style:[rStyles.lineHeight,styles.right]}) : right;
     const swipeableRef = React.useRef(null);
+    React.useEffect(()=>{
+        return ()=>{
+            React.setRef(swipeableRef,null);
+        }
+    },[])
     return  <Pressable
                 disabled = {selectable===false?true : false}
                 {...rowProps}
@@ -125,7 +129,15 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
                     selectable !== false && theme.styles.cursorPointer,
                     //style,
                 ]}
-                ref = {React.useMergeRefs(ref,innerRef)}
+                ref = {(el)=>{
+                    if(el){
+                        el.toggleExpand = (expand)=>{
+                            setExpanded(typeof expand =='boolean'? expand : !expanded);
+                        }
+                    }
+                    React.setRef(ref,el);
+                    React.setRef(innerRef,el);
+                }}
         >
         <Swipeable
             ref = {swipeableRef}
@@ -168,7 +180,9 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
                 style={[styles.renderedContent,viewWrapperStyle]} 
                 testID={testID+'_ContentContainer'}
             >
-                {avatarContent}
+                {hasAvatar?<View testID={testID+"_AvatarContentContainer"} style={[styles.avatarContent]}>
+                    {avatarContent}
+                </View> : avatarContent}
                 <View testID={testID+"_Content"} style={[styles.content,styles.wrap]}>
                     {title}
                     {description}

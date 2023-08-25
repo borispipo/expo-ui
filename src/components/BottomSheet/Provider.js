@@ -43,9 +43,14 @@ const Provider = React.forwardRef((props,innerRef)=>{
         }
     };
     React.setRef(ref,context);        
-    return <Menu {...props} {...state} visible={visible} sheet controlled onDismiss = {(e)=>{
+    return <Menu {...props} {...state} visible={visible} sheet controlled onDismiss = {(...args)=>{
         if(visible){
             setVisible(false);
+        }
+        if(typeof state.onDismiss =='function'){
+            state.onDismiss(...args)
+        } else if(typeof props.onDismiss =='function'){
+            props.onDismiss(...args);
         }
     }}/>
 });

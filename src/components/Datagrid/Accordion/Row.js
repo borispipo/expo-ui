@@ -30,6 +30,7 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
     } = props;
     const {context} = useDatagrid();
     let {title,right,rightProps,description,avatarContent,rowProps} = props;
+    rowProps = defaultObj(rowProps);
     rightProps = defaultObj(rightProps);
     if(!isObj(item)) {
         return null;

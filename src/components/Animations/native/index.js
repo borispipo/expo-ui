@@ -5,13 +5,10 @@
 
  export const ANIMATION_DURATION = 300;
  
- 
- const AnimationComponent = React.forwardRef(function AnimationComponent(props,ref) {
-   let { animationType,animationPosition,enteringCallback,exitingCallback,animationDuration,...rest} = props;
+ const AnimationComponent = React.forwardRef(function AnimationComponent({animationType,animationPosition,enteringCallback,exitingCallback,animationDuration,...rest},ref) {
    const rProps = defaultObj(rest);
    const duration =  animationDuration || ANIMATION_DURATION;
     let animations = getAnimations(animationType,animationPosition);
-    
     const style = useAnimatedStyle(() => {
       return {};
     });

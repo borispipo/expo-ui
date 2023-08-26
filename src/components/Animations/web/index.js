@@ -3,7 +3,7 @@ import { Animated} from "react-native";
 import PropTypes from "prop-types";
 import {translateByAppearFrom,inputRangeByAppearFrom,animationType,outputRangeByAppearFrom,initialPositionByAppearFrom} from "./utils";
 
-const OpacityAnimationComponent = React.forwardRef(({ delay,children,style, animationPosition,animationDuration,enteringCallback,exitingCallback,...viewProps},ref) => {
+const WebAnimationComponent = React.forwardRef(({ delay,children,style, animationPosition,animationDuration,enteringCallback,exitingCallback,...viewProps},ref) => {
   if(!animationPosition || !initialPositionByAppearFrom[animationPosition]){
     animationPosition = 'up';
   }
@@ -42,7 +42,7 @@ const OpacityAnimationComponent = React.forwardRef(({ delay,children,style, anim
   );
 });
 
-OpacityAnimationComponent.propTypes = {
+WebAnimationComponent.propTypes = {
   delay: PropTypes.number,
   enteringCallback : PropTypes.func,
   animationPosition: PropTypes.oneOf([
@@ -50,4 +50,4 @@ OpacityAnimationComponent.propTypes = {
   ]),
   animationDuration: PropTypes.number
 }
-export default OpacityAnimationComponent;
+export default WebAnimationComponent;

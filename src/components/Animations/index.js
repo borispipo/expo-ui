@@ -1,6 +1,4 @@
 
-export * from "./Animation/utils";
+export * from "./web";
 
-export {default} from "./Animation";
-
-export {default as OpacityAnimation} from "./OpacityAnimation";
+export {default} from "./web";

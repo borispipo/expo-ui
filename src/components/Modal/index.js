@@ -7,9 +7,7 @@ import {
 import BackHandler from "$ecomponents/BackHandler";
 import PropTypes from "prop-types";
 import theme,{StyleProp} from "$theme";
-//import Animated  from "react-native-reanimated";
-//import Animation,{OpacityAnimation} from "$ecomponents/Animations";
-import OpacityAnimation from "$ecomponents/Animations/OpacityAnimation";
+import Animation from "$ecomponents/Animation";
 import { Surface } from "react-native-paper";
 import { Platform } from "react-native";
 import Portal from "$ecomponents/Portal";
@@ -99,7 +97,9 @@ const ModalComponent = React.forwardRef((props,ref)=>{
         }
       },100);
     },[visible]);
-    const Anim = animate !== false ? OpacityAnimation  : View;
+    const Anim = React.useMemo(()=>{
+      return animate !== false ? Animation  : View;
+    },[animate]);
     const wrapperProps = animate !== false ? {enteringCallback:callback,exitingCallback:callback} : {};
     return !visible?null: <Portal>
       <Anim

@@ -35,14 +35,13 @@
     "url": "git+https://github.com/borispipo/smart-eneo.git"
   },
   "dependencies": {
-    "@fto-consult/expo-ui": "^6.26.13",
+    "@fto-consult/expo-ui": "^6.28.1",
     "socket.io-client": "^4.6.1"
   },
   "devDependencies": {
-    "@expo/metro-config": "^0.10.6",
-    "@expo/webpack-config": "^18.1.1",
+    "@expo/metro-config": "^0.10.7",
+    "@expo/webpack-config": "^19.0.0",
     "babel-plugin-inline-dotenv": "^1.7.0",
-    "babel-plugin-module-resolver": "^5.0.0",
-    "babel-plugin-transform-inline-environment-variables": "^0.4.4"
+    "babel-plugin-module-resolver": "^5.0.0"
   }
 }

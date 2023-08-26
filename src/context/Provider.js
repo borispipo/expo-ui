@@ -4,7 +4,7 @@ import {MD3LightTheme,MD3DarkTheme} from "react-native-paper";
 import { useMaterial3Theme } from '@pchmn/expo-material3-theme';
 import {colorsAlias,Colors} from "$theme";
 import {isObj,isNonNullString,defaultStr} from "$cutils";
-import eMainScreens from "$escreens/mainScreens";
+import {getMainScreens} from "$escreens/mainScreens";
 import {ExpoUIContext} from "./hooks";
 import Login from "$eauth/Login";
 import {modes} from "$ecomponents/TextField";
@@ -21,6 +21,7 @@ import { prepareScreens } from "./TableData";
     getStructData : ()=>{object|array}
     tablesData : {object}, la liste des tables de données
     strucsData : {object}, la liste des données de structures
+    handleHelpScreen : {boolean}, //si l'écran d'aide sera pris en compte, l'écran d'aide ainsi que les écrans des termes d'utilisations et autres
     convertFiltersToSQL : {boolean}, si les filtres de datagrid ou filtres seront convertis au format SQL
     components : {
         logo : {
@@ -38,13 +39,14 @@ import { prepareScreens } from "./TableData";
       drawerItems : {object|array|function}, la fonction permettant d'obtenir les items du drawer principal de l'application
     }
 */
-const Provider = ({children,getTableData,navigation,components,convertFiltersToSQL,getStructData,tablesData,structsData,...props})=>{
+const Provider = ({children,getTableData,handleHelpScreen,navigation,components,convertFiltersToSQL,getStructData,tablesData,structsData,...props})=>{
     const {extendAppTheme} = appConfig;
     const { theme : pTheme } = useMaterial3Theme();
     navigation = defaultObj(navigation);
     components = defaultObj(components);
     structsData = isObj(structsData)? structsData : null;
     appConfig.tablesData = tablesData;
+    handleHelpScreen = handleHelpScreen === false ? false : true;
     appConfig.structsData = appConfig.structsData = isObj(structsData)? structsData : null;
     getTableData = appConfig.getTable = appConfig.getTableData = getTableOrStructDataCall(tablesData,getTableData);
     getStructData = appConfig.getStructData = getTableOrStructDataCall(structsData,getStructData);
@@ -118,13 +120,14 @@ const Provider = ({children,getTableData,navigation,components,convertFiltersToS
         tables:tablesData,
         screens,
         TableDataScreen:components.TableDataScreen || components.TableDataScreenItem,
-        TableDataScreenList:components.TableDataScreenList||components.TableDataListScreen
+        TableDataScreenList:components.TableDataScreenList||components.TableDataListScreen,
       });
-      return [...r,...eMainScreens];
+      return [...r,...getMainScreens(handleHelpScreen)];
     },[]);
     return <ExpoUIContext.Provider 
       value={{
         ...props,
+        handleHelpScreen,
         navigation,
         convertFiltersToSQL,
         components : {

@@ -3,7 +3,7 @@ import {sanitizeName,GROUP_NAMES} from "./utils";
 import React from "$react";
 import ScreenWrapper from "./ScreenWrapper";
 import { SCREEN_OPTIONS } from "./utils";
-
+export * from "./mainScreens";
 
 export * from "./utils";
 

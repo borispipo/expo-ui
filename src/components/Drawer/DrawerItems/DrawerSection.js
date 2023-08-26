@@ -3,8 +3,7 @@ import {defaultObj,defaultBool} from "$cutils";
 import Divider from "$ecomponents/Divider";
 import Label from "$ecomponents/Label";
 import theme,{Colors,tinyColor,ALPHA_OPACITY} from "$theme";
-export default function DrawerSection (props){
-    let {children,divider,labelStyle,minimized,labelProps,dividerProps,label,text,...rest} = props;
+export default function DrawerSection ({children,divider,labelStyle,minimized,labelProps,withDivider,dividerProps,label,text,...rest}){
     label = defaultStr(label,text);
     if(!label) return children;
     dividerProps = defaultObj(dividerProps);

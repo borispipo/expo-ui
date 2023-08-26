@@ -11,13 +11,15 @@ import {useMemo,useEffect,useRef} from "react";
 import { screenName as aboutScreenName} from "$escreens/Help/About";
 import theme from "$theme";
 import APP from "$capp/instance";
+import useExpoUI from "$econtext";
 
 const useGetItems = (options)=>{
     const {navigation:{drawerItems}} = useContext(); 
     options = defaultObj(options);
     const {refresh,force} = options;
     const showProfilOnDrawer = theme.showProfilAvatarOnDrawer;
-    const handleHelp =  appConfig.get("handleHelpScreen") !== false ? true : false;
+    const {handleHelpScreen} = useExpoUI(); 
+    const handleHelp =  handleHelpScreen !== false;
     const refreshItemsRef = useRef(false);
     useEffect(()=>{
         const refreshItems = (...a)=>{

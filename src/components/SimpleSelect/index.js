@@ -289,7 +289,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
         rippleColor={undefined}
         onLayout={onLayout}
     >
-        <>{anchor}</>
+        {anchor}
     </Pressable>
     const getItemLayout = typeof listProps.itemHeight ==='number' && listProps.itemHeight ? (data, index) => (
         {length: listProps.itemHeight, offset: listProps.itemHeight * index, index}

@@ -11,8 +11,11 @@ import { useDrawer } from '../Provider';
 
 export * from "./utils";
 
+let hasDivider = false;
+
 const DrawerItemsComponent = React.forwardRef((props,ref)=> {
   let {items:_items,minimized} = props;
+  hasDivider = false;
   _items = typeof _items ==='function'? _items(props) : _items;
   if(React.isValidElement(_items)){
      return _items;
@@ -23,11 +26,15 @@ const DrawerItemsComponent = React.forwardRef((props,ref)=> {
           if(isNonNullString(item.perm) && !Auth.isAllowedFromStr(item.perm)) return null;
           const {section,items:itx2,...rest} = item;
           if(section){
+            const sDivider = rest.divider !== false && !hasDivider && items.length ? true : false;
+            if(sDivider){
+              hasDivider = true;
+            }
             return <DrawerSection 
                 {...rest}
                 minimized={minimized} 
                 key={key}
-                divider = {rest.divider !== false && items.length ? true : false}
+                divider = {sDivider}
             >
               {items}
             </DrawerSection>
@@ -124,19 +131,22 @@ const getDefaultProps = function(item){
 const renderItem = ({item,minimized,renderExpandableOrSection,index,key})=>{
   key = key||index;
   if(React.isValidElement(item)){
+    hasDivider = false;
     return <React.Fragment key={key}>
         {item}
     </React.Fragment>
   } else {
     if(isNonNullString(item.perm) && !Auth.isAllowedFromStr(item.perm)) return null;
     if(!item.label && !item.text && !item.icon) {
-        if(item.divider === true){
+        if(item.divider === true && !hasDivider){
           const {divider,...rest} = item;
+          hasDivider = true;
           return (<Divider key={key} {...rest}/>)
       }
       return null;
     }
     item = getDefaultProps(item);
+    hasDivider = false;
     if(isObj(item.items) || Array.isArray(item.items)){
        const itx = [];
        Object.map(item.items,(it,i)=>{

@@ -291,7 +291,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
     const currentDefaultValue = alwaysUseLabel && displayText == emptyValue ? "" : displayText;
     const withAutoHeight = typeof autoHeight === 'boolean'? autoHeight : false;
     const height = withAutoHeight || multiline ? undefined : tHeight;
-    const inputStyle2 = withAutoHeight || multiline ? {height : Math.min(heightRef.current,250)} : null;
+    const inputStyle2 = withAutoHeight || multiline ? {height : Math.min(Math.max(heightRef.current,MULTIPLE_HEIGHT),250)} : null;
     const containerStyle = StyleSheet.flatten(containerProps.style) || {};
     const inputProps= {
         caretHidden : false,

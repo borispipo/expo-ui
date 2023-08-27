@@ -15,6 +15,7 @@ import {
   getStatusBarHeight,
   getBottomSpace,
 } from 'react-native-iphone-x-helper';
+import {isMobileNative} from "$cplatform";
 
 import {defaultObj} from "$cutils";
 
@@ -40,8 +41,9 @@ const ModalComponent = React.forwardRef((props,ref)=>{
         isPreloader,
         children,
         ...rest
-      } = props;
-      rest = defaultObj(rest);
+    } = props;
+    animate = animate !== false ? isMobileNative() : false;
+    rest = defaultObj(rest);
     contentContainerProps = defaultObj(contentContainerProps);
     backdropProps = defaultObj(backdropProps);
     const subscription = React.useRef(null);
@@ -98,9 +100,9 @@ const ModalComponent = React.forwardRef((props,ref)=>{
       },100);
     },[visible]);
     const Anim = React.useMemo(()=>{
-      return animate !== false ? Animation  : View;
+      return animate ? Animation  : View;
     },[animate]);
-    const wrapperProps = animate !== false ? {enteringCallback:callback,exitingCallback:callback} : {};
+    const wrapperProps = animate ? {enteringCallback:callback,exitingCallback:callback} : {};
     return !visible?null: <Portal>
       <Anim
         ref={ref}

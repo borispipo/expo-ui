@@ -11,6 +11,7 @@ import Animation from "$ecomponents/Animation";
 import { Surface } from "react-native-paper";
 import { Platform } from "react-native";
 import Portal from "$ecomponents/Portal";
+import {defaultStr} from "$cutils";
 import {
   getStatusBarHeight,
   getBottomSpace,
@@ -42,7 +43,9 @@ const ModalComponent = React.forwardRef((props,ref)=>{
         children,
         ...rest
     } = props;
-    animate = animate !== false ? isMobileNative() : false;
+    if(animate !== false && isMobileNative() && defaultStr(animationType).toLowerCase().trim() !=='slide'){
+       animate = false;
+    }
     rest = defaultObj(rest);
     contentContainerProps = defaultObj(contentContainerProps);
     backdropProps = defaultObj(backdropProps);

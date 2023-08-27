@@ -27,7 +27,6 @@ import DialogProvider from "$ecomponents/Dialog/Provider";
 import SimpleSelect from '$ecomponents/SimpleSelect';
 import {Provider as AlertProvider} from '$ecomponents/Dialog/confirm/Alert';
 import { DialogProvider as FormDataDialogProvider } from '$eform/FormData';
-import {PortalProvider,CustomPortal} from '$ecomponents/Portal';
 import ErrorBoundaryProvider from "$ecomponents/ErrorBoundary/Provider";
 import notify, {notificationRef} from "$notify";
 import DropdownAlert from '$ecomponents/Dialog/DropdownAlert';
@@ -283,7 +282,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,render,onMount})
                 },
               }}
             >
-              <PortalProvider>
+              <Portal.Host testID="RN_NativePaperPortalHost">
                 <ErrorBoundaryProvider/>  
                 <PreloaderProvider/>   
                 <DialogProvider responsive testID={"RN_MainAppDialogProvider"}/>
@@ -291,17 +290,15 @@ function App({init:initApp,initialRouteName:appInitialRouteName,render,onMount})
                 <FormDataDialogProvider/>  
                 <BottomSheetProvider/>
                 <DropdownAlert ref={notificationRef}/>
-                <Portal.Host testID="RN_NativePaperPortalHost">
-                  <ErrorBoundary>
-                    <StatusBar/>
-                    <SplashScreen isLoaded={isLoaded}>
-                      <PreferencesContext.Provider value={preferences}>
-                        {React.isValidElement(content) && content || child}
-                      </PreferencesContext.Provider>  
-                    </SplashScreen>
-                  </ErrorBoundary>
-                </Portal.Host>
-              </PortalProvider>
+                <ErrorBoundary>
+                  <StatusBar/>
+                  <SplashScreen isLoaded={isLoaded}>
+                    <PreferencesContext.Provider value={preferences}>
+                      {React.isValidElement(content) && content || child}
+                    </PreferencesContext.Provider>  
+                  </SplashScreen>
+                </ErrorBoundary>
+              </Portal.Host>
           </PaperProvider>
         </GestureHandlerRootView>
   </AuthProvider>;

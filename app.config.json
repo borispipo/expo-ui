@@ -1,6 +1,6 @@
 {
 	"name": "@FTO-CONSULT/EXPO-UI",
-	"version": "6.26.8",
+	"version": "6.28.1",
 	"description": "Bibliothèque de composants UI Expo,react-native",
 	"bin": {
 		"expo-ui": "./bin/index.js"

@@ -1,13 +1,4 @@
-/***
- *  MIT License
-    Copyright (c) 2020 Mo Gorhom
-    @see : https://github.com/gorhom/react-native-portal
- */
+import {Portal} from "react-native-paper";
 
-export {default} from "./Portal";
-
-export {default as PortalHost} from "./PortalHost";
-
-export {default as PortalProvider} from "./PortalProvider";
-
-export * from "./hooks";
+export default Portal;
+export const PortalHost = Portal.Host;

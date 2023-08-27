@@ -14,7 +14,6 @@ import DialogTitle from './DialogTitle';
 import {MAX_WIDTH,SCREEN_INDENT,MIN_HEIGHT} from "./utils";
 import {isMobileOrTabletMedia,isMobileMedia} from "$cplatform/dimensions"; 
 import Platform,{isMobileNative} from "$cplatform";
-import Portal from "$ecomponents/Portal";
 import Icon,{BACK_ICON} from "$ecomponents/Icon";
 import {ACTION_ICON_SIZE} from "$ecomponents/AppBar";
 import DialogFooter from "./DialogFooter";
@@ -183,8 +182,7 @@ const DialogComponent = React.forwardRef((props,ref)=>{
             {content}
         </ScrollView>
     }
-    return <Portal>
-            <ModalComponent
+    return <ModalComponent
                 onDismiss={(e)=>{
                     return handleBack(e,false);
                 }}
@@ -272,8 +270,7 @@ const DialogComponent = React.forwardRef((props,ref)=>{
                          /> : null}    
                     </Surface>
                 </DialogContent>
-            </ModalComponent>
-        </Portal>
+    </ModalComponent>
 });
 export default DialogComponent;
 

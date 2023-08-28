@@ -47,6 +47,13 @@ const DatagridFactory = (Factory)=>{
             this.state.refreshing = false;
             this.updateLayout = this.updateLayout.bind(this);
         }
+        componentDidUpdate(){
+            super.componentDidUpdate();
+            const p = this.expandedRef;
+            if(!p || !p?.ref) return;
+            const ref = p.ref;
+            ref?.toggleExpand && ref?.toggleExpand(false);
+        }
         isDatagrid(){
             return true;
         }
@@ -265,6 +272,7 @@ const DatagridFactory = (Factory)=>{
             if(!isObj(this.bottomSheetContext) || typeof this.bottomSheetContext.open !=='function') return;
             if(!isObj(this.renderingItemsProps) || !isObj(this.renderingItemsProps[rowKey])) return;
             const callArgs = this.getItemCallArgs({item,index})
+            this.expandedRef = this.renderingItemsProps[rowKey];
             return this.bottomSheetContext.open({
                 ...rest,
                 onDismiss : ()=>{
@@ -612,13 +620,14 @@ const styles = StyleSheet.create({
         maxHeight : 60
     },
     list : {
-        paddingHorizontal : isNativeMobile()?10:0,
+        paddingHorizontal : 10,
     },
     container : {
         position : 'relative',
         flexDirection :'column',
         justifyContent : 'flex-start',
         width : '100%',
+        paddingHorizontal : 0,
         flex : 1,
     },
     accordionHeader : {

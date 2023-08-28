@@ -165,7 +165,7 @@ export default class DrawerLayout extends React.PureComponent {
         if(permanent){
             dynamicDrawerStyles.position = "relative";
         }
-        const content = <Animated.View style={[styles.main]}>
+        const content = <Animated.View style={[styles.main]} testID={testID+"_DrawerLayoutContent"}>
             {this.props.children}
         </Animated.View>
         return (
@@ -437,6 +437,8 @@ const styles = StyleSheet.create({
     main: {
         flex: 1,
         zIndex: 0,
+        width : "100%",
+        height : "100%",
     },
     overlay: {
         position: 'absolute',

@@ -165,7 +165,7 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
                             },
                             ]}>
                             {(selected?'Désélectionnez la ligne ':'Sélectionnez la ligne ')}
-                    </Animated.Text>
+                        </Animated.Text>
                     </View>
                 );
             }}
@@ -178,7 +178,7 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
             }}
         >
             <View 
-                style={[styles.renderedContent,viewWrapperStyle]} 
+                style={[styles.renderedContent,viewWrapperStyle,!hasAvatar && styles.contentContainerNotAvatar]} 
                 testID={testID+'_ContentContainer'}
             >
                 {hasAvatar?<View testID={testID+"_AvatarContentContainer"} style={[styles.avatarContent]}>
@@ -246,6 +246,8 @@ const styles = StyleSheet.create({
         alignItems : 'center',
         justifyContent : 'center',
         paddingVertical : 10,
+        paddingHorizontal : 0,
+        paddingRight : 10,
         width : "100%",
     },
     right : {
@@ -267,22 +269,25 @@ const styles = StyleSheet.create({
     container : {
         paddingVertical : 0,
         paddingHorizontal : 0,
-        marginHorizontal : 5,
+        marginHorizontal : 0,
         flexWrap : 'nowrap',
         justifyContent : 'center',
         width : '100%',
     },
     avatarContent : {
-        marginRight : 5,
+        marginRight : 10,
     },
     hasNotAvatar : {
         borderLeftWidth : 5,
         paddingLeft : 0,
-        height : "100%"
+        height : "100%",
     },
     selected : {
         paddingHorizontal : 0,
         paddingVertical : 0,
+    },
+    contentContainerNotAvatar : {
+        paddingLeft : 5,
     },
 });
 

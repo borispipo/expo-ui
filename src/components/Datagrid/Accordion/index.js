@@ -73,7 +73,7 @@ const DatagridFactory = (Factory)=>{
             arg.isAccordion = true;
             const {render,key,style} = super.renderRowCell(arg);
             if(render===null || !React.isValidElement(render)) return null;
-            return <Label style={[style,{paddingTop:10,paddingBottom:10}]} key={key}>
+            return <Label testID={`${arg?.testID?arg.testID:""}_LabelContainer`} style={[style,{paddingTop:10,paddingBottom:10}]} key={key}>
                  {render}
             </Label>
         }

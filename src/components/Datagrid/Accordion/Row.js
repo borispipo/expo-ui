@@ -76,6 +76,9 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
         return getRowStyle({row:item,index,selected,numColumns,isAccordion:true,rowIndex:index});
     },[selected,numColumns]);
     const viewWrapperStyle = [selectable !== false && theme.styles.cursorPointer];
+    if(!hasAvatar){
+        viewWrapperStyle.push(styles.hasNotAvatar);
+    }
     if(selected) {
         const handleAvatarRowToggle = (event)=>{
             React.stopEventPropagation(event);
@@ -92,7 +95,6 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
             title = {sTtitle}
         ></Avatar> : null;
         if(!hasAvatar){
-            viewWrapperStyle.push(styles.hasNotAvatar);
             viewWrapperStyle.push({borderLeftColor:theme.colors.primaryOnSurface})
         }
     }
@@ -154,7 +156,7 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
                   extrapolate: 'clamp',
                 });
                 return (
-                    <View style={{justifyContent:'center',flex:1}}>
+                    <View testID={testID+"_SwipeableLeftSide"} style={{justifyContent:'center',flex:1}}>
                         <Animated.Text
                             style={[
                             styles.actionText,
@@ -245,7 +247,7 @@ const styles = StyleSheet.create({
         flexDirection : 'row',
         alignItems : 'center',
         justifyContent : 'center',
-        paddingVertical : 10,
+        paddingVertical : 2,
         paddingHorizontal : 0,
         paddingRight : 10,
         width : "100%",
@@ -281,13 +283,14 @@ const styles = StyleSheet.create({
         borderLeftWidth : 5,
         paddingLeft : 0,
         height : "100%",
+        borderLeftColor : "transparent",
     },
     selected : {
         paddingHorizontal : 0,
         paddingVertical : 0,
     },
     contentContainerNotAvatar : {
-        paddingLeft : 5,
+        paddingLeft : 2,
     },
 });
 

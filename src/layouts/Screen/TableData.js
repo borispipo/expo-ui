@@ -423,7 +423,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
             appBarProps.elevation = 0;
             restProps.elevation = 0;
         }
-        return <ScreenContainer  {...restProps} appBarProps = {appBarProps} testID={testID}>
+        return <ScreenContainer backgroundColor={theme.surfaceBackground}  {...restProps} appBarProps = {appBarProps} testID={testID}>
             {this.wrapRenderingContent(mainContent,{testID})}
         </ScreenContainer>
     }

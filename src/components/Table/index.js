@@ -1,5 +1,5 @@
 import View from "$ecomponents/View";
-import {defaultObj,defaultStr,debounce,defaultNumber,uniqid,isObj,defaultVal} from "$cutils";
+import {defaultObj,defaultStr,debounce,classNames,defaultNumber,uniqid,isObj,defaultVal} from "$cutils";
 import PropTypes from "prop-types";
 import React from "$react";
 import { StyleSheet,View as RNView,ScrollView,Dimensions} from "react-native";
@@ -255,9 +255,9 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
                                 const index = props['data-index'];
                                 const item = getRowByIndex(index) || props?.item || null;
                                 if(!item) return null;
-                                const args = {rowData:item,rowIndex:index,index,bordered,isTable:true};
+                                 const args = {rowData:item,rowIndex:index,index,bordered,isTable:true};
                                 args.selected = withDatagridContext ? useIsRowSelected(item,index) : false;
-                                return <TableRowComponent {...props} style={[getRowStyle(args),props.style]}/>
+                                return <TableRowComponent {...props} className={classNames(props.className,"table-row-tr")} style={[getRowStyle(args),styles.tr,props.style]}/>
                             },
                             Table: VirtuosoTableComponent,
                             EmptyPlaceholder : (props)=>{

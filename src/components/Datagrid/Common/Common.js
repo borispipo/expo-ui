@@ -2890,10 +2890,13 @@ export default class CommonDatagridComponent extends AppComponent {
         args.columnsNames = this.preparedColumns.visibleColumnsNames;
         const key = item.sectionListHeaderKey;
         const label = key === this.emptySectionListHeaderValue ? this.getEmptySectionListHeaderValue() : key;
+        const {renderSectionListHeaderOnFirstCell} = args;
+        const sectionListHeaderContainerProps = defaultObj(args.sectionListHeaderContainerProps);
         const style = typeof this.props.getSectionListHeaderStyle =='function' ? this.props.getSectionListHeaderStyle(args) : null;
         const cStyle = typeof this.props.getSectionListHeaderContentContainerStyle =="function" ?this.props.getSectionListHeaderContentContainerStyle(args) : undefined;
         const lStyle = typeof this.props.getSectionListHeaderLabelStyle =='function' ? this.props.getSectionListHeaderLabelStyle(args) : null;
         const rowKey = defaultVal(args.rowIndex,args.index,args.rowCounterIndex);
+        const rowIndex = defaultNumber(args.rowIndex,args.index);
         const testID  = defaultStr(args.testID,"RN_DatagridSectionListHeader")+"_"+rowKey;
         if(Array.isArray(rowStyle)){
             if(style){
@@ -2901,25 +2904,36 @@ export default class CommonDatagridComponent extends AppComponent {
             }
         }
         let cells = null;
+        const Cell = React.isComponent(args.Cell) ? args.Cell : View;
         const isA = this.isAccordion();
+        const sectionListHeaderProps = defaultObj(args.sectionListHeaderProps);
+        const headerContent = <Label testID={testID+"_Label"} splitText numberOfLines={3} textBold {...sectionListHeaderProps} style={[theme.styles.w100,{color:theme.colors.primaryOnSurface,fontSize:isA?15 :16},lStyle,theme.styles.ph1,sectionListHeaderProps.style]}>{label}</Label>;
+        let hasAlreadRenderMainHeaderOnFirstCell = false;
         if(this.canShowFooters() && isObj(this.sectionListHeaderFooters[key])){
             const {visibleColumnsNames,widths} = defaultObj(this.preparedColumns);
             if(isObj(visibleColumnsNames) &&isObj(widths)){
                 cells = [];
                 const footers = this.sectionListHeaderFooters[key];
                 Object.map(visibleColumnsNames,(v,column)=>{
-                    if(!v || typeof widths[column] !== 'number') {
+                    if(!v || !column) {
                         return null;
                     }
-                    if(!column) return null;
                     const width = widths[column];
                     const key2 = key+column;
+                    const cellProps = Cell !== View ? {width,isSectionListHeader:true,columnField:column} : {style:{width}};
                     if(!this.state.columns[column] || !footers[column]) {
                         if(this.isAccordion()) return null;
-                        cells.push(<View key={key2} testID={testID+"_FooterCellContainer_"+key2} style={[{width,marginLeft:0,paddingLeft:0,marginRight:0,paddingRight:0}]}></View>)
+                        const canD = renderSectionListHeaderOnFirstCell && !hasAlreadRenderMainHeaderOnFirstCell;
+                        const cProps = canD ? sectionListHeaderContainerProps : {};
+                        cells.push(<Cell {...cellProps} {...cProps} key={key2} testID={testID+"_FooterCellContainer_"+key2} style={[{marginLeft:0,paddingLeft:0,marginRight:0,paddingRight:0},cellProps.style,cProps.style]}
+                            children = {canD ? headerContent:null}
+                        />)
                     } else {
                         const footer = footers[column];
-                        cells.push(<View key={key2} testID={testID+"_FooterCellContainer_"+key2} style={[tableStyles.headerItemOrCell,!isA?{width,alignItems:'flex-start',justifyContent:'flex-start'}:{marginLeft:0,paddingLeft:0,marginRight:5}]}>
+                        const canD = renderSectionListHeaderOnFirstCell && !hasAlreadRenderMainHeaderOnFirstCell;
+                        const cProps = canD ? sectionListHeaderContainerProps : {};
+                        cells.push(<Cell {...cellProps} {...cProps} key={key2} width={width} testID={testID+"_FooterCellContainer_"+key2} style={[tableStyles.headerItemOrCell,!isA?{alignItems:'flex-start',justifyContent:'flex-start'}:{marginLeft:0,paddingLeft:0,marginRight:5},cellProps.style,cProps.style]}>
+                            {canD ? headerContent:null}
                             <Footer
                                 key = {key2}
                                 testID={testID+"_FooterItem_"+key2}
@@ -2928,27 +2942,18 @@ export default class CommonDatagridComponent extends AppComponent {
                                 aggregatorFunction = {this.getActiveAggregatorFunction().code}
                                 aggregatorFunctions = {this.aggregatorFunctions}
                                 displayLabel = {this.isAccordion()}
-                                //anchorProps = {{style:[theme.styles.ph1,theme.styles.mh05]}}
                             />  
-                        </View>)
+                        </Cell>)
                     }
+                    hasAlreadRenderMainHeaderOnFirstCell = true;
                 });
             }
         }
-        const isCollapsed = this.isSectionListCollapsed(key);
+        if(React.isComponent(args.Row)){
+            return <args.Row index={rowIndex} rowData={item} rowIndex={rowIndex} isSectionListHeader  cells={cells} headerContent={headerContent}/>
+        }
         return <View testID={testID+"_ContentContainer"}  style={[theme.styles.w100,isA && this.state.displayOnlySectionListHeaders && {borderTopColor:theme.colors.divider,borderTopWidth:1},isA ? [theme.styles.ph2,theme.styles.pt1] : [theme.styles.pt1,theme.styles.noPadding,theme.styles.noMargin],theme.styles.justifyContentCenter,theme.styles.alignItemsCenter,theme.styles.pb1,!cells && theme.styles.ml1,theme.styles.mr1,cStyle]}>
-            {false && <View testID={testID+"_LabelAndCollapsedContainer"} style={[theme.styles.w100,theme.styles.row,theme.styles.alignItemsCenter,theme.styles.justifyContentFlexStart]}>
-                <Icon
-                    name = {isCollapsed?"chevron-up":"chevron-right"}
-                    color = {theme.colors.primaryOnSurface}
-                    style = {[theme.styles.noMargin,theme.styles.noPadding]}
-                    size = {25}
-                    onPress = {(e)=>{
-                        this.toggleSectionListCollapsedState(key);
-                    }}
-                />
-            </View>}
-            <Label testID={testID+"_Label"} splitText numberOfLines={3} textBold style={[theme.styles.w100,{color:theme.colors.primaryOnSurface,fontSize:isA?15 :16},lStyle,theme.styles.ph1]}>{label}</Label>
+            {header}
             {cells ? <View testID={testID+"_TableRow"} style = {[theme.styles.w100,theme.styles.row,isA && theme.styles.pt1,theme.styles.alignItemsFlexStart,this.isAccordion() && theme.styles.rowWrap]}
             >{cells}</View> : null}
         </View>
@@ -3682,7 +3687,7 @@ export default class CommonDatagridComponent extends AppComponent {
             this.sort(columnField);
         };
         return <TouchableRipple disabled={!sortable} style={styles.sortableColumn} onPress={sortMe}>
-            <View testID={"RN_DatagridHeaderCellContainer_"+columnField} style={[tableStyles.cell,theme.styles.row,theme.styles.flex1,theme.styles.justifyContentFlexStart,theme.styles.alignItemsCenter]}>
+            <View testID={"RN_DatagridHeaderCellContainer_"+columnField} style={[theme.styles.row,theme.styles.flex1,theme.styles.justifyContentFlexStart,theme.styles.alignItemsCenter]}>
                 {isColumnSorted ? <Icon
                     {...sortedColumn}
                     size = {24}
@@ -3769,6 +3774,10 @@ export default class CommonDatagridComponent extends AppComponent {
         const renderText = isSectionListHeader === true || customRenderRowCell === false ? true : false;
         if(!isObj(rowData)) return renderText ? null : {render:null,extra:{}};
         rowIndex = isDecimal(rowIndex)? rowIndex : isDecimal(index)? index : undefined;
+        isSectionListHeader = isSectionListHeader || rowData.isSectionListHeader;
+        if(!isSectionListHeader && this.state.displayOnlySectionListHeaders){
+            return {render:null};
+        }
         rowKey = this.isValidRowKey(rowKey) ? rowKey : this.getRowKey(rowData,rowIndex);
         rowCounterIndex = isDecimal(rowCounterIndex) ? rowCounterIndex : isDecimal(rowIndex)? rowIndex+1 : defaultDecimal(rowCounterIndex);
         if(this.isSelectableColumn(columnDef,columnField)){

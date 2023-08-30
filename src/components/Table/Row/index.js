@@ -9,20 +9,31 @@ import styles from "../styles";
 import {useTable} from "../hooks";
 import RowWrapper from "./RowWrapper";
 import React from "$react";
-import theme from "$theme";
+import SectionListHeaderRow from "./SectionListHeaderRow";
+import {isMobileNative} from "$cplatform";
+const isNative = isMobileNative();
+const nativeProps = isNative ? {} : {Cell,Row:SectionListHeaderRow};
 export default function TableRowComponent({cells,rowKey,rowData,index,...rest}){
-    const {visibleColsNames,visibleColsNamesStr,renderSectionHeader,columns} = useTable();
-    if(!isObj(rowData)) return null;
+    const {visibleColsNames,visibleColsNamesStr,renderSectionHeader,colsWidths,columns} = useTable();
+    if(!isObj(rowData)) {
+        return null;
+    };
     const content = React.useMemo(()=>{
-        if(rowData.isSectionListHeader && typeof renderSectionHeader ==='function'){
-            return <RowWrapper style={[styles.row,theme.styles.pv1]}>
-                <Cell isSectionListHeader colSpan={visibleColsNames.length}>{renderSectionHeader({isSectionListHeader:true,rowData,item:rowData,index,rowIndex:index,isTable:true,rowKey})}</Cell>
-            </RowWrapper> 
+        if(rowData.isSectionListHeader){
+            if(typeof renderSectionHeader !='function'){
+                throw "Vous devez définir la fonction renderSectionListHeader, utile pour le rendu du contenu de section header de la table de données";
+            }
+            return renderSectionHeader({isSectionListHeader:true,renderSectionListHeaderOnFirstCell:true,
+            sectionListHeaderContainerProps : {
+                style : {position:"relative",paddingLeft:"10px",paddingRight:"10px"}
+            },
+            sectionListHeaderProps:{className:"table-section-list-header",style:styles.sectionListHeaderAbsolute,testID:"RN_TableComponentSectionListHeader"}
+            ,...nativeProps,rowData,item:rowData,index,rowIndex:index,isTable:true,rowKey})
         }
         return visibleColsNames.map((columnField,cIndex)=>{
             const columnDef = columns[columnField];
             if(!isObj(columnDef)) return null;
-            return <Cell rowData={rowData} rowKey={rowKey} children={rowData[columnField]} rowIndex={index} columnDef={columnDef} index={cIndex} key={columnField} columnField={columnField}/>
+            return <Cell rowData={rowData} width={columnField ? colsWidths[columnField] : 0} rowKey={rowKey} children={rowData[columnField]} rowIndex={index} columnDef={columnDef} index={cIndex} key={columnField} columnField={columnField}/>
         });
     },[rowKey,index,visibleColsNamesStr]);
     return <RowWrapper {...rest} rowKey={rowKey} rowData={rowData} rowIndex={index} style={[styles.row]}>

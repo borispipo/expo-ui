@@ -30,6 +30,8 @@ export const useAppGetComponent = (componentName)=>{
     return components[componentName] ||  components[componentName.toLowerCase()]  || components[componentName.ucFirst()] || components[camCase] || components[lowerFirst] || components[componentName.toUpperCase()] || null;
 }
 
+export const useAppComponent = useAppGetComponent;
+
 /*** permet d'attacher un lister sur la modification des props de manière responsive : 
     permet de récupérer la fonction à attacher par défaut au listener DimensionChange, pour la mise à jour automatique de la propriété style
    * @param mediaQueryUpdateStyleCb{function}, la fonction permettant de mettre à jour les props lorsque la taille de l'écran change

@@ -16,8 +16,7 @@ import styles, {
   _dynamicImageBackground,
   _dynamicBackgroundOpacity,
 } from "./styles"
-const isNative = isNativeMobile();
-const Component = isNative? Animated.View : View;
+import {useAppComponent} from "$econtext/hooks";
 
 const SplashScreenComponent = ({isLoaded,children , duration, delay,logoWidth,logoHeight,backgroundColor,imageBackgroundSource,imageBackgroundResizeMode,
   testID,
@@ -50,23 +49,7 @@ const SplashScreenComponent = ({isLoaded,children , duration, delay,logoWidth,lo
   testID = defaultStr(testID,"RN_SplashscreenComponent")
   logoWidth = defaultDecimal(logoWidth,150);
   logoHeight = defaultDecimal(logoHeight,250);
-  const opacityClearToVisible = {
-    opacity: loadingProgress.interpolate({
-      inputRange: [0, 15, 30],
-      outputRange: [0, 0, 1],
-      extrapolate: "clamp",
-    }),
-  }
-  const imageScale = {
-    transform: [
-      {
-        scale: loadingProgress.interpolate({
-          inputRange: [0, 10, 100],
-          outputRange: [1, 1, 65],
-        }),
-      },
-    ],
-  }
+  const Component = useAppComponent("SplashScreen");
 
   const logoScale = {
     transform: [
@@ -99,6 +82,7 @@ const SplashScreenComponent = ({isLoaded,children , duration, delay,logoWidth,lo
   }
   const child = (animationDone && isLoaded)? React.isValidElement(children) && children : null;
   if(animationDone && isLoaded) return child;
+  const hasComponent = React.isComponent(Component);
   return <View style={[styles.container]} testID={testID} id={testID}>
       {!animationDone ? <View style={StyleSheet.absoluteFill} testID={testID+"_Animation"}/> : null}
       <View style={styles.containerGlue} testID={testID+"_ContainerGlue"}>
@@ -108,22 +92,20 @@ const SplashScreenComponent = ({isLoaded,children , duration, delay,logoWidth,lo
             testID={testID+"_AnimationDone"}
           />
         )}
-        {false && (animationDone || isNative) && child}
         {!animationDone && (
+            React.isComponent(Component)? <Component testID={testID+"_CustomSplashComponent"}/> : 
             <View testID={testID+"_LogoContainer"} style={[StyleSheet.absoluteFill, styles.logoStyle]}>
-            {(
-              <Animated.View
-                testID={testID+"_Logo"}
-                style={_dynamicCustomComponentStyle(
-                      logoScale,
-                      logoOpacity,
-                      logoWidth,
-                      logoHeight
-                  )}>
-                {<LogoProgress/>}
-              </Animated.View>
-            )}
-          </View>
+                <Animated.View
+                  testID={testID+"_Logo"}
+                  style={_dynamicCustomComponentStyle(
+                        logoScale,
+                        logoOpacity,
+                        logoWidth,
+                        logoHeight
+                    )}>
+                  {<LogoProgress />}
+                </Animated.View>
+            </View>
         )}
       </View>
     </View>

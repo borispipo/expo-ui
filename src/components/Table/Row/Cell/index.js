@@ -4,9 +4,9 @@ import { useTable } from "../../hooks";
 import {defaultObj} from "$cutils";
 import Label from "$ecomponents/Label";
 import styles from "../../styles";
-const TableRowCellComponent = React.forwardRef(({children,columnDef,columnField,rowData,colSpan,isSectionListHeader,rowIndex,style,...rest},ref)=>{
+const TableRowCellComponent = React.forwardRef(({children,columnDef,className,columnField,rowData,colSpan,isSectionListHeader,rowIndex,style,...rest},ref)=>{
     if(isSectionListHeader){
-        return <CellContent colSpan={colSpan} ref={ref} style={[styles.sectionListHeader,style]} >
+        return <CellContent colSpan={colSpan} className={className} ref={ref} style={[styles.sectionListHeader,styles.cell,style]} >
             {children}
         </CellContent>
     }
@@ -19,8 +19,8 @@ const TableRowCellComponent = React.forwardRef(({children,columnDef,columnField,
             containerProps : defaultObj(rArgs.containerProps)
         }
     },[children]);
-    return (<CellContent ref={ref}  {...containerProps} columnField={columnField} style={[style,containerProps.style]} >
-        {columnDef.isSelectableColumnName ? content : <Label testID="RN_TableRowCell" style={[styles.cell]}>{content}</Label>}
+    return (<CellContent ref={ref}  {...containerProps} columnField={columnField} style={[styles.cell,style,containerProps.style]} >
+        {<Label testID="RN_TableRowCell">{content}</Label>}
     </CellContent>);
 });
 

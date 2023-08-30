@@ -52,13 +52,14 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
     testID,
     right,
     keyboardAvoidingViewProps,
+    backgroundColor,
     ...rest
   } = props;
   const insets = useSafeAreaInsets();
   keyboardAvoidingViewProps = defaultObj(keyboardAvoidingViewProps);
   testID = defaultStr(testID,"RN_MainScreenScreenWithoutAuthContainer")
   containerProps = defaultObj(containerProps);
-  const backgroundColor = theme.colors.background;
+  backgroundColor = theme.Colors.isValid(backgroundColor)? backgroundColor : theme.colors.background;
   const containerStyle = [
     styles.container,
     {

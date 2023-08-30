@@ -4,9 +4,7 @@
 import React from "react";
 import View from "$ecomponents/View";
 import {useTable} from "../../hooks";
-function TableCellContentComponent({children,columnField,style,colSpan,...rest}){
-    const {colsWidths} = useTable();
-    const width = columnField ? colsWidths[columnField] : 0;
+function TableCellContentComponent({children,width,columnField,style,colSpan,...rest}){
     return (<View testID={"RN_TableRowCellContentComponent"} {...rest} style={[style,width && {width}]}>
         {children}
     </View>);

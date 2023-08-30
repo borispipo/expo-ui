@@ -653,7 +653,6 @@ export default class DropdownAlert extends Component {
       elevation: elevation,
     };
     const activeOpacity = !tapToCloseEnabled || showCancel ? 1 : 0.95;
-    console.log(contentContainerStyle," is content container style");
     const onPress = !tapToCloseEnabled
       ? null
       : () => this.closeAction(ACTION.tap);

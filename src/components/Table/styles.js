@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet,Platform } from "react-native";
 import {isMobileNative} from "$cplatform";
 
 const styles = StyleSheet.create({
@@ -9,6 +9,9 @@ const styles = StyleSheet.create({
         flex:1,
     },
     headerCellLabel : {maxHeight:70},
+    tdSectionHeader : {
+        width : "100%",
+    },
     container : {
         width : '100%',
         minHeight : 300,
@@ -77,6 +80,9 @@ const styles = StyleSheet.create({
         justifyContent : 'center',
         alignItems : 'flex-start',
     },
+    tr : {
+        position : "relative",
+    },
     row : {
         flexDirection : "row",
         justifyContent : "flex-start",
@@ -108,6 +114,16 @@ const styles = StyleSheet.create({
     sectionListHeader : {
         paddingVertical : 10,
         paddingHorizontal : 10,
-    }
+    },
+    sectionListHeaderAbsolute : {
+        position : "relative",
+        top : "0",
+        left : "0",
+        width : "100%",
+        paddingLeft : 0,
+        paddingRight : 0,
+        textAlign : "center",
+        whiteSpace : "nowrap",
+    },
 });
 export default styles;

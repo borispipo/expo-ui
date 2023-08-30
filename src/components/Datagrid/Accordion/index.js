@@ -624,7 +624,7 @@ const styles = StyleSheet.create({
         maxHeight : 60
     },
     list : {
-        paddingHorizontal : 10,
+        paddingHorizontal : isNativeMobile()? 10:0,
     },
     container : {
         position : 'relative',

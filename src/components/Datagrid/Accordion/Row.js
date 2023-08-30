@@ -240,7 +240,6 @@ const styles = StyleSheet.create({
         //paddingHorizontal:10,
     },
     multiColumns : {
-        paddingHorizontal : 5,
         width : "98%"
     },
     renderedContent : {

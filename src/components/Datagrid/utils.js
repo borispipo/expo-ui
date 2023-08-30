@@ -27,8 +27,6 @@ export const IMPUTED_COLOR = "#943542";
 
 export const IMPUTED_TEXT_COLOR = "white";
 
-export const ROW_BORDER_COLOR = "#ced4da";
-
 export const ROW_BORDER_WIDTH = 1;
 
 export const SELECTABLE_COLUMN_WIDTH = 30;
@@ -108,13 +106,13 @@ export const SELECTED_BORDER_COLOR = "rgb(251, 207, 232)";
 export const ROW_BORDER_STYLE = {
     marginHorizontal : 0,
     marginVertical : 0,
-    borderLeftColor : ROW_BORDER_COLOR,
+    get borderLeftColor(){return theme.colors.divider;},
     borderLeftWidth : 0,
-    borderBottomColor : ROW_BORDER_COLOR,
+    get borderBottomColor(){return theme.colors.divider;},
     borderBottomWidth : ROW_BORDER_WIDTH,
-    borderRightColor : ROW_BORDER_COLOR,
+    get borderRightColor(){return theme.colors.divider;},
     borderRightWidth : 0,
-    borderTopColor : ROW_BORDER_COLOR,
+    get borderTopColor(){return theme.colors.divider;},
     borderTopWidth : 0,
     borderStyle : "solid",
 }

@@ -15,14 +15,14 @@ import styles from "../styles";
 import CellWrapper from "./CellWrapper";
 
 export default function RowHeaderComponent({isFilter,isFooter,isHeader,className,children:cChildren,...rest}){
-    const {showHeaders,visibleColsNames,filterable,visibleColsNamesStr,headerContainerProps,footerContainerProps,filtersContainerProps,showFilters,filters,showFooters} = useTable();
+    const {showHeaders,visibleColsNames,colsWidths,filterable,visibleColsNamesStr,headerContainerProps,footerContainerProps,filtersContainerProps,showFilters,filters,showFooters} = useTable();
     const canV = showHeaders === false ? false : Array.isArray(children)? !!children.length : true;
     const visible = canV && (isHeader ?  true : isFilter ? !!showFilters && filterable !== false : isFooter ? !!showFooters: true);
     const containerProps = defaultObj( isHeader ? headerContainerProps : isFooter ? footerContainerProps : filtersContainerProps);
     const style = filters ? styles.filters : isFooter ? styles.footer : null;
     const children = React.useMemo(()=>{    
         return visibleColsNames.map((columnField,index)=>{
-            return <CellWrapper isFilter={isFilter} isFooter={isFooter} key={columnField} columnField={columnField} columIndex={index}/>
+            return <CellWrapper width={colsWidths[columnField]} isFilter={isFilter} isFooter={isFooter} key={columnField} columnField={columnField} columIndex={index}/>
         });
     },[visibleColsNamesStr]);
     if(!visible) return null;

@@ -3,8 +3,7 @@
 // license that can be found in the LICENSE file.
 import React from "react";
 import View from "$ecomponents/View";
-import {useTable} from "../../hooks";
-function TableCellContentComponent({children,width,columnField,style,colSpan,...rest}){
+function TableCellContentComponent({children,columnField,style,colSpan,width,...rest}){
     return (<View testID={"RN_TableRowCellContentComponent"} {...rest} style={[style,width && {width}]}>
         {children}
     </View>);

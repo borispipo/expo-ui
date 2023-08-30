@@ -287,7 +287,9 @@ const DatagridFactory = (Factory)=>{
             </View> : null;
             return <DatagridProvider context={this}>
                      <View style={[styles.container,{flex:1}]} testID={testID+"_TableContainer"} pointerEvents={pointerEvents}>
-                        <View ref={this.layoutRef} testID={testID+"_LayoutContainer"}>
+                        <View ref={(el)=>{
+                            this.layoutRef.current = el;
+                        }} testID={testID+"_LayoutContainer"}>
                             {this.props.showActions !== false ? <DatagridActions 
                                 pointerEvents = {pointerEvents}
                                 title = {this.renderDataSourceSelector()}
@@ -301,7 +303,9 @@ const DatagridFactory = (Factory)=>{
                                 {this.renderChart()}
                             </View> : 
                         <Table
-                            ref = {this.listRef}
+                            ref = {(el)=>{
+                                this.listRef.current = el;
+                            }}
                             {...rest}
                             withDatagridContext
                             sortedColumn = {sortedColumn}

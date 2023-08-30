@@ -517,7 +517,9 @@ const DatagridFactory = (Factory)=>{
         </View>  
         return <DatagridProvider context={this}>
                 <View testID={testID+"_Container"} pointerEvents={pointerEvents} style={[styles.container,this.props.style]} collapsable={false}>
-                     <View testID={testID+"_AccordionHeader"} style={[styles.accordionHeader]} ref={this.layoutRef} onLayout={this.updateLayout.bind(this)}>
+                     <View testID={testID+"_AccordionHeader"} style={[styles.accordionHeader]} ref={(el)=>{
+                        this.layoutRef.current = el;
+                     }} onLayout={this.updateLayout.bind(this)}>
                         {this.props.showActions !== false ? <DatagridActions 
                             testID={testID+"_Actions"}
                             pointerEvents = {pointerEvents}
@@ -564,7 +566,9 @@ const DatagridFactory = (Factory)=>{
                         renderItem = {this.renderItem.bind(this)}
                         items = {this.state.data}
                         isLoading = {isLoading}
-                        ref = {this.listRef}
+                        ref = {(el)=>{
+                            this.listRef.current = el;
+                        }}
                         style = {[styles.list,rest.style]}
                         backToTopRef = {backToTopRef?(e)=>{
                             return this.backToTopRef.current;

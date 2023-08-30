@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     },
     cell : isMobileNative()? {
         paddingLeft:10,
-        paddingRight : 5,
+        paddingRight : 10,
         paddingBottom : 2,
         paddingTop : 2,
     } : {

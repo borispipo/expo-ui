@@ -647,6 +647,9 @@ class DropdownComponent extends AppComponent {
             selectedText : this.getSelectedText(newSelected,selectedValuesKeys)
         });
     }
+    getBackgroundColor(){
+        return theme.surfaceBackground;
+    }
     render (){
         let {
             multiple:_multiple,
@@ -706,6 +709,7 @@ class DropdownComponent extends AppComponent {
             bindResizeEvents,
             left,
             right,
+            backgroundColor : cBackgroundColor,
             dialogProps,
             ...dropdownProps
         } = this.props;
@@ -837,10 +841,11 @@ class DropdownComponent extends AppComponent {
         helperText = <HelperText disabled = {disabled} error={error}>{helperText}</HelperText>
         let labelTextField = defaultVal(label,text);
         const isFlatMode = textInputProps.mode  === flatMode;
-        let backgroundColor = Colors.isValid(textInputProps.style.backgroundColor)?textInputProps.style.backgroundColor : Colors.isValid(flattenStyle.backgroundColor)? flattenStyle.backgroundColor : theme.colors.surface;
+        const dropdownStyle = StyleSheet.flatten(dropdownProps?.style);
+        let backgroundColor = Colors.isValid(cBackgroundColor)? cBackgroundColor : Colors.isValid(dropdownStyle?.backgroundColor)? dropdownStyle?.dropdownStyle: Colors.isValid(textInputProps.style.backgroundColor)?textInputProps.style.backgroundColor : Colors.isValid(flattenStyle.backgroundColor)? flattenStyle.backgroundColor : this.getBackgroundColor();
         const tagLabelStyle = {backgroundColor,color:Colors.setAlpha(theme.colors.text,theme.ALPHA)}
         if(!isFlatMode && backgroundColor ==='transparent'){
-            tagLabelStyle.backgroundColor = theme.colors.surface;
+            tagLabelStyle.backgroundColor = this.surfaceBackground();
         }
         textInputProps.style.backgroundColor = backgroundColor;
         progressBarProps = defaultObj(progressBarProps);
@@ -886,7 +891,6 @@ class DropdownComponent extends AppComponent {
                 accessibilityLabel={defaultStr(accessibilityLabel,label,text)}
                 testID = {testID}
             >
-            {<React.Fragment>{
                 <View {...dropdownProps} {...contentContainerProps} style={[contentContainerProps.style,{pointerEvents},flattenStyle]}
                     ref = {this.anchorRef}
                     collapsable = {false}
@@ -906,7 +910,7 @@ class DropdownComponent extends AppComponent {
                         alwaysUseLabel = {renderTag?true : false}
                         contentContainerProps = {{
                             ...contentContainerProps,
-                            style : [renderTag? styles.inputContainerTag:null,{pointerEvents:iconDisabled && (!enableCopy && disabled)?'none':'auto'},contentContainerProps.style],
+                            style : [renderTag? styles.inputContainerTag:null,{pointerEvents:iconDisabled && (!enableCopy && disabled)?'none':'auto'},styles.anchorContentContainer,contentContainerProps.style],
                         }}
                         containerProps = {{...containerProps,style:[containerProps.style,styles.mbO]}}
                         error = {!!error}
@@ -939,8 +943,7 @@ class DropdownComponent extends AppComponent {
                     />}
                     {!canHandle && isFlatMode && <ProgressBar  color={theme.colors.secondary} {...defaultObj(progressBarProps)} indeterminate />}
                     {helperText}
-                </View>
-            }</React.Fragment>}
+            </View>
         </Pressable>
 
         let restProps = {};
@@ -1067,7 +1070,7 @@ class DropdownComponent extends AppComponent {
                         {...listProps}
                         ref = {this.listRef}
                         responsive = {false}
-                        contentContainerStyle = {[{backgroundColor:theme.colors.surface},listProps.contentContainerStyle]}
+                        contentContainerStyle = {[{backgroundColor},listProps.contentContainerStyle]}
                         style = {[listProps.style]}
                         prepareItems = {false}
                         items = {renderingItems} 
@@ -1149,6 +1152,9 @@ const styles = StyleSheet.create({
         paddingHorizontal:0,
         marginHorizontal : 0,
         paddingVertical : 0,
+    },
+    anchorContentContainer : {
+        backgroundColor : 'transparent',
     },
     searchInput : {
         paddingLeft : 8,
@@ -1234,6 +1240,7 @@ const styles = StyleSheet.create({
 
 DropdownComponent.propTypes = {
     onAddCallback : PropTypes.func,
+    backgroundColor : PropTypes.string,//le background color du list
     checkedIcon : PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.func,

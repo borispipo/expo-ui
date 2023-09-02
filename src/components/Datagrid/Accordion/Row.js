@@ -190,7 +190,7 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
                     {title}
                     {description}
                 </View>
-                {right ? <Label testID={testID+"_Right"} primary selectable {...rightProps} style={[styles.right,styles.label,rStyles.lineHeight,rightProps.style]}>
+                {right && React.isValidElement(right,true) ? <Label testID={testID+"_Right"} primary selectable {...rightProps} style={[styles.right,styles.label,rStyles.lineHeight,rightProps.style]}>
                     {right}
                 </Label> : null}
             </View>

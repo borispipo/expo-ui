@@ -257,7 +257,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,render,onMount})
     ref={navigationRef}
     initialState={initialState}
     onStateChange={(state) =>{
-        setSession(NAVIGATION_PERSISTENCE_KEY,decycle(state),false);
+      setSession(NAVIGATION_PERSISTENCE_KEY,decycle(state),false);
     }
   }
   >

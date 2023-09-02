@@ -122,7 +122,7 @@ const DatagridFactory = (Factory)=>{
                 if(isObj(renderedContent.titleProps)){
                     titleProps = {...titleProps,...renderedContent.titleProps,style:[titleProps.style,renderedContent.titleProps.style]};
                 }
-                right = renderedContent.right
+                right = renderedContent.right;
                 rightProps = Object.assign({},renderedContent.rightProps);
                 description = defaultVal(renderedContent.description,renderedContent.content);
                 avatarContent = renderedContent.avatar;

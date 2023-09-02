@@ -3,7 +3,6 @@ module.exports = function(api,opts) {
   api = api && typeof api =='object'? api : {};
   
   const isLocalDev = require("./is-local-dev")();//si l'application est en developpement local
-  
   ///les chemin vers la variable d'environnement, le chemin du fichier .env,@see : https://github.com/brysgo/babel-plugin-inline-dotenv
   //console.log(environmentPath," is envvv ",opts);
   const path = require("path");

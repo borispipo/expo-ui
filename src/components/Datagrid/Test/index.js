@@ -5,6 +5,7 @@
 import Table from "../IndexComponent";
 import React from "$react";
 import { faker } from '@faker-js/faker';
+import DateLib from "$clib/date";
 export default function TestDatagridComponent({count,...props}){
     const data = React.useMemo(()=>{
         count = typeof count =='number' && count > 5 ? count : 100;
@@ -19,7 +20,7 @@ export default function TestDatagridComponent({count,...props}){
                 content : `${rowData.email}`,
                 title : rowData?.username,
                 //avatar : rowData.avatar,
-                right : rowData.birthdate,
+                right : DateLib.format(rowData.birthdate),
             }
         }}
     columns={{
@@ -31,6 +32,10 @@ export default function TestDatagridComponent({count,...props}){
         username : {
             text : "Name",
             width : 220,
+        },
+        amount : {
+            type : "number",
+            label : "Amount",
         },
         email : {
             type : "email",
@@ -51,6 +56,7 @@ export function createRandomUser (){
     return {
       userId: faker.string.uuid(),
       username: faker.internet.userName(),
+      amount : faker.number.int(),
       email: faker.internet.email(),
       avatar: faker.image.avatar(),
       password: faker.internet.password(),

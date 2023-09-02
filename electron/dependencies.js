@@ -6,7 +6,7 @@ module.exports = {
 		"node-sqlite" : "latest",
 	},
 	"dev" : {
-		"electron": "^22.2.0",
-		"electron-packager": "^17.1.1",
+		"electron": "latest",
+		"electron-packager": "latest",
 	}
 }

@@ -1264,6 +1264,7 @@ export default class CommonDatagridComponent extends AppComponent {
             DialogProvider.open({
                 title : 'Format de date',
                 subtitle : false,
+                withScrollView : true,
                 fields : {
                     dateFormat : {
                         type : 'select_dateformat',
@@ -1460,6 +1461,7 @@ export default class CommonDatagridComponent extends AppComponent {
             DialogProvider.open({
                 title : "Paramètres de groupe",
                 data : config,
+                withScrollView : true,
                 fields : {
                     displayGroupLabels : {
                         type : "switch",
@@ -1535,6 +1537,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 title : 'Configuration des graphes',
                 subtitle : false,
                 data,
+                withScrollView : true,
                 fields : {
                     x : {
                         text : 'Axe des x[horizontal]',
@@ -1736,6 +1739,7 @@ export default class CommonDatagridComponent extends AppComponent {
             return DialogProvider.open({
                 title : `Paramètre d'export ${excel?"excel":"pdf"}`,
                 data : sData,
+                withScrollView : true,
                 fields : {
                     ...this.getExportableFields(),
                     sheetName : excel && {
@@ -2907,7 +2911,7 @@ export default class CommonDatagridComponent extends AppComponent {
         const Cell = React.isComponent(args.Cell) ? args.Cell : View;
         const isA = this.isAccordion();
         const sectionListHeaderProps = defaultObj(args.sectionListHeaderProps);
-        const headerContent = <Label testID={testID+"_Label"} splitText numberOfLines={3} textBold {...sectionListHeaderProps} style={[theme.styles.w100,{color:theme.colors.primaryOnSurface,fontSize:isA?15 :16},lStyle,theme.styles.ph1,sectionListHeaderProps.style]}>{label}</Label>;
+        const headerContent = <Label testID={testID+"_Label"} splitText numberOfLines={3} textBold {...sectionListHeaderProps} style={[theme.styles.w100,{color:theme.colors.primaryOnSurface,fontSize:isA?15 :16},isA && tableStyles.accordionSectionListHeader,lStyle,theme.styles.ph1,sectionListHeaderProps.style]}>{label}</Label>;
         let hasAlreadRenderMainHeaderOnFirstCell = false;
         if(this.canShowFooters() && isObj(this.sectionListHeaderFooters[key])){
             const {visibleColumnsNames,widths} = defaultObj(this.preparedColumns);
@@ -2953,7 +2957,7 @@ export default class CommonDatagridComponent extends AppComponent {
             return <args.Row index={rowIndex} rowData={item} rowIndex={rowIndex} isSectionListHeader  cells={cells} headerContent={headerContent}/>
         }
         return <View testID={testID+"_ContentContainer"}  style={[theme.styles.w100,isA && this.state.displayOnlySectionListHeaders && {borderTopColor:theme.colors.divider,borderTopWidth:1},isA ? [theme.styles.ph2,theme.styles.pt1] : [theme.styles.pt1,theme.styles.noPadding,theme.styles.noMargin],theme.styles.justifyContentCenter,theme.styles.alignItemsCenter,theme.styles.pb1,!cells && theme.styles.ml1,theme.styles.mr1,cStyle]}>
-            {header}
+            {headerContent}
             {cells ? <View testID={testID+"_TableRow"} style = {[theme.styles.w100,theme.styles.row,isA && theme.styles.pt1,theme.styles.alignItemsFlexStart,this.isAccordion() && theme.styles.rowWrap]}
             >{cells}</View> : null}
         </View>

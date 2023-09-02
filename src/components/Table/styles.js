@@ -125,5 +125,9 @@ const styles = StyleSheet.create({
         textAlign : "center",
         whiteSpace : "nowrap",
     },
+    accordionSectionListHeader : {
+        paddingLeft : 0,
+        paddingRight : 0,
+    },
 });
 export default styles;

@@ -6,6 +6,6 @@ const DialogContentComponent = ({isPreloader,title,children,isFullScreen,...prop
     const isFull = isFullScreen();
     //useWindowDimensions();
     const content = React.useMemo(()=>children,[isPreloader,title,children]);
-    return isPreloader || !isFull ? content : <KeyboardAvoidingView>{content}</KeyboardAvoidingView>
+    return isPreloader || !isFull ? content : <KeyboardAvoidingView testID="RN_DialogKeybaordAvoidingView">{content}</KeyboardAvoidingView>
 }
 export default DialogContentComponent;

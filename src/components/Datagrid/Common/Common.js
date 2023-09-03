@@ -174,6 +174,7 @@ export default class CommonDatagridComponent extends AppComponent {
             exportToPDFIsAllowed,
             exportToExcelIsAllowed,
             renderSectionListIsAllowed,
+            checkPerms : customCheckPerms,
             ...rest
         } = props;
         if(this.bindResizeEvents()){
@@ -204,6 +205,9 @@ export default class CommonDatagridComponent extends AppComponent {
         const ePDFIsAllowed = checkPerm(exportToPDFIsAllowed,pArgs);
         const eExcelISAllowed = checkPerm(exportToExcelIsAllowed,pArgs);
         const renderSectionListIsAllowedP = checkPerm(renderSectionListIsAllowed,pArgs);
+        if(typeof customCheckPerms =='function'){
+            customCheckPerms({context:this});
+        }
         Object.map(this.props.displayTypes,(dType,v)=>{
             if(isNonNullString(dType)){
                 dType = dType.toLowerCase().trim();
@@ -771,6 +775,7 @@ export default class CommonDatagridComponent extends AppComponent {
     }
     getActionsArgs (selected){
         const r = isObj(selected)? selected : {};
+        const isMobile = isMobileOrTabletMedia();
         const ret = {
             ...dataSourceArgs,
             rowsByKeys : this.rowsByKeys,
@@ -780,7 +785,8 @@ export default class CommonDatagridComponent extends AppComponent {
             notify,
             selected : defaultBool(selected,false),
             ...r,
-            isMobile : isMobileOrTabletMedia(),
+            isMobile,
+            isDesktop : !isMobile,
             component:'datagrid',
             data : this.state.data,
             rows : this.state.data,
@@ -789,7 +795,8 @@ export default class CommonDatagridComponent extends AppComponent {
             selectedRows : this.getSelectedRows(),
             selectedRowsCount : this.getSelectedRowsCount(),
             context:this,
-            isMobile : isMobileOrTabletMedia(),
+            isAccordion : this.isAccordion(),
+            isTableData : this.isTableData(),
             Auth,
         };
         if(this.props.getActionsArgs){
@@ -4063,6 +4070,7 @@ CommonDatagridComponent.propTypes = {
     canFetchOnlyVisibleColumns : PropTypes.bool,//si l'on peut modifier le type d'affichage lié à la possibilité de récupérer uniquement les données reletives aux colonnes visibles
     useLinesProgressBar  : PropTypes.bool,//si le progress bar lignes horizontale seront utilisés
     abreviateValues : PropTypes.bool, //si les valeurs numériques seront abregées
+    checkPerms : PropTypes.func,//la fonction utilisée pour vérifier les permissions de l'utilisateur
 }
 
 const styles = StyleSheet.create({

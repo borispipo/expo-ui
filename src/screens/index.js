@@ -22,7 +22,11 @@ export const handleScreen = ({Screen,Factory,ModalFactory,result,filter,index})=
     } else if(typeof Screen ==='object' && React.isComponent(Screen.Component) && isNonNullString(Screen.screenName)){
         screenName = Screen.screenName;
         screenOptions = Screen.options;
+        const Modal = typeof Screen.Modal =='boolean'? Screen.Modal : typeof Screen.modal =='boolean'? Screen.modal : undefined;
         Screen = Screen.Component;
+        if(Modal !== undefined){
+            Screen.Modal = Modal;
+        }
     }
     if(React.isComponent(Screen)) {
         screenName = defaultStr(screenName,Screen.screenName);
@@ -74,7 +78,7 @@ export const handleScreen = ({Screen,Factory,ModalFactory,result,filter,index})=
                 options.elevation = typeof options.elevation =='number'? options.elevation : typeof Screen.elevation =='number'? Screen.elevation : undefined;
                 options.back = args.navigation.canGoBack();
                 options.extra = defaultObj(extra);
-                options.isModal = Screen.isModalScreen;
+                options.isModal = options.Modal = Screen.isModalScreen;
                 return options;
             }} component = {ScreenWrapper}/>);
         } else {

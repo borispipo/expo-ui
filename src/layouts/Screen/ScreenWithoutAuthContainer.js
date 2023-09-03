@@ -132,7 +132,7 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
               {fab}
             </ScrollView>
           ) : (
-            <View  testID={testID+'_ScreenContent'} {...rest} style={[styles.container, style]}>
+            <View  testID={testID+'_ScreenContent'} {...rest} style={[styles.container,contentContainerStyle, style]}>
               {children}
               {fab}
             </View>

@@ -249,7 +249,8 @@ const DatagridFactory = (Factory)=>{
                                     ,icon :  showFooters?'view-column':'view-module'
                                     ,text : (showFooters?'Masquer/Ligne des totaux':'Afficher/Ligne des totaux')
                                 } : null,
-                                ...(selectableMultiple ? restItems : [])
+                                ...restItems,
+                                //...(selectableMultiple ? restItems : [])
                             ] : visibleColumns}
                         
                         />

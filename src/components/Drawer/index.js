@@ -34,8 +34,9 @@ const DrawerComponent = React.forwardRef((props,ref)=>{
       minimized,drawerItems,hideStatusBar,overlayColor, onDrawerMinimize,onDrawerToggleMinimize,
       onDrawerOpen,onDrawerClose,onDrawerToggle,header,headerProps,toggleIconProps,
       permanentToggleIcon,minimizedToggleIcon,temporaryToggleIcon,withMinimizedIcon,
-      isItemActive,onPageResize,navigationViewRef,children,testID,drawerType} = props;
+      isItemActive,onPageResize,navigationViewRef,children:customChildren,testID,drawerType} = props;
     
+    const children = React.useMemo(()=>customChildren,[customChildren]);
     testID = defaultStr(testID,"RN_DrawerComponent")
     const session = useSession(sessionName);
     sessionName = session.sessionName;

@@ -10,7 +10,7 @@ import Item from "./Item";
 export const MIN_WIDTH = 180;
 
 export const renderItems = (props)=>{
-    let _items = [];
+    const _items = [];
     let {items,renderItem,testID,isBottomSheetItem,onPressItem,filter,closeOnPressItem,openMenu,closeMenu,itemProps} = props;
     itemProps = defaultObj(itemProps);
     testID = defaultStr(testID,"RN_MenuComponents.Items")

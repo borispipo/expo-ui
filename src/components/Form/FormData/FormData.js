@@ -1,5 +1,5 @@
 import {getAppBarActionsProps} from "./utils";
-import React, {Component as AppComponent} from "$react";
+import React, {ObservableComponent as AppComponent} from "$react";
 import {isNonNullString,defaultStr,defaultNumber,defaultObj,extendObj,isObj,isFunction,defaultFunc,uniqid} from "$cutils";
 import {getForm,getFormField} from "../utils";
 import Surface from "$ecomponents/Surface";

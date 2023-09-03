@@ -15,7 +15,7 @@ export const ChartComponent = React.forwardRef(({chartContext,testID,chartId,id,
         webViewRef.current.injectJavaScript(`
             const method = "${method}";
             const chartId = "${chartId}";
-            const a = ${typeof a =='string'? '"'+a.replaceAll('"','\"')+'"':typeof a =='boolean'? a : a && typeof a =='object'? JSON.stringify(a):undefined};
+            const a = ${typeof a =='string'? '"'+a.replaceAll('"','\"')+'"':typeof a =='boolean' || typeof a =="number" ? a : a && typeof a =='object'? JSON.stringify(a):undefined};
             let element = document.getElementById(chartId);
             if(!element){
                 element = document.createElement("div");
@@ -37,8 +37,8 @@ export const ChartComponent = React.forwardRef(({chartContext,testID,chartId,id,
     //@see : https://apexcharts.com/docs/methods/
     methodsNames.map((cb)=>{
         if(cb !=='exec'){
-            chartContext.current[cb]=(a,b,c,d,e)=>{
-                return exec(cb,a,b,c,d,e);
+            chartContext.current[cb]=(...args)=>{
+                return exec(cb,...args);
             }
         }
     });

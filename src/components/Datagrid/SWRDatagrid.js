@@ -100,6 +100,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         sort,
         defaultSortColumn,
         defaultSortOrder,
+        isLoading : customIsLoading,
         ...rest
     } = props;
     const {swrConfig} = useContext();
@@ -204,9 +205,9 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     });
     const dataRef = React.useRef(null);
     const totalRef = React.useRef(0);
-    const loading = (isLoading || isValidating);
+    const loading = (customIsLoading === true || isLoading || isValidating);
     const {data,total} = React.useMemo(()=>{
-        if(loading || !isObjOrArray(result)){
+        if((loading && customIsLoading !== false) || !isObjOrArray(result)){
             return {data:dataRef.current,total:totalRef.current};
         }
         let {data,total} = (Array.isArray(result) ? {data:result,total:result.length} : isObj(result)? result : {data:[],total:0});

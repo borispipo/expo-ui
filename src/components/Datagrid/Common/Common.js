@@ -1691,7 +1691,7 @@ export default class CommonDatagridComponent extends AppComponent {
     }
    ///reoturne les options de menus à appliquer sur le char
    getChartMenus(){
-        return  [
+        const menus =  [
             {
                 text : "Options du graphe",
                 textBold : true,
@@ -1702,7 +1702,23 @@ export default class CommonDatagridComponent extends AppComponent {
                 icon : "download",
                 onPress : this.downloadChart.bind(this),
             }
-        ]
+        ];
+        Object.map(this.props.chartActions,(menu,t)=>{
+            if(!isObj(menu)) return;
+            const {onPress} = menu;
+            menus.push({
+                ...menu,
+                onPress : (event)=>{
+                    if(!this.chartRef.current) return;
+                    const args = React.getOnPressArgs(event);
+                    args.chartContext = this.chartRef.current;
+                    if(typeof onPress =='function'){
+                        onPress(args);
+                    }
+                }
+            })
+        })
+        return menus;
    }
    getExportableFields(){
         return {
@@ -3855,6 +3871,10 @@ CommonDatagridComponent.propTypes = {
     exportTableProps : PropTypes.oneOfType([
         PropTypes.object,
         PropTypes.object,
+    ]),
+    chartActions : PropTypes.oneOfType([
+        PropTypes.object,
+        PropTypes.array, //les actions supplémentaires à passer au graphe chart
     ]),
     /*** si l'opérateur or de filtre est accepté */
     filterOrOperator : PropTypes.bool,

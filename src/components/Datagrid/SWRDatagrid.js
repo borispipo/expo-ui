@@ -76,7 +76,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         table,
         data:customData,
         saveButton,
-        title,
+        title:customTitle,
         fab,
         rowKey,
         actions,
@@ -125,7 +125,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     const isExportable = !!Auth.isTableDataAllowed({table:tableName,action:'export'});
     rest.exportable = isExportable;
     rowKey = defaultStr(rowKey,table.rowKey,table.primaryKeyColumnName);
-    title = defaultStr(title,table.label,table.text)
+    const title = React.isValidElement(customTitle,true) && customTitle || defaultStr(table.label,table.text)
     columns = table.fields;
     const fetchFields = [];
     Object.map(columns,(column,i)=>{
@@ -149,7 +149,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     rest.exportTableProps.pdf = defaultObj(rest.exportTableProps.pdf);
     rest.exportTableProps.pdf = extendObj(true,{},{
         fileName : rest.exportTableProps.fileName,
-        title
+        title : React.getTextContent(title),
     },rest.exportTableProps.pdf);
     const fetchOptionsRef = React.useRef(defaultObj(customFetchOptions));
     const fPathRef = React.useRef(defaultStr(fetchPathKey,uniqid("fetchPath")));
@@ -297,6 +297,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             testID = {testID}
             {...defaultObj(table.datagrid)} 
             {...rest}
+            title = {customTitle || title || undefined}
             sort = {sort}
             onSort = {({sort})=>{
                 sortRef.current = sort;

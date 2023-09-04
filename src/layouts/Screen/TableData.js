@@ -24,6 +24,7 @@ import { generatedColumnsProperties,defaultArchivedPermsFilter } from "./utils";
 import {isDocEditing,checkPrimaryKey} from "$ecomponents/Form";
 import i18n from "$i18n";
 import fetch from "$capi/fetch";
+import appConfig from "$capp/config";
 
 
 const HIDE_PRELOADER_TIMEOUT = 300;
@@ -36,9 +37,31 @@ const TIMEOUT = 50;
 export default class TableDataScreenComponent extends FormDataScreen{
     constructor(props){
         super(props);
-        const mainProps = props;
-        extendObj(this.state,this.prepareStateData(mainProps));
-        const table = defaultObj(mainProps.table);
+        extendObj(this.state,this.prepareStateData(this.props));
+        this.hidePreloader = this.hidePreloader.bind(this);
+        this.showPreloader = this.showPreloader.bind(this);
+        const table = this.getTableObj();
+        Object.defineProperties(this,{
+            tableName : { value : defaultStr(table.table,table.tableName)},
+            table : {value : table},
+        })
+        this.init();
+    };
+    /**** retourne l'objet table, associé à la tableName */
+    getTableObj(){
+        const table = defaultObj(this.props.table);
+        if(Object.size(table,true)) return table;
+        if(typeof appConfig.getTable ==='function'){
+            return appConfig.getTable(defaultStr(this.props.tableName,this.props.table));
+        }
+        return {};
+    }
+    getNewElementLabel(...args){
+        const tableObj = this.getTableObj();
+        return tableObj?.newElementLabel ? tableObj?.newElementLabel : super.getNewElementLabel(...args);
+    }
+    init(){
+        const table = this.getTableObj();
         const fields = {},primaryKeyFields = {};
         Object.map(table.fields,(field,i)=>{
             if(isObj(field) && field.form !== false){
@@ -49,33 +72,34 @@ export default class TableDataScreenComponent extends FormDataScreen{
                 if((f.type =='id' || f.type =='piece' || f.primaryKey || f.unique === true) && f.unique !== false && f.disabled !== true && f.readOnly !== true){
                     const {onBlur} = f;
                     f.onBlur = (args)=>{
+                        if(isNonNullString(args.value)){
+                            args.value = args.value.trim();
+                        }
                         args = {...f,...args,fetch,columnField:name,fieldName:name,id:args.value};
                         const {context} = args;
                         const r = typeof onBlur =='function'? onBlur (args) : undefined;
                         if(r === false || (!args.value && typeof args.value != 'number')) return r;
                         //on applique la validation seulement en cas de non mise à jour
                         if(!this.isCurrentDocEditingUpdate() && context && typeof context.onNoValidate =='function'){
-                            const cb = typeof field.fetchUniqueId =='function'? field.fetchUniqueId : typeof this.props.fetchUniqueId =='function'? this.props.fetchUniqueId : undefined;
+                            const cb = typeof field.fetchUniqueId =='function'? field.fetchUniqueId : this.fetchUniqueId.bind(this);
                             if(cb){
                                 const r2 = cb(args);
-                                if(isPromise(r2)){
-                                    r2.then((data)=>{
-                                        let message = data;
-                                        if(isObj(data) && Object.size(data,true)){
-                                            message = i18n.lang('validate_rule_field_must_be_unique')+ defaultStr(f.label,f.text);
-                                        }
-                                        if(isNonNullString(message)){
-                                            context.onNoValidate({...args,msg:message,message,context,validRule:context.getValidRule()});
-                                        }
-                                    }).catch((e)=>{
-                                        if(e && e.status?.toString() == '404') return;
-                                        console.log(e," fetching unique id on table data element id : ",args)
-                                        const message = defaultStr(e?.message,e?.msg);
-                                        if(message){
-                                            context.onNoValidate({...args,msg:message,message,error:e,context,validRule:context.getValidRule()});
-                                        }
-                                    })
-                                } 
+                                (isPromise(r2)? r2 : Promise.resolve(r2)).then((data)=>{
+                                    let message = data;
+                                    if(isObj(data) && Object.size(data,true)){
+                                        message = i18n.lang('validate_rule_field_must_be_unique')+ defaultStr(f.label,f.text);
+                                    }
+                                    if(isNonNullString(message)){
+                                        context.onNoValidate({...args,msg:message,message,context,validRule:context.getValidRule()});
+                                    }
+                                }).catch((e)=>{
+                                    if(e && e.status?.toString() == '404') return;
+                                    console.log(e," fetching unique id on table data element id : ",args)
+                                    const message = defaultStr(e?.message,e?.msg);
+                                    if(message){
+                                        context.onNoValidate({...args,msg:message,message,error:e,context,validRule:context.getValidRule()});
+                                    }
+                                });
                             }
                         }
                         return r;
@@ -89,19 +113,15 @@ export default class TableDataScreenComponent extends FormDataScreen{
             }
         });
         Object.defineProperties(this,{
-            tableName : { value : defaultStr(table.table,table.tableName)},
             fields : {value : fields},
-            table : {value : table},
-            archivedPermsFilterFunc : {value : typeof mainProps.archivedPermsFilter =='function'? mainProps.archivedPermsFilter:defaultArchivedPermsFilter},
+            archivedPermsFilterFunc : {value : typeof this.props.archivedPermsFilter =='function'? this.props.archivedPermsFilter:defaultArchivedPermsFilter},
             isDocEditingRef : {value : {current:false}},
-            closeOnSaveProp : {value : mainProps.closeOnSave || mainProps.closeAfterSave },
+            closeOnSaveProp : {value : this.props.closeOnSave || this.props.closeAfterSave },
             //la liste des champ de type clé primaire associés à la table
             primaryKeyFields : {value : primaryKeyFields},
-            showPreloaderOnUpsert : {value : mainProps.showPreloaderOnUpsert},
+            showPreloaderOnUpsert : {value : this.props.showPreloaderOnUpsert},
         });
-        this.hidePreloader = this.hidePreloader.bind(this);
-        this.showPreloader = this.showPreloader.bind(this);
-    };
+    }
     prepareStateData(props){
         const mainProps = defaultObj(props,this.props);
         const hasManyData = isObjOrArray(mainProps.datas) && Object.size(mainProps.datas,true) > 0 ? true : false;
@@ -115,6 +135,13 @@ export default class TableDataScreenComponent extends FormDataScreen{
             currentIndex : 0,
             data : hasManyData ? defaultObj(cDatas[0]) : isObj(mainProps.data)? mainProps.data : {}
         };
+    }
+    fetchUniqueId(...args){
+        const fetch = typeof this.props.fetchUniqueId =='function'? this.props.fetchUniqueId : undefined;
+        if(fetch){
+            return fetch(...args);
+        }
+        return undefined;
     }
     isCurrentDocEditingUpdate(){
         return this.isDocEditingRef.current === true ? true : false;
@@ -178,6 +205,12 @@ export default class TableDataScreenComponent extends FormDataScreen{
     getSessionName (){
         return defaultStr(this.props.sessionName,"table-form-data"+this.getTableName())
     }
+    prepareField(a,...args){
+        if(typeof this.props.prepareField =='function'){
+            return this.props.prepareField(a,...args);
+        }
+        return a;
+    }
     getComponentProps(props){
         const table = this.table;
         const {datas,currentIndex,data} = this.state; 
@@ -219,7 +252,6 @@ export default class TableDataScreenComponent extends FormDataScreen{
             ...rest
         } = this.prepareComponentProps({...props,tableName,context:this,fields:extendObj({},true,this.fields,props.fields),isUpdated,isUpdate:isUpdated,data,datas,currentIndex});
         const sessionName = this.getSessionName();
-        const prepareCb = typeof prepareField =='function'? prepareField : x=> x;
         ///on effectue une mutator sur le champ en cours de modification
         Object.map(preparedFields,(field,i,counterIndex)=>{
             const currentField = isObj(field)?Object.clone(field):field;
@@ -259,7 +291,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
                     this.primaryKeyFields[columnField] = true;
                 }
                 const isPrimary = this.primaryKeyFields[columnField] && true || false;
-                const f = prepareCb(cArgs);  
+                const f = this.prepareField(cArgs);  
                 if(f === false) {
                     delete fields[i];
                     return;
@@ -343,7 +375,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
     handleCustomRender(){
         return true;
     }
-    componentWillRender(rActionsArg){
+    componentWillRender({...rActionsArg}){
         rActionsArg.context = this;
         const rActions = renderActions.call(this,rActionsArg);
         const renderedActs = this.renderActions(rActionsArg);
@@ -354,7 +386,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
                 rActions[iPrefix+i] = a;
             });
         }
-        rActionsArg.actions = rActions;
+        rActionsArg.actions = this.buttonsActions = rActions;
         return rActionsArg;
     }
     _render ({header,content,context}){
@@ -589,7 +621,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
         return Object.assign({},this.getCurrentData());
     }
     getAppBarActionsProps(props){
-        return {...super.getAppBarActionsProps(props),data:this.getCurrentData()}
+        return {...super.getAppBarActionsProps(props),actions:this.buttonsActions,data:this.getCurrentData()}
     }
     /**** cette fonction est appelée immédiatement lorsque l'on clique sur le bouton enregistrer de l'un des actions du formulaire */
     onPressToSaveFormData(args){

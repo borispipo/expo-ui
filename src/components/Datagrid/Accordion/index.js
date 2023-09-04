@@ -359,7 +359,7 @@ const DatagridFactory = (Factory)=>{
             const descriptionColor = Colors.isValid(descriptionStyle.color) ? descriptionStyle.color : Colors.isValid(descOrContentProps.color)? descOrContentProps.color : Colors.setAlpha(theme.colors.text,theme.ALPHA);
             this.accordionDescriptionProps = {
                 ellipsizeMode: EllipsizeMode.tail,
-                numberOfLines : 2,
+                numberOfLines : 3,
                 ...descOrContentProps,
                 color : descriptionColor,
                 style : [styles.description,rStyles.lineHeight,descriptionStyle],

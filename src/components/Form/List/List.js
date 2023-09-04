@@ -281,6 +281,7 @@ export default class FormListComponent extends AppComponent {
             upsertEltProps,
             newElementLabel,
             parentData,
+            routeParams,
             ...rest
         } = this.props;
         rest = defaultObj(rest);
@@ -301,6 +302,7 @@ export default class FormListComponent extends AppComponent {
             formName,
             //fields,
             data,
+            ...defaultObj(routeParams)
         }
         if(typeof upsertEltProps =='function'){
             params = {...params,...defaultObj(upsertEltProps(params)),allData:this.state.allData,onSave : this.onSave.bind(this),show : this.show.bind(this),currentIndex : index,routeName,data:params.data,indexField}

@@ -1011,7 +1011,7 @@ export default class CommonDatagridComponent extends AppComponent {
         return null;
     }
     renderDataSourceSelector(){
-        const t = isNonNullString(this.props.title)? <Label testID={"RN_DatagridTitleProp"}>{this.props.title}</Label> : React.isValidElement(this.props.title)? this.props.title : null;
+        const t = !this.props.handleTitle ? null : isNonNullString(this.props.title) || typeof this.props.title ==='number' ? <Label textBold primary style={[theme.styles.fs14]} testID={"RN_DatagridTitleProp"}>{this.props.title}</Label> : React.isValidElement(this.props.title)? this.props.title : null;
         const table = defaultStr(this.props.table,this.props.tableName);
         const dS = dS === false ? null : typeof this.props.dataSourceSelector ==='function'? this.props.dataSourceSelector({
             defaultValue : this.currentDataSources,
@@ -4090,6 +4090,7 @@ CommonDatagridComponent.propTypes = {
     canFetchOnlyVisibleColumns : PropTypes.bool,//si l'on peut modifier le type d'affichage lié à la possibilité de récupérer uniquement les données reletives aux colonnes visibles
     useLinesProgressBar  : PropTypes.bool,//si le progress bar lignes horizontale seront utilisés
     abreviateValues : PropTypes.bool, //si les valeurs numériques seront abregées
+    handleTitle : PropTypes.bool,//si le titre du datagrid, props title, sera pris en compte dans les actions du datagrid, pour le rendu du DataSourceSelector, fonction renderDataSourceSelector
     checkPerms : PropTypes.func,//la fonction utilisée pour vérifier les permissions de l'utilisateur
 }
 

@@ -11,7 +11,7 @@ import { StyleSheet } from "react-native";
 import Label from "$ecomponents/Label";
 import { useWindowDimensions } from "react-native";
 import {useDatagrid,useGetSelectedRowsCount} from "../hooks";
-export default function DatagridActions ({actions,actionProps,...props}){
+export default function DatagridActions ({actions,title,actionProps,...props}){
   const {context} = useDatagrid();
   const selectedRowsCount = useGetSelectedRowsCount();
   useWindowDimensions();
@@ -39,6 +39,8 @@ export default function DatagridActions ({actions,actionProps,...props}){
   if(selectedRowsCount > 0){
     let sLetter = (selectedRowsCount>1?'s':'');
     contextualTitle = (selectedRowsCount<10?'0':'')+selectedRowsCount+(' ligne'+sLetter+' sélectionnée'+sLetter),1;
+  } else if(React.isValidElement(title,true)){
+    contextualTitle = title;
   }
   const children = renderSplitedActions(splitedActions,{
       anchor : (props)=>{

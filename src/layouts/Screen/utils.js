@@ -134,7 +134,7 @@ export  function renderActions({context,isUpdate,newElementLabel,readablePerms:c
         flat : true,
         onPress : createCallback({context:self,action:'save2new',callback:onPressToSave})
     } : null;
-    self.buttonsActions =  {
+    return {
         print : (isUpdate && permsObj.canPrint)?{
             text : 'Imprimer',
             shortcut : 'print',
@@ -217,7 +217,6 @@ export  function renderActions({context,isUpdate,newElementLabel,readablePerms:c
             onPress: createCallback({context:self,action:'copyToClipboard',callback:onPressCopyToClipboard})
         } : null,
     }
-    return self.buttonsActions;
 }
 
 

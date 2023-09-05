@@ -788,6 +788,13 @@ export default class TableDataScreenComponent extends FormDataScreen{
     getTableName(){
         return this.tableName;
     }
+    getTableText(){
+        const tableObj = this.getTableObj();
+        return defaultStr(tableObj?.text,tableObj?.label);
+    }
+    getTableLabel(){
+        return this.getTableText();
+    }
     getMakePhoneCallProps (){
         const table = this.table;
         const makePhoneCallProps = defaultVal(this.props.makePhoneCallProps,table.makePhoneCallProps);
@@ -850,11 +857,6 @@ TableDataScreenComponent.propTypes = {
     ...defaultObj(FormData.propTypes),
     prepareComponentProps : PropTypes.func, //permet d'appreter les components props à utiliser pour le rendu des données
     prepareField : PropTypes.func,//La fonction permettant de faire des mutations sur le champ field à passer au formulaire form. si elle retourne false alors la field ne sera pas pris een compte
-    table : PropTypes.shape({
-        tableName : PropTypes.string,
-        table : PropTypes.string,
-        fields : PropTypes.object,
-    }),
     unique : PropTypes.bool,//si la validation de type unique sur le champ sera effective
     fetchUniqueId : PropTypes.func,//la fonction permettant de fetch un élément unique pour la validation de type uniqueID, liée aux champs de type piece et id
     validateData : PropTypes.func,// la fonction permettant de valider les données à enregistrer

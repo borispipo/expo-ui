@@ -13,9 +13,10 @@ import { useWindowDimensions } from "react-native";
 import {useDatagrid,useGetSelectedRowsCount} from "../hooks";
 export default function DatagridActions ({actions,title,actionProps,...props}){
   const {context} = useDatagrid();
+  const forceRender = React.useForceRender();
   const selectedRowsCount = useGetSelectedRowsCount();
   useWindowDimensions();
-  const selected = !!selectedRowsCount;
+  const selected = selectedRowsCount>0;
   actions = selected ? context?.renderSelectedRowsActions.call(context,{}) : actions;
   if(selected){
     actionProps = Object.assign({},actionProps);
@@ -36,7 +37,7 @@ export default function DatagridActions ({actions,title,actionProps,...props}){
   }
   const splitedActions = isObjOrArray(actions)? splitActions({...props,...sArg,actionProps,actions,isAppBarAction:false,alwaysSplitOnMobile:true}) : undefined;
   let contextualTitle = "";
-  if(selectedRowsCount > 0){
+  if(selected){
     let sLetter = (selectedRowsCount>1?'s':'');
     contextualTitle = (selectedRowsCount<10?'0':'')+selectedRowsCount+(' ligne'+sLetter+' sélectionnée'+sLetter),1;
   } else if(React.isValidElement(title,true)){

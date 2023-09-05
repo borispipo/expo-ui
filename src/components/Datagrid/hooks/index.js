@@ -87,18 +87,18 @@ export const useBindEvent = (event,onEvent)=>{
     return onEvent;
 }
 export const useIsRowSelected = (...args)=>{
-    return useOnEvent([events.ON_ROW_TOGGLE,events.ON_ALL_ROWS_TOGGLE],(context)=>{
+    return useOnEvent([events.ON_ROW_TOGGLE,'componentDidUpdate',events.ON_ALL_ROWS_TOGGLE],(context)=>{
         return context.isRowSelected(...args);
     });
 };
 
 export const useGetSelectedRowsCount = ()=>{
-    return useOnEvent([events.ON_ROW_TOGGLE,events.ON_ALL_ROWS_TOGGLE],(context)=>{
+    return useOnEvent([events.ON_ROW_TOGGLE,'componentDidUpdate',events.ON_ALL_ROWS_TOGGLE],(context,...rest)=>{
         return context.getSelectedRowsCount();
     });
 }
 export const useIsAllRowsSelected = ()=>{
-    return useOnEvent([events.ON_ROW_TOGGLE,events.ON_ALL_ROWS_TOGGLE],(context)=>{
+    return useOnEvent([events.ON_ROW_TOGGLE,'componentDidUpdate',events.ON_ALL_ROWS_TOGGLE],(context)=>{
         return context.isAllRowsSelected();
     });
 };

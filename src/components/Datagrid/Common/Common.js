@@ -3273,10 +3273,7 @@ export default class CommonDatagridComponent extends AppComponent {
             arg.data = d.data;
             arg.total = defaultNumber(arg.total,arg.data.total);
         }
-        /*if(typeof arg.total != 'number'){
-            arg.total = Object.size(arg.data);
-        }*/
-        const {cb,total,data} = arg;
+        const {cb,data} = arg;
         return new Promise((resolve)=>{
             this.prepareData(arg,(state)=>{
                 state.data = Array.isArray(state.data)? state.data : [];

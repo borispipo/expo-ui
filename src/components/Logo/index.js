@@ -1,3 +1,8 @@
-export {default} from "./Logo";
+import Logo from "./Logo";
 
-export {default as LogoProgress} from "./Progress";
+import LogoProgress from "./Progress";
+
+Logo.Progress = LogoProgress;
+export {LogoProgress};
+
+export default Logo;

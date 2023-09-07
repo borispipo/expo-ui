@@ -36,7 +36,8 @@ import { prepareScreens } from "./TableData";
     },
     navigation : {
       screens : {Array}, les écrans de navigation,
-      drawerItems : {object|array|function}, la fonction permettant d'obtenir les items du drawer principal de l'application
+      drawerItems : {object|array|function}, la fonction permettant d'obtenir les items du drawer principal de l'application,
+      containerProps : {object}, les props à passer au composant NavigationContainer de react-navigation
     }
 */
 const Provider = ({children,getTableData,handleHelpScreen,navigation,components,convertFiltersToSQL,getStructData,tablesData,structsData,...props})=>{
@@ -124,6 +125,8 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,components,
       });
       return [...r,...getMainScreens(handleHelpScreen)];
     },[]);
+    navigation.containerProps = defaultObj(navigation.containerProps);
+    const {linking} = navigation;
     return <ExpoUIContext.Provider 
       value={{
         ...props,

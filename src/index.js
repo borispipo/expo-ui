@@ -40,6 +40,7 @@ import FontIcon from "$ecomponents/Icon/Font";
 import useContext from "$econtext/hooks";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet } from "react-native";
+import Logo from "$ecomponents/Logo";
 export * from "./context";
 
 let MAX_BACK_COUNT = 1;
@@ -60,7 +61,8 @@ const NAVIGATION_PERSISTENCE_KEY = 'NAVIGATION_STATE';
  */
 function App({init:initApp,initialRouteName:appInitialRouteName,render,onMount}) {
   AppStateService.init();
-  const {FontsIconsFilter,beforeExit,preferences:appPreferences,getStartedRouteName} = useContext();
+  const {FontsIconsFilter,beforeExit,preferences:appPreferences,navigation,getStartedRouteName} = useContext();
+  const {containerProps} = navigation;
   const [initialState, setInitialState] = React.useState(undefined);
   const appReadyRef = React.useRef(true);
   const [state,setState] = React.useState({
@@ -256,10 +258,14 @@ function App({init:initApp,initialRouteName:appInitialRouteName,render,onMount})
   const child = isLoaded ? <NavigationContainer 
     ref={navigationRef}
     initialState={initialState}
-    onStateChange={(state) =>{
+    {...containerProps}
+    onStateChange={(state,...rest) =>{
       setSession(NAVIGATION_PERSISTENCE_KEY,decycle(state),false);
-    }
-  }
+      if(typeof containerProps.onStateChange =='function'){
+        containerProps.onStateChange(state,...rest);
+      }
+    }}
+    fallback = {React.isValidElement(containerProps.fallback) ? containerProps.fallback : <Logo.Progress/>}
   >
         <Navigation
           initialRouteName = {defaultStr(hasGetStarted ? appInitialRouteName : getStartedRouteName,"Home")}

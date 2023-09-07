@@ -258,7 +258,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
             prepareField,
             prepareComponentProps,
             ...rest
-        } = this.prepareComponentProps({...props,tableName,context:this,fields:extendObj({},true,this.fields,props.fields),isUpdated,isUpdate:isUpdated,data,datas,currentIndex});
+        } = this.prepareComponentProps({...props,tableName,context:this,fields:extendObj(true,{},this.fields,props.fields),isUpdated,isUpdate:isUpdated,data,datas,currentIndex});
         const sessionName = this.getSessionName();
         ///on effectue une mutator sur le champ en cours de modification
         Object.map(preparedFields,(field,i,counterIndex)=>{

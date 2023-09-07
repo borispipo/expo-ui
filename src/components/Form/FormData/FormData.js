@@ -37,7 +37,10 @@ export default class FormDataComponent extends AppComponent{
     getField(fieldName){
         return getFormField(this.getFormName(),fieldName)
     }
-    getData(){
+    getData(...args){
+        return this.getFormData(...args);
+    }
+    getFormData(){
         const form = this.getForm();
         if(form){
             return form.getData();
@@ -63,6 +66,15 @@ export default class FormDataComponent extends AppComponent{
     }
     reset(args){
         return null;
+    }
+    isValid(...args){
+        return this.isFormValid(...args);
+    }
+    isFormValid(...args){
+        return this.getForm()?.isValid(...args);
+    }
+    getErrorText(){
+        return this.getForm()?.getErrorText();
     }
     getAppBarActionsProps(props){
         let {data,onCancel,perm,beforeSaveArgumentsMutator,beforeSave,actions,saveDataMutator,...rest} = (defaultObj(props,this.props));

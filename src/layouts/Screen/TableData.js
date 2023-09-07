@@ -211,6 +211,14 @@ export default class TableDataScreenComponent extends FormDataScreen{
         }
         return a;
     }
+    isUpdate(...args){
+        return this.isDocUpdate(...args);
+    }
+    isDocUpdate(){
+        const t = this.currentRenderingProps;
+        if(isObj(t) && 'isUpdate' in t) return t.isUpdate;
+        return this.isDocEditing(this.getCurrentData());
+    }
     getComponentProps(props){
         const table = this.table;
         const {datas,currentIndex,data} = this.state; 

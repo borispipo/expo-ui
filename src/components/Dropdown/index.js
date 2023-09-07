@@ -259,9 +259,6 @@ class DropdownComponent extends AppComponent {
         for(let valueKey in selectedValuesKeys){
             if(isObj(valuesKeys[valueKey])){
                 const node = valuesKeys[valueKey];
-                /*if(this.props.dynamicContent){
-                    node = this.getNode({...node,callArgs:this.getCallArgs({...node,items:this.getItemsData()})});
-                }*/
                 const text = node.text;
                 if(!this.canHandleMultiple){
                     sDText = text;
@@ -370,6 +367,7 @@ class DropdownComponent extends AppComponent {
                 if(!selectedValuesKeys[keyNode.valueKey]){
                     newSelected.push(cVal);
                     hasChanged = true;
+                    selectedValuesKeys[keyNode.valueKey] = true;
                 }
             }
         } else {
@@ -378,6 +376,7 @@ class DropdownComponent extends AppComponent {
             if(!selectedValuesKeys[keyNode.valueKey]){
                 newSelected = value;
                 hasChanged = true;
+                selectedValuesKeys[keyNode.valueKey] = true;
             }
         }
         if(hasChanged){

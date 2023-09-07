@@ -86,6 +86,9 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,isStructData,ge
     if(fetchOptions.fields !== 'all' && (!Array.isArray(fetchOptions.fields) || !fetchOptions.fields.length)){
         fetchOptions.fields = defaultFields;
     }
+    if(fetchOptions.fields =='all'){
+        delete fetchOptions.fields;
+    }
     const foreignKeyColumnValue = props.defaultValue;
     let isDisabled = defaultBool(props.disabled,props.readOnly,false);
     if(!isDisabled && props.readOnly === true){

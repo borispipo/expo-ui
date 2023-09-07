@@ -43,6 +43,8 @@ export default class FormSelectField extends Field{
     selectValue(val,reset,cb){
         if(this._field && isFunction(this._field.selectValue)){
             this._field.selectValue(val,reset,cb);
+        } else {
+            this.validate({value:val});
         }
     }
     isSelectField(){

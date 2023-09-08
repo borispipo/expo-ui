@@ -19,6 +19,7 @@ import "$cutils";
 import React from "$react";
 import SelectDateFormat from "./SelectDateFormat";
 import CurrencyFormat from "./CurrencyFormat";
+import SelectFontIcon from "./SelectFontIcon"
 
 const defFormFields = {
     Field,
@@ -41,6 +42,7 @@ const defFormFields = {
     ,Tel
     ,SelectDateFormat
     ,Html
+    ,SelectFontIcon,
 }
 
 export default defFormFields;
@@ -65,7 +67,8 @@ export {
     ,Image
     ,Tel
     ,SelectDateFormat
-    ,Html
+    ,Html,
+    SelectFontIcon,
 }
 
 export const extendFields = (fields)=>{

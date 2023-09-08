@@ -29,6 +29,7 @@ export const getComponentTypes = ()=>{
         schedule : Fields.Scheduler,
         scheduler : Fields.Scheduler,
         default : Fields.TextField,
+        selecticon : Fields.SelectFontIcon,
         ...Fields,
     };
 }

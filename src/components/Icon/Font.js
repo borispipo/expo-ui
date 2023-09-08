@@ -38,33 +38,19 @@ const FontIcon = React.forwardRef(({icon,name,testID,color,iconColor,iconStyle,b
     const fStyle = StyleSheet.flatten(style) || {};
     color = theme.Colors.isValid(color)? color : Colors.isValid(iconColor)?iconColor : fStyle.color || theme.colors.text;
     backgroundColor = theme.Colors.isValid(backgroundColor)? backgroundColor : fStyle.backgroundColor || 'transparent';
-    const isMaterial = isIcon(name,"material");
-    const isFa = isIcon(name,"fa");
-    const isAnt = isIcon(name,"ant");
-    const isFontisto = isIcon(name,"fontisto");
-    const isFoundation = isIcon(name,"foundation");
-    const isIonicons = isIcon(name,"ionic");
-    const isOcticons = isIcon(name,"octicons");
-    const isSimpleLineIcons = isIcon(name,"simple-line");
-    const isZocial = isIcon(name,"zocial");
-    let Icon = isMaterial ? MaterialIcons : 
-            isFa ? FontAwesome5 :  
-            isFontisto ? Fontisto : 
-            isAnt ? AntDesign : 
-            isFoundation ? Foundation : 
-            isIonicons ? Ionicons : 
-            isOcticons ? Octicons: 
-            isSimpleLineIcons ? SimpleLineIcons :
-            isZocial ? Zocial : 
-            MaterialCommunityIcons;
+    let Icon = MaterialCommunityIcons,iconSetName = "";
+    for(let i in IconsSetsByPrefix){
+        if(isIcon(name,i)){
+            iconSetName = i;
+            Icon = fontsObjects[IconsSetsByPrefix[i]] || Icon;
+            break;
+        }
+    }
     if(!icon || !Icon){
         console.warn("Icone non définie pour le composant FontIcon, icon [{0}], merci de spécifier une icone supportée par la liste du module https://github.com/expo/vector-icons/MaterialCommunityIcons".sprintf(icon),props);
         return null;
     }
-    const iconName = icon.ltrim("material-")
-                    .ltrim("fa-").ltrim("ant-").ltrim("fontisto-")
-                    .ltrim("foundation-").ltrim("ionic-").ltrim("octicons-")
-                    .ltrim("simple-line-").ltrim("zocial-").trim();
+    const iconName = icon.trim().ltrim(iconSetName).trim();
     return <Icon {...props} 
         ref = {ref}
         testID = {testID}
@@ -102,26 +88,39 @@ export const isIcon = (name,iconSet)=>{
 }
 
 export default theme.withStyles(FontIcon,{displayName:FontIcon.displayName,mode:'normal'});
-export const fonts = [
-    MaterialCommunityIcons.font,
-    FontAwesome5.font,
-    AntDesign.font,
-    Fontisto.font,
-    Foundation.font,
-    Ionicons.font,
-    MaterialIcons.font,
-    Octicons.font,
-    SimpleLineIcons.font,
-    Zocial.font,
-];
-export const fontsNames = {};
-Object.map(fonts,(f,k)=>{
-    if(isObj(f)){
-        for(let i in f){
-            fontsNames[i] = true;
-        }
-    }
-});
+
+export const fontsObjects = {
+    MaterialCommunityIcons,
+    FontAwesome5,
+    AntDesign,
+    Fontisto,
+    Foundation,
+    Ionicons,
+    MaterialIcons,
+    Octicons,
+    SimpleLineIcons,
+    Zocial,
+}
+export const fonts = Object.values(fontsObjects).map(f=>f.font);
+export const fontsByIndex = Object.keys(fontsObjects);
+
+/*** les prefix des icons sets */
+export const IconsSetsByPrefix = {
+    material : "MaterialIcons",
+    fa : "FontAwesome5",
+    ant : "AntDesign",
+    foundation : "Foundation",
+    fontisto : "Fontisto",
+    ionic : "Ionicons",
+    octicons : "Octicons",
+    'simple-line' : "SimpleLineIcons",
+    zocial : "Zocial",
+}
+export const IconsSetNamesToPrefix = {};
+Object.keys(IconsSetsByPrefix).map((k)=>{
+    IconsSetNamesToPrefix[IconsSetsByPrefix[k]] = k;
+})
+export const loadedIconsSetsNames = [];
 
 /*** chage les fonts liés à l'application
  * @param {function} filter, le filtre prenant en paramètr ele fontAsset en suite et le nom de la font en question
@@ -129,14 +128,32 @@ Object.map(fonts,(f,k)=>{
  */
 export function loadFonts(filter) {
     filter = typeof filter =='function'? filter : (f,name,nameLower)=> name.toLowerCase().contains("material") ? true : false;
-    return Promise.all(fonts.map(font =>  {
+    return Promise.all(fonts.map((font,index) =>  {
         if(!isObj(font)) return Promise.reject({message:'Invalid font'});
+        const iconSetName = fontsByIndex[index];
         const fontName = Object.keys(font)[0]?.toLowerCase();
-        if(!isNonNullString(fontName) || !fontsNames[fontName] || !filter(font,fontName,fontName.toLowerCase)) return Promise.resolve({
+        const iconSetNameLower = iconSetName.toLocaleLowerCase();
+        if(!isNonNullString(fontName) || (!iconSetNameLower.toLowerCase().contains("material") && !filter(font,iconSetName,iconSetNameLower))) return Promise.resolve({
             status : false,
             message : 'Font {0} introuvable'.sprintf(fontName)
         });
-        return FontAsset.loadAsync(font);
-    }))
+        return FontAsset.loadAsync(font).then((f)=>{
+            loadedIconsSetsNames.push(iconSetName);
+            return f;
+        });
+    }));
  };
+ 
+ /*** retourne la liste des icones qui ont été chargées par l'application */
+ export const getLoadedIconsSets = ()=>{
+    const loadedIconsSets = {};
+    loadedIconsSetsNames.map((iconSetName)=>{
+        loadedIconsSets[iconSetName] = {
+            prefix : IconsSetNamesToPrefix[iconSetName] || '',
+            icons : isObj(fontsObjects[iconSetName]?.glyphMap)? Object.keys(fontsObjects[iconSetName]?.glyphMap) : []
+        };
+    });
+    return loadedIconsSets
+ }
   
+  export const getLoadedFonts = x=> loadedFontsRef.current;

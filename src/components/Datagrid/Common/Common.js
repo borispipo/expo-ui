@@ -2943,7 +2943,6 @@ export default class CommonDatagridComponent extends AppComponent {
         if(this.canShowFooters() && isObj(this.sectionListHeaderFooters[key])){
             const {visibleColumnsNames,widths} = defaultObj(this.preparedColumns);
             if(isObj(visibleColumnsNames) &&isObj(widths)){
-                cells = [];
                 const footers = this.sectionListHeaderFooters[key];
                 Object.map(visibleColumnsNames,(v,column)=>{
                     if(!v || !column) {

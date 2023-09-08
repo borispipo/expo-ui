@@ -42,6 +42,7 @@ import * as XLSX from "xlsx";
 import {convertToSQL} from "$ecomponents/Filter";
 import appConfig from "$capp/config";
 import events from "../events";
+import {MORE_ICON} from "$ecomponents/Icon"
 
 export const TIMEOUT = 100;
 
@@ -1205,7 +1206,9 @@ export default class CommonDatagridComponent extends AppComponent {
             },true)
         },TIMEOUT)
     }
-   /*** affiche ou masque une colonne */
+   /*** affiche ou masque une colonne 
+    @param {string} field
+   */
    toggleColumnVisibility(field,removeFocus){
         if(!isNonNullString(field)) return;
         setTimeout(()=>{
@@ -2487,6 +2490,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 key,
                 sortType,
                 width,
+                datagridMenuItems,
                 ...restCol
             } = header;
             restCol = Object.clone(defaultObj(restCol));
@@ -3685,6 +3689,7 @@ export default class CommonDatagridComponent extends AppComponent {
         return defaultObj(this.sortRef.current);
     }
     renderHeaderCell({columnDef,containerProps,columnField}){
+        const isIndex = true;//this.isIndexColumn(columnDef,columnField);
         if(this.isSelectableColumn(columnDef,columnField)){
             const style = this.getSelectableColumNameStyle();
             if(isObj(containerProps)){
@@ -3721,6 +3726,18 @@ export default class CommonDatagridComponent extends AppComponent {
                     primary
                 />: null}
                 <Label testID={"RN_DatagridHeaderCellLabel_"+columnField} textBold style={[{fontSize:13}]} primary={isColumnSorted}>{ret}</Label>
+                {!isIndex ? <Menu
+                    anchor={(p)=><Icon name={MORE_ICON} {...p} size={20} style={[p.style,theme.styles.noMargin,theme.styles.noPadding]} primary={isColumnSorted||p.primary}/>}
+                    items = {{
+                        toggleVisibility : {
+                            icon : 'eye',
+                            text : `Masquer la colone [${ret}]`,
+                            onPress : (e)=>{
+                                this.toggleColumnVisibility(columnField);
+                            }
+                        }
+                    }}
+                />:null}
             </View>
         </TouchableRipple>
     }

@@ -4,6 +4,7 @@
 import React from "react";
 import {classNames} from "$cutils";
 import { StyleSheet } from "react-native";
+import styles from "../../styles";
 
 function TableCellContentComponent({children,columnDef,width,testID,columnField,colSpan,style,...rest}){
     return (<td  data-test-id={testID||"RN_TableCellComoponent"} colSpan={colSpan} className={classNames(rest.className,"table-row-cell")} style={StyleSheet.flatten([style])}>

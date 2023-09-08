@@ -107,8 +107,8 @@ const styles = StyleSheet.create({
         paddingTop : 2,
     } : {
         paddingLeft: 10,
-        paddingTop:5,
-        paddingBottom:5,
+        paddingTop:7,
+        paddingBottom:7,
         paddingRight: 10
     },
     sectionListHeader : {

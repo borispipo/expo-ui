@@ -947,7 +947,7 @@ class DropdownComponent extends AppComponent {
 
         let restProps = {};
         if(!isMob){
-            restProps.handleScroll = false;
+            restProps.withScrollView = false;
             restProps.sameWidth = true;
         } else {
             restProps.fullScreen = true;

@@ -253,7 +253,7 @@ class _Menu extends AppComponent {
       children,
       statusBarHeight,
       onDismiss,
-      handleScroll:canHandleScroll,
+      withScrollView:canHandleScroll,
       overlayAccessibilityLabel,
       sameWidth,
       minWidth:customMinWidth,
@@ -324,7 +324,7 @@ class _Menu extends AppComponent {
         left = windowLayout.width - SCREEN_INDENT - menuLayout.width;
       }
     }
-    const handleScroll = canHandleScroll !== false? true : false;
+    const withScrollView = canHandleScroll !== false? true : false;
     
     // If the menu is larger than available vertical space,
     // calculate the height of scrollable view
@@ -342,7 +342,7 @@ class _Menu extends AppComponent {
       top <= windowLayout.height - top
     ) {
       // Scrollable menu should be below the anchor (expands downwards)
-      if(handleScroll){
+      if(withScrollView){
         scrollableMenuHeight =
         windowLayout.height - top - SCREEN_INDENT - additionalVerticalValue;
       }
@@ -363,14 +363,14 @@ class _Menu extends AppComponent {
           additionalVerticalValue
     ) {
       // Scrollable menu should be above the anchor (expands upwards)
-      if(handleScroll){
+      if(withScrollView){
         scrollableMenuHeight =
         top + anchorLayout.height - SCREEN_INDENT + additionalVerticalValue;
       }
     }
 
     // Scrollable menu max height
-    if(handleScroll){
+    if(withScrollView){
       scrollableMenuHeight = scrollableMenuHeight > windowLayout.height - 2 * SCREEN_INDENT
         ? windowLayout.height - 2 * SCREEN_INDENT
         : scrollableMenuHeight;
@@ -435,7 +435,7 @@ class _Menu extends AppComponent {
       opacity: opacityAnimation,
       transform: scaleTransforms,
       borderRadius: theme.roundness,
-      ...(scrollableMenuHeight && handleScroll ? { height: scrollableMenuHeight } : {}),
+      ...(scrollableMenuHeight && withScrollView ? { height: scrollableMenuHeight } : {}),
     };
     
     //- (sameWidth ? anchorLayout.height  : 0)
@@ -537,7 +537,7 @@ export default Menu;
 
 Menu.propTypes = {
     minWidth : PropTypes.number,///la longueur minimale du menu
-    handleScroll : PropTypes.bool, //si le contenu est scrollable
+    withScrollView : PropTypes.bool, //si le contenu est scrollable
     /**
      * Whether the _Menu is currently visible.
      */

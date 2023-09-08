@@ -150,6 +150,7 @@ export function loadFonts(filter) {
     loadedIconsSetsNames.map((iconSetName)=>{
         loadedIconsSets[iconSetName] = {
             prefix : IconsSetNamesToPrefix[iconSetName] || '',
+            iconSetName,
             icons : isObj(fontsObjects[iconSetName]?.glyphMap)? Object.keys(fontsObjects[iconSetName]?.glyphMap) : []
         };
     });

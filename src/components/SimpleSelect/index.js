@@ -202,7 +202,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
     dialogProps = defaultObj(dialogProps);
     let rProps = {};
     if(!isMob){
-        rProps.handleScroll = false;
+        rProps.withScrollView = false;
     } else {
         rProps = {
             ...dialogProps,

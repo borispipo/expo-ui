@@ -12,15 +12,20 @@ const SelectFontIconComponent = React.forwardRef((props,ref)=>{
     const items = React.useMemo(()=>{
         const sets = getLoadedIconsSets();
         const items = [];
-        Object.map(sets,({prefix,icons})=>{
+        Object.map(sets,({prefix,iconSetName,icons})=>{
+            prefix = typeof prefix =='string'? prefix.trim() : "";
+            if(prefix){
+                prefix = prefix.rtrim("-")+"-"
+            }
             icons.map((icon)=>{
                 if(!isNonNullString(icon)) return;
-                if(prefix){
-                    items.push(`${prefix.rtrim("-")}-${icon.trim()}`)
-                } else {
-                    items.push(icon.trim());
-                }
-            })
+                icon = icon.trim();
+                items.push({
+                    realIcon : icon,
+                    iconSetName,
+                    icon : `${prefix}${icon.trim().ltrim("-")}`,
+                })
+            });
         })
         return items;
     },[])
@@ -29,12 +34,15 @@ const SelectFontIconComponent = React.forwardRef((props,ref)=>{
         {...props}
         type = {'select'}
         items ={items}
-        getItemValue ={({item})=>item}
-        renderText = {({item})=>item}
+        getItemValue ={({item})=>item.icon}
+        renderText = {({item})=>item.icon}
         renderItem = {({item})=>{
             return <View testID="RN_SELECTFontIconContainer" style={[theme.styles.row,theme.styles.w100,theme.styles.justifyContentFlexStart,theme.styles.alignItemsCenter]}>
-                <Icon size={40} primary name={item}/>
-                <Label>{item}</Label>
+                <Icon size={35} primary name={item.icon}/>
+                <View>
+                    <Label textBold>{item.icon}</Label>
+                    <Label>{item.iconSetName}</Label>
+                </View>
             </View>
         }}
     />

@@ -50,7 +50,7 @@ const FontIcon = React.forwardRef(({icon,name,testID,color,iconColor,iconStyle,b
         console.warn("Icone non définie pour le composant FontIcon, icon [{0}], merci de spécifier une icone supportée par la liste du module https://github.com/expo/vector-icons/MaterialCommunityIcons".sprintf(icon),props);
         return null;
     }
-    const iconName = icon.trim().ltrim(iconSetName).trim();
+    const iconName = icon.trim().ltrim(iconSetName+"-").ltrim("-").trim();
     return <Icon {...props} 
         ref = {ref}
         testID = {testID}

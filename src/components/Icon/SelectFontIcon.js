@@ -7,6 +7,8 @@ import {View} from "react-native";
 import Icon from "./Icon";
 import Label from "$ecomponents/Label";
 import theme from "$theme";
+import {copyTextToClipboard} from "$clipboard/utils";
+import { StyleSheet } from "react-native"; 
 
 const SelectFontIconComponent = React.forwardRef((props,ref)=>{
     const items = React.useMemo(()=>{
@@ -37,12 +39,18 @@ const SelectFontIconComponent = React.forwardRef((props,ref)=>{
         getItemValue ={({item})=>item.icon}
         renderText = {({item})=>item.icon}
         renderItem = {({item})=>{
-            return <View testID="RN_SELECTFontIconContainer" style={[theme.styles.row,theme.styles.w100,theme.styles.justifyContentFlexStart,theme.styles.alignItemsCenter]}>
-                <Icon size={35} primary name={item.icon}/>
-                <View>
-                    <Label textBold>{item.icon}</Label>
-                    <Label>{item.iconSetName}</Label>
+            const {icon,iconSetName} = item;
+            return <View testID="RN_SELECTFontIconContainer" style={[theme.styles.row,styles.content,theme.styles.justifyContentSpaceBetween,theme.styles.alignItemsCenter]}>
+                <View style={[theme.styles.row,theme.styles.justifyContentFlexStart,theme.styles.alignItemsCenter]}>
+                    <Icon size={35} primary name={icon}/>
+                    <View>
+                        <Label textBold>{icon}</Label>
+                        <Label>{iconSetName}</Label>
+                    </View>
                 </View>
+                <Icon size={25} name="content-copy" title={`Copier la valeur [${icon}] dans le presse papier`} onPress={(e)=>{
+                    copyTextToClipboard(icon);
+                }}/>
             </View>
         }}
     />
@@ -57,6 +65,10 @@ SelectFontIconComponent.propTypes = {
     imageProps : PropTypes.object, ///les props à appliquer aux images affichées
 }
 
-
+const styles = StyleSheet.create({
+    content : {
+        flexGrow : 1,
+    }
+})
 
 

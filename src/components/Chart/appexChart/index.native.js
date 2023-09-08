@@ -1,4 +1,4 @@
-const htmlTemplate = require("./index.html");
+const htmlTemplate = require("./file.html");
 import React from "$react";
 import WebView from "$ecomponents/WebView";
 import {defaultStr,defaultObj,uniqid} from "$cutils";

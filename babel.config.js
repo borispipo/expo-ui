@@ -51,7 +51,7 @@ module.exports = function(api,opts) {
         //generating appex js file
         const eAppex  = $ecomponents && path.resolve($ecomponents,"Chart","appexChart");
         if(eAppex && fs.existsSync(eAppex)){
-          const appexPathHtml = path.resolve(eAppex,"index.html");
+          const appexPathHtml = path.resolve(eAppex,"appexChart.html");
           const appexDistPath = path.resolve(nodeModulesPath,"apexcharts","dist","apexcharts.min.js");
           if(fs.existsSync(appexDistPath)){
              const jsContent = fs.readFileSync(appexDistPath, 'utf8')

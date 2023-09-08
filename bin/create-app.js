@@ -35,6 +35,8 @@ module.exports = function(parsedArgs,{projectRoot:root}){
             start : "npx expo start -c",
             "serve-web" : "npx serve web-build --single",
             "build-web" : "npx expo export:web",
+            "build-android" : "npx eas build --platform android",
+            "build-ios" : "eas build --platform ios",
           },
           "dependencies" : {
             [euModule] : "latest",

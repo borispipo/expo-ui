@@ -257,7 +257,7 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
                                 if(!item) return null;
                                  const args = {rowData:item,rowIndex:index,index,bordered,isTable:true};
                                 args.selected = withDatagridContext ? useIsRowSelected(item,index) : false;
-                                return <TableRowComponent {...props} className={classNames(props.className,"table-row-tr")} style={[getRowStyle(args),styles.tr,props.style]}/>
+                                return <TableRowComponent rowData={item} isSectionListHeader={item?.isSectionListHeader} {...props} className={classNames(props.className,"table-row-tr")} style={[getRowStyle(args),styles.tr,props.style]}/>
                             },
                             Table: VirtuosoTableComponent,
                             EmptyPlaceholder : (props)=>{

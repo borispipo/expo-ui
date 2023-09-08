@@ -2934,7 +2934,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 rowStyle.push(style);
             }
         }
-        let cells = null;
+        const cells = [];
         const Cell = React.isComponent(args.Cell) ? args.Cell : View;
         const isA = this.isAccordion();
         const sectionListHeaderProps = defaultObj(args.sectionListHeaderProps);

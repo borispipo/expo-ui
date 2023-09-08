@@ -286,9 +286,9 @@ const normalizeEvent = (e)=>{
     document.body.appendChild(style);
 }
 
-export const TableRowComponent = ({testID,style,...props}) => {
+export const TableRowComponent = ({testID,style,children,isSectionListHeader,rowData,...props}) => {
     const index = props['data-index'];
     const isOdd = typeof index =='number' ? index%2 > 0 : false;
     testID = defaultStr(testID,"_VirtuosoTableRow_"+index);
-    return <tr data-test-id={testID} {...props} style={StyleSheet.flatten(style)} className={classNames(props.className,"virtuoso-table-row",`table-row-${isOdd?"odd":"even"}`)}/>
+    return <tr data-test-id={testID} {...props} children={children} style={StyleSheet.flatten(style)} className={classNames(props.className,"virtuoso-table-row",`table-row-${isOdd?"odd":"even"}`)}/>
 };

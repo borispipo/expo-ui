@@ -14,6 +14,9 @@ const TableRowCellComponent = React.forwardRef(({children,columnDef,className,co
     const {renderCell,colsWidths} = useTable();
     const width = colsWidths && columnField ? colsWidths[columnField] : undefined;
     const {content,containerProps} = React.useMemo(()=>{
+        if(!isObj(rowData)){
+            return  {content:null};
+        }
         const rArgs = {...rest,columnDef,columnField,rowData,width,rowIndex,containerProps : {}};
         const r = typeof renderCell =='function' && renderCell (rArgs) ||  children;
         return {

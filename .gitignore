@@ -32,9 +32,8 @@ electron/paths.json
 
 electron/package.app.json
 
-
-src/app.config.json
-src/app.config.json
+src/expo-ui.app.config.json
+src/app.config.$common.json
 electron/package.app.json
 electron/package.app.json
 electron/package.app.json

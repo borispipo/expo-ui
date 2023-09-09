@@ -47,27 +47,6 @@ module.exports = function(api,opts) {
             writeFile(path.resolve(structsDataPath,"getStructData.js"),getStructDataJSContent);
           }
         }
-      
-        //generating appex js file
-        const eAppex  = $ecomponents && path.resolve($ecomponents,"Chart","appexChart");
-        if(eAppex && fs.existsSync(eAppex)){
-          const appexPathHtml = path.resolve(eAppex,"appexChart.html");
-          const appexDistPath = path.resolve(nodeModulesPath,"apexcharts","dist","apexcharts.min.js");
-          if(fs.existsSync(appexDistPath)){
-             const jsContent = fs.readFileSync(appexDistPath, 'utf8')
-             //overite appex chart html file
-             writeFile(appexPathHtml,`
-               <html>
-               <head>
-                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                 <script>${jsContent}</script>
-                 </head>
-                 <body>
-                 </body>
-               </html>
-             `);
-          }
-        }
      }
     
   }

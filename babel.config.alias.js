@@ -123,5 +123,9 @@ module.exports = (opts)=>{
     }
     ///on sauvegarde les chemins des fichiers utiles, qui seront utilisées par la variable electron plus tard
     writeFile(path.resolve(dir,"electron","paths.json"),JSON.stringify(electronPaths));
+    r["$erealm"] = path.resolve(expo,'realm');
+    if(!r.$realm){
+        r.$realm = r.$erealm;
+    }
     return r;
 }

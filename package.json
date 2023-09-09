@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "6.32.9",
+  "version": "6.32.10",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "index.js",
   "scripts": {
@@ -41,9 +41,11 @@
     "find-licenses": "node ./find-licenses.js",
     "fix-dependencies": "expo-cli doctor --fix-dependencies",
     "expo-fix": "npx expo install --fix",
+    "update-apexchart": "node ./bin/update-appex-chart.js",
+    "update-appexchart": "npm run update-apexchart",
     "delete-node-modules": "rimraf ./**/node_modules",
     "modifier-url-remote-git": "git remote set-url origin 'https://borispipo@github.com/borispipo/smart-eneo.git'",
-    "update": "npm i expo @emotion/native@latest react-native-big-list@latest apexcharts@latest file-saver@latest fs-extra@latest google-libphonenumber@latest @pchmn/expo-material3-theme@latest @emotion/native@latest @fto-consult/common@latest react-native-blob-util react-native-gesture-handler@latest react-native-iphone-x-helper@latest react-native-mime-types@latest react-native-paper@latest react-native-paper-dates@latest @react-navigation/native@latest @react-navigation/native-stack@latest react-virtuoso@latest tippy.js@latest websql@latest xlsx@latest && npx expo install --fix"
+    "update": "npm i expo @emotion/native@latest react-native-big-list@latest apexcharts@latest file-saver@latest fs-extra@latest google-libphonenumber@latest @pchmn/expo-material3-theme@latest @emotion/native@latest @fto-consult/common@latest react-native-blob-util react-native-gesture-handler@latest react-native-iphone-x-helper@latest react-native-mime-types@latest react-native-paper@latest react-native-paper-dates@latest @react-navigation/native@latest @react-navigation/native-stack@latest react-virtuoso@latest tippy.js@latest websql@latest xlsx@latest && npx expo install --fix && npm run update-apexchart"
   },
   "bin": {
     "expo-ui": "./bin/index.js"
@@ -76,6 +78,7 @@
     "@react-native/assets-registry": "^0.72.0",
     "@react-navigation/native": "^6.1.7",
     "@react-navigation/native-stack": "^6.9.13",
+    "@realm/react": "^0.6.0",
     "@shopify/flash-list": "1.4.3",
     "apexcharts": "^3.42.0",
     "expo": "^49.0.9",
@@ -113,6 +116,7 @@
     "react-native-web": "~0.19.6",
     "react-native-webview": "13.2.2",
     "react-virtuoso": "^4.5.1",
+    "realm": "^12.1.0",
     "sharp-cli": "^4.1.1",
     "tippy.js": "^6.3.7",
     "websql": "^2.0.3",

@@ -1,4 +1,4 @@
-const htmlTemplate = require("./file.html");
+const htmlTemplate = require("./appexChart.html");
 import React from "$react";
 import WebView from "$ecomponents/WebView";
 import {defaultStr,defaultObj,uniqid} from "$cutils";

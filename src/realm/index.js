@@ -1,8 +1,10 @@
-import Realm from "realm";
+import Realm from "./realm";
 
 export default Realm;
 
-export * from "realm";
+export * from "./realm";
+
+export * from "./react";
 
 export class Model extends Realm.Object{
     constructor(props){

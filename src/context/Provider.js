@@ -10,6 +10,7 @@ import Login from "$eauth/Login";
 import {modes} from "$ecomponents/TextField";
 import {isMobileMedia} from "$cdimensions";
 import { prepareScreens } from "./TableData";
+import ERealmProvider from "$erealmProvider";
 
 
 /*****
@@ -38,7 +39,8 @@ import { prepareScreens } from "./TableData";
       screens : {Array}, les écrans de navigation,
       drawerItems : {object|array|function}, la fonction permettant d'obtenir les items du drawer principal de l'application,
       containerProps : {object}, les props à passer au composant NavigationContainer de react-navigation
-    }
+    },
+    realm : {}, //les options de configurations de la base de données realmdb
 */
 const Provider = ({children,getTableData,handleHelpScreen,navigation,components,convertFiltersToSQL,getStructData,tablesData,structsData,...props})=>{
     const {extendAppTheme} = appConfig;
@@ -149,7 +151,7 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,components,
         structsData,
         appConfig
       }} 
-      children={children}
+      children={<ERealmProvider>{children}</ERealmProvider>}
     />;
 }
 const getTableOrStructDataCall = (tablesOrStructDatas,getTableOrStructDataFunc)=>{

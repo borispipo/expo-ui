@@ -5,3 +5,5 @@ export * from '@realm/react';
 export const createContext = (realmConfig)=>{
     return createRealmContext(realmConfig);
 }
+
+export * from "$erealmProvider";

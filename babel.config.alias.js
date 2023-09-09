@@ -127,5 +127,8 @@ module.exports = (opts)=>{
     if(!r.$realm){
         r.$realm = r.$erealm;
     }
+    const {withRealm} = opts; //si la prise en compte de la base de données realm est nécessaire
+    const $realmProvider = path.resolve(r.$realm,"Provider");
+    r.$erealmProvider = r.$realmProvider = !withRealm ? path.resolve($realmProvider,"realm.not-enabled.js") : $realmProvider;  
     return r;
 }

@@ -10,7 +10,6 @@ import Login from "$eauth/Login";
 import {modes} from "$ecomponents/TextField";
 import {isMobileMedia} from "$cdimensions";
 import { prepareScreens } from "./TableData";
-import ERealmProvider from "$erealmProvider";
 
 
 /*****
@@ -151,7 +150,7 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,components,
         structsData,
         appConfig
       }} 
-      children={<ERealmProvider>{children}</ERealmProvider>}
+      children={children}
     />;
 }
 const getTableOrStructDataCall = (tablesOrStructDatas,getTableOrStructDataFunc)=>{

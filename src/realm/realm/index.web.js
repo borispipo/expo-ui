@@ -1,4 +1,4 @@
-import Realm from "realm-web";
+import * as Realm from "realm-web";
 
 export default Realm;
 

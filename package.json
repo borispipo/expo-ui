@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "6.33.0",
+  "version": "6.34.0",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "index.js",
   "scripts": {
@@ -80,7 +80,6 @@
     "@react-navigation/native-stack": "^6.9.13",
     "@realm/react": "^0.6.0",
     "@shopify/flash-list": "1.4.3",
-    "abort-controller": "^3.0.0",
     "apexcharts": "^3.42.0",
     "expo": "^49.0.9",
     "expo-camera": "~13.4.2",
@@ -96,7 +95,6 @@
     "fs-extra": "^11.1.1",
     "google-libphonenumber": "^3.2.33",
     "htmlparser2-without-node-native": "^3.9.2",
-    "node-fetch": "^3.3.2",
     "pdfmake": "^0.2.7",
     "process": "^0.11.10",
     "prop-types": "^15.8.1",
@@ -119,7 +117,6 @@
     "react-native-webview": "13.2.2",
     "react-virtuoso": "^4.5.1",
     "realm": "^12.1.0",
-    "realm-web": "^2.0.0",
     "sharp-cli": "^4.1.1",
     "tippy.js": "^6.3.7",
     "websql": "^2.0.3",

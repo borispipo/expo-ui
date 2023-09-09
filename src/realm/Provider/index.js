@@ -2,6 +2,7 @@ import useExpoUI from "$econtext";
 import React from "$react";
 
 export default function ExpoUIRealmProvider({children,...props}){
+  return children;
   const {realm:{RealmProvider,Provider}} = useExpoUI();
     RealmProvider = React.isComponent(RealmProvider)? RealmProvider : React.isComponent(Provider)?Provider : null;
     if(!RealmProvider){

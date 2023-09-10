@@ -13,7 +13,7 @@ import {keyboardTypes,inputModes,FONT_SIZE,parseDecimal,HEIGHT,outlinedMode,mode
 import {copyTextToClipboard} from "$clipboard/utils";
 import Surface from "$ecomponents/Surface";
 import View from "$ecomponents/View";
-const PADDING_HORIZONTAL_FLAT_MODE = 2;
+const PADDING_HORIZONTAL_FLAT_MODE = 0;
 
 export const LINE_HEIGHT = 10;
 
@@ -485,7 +485,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
             }
         } else affix = undefined;
     }
-    elevation = defaultNumber(contentContainerProps.elevation,elevation,isShadowMode?4:0);
+    elevation = defaultNumber(contentContainerProps.elevation,elevation,isShadowMode?5:0);
     const paddingVertical = multiline ? 0 : (hasRight || hasLeft)? isMob?5 : 0 : 10;
     const contentContainerStyle = isOutlinedMode ? {
         borderColor,
@@ -500,17 +500,19 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
         borderRadius,
         borderWidth,
         backgroundColor,
+        elevation,
+        shadowColor : backgroundColor,
     } : isNormalMode ?{
         borderColor,
         borderRadius : 0,
         paddingHorizontal : 10,
         borderWidth : borderWidth,
-    } :  {
+    } : StyleSheet.flatten([ {
         borderColor,
         //paddingLeft : 0,
         borderBottomWidth : divider !== false ? borderWidth : 0,
         paddingHorizontal : PADDING_HORIZONTAL_FLAT_MODE,
-    }
+    },styles.contentContainerFlatMode])
     contentContainerStyle.backgroundColor = backgroundColor;
     if(!height){
         contentContainerStyle.paddingVertical = paddingVertical;
@@ -518,7 +520,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
     const children = typeof customChildren =='function'? customChildren(iconProps) : customChildren;
     return (
         <View testID={testID+"_Container"} {...containerProps} style={[styles.container,containerProps.style]}>
-            {hasLabel? <Label
+            {<Label
                 ellipsizeMode = {"tail"}
                 numberOfLines = {1}
                 testID={testID+"_Label"}
@@ -537,12 +539,14 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
                     isShadowMode && styles.labelShadow,
                     isNormalMode && styles.labelNormal,
                     labelStyle,
+                    isOutlinedMode && styles.labelOutlinedMaxIndex,
+                    !hasLabel && styles.hasNotLabel,
                 ]}
-                >
+            >
                 {label}
-            </Label> : null}
+            </Label>}
             <>
-                <Surface elevation={isShadowMode?5:0} testID={testID+"_TextFieldContentContainer"}  {...contentContainerProps}  style={[styles.contentContainer,{pointerEvents},!left? styles.paddingLeft:null,styles.row,contentContainerStyle,contentContainerProps.style]}>
+                <Surface elevation={isAndroid?undefined:elevation} testID={testID+"_TextFieldContentContainer"}  {...contentContainerProps}  style={[styles.contentContainer,{pointerEvents},!left? styles.paddingLeft:null,styles.row,contentContainerStyle,contentContainerProps.style]}>
                     {left ? (<View testID={testID+"_Left"} {...leftContainerProps} style={[styles.AdornmentContainer,styles.leftAdornment,leftContainerProps.style,disabledStyle]}>
                         {left}
                     </View>) : null}
@@ -584,10 +588,15 @@ const styles = StyleSheet.create({
         padding : 0,
         alignSelf : 'center',
         justifyContent : 'center',
-        alignItems : 'flex-start'
+        alignItems : 'flex-start',
+        position : "relative",
     },
     row : {
         flexDirection:'row',
+    },
+    contentContainerFlatMode : {
+        paddingLeft : 0,
+        paddingRight : 0 
     },
     contentContainer : {
         width : '100%',
@@ -636,6 +645,9 @@ const styles = StyleSheet.create({
     labelOutlined : {
         top : -10,
         left : 5,
+    },
+    labelOutlinedMaxIndex : {
+        zIndex : 100,
     },
     labelFlat : {
     },
@@ -706,7 +718,11 @@ const styles = StyleSheet.create({
     inputMultipleShadowMode : {
         paddingHorizontal : 7,
         paddingVertical : 7,
-    }
+    },
+    hasNotLabel : {
+        opacity : 0,
+        display : "none",
+    },
 })
 
 TextFieldComponent.propTypes = {

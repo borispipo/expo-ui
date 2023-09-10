@@ -5,8 +5,9 @@ const REGISTER_EVENT = "REGISTER-APP-COMPONENT-ROOT";
 import {useState,useEffect} from "react";
 const propsRef = {current:null};
 import APP from "$capp/instance";
-import {isObj} from "$cutils";
-
+import {isObj,uniqid} from "$cutils";
+import {View} from "react-native";
+const isLOCALDEV = uniqid("is-expo-ui-local-DEV...");
 
 /****
  * les options sont de la forme : 
@@ -37,7 +38,7 @@ const MainAppEntry = function(mProps){
     },[]);
     const cProps = isObj(props) ? props : propsRef.current;
     if(!isObj(cProps)) {
-        return null;
+        return <View/>;
     }
     const {onMount,onUnmount,onRender,render,swrConfig,init,...rest} = {...mProps,...cProps};
     return  <Provider {...rest} swrConfig={isObj(swrConfig) && swrConfig || {}} children={<App init={init} render={render} onMount={onMount} onUnmount={onUnmount} onRender={onRender}/>}/>
@@ -52,6 +53,7 @@ registerRootComponent(MainAppEntry);
 
 //si après 5 secondes, l'application n'a pas été registrer, alors il s'agit d'un test en mode local
 registerApp({
+    isLOCALDEV,
     navigation : {
         screens : require("./src/test-screens").default
     },

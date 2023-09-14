@@ -1,5 +1,4 @@
 import { registerRootComponent } from "expo";
-import App from "./src/App";
 import Provider from "$econtext/Provider";
 const REGISTER_EVENT = "REGISTER-APP-COMPONENT-ROOT";
 import {useState,useEffect} from "react";
@@ -41,15 +40,16 @@ const MainAppEntry = function(mProps){
         return <View/>;
     }
     const {onMount,onUnmount,onRender,render,swrConfig,init,...rest} = {...mProps,...cProps};
+    const App = require("./src/App").default;
     return  <Provider {...rest} swrConfig={isObj(swrConfig) && swrConfig || {}} children={<App init={init} render={render} onMount={onMount} onUnmount={onUnmount} onRender={onRender}/>}/>
 };
+
+registerRootComponent(MainAppEntry);
 
 export default function registerApp (opts){
     propsRef.current = opts;
     APP.trigger(REGISTER_EVENT,opts);
 }
-
-registerRootComponent(MainAppEntry);
 
 //si après 5 secondes, l'application n'a pas été registrer, alors il s'agit d'un test en mode local
 registerApp({

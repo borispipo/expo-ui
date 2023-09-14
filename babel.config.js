@@ -16,7 +16,6 @@ module.exports = function(api,opts) {
   /*** par défaut, les variables d'environnements sont stockés dans le fichier .env situé à la racine du projet, référencée par la prop base  */
   const alias =  require("./babel.config.alias")(options);
   const $eelectron = alias.$eelectron || null;
-  const $ecomponents = alias.$ecomponents|| null;
   const expoRoot = alias["$expo-ui-root-path"] || null;
   const aDistPath = path.join("apexcharts","dist","apexcharts.min.js");
   const expoRootModulesP = expoRoot && fs.existsSync(path.resolve(expoRoot,"node_modules")) && path.resolve(expoRoot,"node_modules") || null;

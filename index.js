@@ -51,15 +51,18 @@ export default function registerApp (opts){
     APP.trigger(REGISTER_EVENT,opts);
 }
 
-//si après 5 secondes, l'application n'a pas été registrer, alors il s'agit d'un test en mode local
-registerApp({
-    isLOCALDEV,
-    navigation : {
-        screens : require("./src/test-screens").default
-    },
-    init : ({appConfig})=>{
-        appConfig.set("isAuthSingleUserAllowed",true);
-        appConfig.set("authDefaultUser",{code:"root",password:"admin123",label:"Master admin"})
-        return Promise.resolve("test ted")
-    }
-});
+if(typeof __DEV__ !=='boolean' && window?.__DEV__){
+    //c'est uniquement en environnement développement que ceci est valide
+    //si après 5 secondes, l'application n'a pas été registrer, alors il s'agit d'un test en mode local
+    registerApp({
+        isLOCALDEV,
+        navigation : {
+            screens : require("./src/test-screens").default
+        },
+        init : ({appConfig})=>{
+            appConfig.set("isAuthSingleUserAllowed",true);
+            appConfig.set("authDefaultUser",{code:"root",password:"admin123",label:"Master admin"})
+            return Promise.resolve("test ted")
+        }
+    });
+}

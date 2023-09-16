@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "6.37.2",
+  "version": "6.37.3",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
@@ -70,7 +70,7 @@
     "@expo/html-elements": "^0.5.1",
     "@expo/vector-icons": "^13.0.0",
     "@faker-js/faker": "^8.0.2",
-    "@fto-consult/common": "^3.36.0",
+    "@fto-consult/common": "^3.36.1",
     "@pchmn/expo-material3-theme": "^1.3.1",
     "@react-native-community/datetimepicker": "7.2.0",
     "@react-native-community/netinfo": "9.3.10",
@@ -87,7 +87,6 @@
     "expo-linking": "~5.0.2",
     "expo-sqlite": "~11.3.3",
     "expo-status-bar": "~1.6.0",
-    "expo-storage": "^48.1.0",
     "expo-system-ui": "~2.4.0",
     "expo-web-browser": "~12.3.2",
     "file-saver": "^2.0.5",

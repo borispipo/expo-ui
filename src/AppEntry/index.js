@@ -45,7 +45,9 @@ export default function getIndex({onMount,onUnmount,render,onRender,init}){
             screensRef.current[sanitizedName] = new Date();
             activeScreenRef.current = sanitizedName;
             isScreenFocusedRef.current = true;
-        }, onScreenBlur = ()=>{
+            console.log(sanitizedName," is focused");
+        }, onScreenBlur = (...args)=>{
+          console.log(args," is blured");
           isScreenFocusedRef.current = false;
         }
         APP.on(APP.EVENTS.SCREEN_FOCUS,onScreenFocus);

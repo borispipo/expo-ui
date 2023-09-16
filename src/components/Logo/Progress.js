@@ -9,7 +9,7 @@ import {defaultStr} from "$cutils";
 
 export default function LogoProgress ({testID}){
     testID = defaultStr(testID,"RN_LogoProgress");
-    let containerStyle = {width:(Logo.width?Logo.width:undefined),height:(Logo.height?(Logo.height+100):undefined),flex:1,alignItems:"center",justifyContent:"center"};
+    let containerStyle = {width:(Logo.width?Logo.width:undefined),height:undefined,flex:1,alignItems:"center",justifyContent:"center"};
     const primaryColor = theme.colors.primaryOnSurface,
     secondaryColor = theme.colors.secondaryOnSurface;
     return <View style={[containerStyle]} testID={testID+"_ProgressLogoContainer"}>

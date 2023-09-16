@@ -41,7 +41,7 @@ import { prepareScreens } from "./TableData";
     },
     realm : {}, //les options de configurations de la base de données realmdb
 */
-const Provider = ({children,getTableData,handleHelpScreen,navigation,components,convertFiltersToSQL,getStructData,tablesData,structsData,...props})=>{
+const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,components,convertFiltersToSQL,getStructData,tablesData,structsData,...props})=>{
     const {extendAppTheme} = appConfig;
     const { theme : pTheme } = useMaterial3Theme();
     navigation = defaultObj(navigation);
@@ -53,6 +53,7 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,components,
     getTableData = appConfig.getTable = appConfig.getTableData = getTableOrStructDataCall(tablesData,getTableData);
     getStructData = appConfig.getStructData = getTableOrStructDataCall(structsData,getStructData);
     appConfig.LoginComponent = Login;
+    swrConfig = defaultObj(swrConfig);
     if(convertFiltersToSQL !== undefined){
       appConfig.set("convertFiltersToSQL",convertFiltersToSQL);
     }
@@ -148,7 +149,8 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,components,
         getStructData,
         tablesData,
         structsData,
-        appConfig
+        appConfig,
+        swrConfig,
       }} 
       children={children}
     />;

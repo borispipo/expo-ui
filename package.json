@@ -1,8 +1,8 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "6.36.0",
+  "version": "6.37.0",
   "description": "Bibliothèque de composants UI Expo,react-native",
-  "main": "index.js",
+  "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "clear-npx-cache": "npx clear-npx-cache",
     "publish1": "npm publish --access=public",
@@ -94,6 +94,7 @@
     "fs-extra": "^11.1.1",
     "google-libphonenumber": "^3.2.33",
     "htmlparser2-without-node-native": "^3.9.2",
+    "is-plain-obj": "^4.1.0",
     "pdfmake": "^0.2.7",
     "process": "^0.11.10",
     "prop-types": "^15.8.1",

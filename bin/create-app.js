@@ -31,6 +31,7 @@ module.exports = function(parsedArgs,{projectRoot:root}){
           version : "1.0.0",
           "description": "",
           "main": "index.js",
+          "main": "node_modules/expo/AppEntry.js",
           "scripts" : {
             start : "npx expo start -c",
             "serve-web" : "npx serve web-build --single",
@@ -50,6 +51,7 @@ module.exports = function(parsedArgs,{projectRoot:root}){
       mainPackage.dependencies = typeof mainPackage.dependencies ==="object" && mainPackage.dependencies || {};
       mainPackage.dependencies["react-native"] = reactNativeVersion;
       mainPackage.dependencies["expo"] = expoVersion;
+      mainPackage.main = mainPackage.main || "node_modules/expo/AppEntry.js";
       for(let i in devDeps){
         if(!(i in mainPackage.devDependencies)){
             hasUpdateDeps = true;

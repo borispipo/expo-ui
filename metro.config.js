@@ -26,8 +26,19 @@ module.exports = function(opts){
   config.projectRoot = projectRoot;
   const mainPackagePath = path.resolve(projectRoot,"package.json");
   const mainPackage = fs.existsSync() && require(`${mainPackagePath}`) || null;
-  const packageJSON = require("./package.json");
-  const expoVersion = null;//getDependencyVersion(packageJSON,"expo");
+  const packageJSonPath = path.resolve(projectRoot,"package.json");
+  if(fs.existsSync(packageJSonPath)){
+      try {
+          const packageObj = require(`${packageJSonPath}`);
+          if(packageObj && typeof packageObj =='object'){
+            ["scripts","private","main","repository","keywords","bugs","dependencies","devDependencies"].map(v=>{
+                delete packageObj[v];
+            })
+            fs.writeFileSync(path.resolve(__dirname,"mainPackageJSON.json"),JSON.stringify(packageObj,null,"\t"));
+          }
+      } catch{}
+  }
+  const expoVersion = null;
   if(isObj(mainPackage) && isObj(mainPackage.dependencies)){
     if(expoVersion && mainPackage.dependencies["expo"] !== expoVersion){
         console.log("fix expo  dependencies to ",expoVersion);

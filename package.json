@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "6.37.3",
+  "version": "6.37.4",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
@@ -118,7 +118,8 @@
     "sharp-cli": "^4.1.1",
     "tippy.js": "^6.3.7",
     "websql": "^2.0.3",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "@react-native-async-storage/async-storage": "1.18.2"
   },
   "devDependencies": {
     "@expo/metro-config": "^0.10.7",

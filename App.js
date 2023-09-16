@@ -1,5 +1,4 @@
 import AppEntry from "./src";
-import appConfig from "$capp/config";
 
 export default function MainExpoApp(props){
     return <AppEntry

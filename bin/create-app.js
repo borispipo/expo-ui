@@ -34,6 +34,7 @@ module.exports = function(parsedArgs,{projectRoot:root}){
           "main": "node_modules/expo/AppEntry.js",
           "scripts" : {
             start : "npx expo start -c",
+            "dev" : "npx expo start --no-dev --minify -c",
             "serve-web" : "npx serve web-build --single",
             "build-web" : "npx expo export:web",
             "build-android" : "npx eas build --platform android",

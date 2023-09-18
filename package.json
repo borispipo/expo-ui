@@ -8,7 +8,6 @@
     "publish1": "npm publish --access=public",
     "unpublish": "npm -f unpublish @fto-consult/expo-ui",
     "build-web": "",
-    "dev": "npx expo start -c --no-minify",
     "start": "npx expo start --dev --no-minify",
     "start-d": "npx expo start -c --no-dev --no-minify",
     "start-p": "npm run start-d",
@@ -44,6 +43,7 @@
     "update-apexchart": "node ./bin/update-appex-chart.js",
     "update-appexchart": "npm run update-apexchart",
     "delete-node-modules": "rimraf ./**/node_modules",
+    "dev" : "npx expo start --no-dev --minify -c",
     "modifier-url-remote-git": "git remote set-url origin 'https://borispipo@github.com/borispipo/smart-eneo.git'",
     "update": "npm i expo @emotion/native@latest react-native-big-list@latest apexcharts@latest file-saver@latest fs-extra@latest google-libphonenumber@latest @pchmn/expo-material3-theme@latest @emotion/native@latest @fto-consult/common@latest @react-navigation/stack react-native-blob-util react-native-gesture-handler@latest react-native-iphone-x-helper@latest react-native-mime-types@latest react-native-paper@latest react-native-paper-dates@latest @react-navigation/native@latest @react-navigation/native-stack@latest react-virtuoso@latest tippy.js@latest websql@latest xlsx@latest && npx expo install --fix && npm run update-apexchart && npm run find-licenses"
   },

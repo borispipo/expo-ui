@@ -34,8 +34,8 @@ export default function NavigationComponent (props){
         headerShown : false,
         header : ()=> null,
         headerStyle: { backgroundColor: theme.colors.primary},
-        presentation : isAndroid()? "card":"default",
-        animationEnabled : true,
+        presentation : isAndroid() || isWeb()? "modal":"default",
+        animationEnabled : !isWeb(),
     }
     const cardStyle = { backgroundColor: 'transparent' };
     if(isWeb()){
@@ -54,7 +54,7 @@ export default function NavigationComponent (props){
                         key = {"MODAL-DRAWERS-SCREENS"}
                         screenOptions={{
                             ...opts,
-                            presentation: 'transparentModal', 
+                            presentation :"transparentModal",
                             cardStyle
                         }}
                     >

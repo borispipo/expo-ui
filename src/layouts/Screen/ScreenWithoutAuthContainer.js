@@ -101,7 +101,7 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
   const WrapperProps = modal? {screenName} : {};
   const portalId = uniqid("screeen-container-"+screenName);
   return <Wrapper {...WrapperProps}>
-    <Animated.View sharedTransitionTag="tag" sharedTransitionStyle ={sharedElementTransition} testID={testID+"_ScreenContentContainer"} id={portalId} {...containerProps} style={[styles.container,{backgroundColor},modal && styles.modal,containerProps.style]} >
+    <View  testID={testID+"_ScreenContentContainer"} id={portalId} {...containerProps} style={[styles.container,{backgroundColor},modal && styles.modal,containerProps.style]} >
       <KeyboardAvoidingView testID={testID} {...keyboardAvoidingViewProps} style={[styles.keyboardAvoidingView,keyboardAvoidingViewProps.style]}>
           {withStatusBar !== false ? <StatusBar/> : null}
           {appBar === false ? null : React.isValidElement(appBar)? state.AppBar :  <AppBar 
@@ -130,7 +130,7 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
             </View>
           )}
         </KeyboardAvoidingView>
-    </Animated.View>
+    </View>
   </Wrapper>
 }
 

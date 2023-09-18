@@ -23,7 +23,7 @@ module.exports = function(api,opts) {
   const packageRootPath = path.resolve(process.cwd(),"package.json");
   const packageJSON = fs.existsSync(packageRootPath) && require(`${packageRootPath}`) || {};
   const envObj = require("./parse-env")();
-  const projetRootConfig = path.resolve(process.cwd(),"expo-ui.conf.js");
+  const projetRootConfig = path.resolve(process.cwd(),"expo-ui.json");
   const writeFilePath = path.resolve($eelectron,"utils","writeFile.js");
   if(!fs.existsSync(projetRootConfig)){
     try {

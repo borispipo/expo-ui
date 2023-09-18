@@ -39,5 +39,7 @@ module.exports = function(opts){
        config.platforms.push(p);
     }
   });*/
+  ///on génère les librairies open sources utilisées par l'application
+  require("./find-licenses");
   return config;
 }

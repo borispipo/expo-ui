@@ -18,7 +18,7 @@
         animations.entering.duration(duration).withCallback(enteringCallback);
         animations.exiting.duration(duration).withCallback(exitingCallback);
     } else {
-      animations = getDefaultAnimation({duration,enteringCallback,exitingCallback,callback});
+      animations = getDefaultAnimation({duration,enteringCallback,exitingCallback});
     }
     
     return <Animated.View

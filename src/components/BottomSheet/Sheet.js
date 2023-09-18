@@ -14,10 +14,10 @@ import KeyboardAvoidingView from "$ecomponents/KeyboardAvoidingView";
 import {Elevations} from "$ecomponents/Surface";
 import {defaultStr} from "$cutils";
 import View from "$ecomponents/View";
-import {Easing} from "react-native";
 import Portal from "$ecomponents/Portal";
 import { ScrollView } from "react-native";
 import BackHandler from "$ecomponents/BackHandler";
+import Reanimated, { useSharedValue,withTiming,useAnimatedStyle, } from 'react-native-reanimated';
 import {
   Pressable,
   Animated,
@@ -27,7 +27,7 @@ import {
   Button,
   Platform
 } from "react-native";
-
+import Animation from "$ecomponents/Animation";
 export const defaultHeight = 300;
 
 const useNativeDriver = false;
@@ -75,29 +75,17 @@ const BottomSheetComponent = React.forwardRef((props,ref)=> {
     } else {
         height = Math.max(winHeight/3,defaultHeight);
     }
-    const [state,setState] = React.useState({
-        animatedHeight: new Animated.Value(0),
-        pan: new Animated.ValueXY(),
-        visible : typeof customVisible === 'boolean'?customVisible : false,
-    });
+    const [pan,setPan] = React.useState(new Animated.ValueXY());
+    const [visible,setVisible] = React.useState(typeof customVisible === 'boolean'?customVisible : false);
     const isMounted = React.useIsMounted();
-    const {pan,animatedHeight,visible} = state;
     const prevVisible = React.usePrevious(visible);
-    const forceCloseModal = ()=>{
-        setState({
-            ...state,
-            visible:false,
-            animatedHeight: new Animated.Value(0)
-        });
-    }
-    
+    const animatedHeight = useSharedValue(0);
+    const hasCallCallbackRef = React.useState(false);
+
     const open = ()=>{
         if(!isMounted() || visible)return;
-        setState({...state,visible:true});
+        setVisible(true);
     };
-    const getAnimValue = ()=>{
-        return animatedHeight?.__getValue();
-    }
     const subscription = React.useRef(null);
     const handleBack = React.useCallback((e)=>{
       if (dismissable) {
@@ -120,22 +108,30 @@ const BottomSheetComponent = React.forwardRef((props,ref)=> {
         handleBack
       );
     }
-    const closeModal = ()=>{
+    
+    const closeModal = (cb)=>{
         removeListeners();
-        if(!isMounted()) return;
-        const value = getAnimValue();
-        if(animateOnClose === false || typeof value =='number' && value <= minClosingHeight){
-            return forceCloseModal();
+        //if(!isMounted()) return;
+        const callback = ()=>{
+            if(hasCallCallbackRef.current) return;
+            if(visible){
+                setVisible(false);
+            }
+            if(typeof cb =='function'){
+                cb();
+            }
+            hasCallCallbackRef.current = true;
+        };
+        hasCallCallbackRef.current = false;
+        if(animatedHeight.value != 0){
+            animatedHeight.value = withTiming(0,{
+                duration: closeDuration,
+                callback,
+            });
+            setTimeout(callback,closeDuration+100);
+        } else {
+            callback();
         }
-        return Animated.timing(animatedHeight, {
-            useNativeDriver,
-            toValue: minClosingHeight,
-            easing : Easing.linear,
-            duration: closeDuration
-        }).start(()=>{
-            pan.setValue({ x: 0, y: 0 });
-            forceCloseModal();
-        });
     }
     const [panResponder] = React.useState(PanResponder.create({
         onStartShouldSetPanResponder: () => closeOnDragDown,
@@ -152,11 +148,16 @@ const BottomSheetComponent = React.forwardRef((props,ref)=> {
             }
         }
     }))
-    
+    const animatedStyles = useAnimatedStyle(() => ({
+        height : animatedHeight.value,
+    }));
     React.useEffect(()=>{
         if(typeof customVisible !=='boolean' || customVisible === visible) return;
         if(customVisible){
-            setState({...state,visible:true});
+            if(animatedHeight.value >0){
+                animatedHeight.value = withTiming(0);
+            }
+            setVisible(true);
         } else {
             closeModal();
         }
@@ -169,29 +170,25 @@ const BottomSheetComponent = React.forwardRef((props,ref)=> {
         if(visible){
             addListener();
             pan.setValue({ x: 0, y: 0 });
-            Animated.timing(animatedHeight, {
-                useNativeDriver,
-                toValue: height,
+            animatedHeight.value = withTiming(height,{
+                callback : ()=>{
+                    if (typeof onOpen === "function") onOpen(props)  
+                },
                 duration: openDuration,
-                easing : Easing.linear,
-            }).start(()=>{
-                if (typeof onOpen === "function") onOpen(props)
-            });
+            })
         } else {
-            if (typeof onClose === "function") onClose(props);
-            else if(onDismiss){
-                onDismiss(props);
-            }
+            closeModal(()=>{
+                if (typeof onClose === "function") onClose(props);
+                else if(onDismiss){
+                    onDismiss(props);
+                }
+            });
         }
     },[visible])    
 
     const panStyle = {
         transform: pan.getTranslateTransform()
     };
-    const slideUp = animatedHeight.interpolate({ 
-        inputRange: [0, 1], 
-        outputRange: [0, height],
-    });
     const actionProps = Object.assign({},rest.actionProps);
     const backdropProps = defaultObj(backdropProps);
     //actionProps.size = actionProps.size || 25;
@@ -257,10 +254,10 @@ const BottomSheetComponent = React.forwardRef((props,ref)=> {
                     activeOpacity={1}
                     onPress={() => (closeOnPressMask && dismissable !== false ? closeModal() : null)}
                 />
-                    <Animated.View
+                    <Reanimated.View
                         {...(!dragFromTopOnly && panResponder.panHandlers)}
                         testID = {testID+"_Container"} {...containerProps} 
-                        style={[styles.container,containerProps.style,{height:animatedHeight},{borderTopWidth:borderWidth,borderTopColor:borderColor,backgroundColor:theme.colors.surface},Elevations[elevation],panStyle,slideUp]}
+                        style={[styles.container,containerProps.style,{borderTopWidth:borderWidth,borderTopColor:borderColor,backgroundColor:theme.colors.surface},Elevations[elevation],panStyle,animatedStyles]}
                     >
                         {closeOnDragDown && (
                             <View
@@ -293,7 +290,7 @@ const BottomSheetComponent = React.forwardRef((props,ref)=> {
                                 <KeyboardAvoidingView testID={testID+"_KeyboardAvoidingView"}>{children}</KeyboardAvoidingView>  
                             </View>}
                         </View>
-                    </Animated.View>
+                    </Reanimated.View>
             </View>
         </Portal>
     );
@@ -329,8 +326,8 @@ BottomSheetComponent.defaultProps = {
   animationType: isNativeMobile ? "slide" : "fade",//Background animation ("none", "fade", "slide")
   height:undefined,//Height of Bottom Sheet
   minClosingHeight: 0,//Minimum height of Bottom Sheet before close
-  openDuration: 300,//Open Bottom Sheet animation duration
-  closeDuration: 300,
+  openDuration: 500,//Open Bottom Sheet animation duration
+  closeDuration: 500,
   closeOnDragDown: true,//Use gesture drag down to close Bottom Sheet
   dragFromTopOnly: false, //Drag only the top area of the draggableIcon to close Bottom Sheet instead of the whole content
   closeOnPressMask: true, //Press the area outside to close Bottom Sheet

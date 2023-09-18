@@ -74,10 +74,6 @@ module.exports = (opts)=>{
     r.$ehooks = path.resolve(expo,"context","hooks");
     ///le chemin racine du projet expo-ui
     r["$expo-ui-root-path"] = r["$expo-ui-root"]= path.resolve(expo,"..");
-
-    
-    ///on génère les librairies open sources utilisées par l'application
-    require("./find-licenses");
     const $assets = r.$assets;
     const $electron = path.resolve(dir,"electron");
     const electronPaths = {

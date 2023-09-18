@@ -8,7 +8,8 @@ export default function AppMainEntry(){
         navigation = { {
             //all application screeens
             screens,
-            drawerItems, //application main drawer items
+            drawerItems, //application main drawer items,
+            screenOptions : {},//les options du composant Stack.Navigator de react-navigation, voir https://reactnavigation.org/docs/native-stack-navigator/
         }}
         components = {{
             logo : Logo,//logo component's properties
@@ -24,17 +25,9 @@ export default function AppMainEntry(){
         init = {function({appConfig}){ 
             return Promise.resolve("app is initialized");
         }}
-        /**
-        * //when main application component is mounted
-        */
-        onMount = {function(){}}
-        /****when main application component is unmounted*/
-        onUnmount = {function(){}}
-        /**** called any time main application's component is rendered */
-        onRender = {function(){}}
         /*** if you need to wrap main application content with some custom react Provider*/
-        children = {function({children}){
-            return children;           
+        render = {function({render,appConfig}){
+            return render;           
         }}
     />
 }  

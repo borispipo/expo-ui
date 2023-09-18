@@ -24,7 +24,7 @@ Object.map(Utils,(v,i)=>{
   }
 });
 
-export default function getIndex({onMount,onUnmount,render,onRender,init}){
+export default function getIndex({render,init}){
     const {swrConfig} = useContext();
     const isScreenFocusedRef = React.useRef(true);
     isMobileNative() && useKeepAwake();
@@ -34,7 +34,6 @@ export default function getIndex({onMount,onUnmount,render,onRender,init}){
     const prevActiveScreenRef = React.useRef('');
     const appStateRef = React.useRef({});
     const isKeyboardOpenRef = React.useRef(false);
-    React.useOnRender(onRender);
     React.useEffect(()=>{
         ///la fonction de rappel lorsque le composant est monté
         const onScreenFocus = ({sanitizedName})=>{
@@ -141,7 +140,7 @@ export default function getIndex({onMount,onUnmount,render,onRender,init}){
           }
         }}
       >
-       <App onMount={onMount} render={render} onUnmount={onUnmount} onRender={onRender} init={init}/>
+       <App init={init} render={render}/>
       </SWRConfig>
     );
 };

@@ -36,6 +36,7 @@ import { prepareScreens } from "./TableData";
     },
     navigation : {
       screens : {Array}, les écrans de navigation,
+      screenOptions : {object}, les options du composant Stack.Navigator, voir https://reactnavigation.org/docs/native-stack-navigator/
       drawerItems : {object|array|function}, la fonction permettant d'obtenir les items du drawer principal de l'application,
       containerProps : {object}, les props à passer au composant NavigationContainer de react-navigation
     },

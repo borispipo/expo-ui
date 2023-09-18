@@ -13,8 +13,8 @@ import App from "./AppEntry";
  * }
  */
 
-export default function ExpoUIAppEntryProvider({onMount,onUnmount,onRender,render,swrConfig,init,...rest}){
+export default function ExpoUIAppEntryProvider({swrConfig,children,init,...rest}){
     return  <Provider {...rest}>
-        <App init={init} render={render} onMount={onMount} onUnmount={onUnmount} onRender={onRender}/>
+        <App init={init} children={children}/>
     </Provider>
 }

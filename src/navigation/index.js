@@ -8,6 +8,7 @@ import { MainNavigationProvider } from "./hooks";
 import {isWeb,isAndroid} from "$cplatform";
 import Stack from "./Stack";
 import theme from "$theme";
+import {defaultObj} from "$cutils";
 
 export * from "./hooks";
 
@@ -19,7 +20,7 @@ export * from "./utils";
 export default function NavigationComponent (props){
     let {state,hasGetStarted,isLoading,onGetStart,initialRouteName,...rest} = props;
     if(isLoading) return null;
-    const {navigation:{screens}} = useContext();
+    const {navigation:{screens,screenOptions}} = useContext();
     const allScreens = initScreens({Factory:Stack,screens,ModalFactory:Stack,filter:({name})=>{
         return true;
     }});
@@ -36,6 +37,7 @@ export default function NavigationComponent (props){
         headerStyle: { backgroundColor: theme.colors.primary},
         presentation : isAndroid() || isWeb()? "modal":"default",
         animationEnabled : !isWeb(),
+        ...Object.assign({},screenOptions)
     }
     const cardStyle = { backgroundColor: 'transparent' };
     if(isWeb()){

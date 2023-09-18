@@ -7,6 +7,7 @@ import useContext from "$econtext/hooks";
 import { MainNavigationProvider } from "./hooks";
 import {isWeb,isAndroid} from "$cplatform";
 import Stack from "./Stack";
+import theme from "$theme";
 
 export * from "./hooks";
 
@@ -32,6 +33,7 @@ export default function NavigationComponent (props){
     const opts = {
         headerShown : false,
         header : ()=> null,
+        headerStyle: { backgroundColor: theme.colors.primary},
         presentation : isAndroid()? "card":"default",
         animationEnabled : true,
     }

@@ -99,7 +99,6 @@ FormDataDialogComponent.propTypes = {
     open : PropTypes.func, //la fonction appelée pour ouvrir la boîte de dialogue
     close : PropTypes.func, //la fonction appelée pour fermer la boîte de dialogue
     containerProps : PropTypes.object,
-    withHeavyScreen : PropTypes.bool,
     contentProps : PropTypes.object,
     preloader : PropTypes.any,
     preloaderProps : PropTypes.object,

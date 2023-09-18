@@ -1,9 +1,9 @@
 import React from '$react';
-import {useAfterInteractions }  from "./utils";
-import PropTypes from "prop-types"
-import Animated,{ FadeIn, FadeOut } from 'react-native-reanimated';
+import PropTypes from "prop-types";
 import { StylePropTypes } from '$theme';
 import {isNumber,defaultStr} from "$cutils";
+import { useNavigation } from '$enavigation/utils';
+import { StyleSheet } from 'react-native';
 
 const OptimizedHeavyScreen = React.forwardRef(({
   style,
@@ -15,23 +15,38 @@ const OptimizedHeavyScreen = React.forwardRef(({
   placeholder,
   enabled,
 },ref) => {
-  timeout = isNumber(timeout)? timeout : isNumber(transitionTimeout)? transitionTimeout : undefined;
-  const { transitionRef, areInteractionsComplete } = useAfterInteractions(timeout);
-  let Placeholder = placeholder;
+  timeout = isNumber(timeout)? timeout : isNumber(transitionTimeout)? transitionTimeout : 500;
+  const navigation = useNavigation();
+  const transitionStaredRef = React.useRef(false);
+  const [isScreenLoaded,setIsScreenLoaded] = React.useState(false);
+    React.useEffect(() => {
+      const unsubscribe1 = navigation.addListener('transitionStart', (e) => {
+        // Do something
+        transitionStaredRef.current = true;
+      });
+      const unsubscribe = navigation.addListener('transitionEnd', (e) => {
+          // Do something
+          if(isScreenLoaded) return;
+          setIsScreenLoaded(true);
+      });
+      setTimeout(()=>{
+        if(transitionStaredRef.current){
+            return;
+        }
+        if(isScreenLoaded) return;
+        setIsScreenLoaded(true);
+      },timeout)
+      return ()=>{
+          transitionStaredRef.current = false;
+          unsubscribe && unsubscribe();
+          unsubscribe1 && unsubscribe1();
+      }
+    }, [navigation]);
+  const Placeholder = placeholder;
   const children = React.useStableMemo(()=>cChildren,[cChildren]);
-  if(enabled === false) return children;
+  if(enabled === false && isScreenLoaded) return children;
   placeholder = React.isComponent(Placeholder)? <Placeholder /> : React.isValidElement(Placeholder)? Placeholder :  null;
-  return (
-    <Animated.View
-      testID={defaultStr(testID,'RN_OptimizedHeavyScreen')}
-      entering={FadeIn} 
-      exiting={FadeOut}
-      style={[{flex:1},style]}
-      ref={React.useMergeRefs(transitionRef,ref)}
-    >
-      {areInteractionsComplete && isLoading !==true ? (children) :  placeholder}
-    </Animated.View>
-  )
+  return isScreenLoaded && isLoading !==true ? (children) :  placeholder;
 });
 
 export default OptimizedHeavyScreen;
@@ -51,3 +66,9 @@ OptimizedHeavyScreen.propTypes = {
   }
 
   OptimizedHeavyScreen.displayName = "OptimizedHeavyScreenComponent";
+  
+  const styles = StyleSheet.create({
+    container : {
+        backgroundColor : 'transparent'
+    }
+  })

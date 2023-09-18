@@ -106,6 +106,11 @@ export default class DrawerLayout extends React.PureComponent {
     getBackgroundColor(){
         return Colors.isValid(this.props.drawerBackgroundColor)? this.props.backgroundColor : theme.colors.surface;
     }
+    renderContent({testID}){
+        return <View style={[styles.main]} testID={testID+"_DrawerLayoutContent"}>
+        {this.props.children}
+    </View>;
+    }
     render() {
         const { accessibilityViewIsModal, drawerShown, openValue } = this.state;
         const elevation = typeof this.props.elevation =='number'? this.props.elevation : 5;
@@ -165,9 +170,6 @@ export default class DrawerLayout extends React.PureComponent {
         if(permanent){
             dynamicDrawerStyles.position = "relative";
         }
-        const content = <Animated.View style={[styles.main]} testID={testID+"_DrawerLayoutContent"}>
-            {this.props.children}
-        </Animated.View>
         return (
             <View
                 testID = {testID}
@@ -186,7 +188,7 @@ export default class DrawerLayout extends React.PureComponent {
                         style={[styles.overlay,{backgroundColor:theme.colors.backdrop}, animatedOverlayStyles]}
                     />
                 </TouchableWithoutFeedback>}
-                {posRight && content}
+                {posRight && this.renderContent({testID})}
                 <Animated.View
                     testID={testID+"_NavigationViewContainer"}
                     ref={React.mergeRefs(navigationViewRef,this._navigationViewRef)}
@@ -200,7 +202,7 @@ export default class DrawerLayout extends React.PureComponent {
                 >
                     {this.props.renderNavigationView()}
                 </Animated.View>
-                {!posRight && content}
+                {!posRight && this.renderContent({testID})}
             </View>
         );
     }

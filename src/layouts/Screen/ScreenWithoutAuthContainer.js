@@ -1,6 +1,5 @@
 import React from '$react';
 import {StyleSheet} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import PropTypes from "prop-types";
 import {defaultObj,defaultStr,defaultNumber,defaultBool,uniqid} from "$cutils";
 import View from "$ecomponents/View";
@@ -13,6 +12,8 @@ import theme,{StyleProp} from "$theme";
 import StatusBar from "$ecomponents/StatusBar";
 import ScrollView from "$ecomponents/ScrollView";
 import KeyboardAvoidingView from "$ecomponents/KeyboardAvoidingView";
+import Animated from 'react-native-reanimated';
+import {sharedElementTransition} from "./transition";
 
 const getDefaultTitle = (nTitle,returnStr)=>{
   let titleStr = React.getTextContent(nTitle);
@@ -55,20 +56,11 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
     backgroundColor,
     ...rest
   } = props;
-  const insets = useSafeAreaInsets();
+  
   keyboardAvoidingViewProps = defaultObj(keyboardAvoidingViewProps);
   testID = defaultStr(testID,"RN_MainScreenScreenWithoutAuthContainer")
   containerProps = defaultObj(containerProps);
   backgroundColor = theme.Colors.isValid(backgroundColor)? backgroundColor : theme.colors.background;
-  const containerStyle = [
-    styles.container,
-    {
-      backgroundColor,
-      paddingBottom: insets.bottom,
-      paddingLeft: insets.left,
-      paddingRight: insets.right,
-    },
-  ];
   options = defaultObj(options);
   appBarProps = defaultObj(appBarProps)
   title = defaultVal(title,appBarProps.title);
@@ -109,7 +101,7 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
   const WrapperProps = modal? {screenName} : {};
   const portalId = uniqid("screeen-container-"+screenName);
   return <Wrapper {...WrapperProps}>
-    <View testID={testID+"_ScreenContentContainer"} id={portalId} {...containerProps} style={[containerStyle,{backgroundColor},modal && styles.modal,containerProps.style]} >
+    <Animated.View sharedTransitionTag="tag" sharedTransitionStyle ={sharedElementTransition} testID={testID+"_ScreenContentContainer"} id={portalId} {...containerProps} style={[styles.container,{backgroundColor},modal && styles.modal,containerProps.style]} >
       <KeyboardAvoidingView testID={testID} {...keyboardAvoidingViewProps} style={[styles.keyboardAvoidingView,keyboardAvoidingViewProps.style]}>
           {withStatusBar !== false ? <StatusBar/> : null}
           {appBar === false ? null : React.isValidElement(appBar)? state.AppBar :  <AppBar 
@@ -138,7 +130,7 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
             </View>
           )}
         </KeyboardAvoidingView>
-    </View>
+    </Animated.View>
   </Wrapper>
 }
 
@@ -156,6 +148,7 @@ const styles = StyleSheet.create({
     flex : 1,
     backgroundColor : "transparent",
   },
+  animated : null,//{ width: 300, height: 300 },
   wrapper : {
     flex : 1,
     /*flex : 1,

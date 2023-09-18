@@ -57,7 +57,8 @@ export default function NavigationComponent (props){
                         screenOptions={{
                             ...opts,
                             presentation :"transparentModal",
-                            cardStyle
+                            cardStyle,
+                            animationEnabled : true,
                         }}
                     >
                         {stackScreens}

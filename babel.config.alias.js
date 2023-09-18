@@ -75,18 +75,9 @@ module.exports = (opts)=>{
     ///le chemin racine du projet expo-ui
     r["$expo-ui-root-path"] = r["$expo-ui-root"]= path.resolve(expo,"..");
 
-    const HelpScreen = path.resolve(r["$escreens"],"Help");
+    
     ///on génère les librairies open sources utilisées par l'application
-    const root = path.resolve(r.$src,"..");
-    const nModulePath = isLocalDev ? path.resolve(__dirname,"node_modules") : fs.existsSync(path.resolve(root,"node_modules")) && path.resolve(root,"node_modules") || fs.existsSync(path.resolve(r.$src,"node_modules")) && path.resolve(r.$src,"node_modules") || path.resolve(projectRoot,"node_modules");
-    const nodeModulesPath = fs.existsSync(nModulePath) ? nModulePath : path.resolve(process.cwd(),"node_modules");
-    const outputPath = path.resolve(HelpScreen,"openLibraries.js");
-    r.$nodeModulesPath = r.$enodeModulesPath= nodeModulesPath;
-    require("./find-licenses")({
-        paths : [root,r["$expo-ui-root-path"],path.resolve(process.cwd())],
-        nodeModulesPath : nodeModulesPath,
-        outputPath
-    });
+    require("./find-licenses");
     const $assets = r.$assets;
     const $electron = path.resolve(dir,"electron");
     const electronPaths = {

@@ -59,7 +59,8 @@ const findLicences = (projectPath,nodeModulesPath)=> {
         }
     }
 }
-module.exports = (options)=>{
+
+const findLicencesMain = (options)=>{
     options = typeof options =='string'? {path:options} : typeof options =='object' && options ? options : {};
     if(!options || typeof options !='object'){
         options = {};
@@ -68,6 +69,7 @@ module.exports = (options)=>{
     const outputDir = outputPath && typeof outputPath =='string' && path.dirname(outputPath) || '';
     if(outputDir && fs.existsSync(outputDir)){
         openLibraries = {};
+        findLicences(path.resolve(__dirname),path.resolve(__dirname,"node_modules"));
         if(Array.isArray(options.paths)){
             options.paths.map((p)=>{
                 if(p && typeof p =='string' && fs.existsSync(p)){
@@ -102,3 +104,19 @@ module.exports = (options)=>{
         });
     }
 }
+
+module.exports = ()=>{
+    ///on génère les librairies open sources utilisées par l'application
+    const root = path.resolve(process.cwd());
+    const expoUI = require("./expo-ui-path")();
+    const localNodeModule = path.resolve(root,"node_modules");
+    const HelpScreen = path.resolve(expoUI,"src","screens","Help");
+    const outputPath = path.resolve(HelpScreen,"openLibraries.js");
+    return findLicencesMain({
+        paths : [root,path.resolve(process.cwd())],
+        nodeModulesPath : fs.existsSync(localNodeModule) ? localNodeModule :  path.resolve(expoUI,"node_modules"),
+        outputPath
+    });
+}
+
+module.exports();

@@ -1,12 +1,8 @@
 const path = require("path");
 const fs = require("fs");
-const {writeFile,isObj,getDependencyVersion} = require("./electron/utils");
 const { getDefaultConfig } = require('expo/metro-config');
 module.exports = function(opts){
   const isDev = 'development' === process.env.NODE_ENV;
-  //const nodeModulePath = `${process.cwd()}/node_modules`;
-  //const mConfigPath = fs.existsSync(`${nodeModulePath}/@expo/metro-config`) && `${nodeModulePath}/@expo/metro-config` || "@expo/metro-config";
-  //const { getDefaultConfig } = require(`${mConfigPath}`);
   opts = opts && typeof opts =='object'? opts : {};
   let {assetExts,sourceExts} = opts;
   assetExts = Array.isArray(assetExts)? assetExts: [];

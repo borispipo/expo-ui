@@ -152,6 +152,12 @@ const VirtuosoListComponent = React.forwardRef(({onRender,id,fixedHeaderContent,
         },
         defaultItemHeight : typeof estimatedItemSize=='number' && estimatedItemSize || undefined,
     };
+    const getItemData = (index)=>{
+        if(typeof index =='number'){
+            return context.items[index] || null;
+        }
+        return null;
+    }
     return <View {...containerProps} {...props} id={containerId} className={classNames("virtuoso-list-container",renderTable&& "virtuoso-list-container-render-table")} style={[{flex:1},containerProps.style,style,autoSizedStyle,{minWidth:'100%',height:'100%',maxWidth:'100%'}]} onLayout={onLayout} testID={testID}>
         <Component
             {...r2}
@@ -178,7 +184,7 @@ const VirtuosoListComponent = React.forwardRef(({onRender,id,fixedHeaderContent,
                 if(!renderTable) return;
             }}
             components = {{
-                Item : renderTable ? undefined : responsive ? function(props){return <ItemContainer {...props} style={[itemProps.style,props.style]} numColumns={numColumns}/>} : undefined,
+                Item : renderTable ? undefined : responsive ? function(props){return <ItemContainer {...props} getItemData={getItemData} style={[itemProps.style,props.style]} numColumns={numColumns}/>} : undefined,
                 ...(renderTable ? {
                     TableRow: TableRowComponent,
                 }:{}),
@@ -243,17 +249,19 @@ const normalizeEvent = (e)=>{
     };
   }
   
-  function ItemContainer({numColumns,responsive,windowWidth,...props}){
+  function ItemContainer({numColumns,getItemData,responsive,windowWidth,...props}){
+    const dataIntex  = "index" in props ? props.index : "data-index" in props ? props["data-index"] : ""
+    const item = getItemData(dataIntex);
     const width = React.useMemo(()=>{
+        if(item?.isSectionListHeader) return "100%";
         if(!numColumns || numColumns <= 1) return undefined;
         if(typeof windowWidth =='number' && windowWidth <=600) return "100%";
         if(Dimensions.isMobileMedia()){
             return "100%";
         }
         return (100/numColumns)+"%";
-    },[windowWidth,numColumns]);
+    },[windowWidth,numColumns,item?.isSectionListHeader]);
     const style = width && {width} || grid.col(windowWidth);
-    const dataIntex  = "index" in props ? props.index : "data-index" in props ? props["data-index"] : ""
     const dataItemIndex = "data-item-index" in props ? props["data-item-index"] : "";
     if(isObj(style)){
         style.paddingRight = style.paddingLeft = style.paddingHorizontal = undefined;

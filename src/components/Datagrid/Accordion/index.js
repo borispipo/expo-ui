@@ -189,7 +189,7 @@ const DatagridFactory = (Factory)=>{
                     return null;
                 }
                 const rowKey = defaultVal(args.rowIndex,args.index,args.rowCounterIndex);
-                return <View {...rowProps} testID={defaultStr(rowProps.testID,"RNDatagridAccordionSectionHeader")+rowKey}  style={[theme.styles.w100,theme.styles.justifyContentCenter,theme.styles.alignItemsCenter,rowProps.style,rowStyle]}>
+                return <View {...rowProps} testID={defaultStr(rowProps.testID,"RNDatagridAccordionSectionHeader")+rowKey}  style={[theme.styles.w100,theme.styles.justifyContentCenter,theme.styles.alignItemsCenter,rowProps.style,rowStyle,theme.styles.w100]}>
                     {it}
                 </View>;
             }

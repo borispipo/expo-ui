@@ -36,7 +36,7 @@ export default function NavigationComponent (props){
         header : ()=> null,
         headerStyle: { backgroundColor: theme.colors.primary},
         presentation : isAndroid() || isWeb()? "modal":"default",
-        animationEnabled : false,
+        animationEnabled : !isWeb(),
         ...Object.assign({},screenOptions)
     }
     const cardStyle = { backgroundColor: 'transparent' };

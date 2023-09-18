@@ -23,9 +23,22 @@ module.exports = function(api,opts) {
   const packageRootPath = path.resolve(process.cwd(),"package.json");
   const packageJSON = fs.existsSync(packageRootPath) && require(`${packageRootPath}`) || {};
   const envObj = require("./parse-env")();
-  
+  const projetRootConfig = path.resolve(process.cwd(),"expo-ui.conf.js");
+  const writeFilePath = path.resolve($eelectron,"utils","writeFile.js");
+  if(!fs.existsSync(projetRootConfig)){
+    try {
+      if(packageJSON){
+            ["scripts","private","main","repository","keywords","bugs","dependencies","devDependencies"].map(v=>{
+                delete packageJSON[v];
+            })
+            fs.writeFileSync(projetRootConfig,JSON.stringify(packageJSON,null,"\t"));
+        }
+      } catch (e){}
+   }
+   if(fs.existsSync(projetRootConfig)){
+      alias.$packageJSON = projetRootConfig;
+   }
   if(nodeModulesPath && fs.existsSync(nodeModulesPath) && $eelectron && fs.existsSync($eelectron)){
-     const writeFilePath = path.resolve($eelectron,"utils","writeFile.js");
      if(fs.existsSync(writeFilePath)){
         const writeFile = require(`${writeFilePath}`);
         //generate getTable.js file

@@ -15,10 +15,7 @@ module.exports = (opts)=>{
     const expoUI = require("./expo-ui-path")();
     const euCommon = path.resolve(expoUI,"node_modules","@fto-consult","common");
     const cpath = fs.existsSync(euCommon)? path.resolve(euCommon,"babel.config.alias") : "@fto-consult/common/babel.config.alias";
-    const mainPackageJSON = path.resolve(dir,"mainPackageJSON.json");
-    if(fs.existsSync(mainPackageJSON)){
-        opts.$packageJSON = mainPackageJSON;
-    }
+    
     const r = require(`${cpath}`)(opts);
     const expo = path.resolve(expoUI,"src");
     r["$ecomponents"] = r["$expo-components"] = path.resolve(expo,"components");

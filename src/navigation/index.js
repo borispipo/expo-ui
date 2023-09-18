@@ -1,11 +1,12 @@
 import initScreens from "$escreens";
 import {handleContent,sanitizeName} from '$escreens';
-import {Stack,setInitialRouteName } from "$cnavigation";
+import {setInitialRouteName } from "$cnavigation";
 import React from "$react";
 import DrawerNavigator from "./Drawer";
 import useContext from "$econtext/hooks";
 import { MainNavigationProvider } from "./hooks";
 import {isWeb,isAndroid} from "$cplatform";
+import Stack from "./Stack";
 
 export * from "./hooks";
 

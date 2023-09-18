@@ -28,6 +28,9 @@ export default class FormDataComponent extends AppComponent{
             },
         });
     }
+    isFormList(){
+        return false;
+    }
     getForm (){
         return getForm(this.getFormName());
     }

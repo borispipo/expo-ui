@@ -6,7 +6,7 @@ import Label from "$ecomponents/Label";
 import { renderActions } from "$ecomponents/Dialog";
 import {isObjOrArray,defaultVal,defaultObj} from "$cutils";
 import {renderSplitedActions} from "$ecomponents/AppBar/utils";
-import {isWeb,isNativeMobile} from "$cplatform";
+import {isWeb,isNativeMobile,isTouchDevice} from "$cplatform";
 import Divider from "$ecomponents/Divider";
 import {isMobileOrTabletMedia} from "$cplatform/dimensions";
 import APP from "$capp/instance";
@@ -75,13 +75,16 @@ const BottomSheetComponent = React.forwardRef((props,ref)=> {
     } else {
         height = Math.max(winHeight/3,defaultHeight);
     }
-    const [pan,setPan] = React.useState(new Animated.ValueXY());
+    const [pan] = React.useState(new Animated.ValueXY());
     const [visible,setVisible] = React.useState(typeof customVisible === 'boolean'?customVisible : false);
+    const heightRef = React.useRef(height);
+    heightRef.current = height;
     const isMounted = React.useIsMounted();
     const prevVisible = React.usePrevious(visible);
     const animatedHeight = useSharedValue(0);
     const hasCallCallbackRef = React.useState(false);
-
+    const visibleRef = React.useRef(visible);
+    visibleRef.current = visible;
     const open = ()=>{
         if(!isMounted() || visible)return;
         setVisible(true);
@@ -111,10 +114,11 @@ const BottomSheetComponent = React.forwardRef((props,ref)=> {
     
     const closeModal = (cb)=>{
         removeListeners();
-        //if(!isMounted()) return;
+        if(!isMounted()) return;
+        pan.setValue({ x: 0, y: 0 });
         const callback = ()=>{
             if(hasCallCallbackRef.current) return;
-            if(visible){
+            if(visibleRef.current){
                 setVisible(false);
             }
             if(typeof cb =='function'){
@@ -136,20 +140,21 @@ const BottomSheetComponent = React.forwardRef((props,ref)=> {
     const [panResponder] = React.useState(PanResponder.create({
         onStartShouldSetPanResponder: () => closeOnDragDown,
         onPanResponderMove: (e, gestureState) => {
-            if (gestureState.dy > 0) {
-                Animated.event([null, { dy: pan.y }], { useNativeDriver})(e, gestureState);
+            const diff = gestureState.dy > 0 ? animatedHeight.value - gestureState.dy : Math.min(heightRef.current,animatedHeight.value-gestureState.dy);
+            if(diff >0 && diff !== animatedHeight.value){
+                animatedHeight.value = withTiming(diff,{duration:100});
             }
         },
-        onPanResponderRelease: (e, gestureState) => {
+        onPanResponderRelease: (e, gestureState) => { 
+            const height = animatedHeight.value;
             if (height/3 - gestureState.dy < 0) {
                 closeModal();
-            } else {
-                Animated.spring(pan, { toValue: { x: 0, y: 0 }, useNativeDriver}).start();
             }
         }
     }))
     const animatedStyles = useAnimatedStyle(() => ({
         height : animatedHeight.value,
+        transform :[{ translateX: 0 }],
     }));
     React.useEffect(()=>{
         if(typeof customVisible !=='boolean' || customVisible === visible) return;
@@ -233,7 +238,7 @@ const BottomSheetComponent = React.forwardRef((props,ref)=> {
             React.setRef(ref,null);
         }
     },[]);
-    const dragFromTopOnly = typeof dragFromTopOnly ==='boolean' ? dragFromTopOnly : withScrollView !== false ? true : !isWeb();
+    const dragFromTopOnly = typeof dragFromTopOnly ==='boolean' ? dragFromTopOnly : withScrollView !== false ? true : isTouchDevice();
     const testID = defaultStr(customTestID,"RN_BottomSheetComponent");
     const containerProps = defaultObj(customContainerProps);
     const elevation = typeof customElevation =='number'? Math.ceil(customElevation) : 10;
@@ -257,7 +262,7 @@ const BottomSheetComponent = React.forwardRef((props,ref)=> {
                     <Reanimated.View
                         {...(!dragFromTopOnly && panResponder.panHandlers)}
                         testID = {testID+"_Container"} {...containerProps} 
-                        style={[styles.container,containerProps.style,{borderTopWidth:borderWidth,borderTopColor:borderColor,backgroundColor:theme.colors.surface},Elevations[elevation],panStyle,animatedStyles]}
+                        style={[styles.container,containerProps.style,{borderTopWidth:borderWidth,borderTopColor:borderColor,backgroundColor:theme.colors.surface},Elevations[elevation],panStyle,styles.animated,animatedStyles]}
                     >
                         {closeOnDragDown && (
                             <View
@@ -326,8 +331,8 @@ BottomSheetComponent.defaultProps = {
   animationType: isNativeMobile ? "slide" : "fade",//Background animation ("none", "fade", "slide")
   height:undefined,//Height of Bottom Sheet
   minClosingHeight: 0,//Minimum height of Bottom Sheet before close
-  openDuration: 500,//Open Bottom Sheet animation duration
-  closeDuration: 500,
+  openDuration: 300,//Open Bottom Sheet animation duration
+  closeDuration: 300,
   closeOnDragDown: true,//Use gesture drag down to close Bottom Sheet
   dragFromTopOnly: false, //Drag only the top area of the draggableIcon to close Bottom Sheet instead of the whole content
   closeOnPressMask: true, //Press the area outside to close Bottom Sheet

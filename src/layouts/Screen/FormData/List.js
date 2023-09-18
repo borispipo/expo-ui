@@ -11,6 +11,9 @@ export default class FormDataListScreen extends FormData{
             }
         })
     }
+    isFormList(){
+        return true;
+    }
     isDocEditing(data){
         if(super.isDocEditing(data)) return true;
         const {indexField,isDocUpdate,isDocEditing} = this.props;

@@ -520,7 +520,7 @@ export default class FormListComponent extends AppComponent {
             this.restDatagridProps = dgProps;
             this._onRowsClick = dgProps.onRowPress;
             listContent = <Datagrid
-                testID = {testID+"_Datagrid"} 
+                testID = {testID+"_FormListDatagrid"} 
                 {...dgProps}
                 onRowPress = {this.onRowPress.bind(this)}
                 rowKey = {dgProps.rowKey === false || this.props.rowKey === false ? undefined : defaultStr(dgProps.rowKey,this.props.rowKey,dgProps.indexField,this.props.indexField,'_id')}
@@ -547,8 +547,8 @@ export default class FormListComponent extends AppComponent {
             if(!React.isValidElement(addIcon,true)){
                 addIcon = isObj(addIcon) ?  <Button {...addIconObj} {...addIcon}/> : null;
             }
-            listContent = <View testID={testID+"_List"} {...ListProps}>
-                <View testID={testID+"_HeaderContainer"} style={[styles.row]}>
+            listContent = <View testID={testID+"_FormList"} {...ListProps} style={[styles.listContainer,ListProps.styles]}>
+                <View testID={testID+"_FormListHeaderContainer"} style={[styles.row]}>
                     {!isCurrentDisplayTable && addIcon ? <List.Subheader>{addIcon}</List.Subheader> : null}
                     {canRenderTable && this.canChangeDisplayType && <List.Subheader >
                         <Button 
@@ -561,7 +561,7 @@ export default class FormListComponent extends AppComponent {
                         </Button>    
                     </List.Subheader>}
                 </View>
-                <View testID={testID+"_ListWrapper"} style={[theme.styles.ph1]}>
+                <View testID={testID+"_FormListWrapper"} style={[theme.styles.ph1]}>
                     <FlashList
                         items = {allData}
                         responsive
@@ -647,7 +647,7 @@ export default class FormListComponent extends AppComponent {
                 </View>
             </View>
         }
-        return <View testID={testID+"_Container"}>
+        return <View testID={testID+"_FormListContainer"} style={[styles.container]}>
             {listContent}
         </View>
     }
@@ -792,5 +792,11 @@ const styles = StyleSheet.create({
     },
     item : {
         paddingRight : 0,
-    }
+    },
+    listContainer : {
+        width : "100%"
+    },
+    container : {
+        width : "100%"
+    },
 })

@@ -17,7 +17,7 @@ import View from "$ecomponents/View";
 import Portal from "$ecomponents/Portal";
 import { ScrollView } from "react-native";
 import BackHandler from "$ecomponents/BackHandler";
-import Reanimated, { useSharedValue,withTiming,useAnimatedStyle, } from 'react-native-reanimated';
+import Reanimated, { useSharedValue,withTiming,useAnimatedStyle} from 'react-native-reanimated';
 import {
   Pressable,
   Animated,
@@ -128,7 +128,7 @@ const BottomSheetComponent = React.forwardRef((props,ref)=> {
         };
         hasCallCallbackRef.current = false;
         if(animatedHeight.value != 0){
-            animatedHeight.value = withTiming(0,{
+            animatedHeight.value = animate(0,{
                 duration: closeDuration,
                 callback,
             });
@@ -142,7 +142,7 @@ const BottomSheetComponent = React.forwardRef((props,ref)=> {
         onPanResponderMove: (e, gestureState) => {
             const diff = gestureState.dy > 0 ? animatedHeight.value - gestureState.dy : Math.min(heightRef.current,animatedHeight.value-gestureState.dy);
             if(diff >0 && diff !== animatedHeight.value){
-                animatedHeight.value = withTiming(diff,{duration:100});
+                animatedHeight.value = animate(diff,{duration:100});
             }
         },
         onPanResponderRelease: (e, gestureState) => { 
@@ -160,7 +160,7 @@ const BottomSheetComponent = React.forwardRef((props,ref)=> {
         if(typeof customVisible !=='boolean' || customVisible === visible) return;
         if(customVisible){
             if(animatedHeight.value >0){
-                animatedHeight.value = withTiming(0);
+                animatedHeight.value = animate(0);
             }
             setVisible(true);
         } else {
@@ -175,7 +175,7 @@ const BottomSheetComponent = React.forwardRef((props,ref)=> {
         if(visible){
             addListener();
             pan.setValue({ x: 0, y: 0 });
-            animatedHeight.value = withTiming(height,{
+            animatedHeight.value = animate(height,{
                 callback : ()=>{
                     if (typeof onOpen === "function") onOpen(props)  
                 },
@@ -426,3 +426,9 @@ const styles = StyleSheet.create({
   });
 
   BottomSheetComponent.displayName = "BottomSheetComponent";
+  
+  export const animate = (time,options)=>{
+    return withTiming(time,{
+        ...Object.assign({},options)
+    });
+  }

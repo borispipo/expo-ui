@@ -15,6 +15,10 @@ module.exports = (opts)=>{
     const expoUI = require("./expo-ui-path")();
     const euCommon = path.resolve(expoUI,"node_modules","@fto-consult","common");
     const cpath = fs.existsSync(euCommon)? path.resolve(euCommon,"babel.config.alias") : "@fto-consult/common/babel.config.alias";
+    const mainAppPackage = path.resolve(projectRoot,"expo-ui.json");
+    if(fs.existsSync(mainAppPackage)){
+        opts.$packageJSON = mainAppPackage;
+    }
     const r = require(`${cpath}`)(opts);
     const expo = path.resolve(expoUI,"src");
     r["$ecomponents"] = r["$expo-components"] = path.resolve(expo,"components");
@@ -74,6 +78,7 @@ module.exports = (opts)=>{
     r.$ehooks = path.resolve(expo,"context","hooks");
     ///le chemin racine du projet expo-ui
     r["$expo-ui-root-path"] = r["$expo-ui-root"]= path.resolve(expo,"..");
+    
     const $assets = r.$assets;
     const $electron = path.resolve(dir,"electron");
     const electronPaths = {

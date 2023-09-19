@@ -2,19 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const { getDefaultConfig } = require('expo/metro-config');
 module.exports = function(opts){
-  const packageJSonPath = path.resolve(projectRoot,"package.json");
-  const mainAppPackage = path.resolve(projectRoot,"expo-ui.json");
-  if(!fs.existsSync(mainAppPackage) && fs.existsSync(packageJSonPath)){
-    try {
-        const packageObj = require(`${packageJSonPath}`);
-        if(packageObj && typeof packageObj =='object'){
-          ["scripts","private","main","repository","keywords","bugs","dependencies","devDependencies"].map(v=>{
-              delete packageObj[v];
-          });
-          fs.writeFileSync(mainAppPackage,JSON.stringify(packageObj,null,"\t"));
-        }
-    } catch{}
-  }
+  require("./create-expo-ui-package");
   const isDev = 'development' === process.env.NODE_ENV;
   opts = opts && typeof opts =='object'? opts : {};
   let {assetExts,sourceExts} = opts;

@@ -38,6 +38,9 @@ export default function AutolinkComponent({onPress,withBrowser,mailto,email,tel,
     />
 }
 
+AutolinkComponent.isValid = (url)=>{
+    return isValidEmail(url) || isValidUrl(url);
+}
 
 const styles = StyleSheet.create({
     textDecorationUnderline : {

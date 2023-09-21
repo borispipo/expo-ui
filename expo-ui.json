@@ -1,0 +1,11 @@
+{
+	"name": "@fto-consult/expo-ui",
+	"version": "6.44.4",
+	"description": "Bibliothèque de composants UI Expo,react-native",
+	"bin": {
+		"expo-ui": "./bin/index.js"
+	},
+	"author": "Boris Fouomene",
+	"license": "ISC",
+	"homepage": "https://github.com/borispipo/expo-ui#readme"
+}

@@ -6,7 +6,6 @@ import theme from "$theme";
 import Link from "$ecomponents/Link";
 import {StyleSheet} from "react-native";
 import appConfig from "$capp/config";
-import Grid from "$ecomponents/Grid";
 import Table from "$ecomponents/Table";
 import React  from "$react";
 import AutoLink from "$ecomponents/AutoLink";

@@ -3,7 +3,8 @@ import AppEntry from "./src";
 export default function MainExpoApp(props){
     return <AppEntry
         navigation={{
-            screens : require("./src/test-screens").default
+            screens : require("./docs/screens").default,
+            drawerItems:require("./docs/drawerItems").default,
         }}
         init ={({appConfig})=>{
             appConfig.set("isAuthSingleUserAllowed",true);

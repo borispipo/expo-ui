@@ -2,7 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const { getDefaultConfig } = require('expo/metro-config');
 module.exports = function(opts){
-  require("./create-expo-ui-package");
+  //require("./create-expo-ui-package");
   const isDev = 'development' === process.env.NODE_ENV;
   opts = opts && typeof opts =='object'? opts : {};
   let {assetExts,sourceExts} = opts;

@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "6.47.1",
+  "version": "6.47.2",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "main",
   "scripts": {
@@ -101,7 +101,7 @@
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-content-loader": "^6.2.1",
-    "react-dom": "^18.2.0",
+    "react-dom": "18.2.0",
     "react-native": "0.72.5",
     "react-native-big-list": "^1.6.1",
     "react-native-blob-util": "^0.18.6",

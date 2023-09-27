@@ -15,10 +15,10 @@ module.exports = (opts)=>{
     const expoUI = require("./expo-ui-path")();
     const euCommon = path.resolve(expoUI,"node_modules","@fto-consult","common");
     const cpath = fs.existsSync(euCommon)? path.resolve(euCommon,"babel.config.alias") : "@fto-consult/common/babel.config.alias";
-    const mainAppPackage = path.resolve(projectRoot,"expo-ui.json");
+    /*const mainAppPackage = path.resolve(projectRoot,"expo-ui.json");
     if(fs.existsSync(mainAppPackage)){
         opts.$packageJSON = mainAppPackage;
-    }
+    }*/
     const r = require(`${cpath}`)(opts);
     const expo = path.resolve(expoUI,"src");
     r.$edocs = path.resolve(expoUI,"docs");//l'alias de la documentation
@@ -113,7 +113,7 @@ module.exports = (opts)=>{
     const jsonPath = path.resolve(projectRoot,'package.json');
     if(fs.existsSync(jsonPath)){
         try {
-            require("./electron/utils/copy")(jsonPath,path.resolve(dir,"electron","package.app.json"))
+            require("./electron/utils/copy")(jsonPath,path.resolve(dir,"electron","expo-ui.json"))
         } catch{}
     }
     ///on sauvegarde les chemins des fichiers utiles, qui seront utilisées par la variable electron plus tard

@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "6.49.1",
+  "version": "6.49.0",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "main",
   "scripts": {
@@ -118,7 +118,7 @@
     "react-native-web": "^0.19.9",
     "react-native-webview": "13.2.2",
     "react-virtuoso": "^4.6.0",
-    "sharp-cli": "^2.1.0",
+    "sharp-cli": "^4.1.1",
     "tippy.js": "^6.3.7",
     "websql": "^2.0.3",
     "xlsx": "^0.18.5"

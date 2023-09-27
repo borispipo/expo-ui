@@ -20,6 +20,13 @@ module.exports = function(opts){
   if(!isLocalTest){
     config.watchFolders.push(localDir);
   }
+  // 2. Let Metro know where to resolve packages and in what order
+  const nodeModulesPaths = (Array.isArray(config.resolver.nodeModulesPaths)?config.resolver.nodeModulesPaths : []);
+  const nodeModulePath = path.resolve(projectRoot, 'node_modules');
+  if(!nodeModulesPaths.includes(nodeModulePath)){
+    nodeModulesPaths.unshift(nodeModulePath);
+  }
+  config.resolver.nodeModulesPaths = nodeModulesPaths;
   config.projectRoot = projectRoot;
   config.resolver.assetExts = [
      ...config.resolver.assetExts,

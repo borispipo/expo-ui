@@ -3,7 +3,7 @@
 // override l'alias du repertoire des écrans par défaut, celui de escreens
 
 Les variables d'environnement : 
-EXPO_UI_ROOT_PATH, et COMMON_ROOT_PATH sont exploitées pour spécifier les répertoires racines aux dossiers expo-ui et common respectivement 
+EXPO_UI_ROOT_PATH sont exploitées pour spécifier les répertoires racines aux dossiers expo-ui et common respectivement 
 pendant le développement de l'application
 
 en plus de la variable d'environnement TABLES_DATA_PATH pour la génération des tables de l'application, l'on peut aussi spécifier, 

@@ -122,7 +122,7 @@ const ModalComponent = React.forwardRef((props,ref)=>{
       >
           <TouchableWithoutFeedback
             accessibilityLabel={overlayAccessibilityLabel}
-            role="button"
+            //role="button"
             disabled={!dismissable}
             onPress={dismissable ? hideModal : undefined}
             importantForAccessibility="no"

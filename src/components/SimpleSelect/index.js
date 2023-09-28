@@ -278,7 +278,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
     const autoFocus = canAutoFocusSearchField({visible,items:renderingItems});
     testID = defaultStr(testID, "RN_SimpleSelectComponent");
     anchor =  <Pressable
-        role="button"
+        //role="button"
         activeOpacity={0.3}
         testID = {testID}
         {...defaultObj(anchorContainerProps)}

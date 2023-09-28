@@ -8,7 +8,7 @@ import Auth,{login,getLoginId} from "$cauth";
 import View from "$ecomponents/View";
 import { StyleSheet } from "react-native";
 import defaultTheme,{getColors} from "$theme/defaultTheme";
-import theme,{defaultDarkTheme,Colors,defaultLightTheme} from "$theme";
+import theme,{defaultDarkTheme,Colors,defaultLightTheme,lightColors,darkColors} from "$theme";
 import Provider from "$ecomponents/Form/FormData/DialogProvider";
 import Dropdown from "$ecomponents/Dropdown";
 import {defaultObj} from "$cutils";
@@ -16,6 +16,27 @@ import Icon from "$ecomponents/Icon";
 import {open,close} from "$preloader";
 import {fields,getThemeData} from "$theme/utils";
 import {modes} from "$ecomponents/TextField/utils";
+import {createMaterial3Theme,getMaterial3Theme} from "@pchmn/expo-material3-theme";
+import notify from "$cnotify";
+
+const mColors = [
+    {
+        light: '#FFE082',
+        dark: '#FFE082',
+    },
+    {
+        light: '#3E8260',
+        dark: '#ADF2C7',
+    },
+    {
+        light: '#756FAB',
+        dark: '#E5DFFF',
+    },
+     {
+        light: '#9F6C2C',
+        dark: '#FDDDB9',
+    },
+]
 
 const getStyle = (color)=>{
     if(!Colors.isValid(color)) return {};
@@ -47,7 +68,26 @@ export const getThemeFieldProps = (props,ref)=>{
     const userThemeName = defaultStr(userTheme.name,defaultTheme.name);
     const isDark = theme.isDark() || theme.isDarkUI();
     const defTheme = isDark ? {...defaultDarkTheme.colors,dark:true} : {...defaultLightTheme.colors,dark:false};
-    const itemsRef = React.useRef({...defaultObj(user.customThemes),...getColors()});
+    const customColors = React.useMemo(()=>{
+        const colors = getColors();
+        if(false && userThemeName){
+            const t = `${userThemeName}`;
+            const c = Colors.isValid(defaultTheme?.colors?.primary)? createMaterial3Theme(defaultTheme.colors.primary) : null,
+            c2 = Colors.isValid(defaultTheme?.colors.secondary)? createMaterial3Theme(defaultTheme?.colors.secondary) :null;
+            ['light','dark'].map((l)=>{
+                if(c && c[l]){
+                    const name = `${t}-primary-${l}`;
+                    colors[name] = {name,primaryName:userThemeName,secondaryName:`primary-${l}`,...c[l]};
+                }
+                if(c2 && c2[l]){
+                    const name2 = `${t}-secondary-${l}`;
+                    colors[name2] = {name:name2,primaryName:userThemeName,secondaryName:`secondary-${l}`,...c2[l]};
+                }
+            })
+        }
+        return colors;
+    },[]);
+    const itemsRef = React.useRef({...defaultObj(user.customThemes),...customColors});
     fields.textFieldMode = {
         type : 'select',
         items : {...modes,none:{code:'',label:'Dynamique'}},
@@ -90,7 +130,7 @@ export const getThemeFieldProps = (props,ref)=>{
                     }
                     data.custom = true;
                     customThemes[data.name] = data;
-                    itemsRef.current = {...customThemes,...getColors()};
+                    itemsRef.current = {...customThemes,...customColors};
                     user.customThemes = customThemes;
                     open((isEditing?"Modification ":"Enregistrement ")+"du thème...");
                     Auth.upsertUser(user,false).then(()=>{
@@ -118,7 +158,43 @@ export const getThemeFieldProps = (props,ref)=>{
         showAdd : typeof showAdd =='boolean'? showAdd : isUserActive || Auth.isTableDataAllowed({table:'users',action:'"changeTheme"'}),
         addIconTooltip : "Cliquez pour ajouter un nouveau thème",
         onAdd : ()=>{
-            showThemeExplorer();
+            return Provider.open({
+                title : "Ajouter un theme personnalisé",
+                fields : {
+                    color : {
+                        type :"color",
+                        text : 'A partir de la couleur',
+                        required : true,
+                    },
+                    name : fields.name,
+                    dark : fields.dark,
+                },
+                onSuccess : ({data})=>{
+                    try {
+                        const theme = createMaterial3Theme(data.color)
+                        const dat = {...data,...Object.assign({},(data.dark? theme.dark : theme?.light))};
+                        dat.text = Colors.isValid(dat.text)? dat.text : dat.onBackground || dat.onSurface;
+                        const cols = dat.dark ? darkColors : lightColors;
+                        ["warning","error","info","success","divider"].map((c)=>{
+                            if(!Colors.isValid(dat[c])){
+                                dat[c] = cols[c];
+                                const onKey = `on${c.ucFirst()}`;
+                                dat[onKey] = dat[onKey] || cols[onKey];
+                            }
+                        })
+                        if(isObj(dat)){
+                            delete dat.color;
+                            //Provider.close();
+                            setTimeout(()=>{
+                                showThemeExplorer(dat);
+                            },500);
+                        }
+                    } catch(e){
+                        notify.error(e);
+                        Provider.close();
+                    }
+                }
+            })
         },
         onChange : (args)=>{
             args = defaultObj(args);

@@ -1188,11 +1188,11 @@ export default class CommonDatagridComponent extends AppComponent {
         return defaultStr(this.props.table,this.props.tableName,this.props.sessionName);
    }
    /*** affiche ou masque une colonne filtrée */
-   toggleFilterColumnVisibility(field){
+   toggleFilterColumnVisibility1(field){
         if(!isNonNullString(field)) return;
         setTimeout(()=>{
             this.setIsLoading(true,()=>{
-                let filteredColumns = {...this.state.filteredColumns};
+                const filteredColumns = {...this.state.filteredColumns};
                 filteredColumns[field] = defaultBool(filteredColumns[field],false) == false ? true : false;
                 this.prepareColumns({filteredColumns});
                 this.setState({filteredColumns},()=>{
@@ -1204,8 +1204,16 @@ export default class CommonDatagridComponent extends AppComponent {
                     }
                 });
             },true)
-        },TIMEOUT)
+        },TIMEOUT);
     }
+    toggleFilterColumnVisibility(field,visible){
+        if(!isNonNullString(field)) return;
+        const filteredColumns = {...this.state.filteredColumns};
+        filteredColumns[field] = visible;
+        this.setSessionData("filteredColumns"+this.getSessionNameKey(),filteredColumns);
+        return visible;
+    }
+    
    /*** affiche ou masque une colonne 
     @param {string} field
    */
@@ -2370,7 +2378,7 @@ export default class CommonDatagridComponent extends AppComponent {
       return this.state.showFooters || this.hasSectionListData() && this.state.displayOnlySectionListHeaders;
    }
    canShowFilters(){
-        return this.state.showFilters
+        return this.isFilterable() && this.state.showFilters
    }
    toggleDisplayOnlySectionListHeaders(){
         if(!this.canDisplayOnlySectionListHeaders()) return
@@ -2717,6 +2725,9 @@ export default class CommonDatagridComponent extends AppComponent {
     }
     isValidRowKey(rowKey){
         return !!(isNonNullString(rowKey) || typeof rowKey =='number');
+    }
+    getPreparedColumns(){
+        return this.preparedColumns;
     }
     prepareData(args,cb){
         let {pagination,config,aggregatorFunction:customAggregatorFunction,displayOnlySectionListHeaders:cdisplayOnlySectionListHeaders,data,force,sectionListColumns,sectionListCollapsedStates,updateFooters} = defaultObj(args);

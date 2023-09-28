@@ -15,6 +15,7 @@ import Footer from "../Footer/Footer";
 import theme from "$theme";
 import Table,{styles as tableStyles} from "$ecomponents/Table";
 import DatagridProvider from "../hooks/Provider";
+import Filters from "./Filters";
 
 
 const DatagridFactory = (Factory)=>{
@@ -114,6 +115,7 @@ const DatagridFactory = (Factory)=>{
                 this.listRef.current.scrollToIndex({index});
             }
         }
+        
         getTestID(){
             return defaultStr(this.props.testID,"RN_DatagridTable");
         }
@@ -288,9 +290,7 @@ const DatagridFactory = (Factory)=>{
             </View> : null;
             return <DatagridProvider context={this}>
                      <View style={[styles.container,{flex:1}]} testID={testID+"_TableContainer"} pointerEvents={pointerEvents}>
-                        <View ref={(el)=>{
-                            this.layoutRef.current = el;
-                        }} testID={testID+"_LayoutContainer"}>
+                        <View ref={(el)=>{this.layoutRef.current = el;}} testID={testID+"_LayoutContainer"}>
                             {this.props.showActions !== false ? <DatagridActions 
                                 pointerEvents = {pointerEvents}
                                 title = {this.renderDataSourceSelector()}
@@ -298,6 +298,11 @@ const DatagridFactory = (Factory)=>{
                             /> : null}
                             {rPagination}
                             {progressBar}  
+                            <Filters
+                                testID={testID+"_DatagridTableHeaderFilters"}
+                                orOperator = {this.props.filterOrOperator}
+                                andOperator = {this.props.filterAndOperator}
+                            />
                         </View>
                         {canRenderChart ?
                             <View testID={testID+"_ChartContainer"} {...chartContainerProps} style={[theme.styles.w100,chartContainerProps.style]}>
@@ -315,7 +320,7 @@ const DatagridFactory = (Factory)=>{
                             renderItem = {this.renderFlashListItem.bind(this)}
                             renderSectionHeader = {this.renderFlashListItem.bind(this)}
                             hasFooters = {hasFootersFields && !canRenderChart ? true : false}
-                            showFilters = {showFilters}
+                            showFilters = {false}
                             showFooters = {showFooters && !canRenderChart ? true : false}
                             showHeaders = { canRenderChart ? !!showFilters : true}
                             headerCellContainerProps = {{
@@ -335,7 +340,7 @@ const DatagridFactory = (Factory)=>{
                             data = {this.state.data}
                             footers = {this.getFooterValues()}
                             renderHeaderCell={this.renderHeaderCell.bind(this)}
-                            renderFilterCell={this.renderFilterCell.bind(this)}
+                            //renderFilterCell={this.renderFilterCell.bind(this)}
                             renderFooterCell={this.renderFooterCell.bind(this)}
                             renderEmpty = {this.renderEmpty.bind(this)}
                         />}

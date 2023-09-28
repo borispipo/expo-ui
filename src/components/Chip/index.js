@@ -200,7 +200,7 @@ const ChipComponent = React.forwardRef(({
             // @ts-expect-error We keep old a11y props for backwards compat with old RN versions
             accessibilityTraits="button"
             accessibilityComponentType="button"
-            role="button"
+            //role="button"
             accessibilityLabel={closeIconAccessibilityLabel}
             testID={testID+"_CloseButtonRipple"}
           >

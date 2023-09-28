@@ -474,7 +474,7 @@ class _Menu extends AppComponent {
             {rendered ? <TouchableWithoutFeedback
               testID={testID+"_Menu_TouchableWithoutFeedBack"}
               accessibilityLabel={overlayAccessibilityLabel}
-              role="button"
+              //role="button"
               onPress={onDismiss}
               style = {[hiddenStyle]}
             >

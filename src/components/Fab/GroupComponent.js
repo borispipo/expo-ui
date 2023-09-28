@@ -174,7 +174,7 @@ const FABGroup = ({
           // @ts-expect-error We keep old a11y props for backwards compat with old RN versions
           accessibilityTraits="button"
           accessibilityComponentType="button"
-          role="button"
+          //role="button"
           accessibilityState={{ expanded: open }}
           style={StyleSheet.flatten([styles.fab, fabStyle])}
           visible={visible}
@@ -310,7 +310,7 @@ const _FabItem = function({children,label,disabled:customDisabled,pointerEvents,
                  }
                  accessibilityTraits="button"
                  accessibilityComponentType="button"
-                 role="button"
+                 //role="button"
                >
                  <Text testID={testID+"_Label"} style={StyleSheet.flatten([{ color},cursorStyle])}>
                    {label}
@@ -345,7 +345,7 @@ const _FabItem = function({children,label,disabled:customDisabled,pointerEvents,
              // @ts-expect-error We keep old a11y props for backwards compat with old RN versions
              accessibilityTraits="button"
              accessibilityComponentType="button"
-             role="button"
+             //role="button"
              testID={testID}
              visible={open}
         />

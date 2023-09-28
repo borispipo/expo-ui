@@ -261,12 +261,7 @@ const DatagridFactory = (Factory)=>{
         getMaxSelectedRows(){
             return isMobileMedia()? 30 : 50;
         }
-        toggleFilterColumnVisibility(field,visible){
-            if(!isNonNullString(field)) return;
-            let filteredColumns = {...this.state.filteredColumns};
-            filteredColumns[field] = visible;
-            this.setSessionData("filteredColumns"+this.getSessionNameKey(),filteredColumns);
-        }
+        
         /*** affiche les infos de l'item */
         onToggleExpandItem({item,index,rowIndex,rowKey,...rest}){
             if(!isObj(this.bottomSheetContext) || typeof this.bottomSheetContext.open !=='function') return;
@@ -410,7 +405,7 @@ const DatagridFactory = (Factory)=>{
                 visibleColumnsNames,
                 filteredColumns,
                 filters :headerFilters,
-            } = this.preparedColumns;
+            } = this.getPreparedColumns();
             const hasFootersFields = this.hasFootersFields();
             const datagridHeader = <View testID={testID+"_HeaderContainer"} pointerEvents={pointerEvents} style={[styles.datagridHeader]}>
                 <ScrollView testID={testID+"_HeaderScrollView"} horizontal  contentContainerStyle={StyleSheet.flatten([styles.contentContainerStyle,styles.minW100])}>

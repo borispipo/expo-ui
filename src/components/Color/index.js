@@ -69,7 +69,7 @@ const ColorPickerComponent = React.forwardRef ((props,ref)=>{
     return <>
             <Pressable
                 {...containerProp}
-                role="button"
+                //role="button"
                 disabled = {!isEditable}
                 pointerEvents = {pointerEvents}
                 accessibilityLabel={defaultStr(label,text)}

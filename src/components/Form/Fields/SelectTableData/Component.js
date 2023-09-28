@@ -60,9 +60,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,isStructData,ge
     }
     const isMounted = React.useIsMounted();
     
-    const [state,setState] = React.useState({
-        items : [],
-    });
+    const [stateItems,setItems] = React.useState([]);
     const [isLoading,setIsLoading] = React.useState(true);
     fetchOptions = Object.clone(defaultObj(fetchOptions));
     const queryPath = fetchItemsPath || typeof fKeyTable.queryPath =='string' && fKeyTable.queryPath || typeof fKeyTable.fetchPath =='string' && fKeyTable.fetchPath || '';
@@ -185,7 +183,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,isStructData,ge
                             }
                         }
                     }
-                    setState({...state,items});
+                    setItems(items);
                     if(onFetchItems){
                         onFetchItems({data:items,items,context,props});
                     }
@@ -256,9 +254,9 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,isStructData,ge
     },[isFilter,foreignKeyTable,customShowAdd]);
     return <Dropdown
         {...props}
+        items = {stateItems}
         isFilter = {isFilter}
         showAdd = {showAdd}
-        {...state}
         isLoading = {isLoading}
         dialogProps = {dialogProps}
         ref = {ref}

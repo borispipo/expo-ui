@@ -19,7 +19,7 @@ export default function Logo (props) {
         if(LogoComponent){
             hasTwice = React.isComponent(LogoComponent.Image) && React.isComponent(LogoComponent.Text);
             if(!hasTwice){
-                logoImage = React.isValidElement(LogoComponent)? LogoComponent : React.isComponent(LogoComponent)? <LogoComponent {...props} style={styles.logoContent} testID={testID+"_Content"} styles={styles}/> : null;
+                logoImage = React.isValidElement(LogoComponent)? LogoComponent : React.isComponent(LogoComponent)? <LogoComponent {...props} style={[styles.logoContent,props.style]} testID={testID+"_Content"} styles={styles}/> : null;
             } else {
                 img = icon !== false ? <View testID={testID+"_ContentContainer"} style={styles.logoImage}>
                     <LogoComponent.Image styles={styles}/>

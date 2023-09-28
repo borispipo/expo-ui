@@ -24,10 +24,9 @@ import { prepareScreens } from "./TableData";
     handleHelpScreen : {boolean}, //si l'écran d'aide sera pris en compte, l'écran d'aide ainsi que les écrans des termes d'utilisations et autres
     convertFiltersToSQL : {boolean}, si les filtres de datagrid ou filtres seront convertis au format SQL
     components : {
-        logo : {
-            object |
-            ReactNode,
-            ReactComponent
+        logo : ReactNode | ReactComponent | object {
+           image{ReactComponent} :,
+           text {ReactComponent}
         },
         loginPropsMutator : ({object})=><{object}>, la fonction permettant de muter les props du composant Login,
         tableLinkPropsMutator : ({object})=><{object}>, la fonction permettant de muter les props du composant TableLink,

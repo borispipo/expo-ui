@@ -2973,7 +2973,7 @@ export default class CommonDatagridComponent extends AppComponent {
                         const footer = footers[column];
                         const canD = renderSectionListHeaderOnFirstCell && !hasAlreadRenderMainHeaderOnFirstCell;
                         const cProps = canD ? sectionListHeaderContainerProps : {};
-                        cells.push(<Cell {...cellProps} {...cProps} key={key2} width={width} testID={testID+"_FooterCellContainer_"+key2} style={[tableStyles.headerItemOrCell,!isA?{alignItems:'flex-start',justifyContent:'flex-start'}:{marginLeft:0,paddingLeft:0,marginRight:5},cellProps.style,cProps.style]}>
+                        cells.push(<Cell {...cellProps} {...cProps} key={key2} width={width} testID={testID+"_FooterCellContainer_"+key2} style={[tableStyles.headerItemOrCell,!isA?{alignItems:'flex-start',justifyContent:'flex-start'}:{marginLeft:0,paddingLeft:0,marginRight:5,paddingTop:5,paddingBottom:5},cellProps.style,cProps.style]}>
                             {canD ? headerContent:null}
                             <Footer
                                 key = {key2}

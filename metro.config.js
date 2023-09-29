@@ -1,6 +1,6 @@
 const path = require("path");
 const fs = require("fs");
-const { getDefaultConfig } = require('expo/metro-config');
+const { getDefaultConfig } = require('@expo/metro-config');
 module.exports = function(opts){
   //require("./create-expo-ui-package");
   const isDev = 'development' === process.env.NODE_ENV;
@@ -10,11 +10,17 @@ module.exports = function(opts){
   sourceExts= Array.isArray(sourceExts)?sourceExts : [];
   const projectRoot = path.resolve(process.cwd());
   const localDir = path.resolve(__dirname);
+  const transpilePath = null;//require("./create-transpile-module-transformer")(opts);
+  const hasTranspilePath = typeof transpilePath =='string' && transpilePath && fs.existsSync(transpilePath);
   //@see : https://docs.expo.dev/versions/latest/config/metro/
   const config = getDefaultConfig(projectRoot,{
     // Enable CSS support.,
     isCSSEnabled: true,
+    mode: hasTranspilePath && 'exotic' || undefined,
   });
+  if(hasTranspilePath){
+    config.transformer.babelTransformerPath = transpilePath;
+  }
   config.watchFolders = Array.isArray(config.watchFolders) && config.watchFolders || [];
   const isLocalTest = require("./is-local-dev")();
   if(!isLocalTest){
@@ -39,6 +45,7 @@ module.exports = function(opts){
       ...sourceExts,"txt",
       'jsx', 'js','tsx',
   ]
+  
   // Remove all console logs in production...
   config.transformer.minifierConfig.compress.drop_console = false;
   /*config.platforms = Array.isArray(config.platforms) && config.platforms || [];

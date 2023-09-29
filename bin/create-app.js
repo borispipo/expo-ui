@@ -132,7 +132,7 @@ const createAPPJSONFile = (projectRoot,{name,version})=>{
       },
       "web": {
         "favicon": "./assets/favicon.png",
-        "bundler": "metro"
+        "bundler": "webpack"
       }
     }
   }

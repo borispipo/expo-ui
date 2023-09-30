@@ -2552,7 +2552,8 @@ export default class CommonDatagridComponent extends AppComponent {
                     },100);
                     return false;
                 },
-                title : title,
+                title,
+                label,
                 icon : visible?CHECKED_ICON_NAME : null,
                 right : false ? (p)=><Icon {...p} icon="material-gear"
                     onPress = {(e)=>{console.log(e," is pressed toddd config")}}

@@ -7,7 +7,6 @@ import Filter from "$ecomponents/Filter";
 
 export default function FilterAccordionComponent({onChange,...props}){
     const valuesRefs = React.useRef({});
-    console.log("rendering ",valuesRefs);
     return  <Filter
         {...props}
         {...valuesRefs.current}

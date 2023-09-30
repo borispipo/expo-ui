@@ -13,7 +13,9 @@ module.exports = (opts)=>{
     opts.withPouchDB = opts.withPouchDB !== false && opts.withPouchdb !== false ? true : false;
     delete opts.withPouchdb;
     const expoUI = require("./expo-ui-path")();
-    const r = require(`"@fto-consult/common/babel.config.alias"`)(opts);
+    const euCommon = path.resolve(expoUI,"node_modules","@fto-consult","common");
+    const cpath = fs.existsSync(euCommon)? path.resolve(euCommon,"babel.config.alias") : "@fto-consult/common/babel.config.alias";
+    const r = require(`${cpath}`)(opts);
     const expo = path.resolve(expoUI,"src");
     r.$edocs = path.resolve(expoUI,"docs");//l'alias de la documentation
     r["$edocs-components"] = path.resolve(r.$edocs,"components");

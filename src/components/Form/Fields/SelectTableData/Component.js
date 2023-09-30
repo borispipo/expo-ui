@@ -215,14 +215,16 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,isStructData,ge
         if(Array.isArray(foreignKeyLabel)){
             let itl = "";
             foreignKeyLabel.map(fk=>{
-                if(!fk) return;
-                const itv = p.item[fk];
-                itl+= (itl?" ":"")+ (typeof itv =='number' && itv || defaultStr(itv))
+                if(!isNonNullString(fk)) return;
+                let itv = p.item[fk];
+                if(typeof itv =='number'){
+                    itv = String(itv);
+                }
+                itl+= (itl?" ":"")+ (itv || defaultStr(itv))
             })
             if(itl){
                 itemLabel = itl;
             }
-            
         }
         if(!itemLabel && isNonNullString(foreignKeyLabel)){
             itemLabel = defaultStr(p.item[foreignKeyLabel] !== undefined && p.item[foreignKeyLabel] !== null && p.item[foreignKeyLabel].toString(), p.item[foreignKeyColumn] !== undefined && p.item[foreignKeyColumn] !== null && p.item[foreignKeyColumn].toString());

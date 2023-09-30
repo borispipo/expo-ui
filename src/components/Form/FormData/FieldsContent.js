@@ -1,6 +1,6 @@
 import React from "$react";
 import Divider from "$ecomponents/Divider";
-import {isObj,isNonNullString,defaultStr,defaultObj} from "$utils";
+import {isObj,isNonNullString,defaultStr,defaultObj} from "$cutils";
 import {flattenStyle,Colors} from "$theme";
 import FieldContent from "./FieldContent";
 

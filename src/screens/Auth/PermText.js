@@ -13,7 +13,7 @@ const PermText = React.forwardRef(({isUserMasterAdmin,disabled,assignPerm,testID
         testID = {testID}
         disabled = {disabled || isUserMasterAdmin}
         defaultValue = {checked || isUserMasterAdmin?1 : 0}
-        style  = {[theme.styles.noPadding,theme.styles.noMarging,labelStyle !== false && styles.checkbox]}
+        style  = {[theme.styles.noPadding,theme.styles.noMargin,labelStyle !== false && styles.checkbox]}
         labelStyle = {[labelStyle !== false && styles.label,labelStyle && labelStyle]}
         label = {defaultVal(label,text)}
         onPress = {(args)=>{

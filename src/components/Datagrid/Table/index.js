@@ -298,11 +298,13 @@ const DatagridFactory = (Factory)=>{
                             /> : null}
                             {rPagination}
                             {progressBar}  
-                            <Filters
+                            {/**
+                                <Filters
                                 testID={testID+"_DatagridTableHeaderFilters"}
                                 orOperator = {this.props.filterOrOperator}
                                 andOperator = {this.props.filterAndOperator}
                             />
+                            */}
                         </View>
                         {canRenderChart ?
                             <View testID={testID+"_ChartContainer"} {...chartContainerProps} style={[theme.styles.w100,chartContainerProps.style]}>
@@ -320,7 +322,7 @@ const DatagridFactory = (Factory)=>{
                             renderItem = {this.renderFlashListItem.bind(this)}
                             renderSectionHeader = {this.renderFlashListItem.bind(this)}
                             hasFooters = {hasFootersFields && !canRenderChart ? true : false}
-                            showFilters = {false}
+                            showFilters = {showFilters}
                             showFooters = {showFooters && !canRenderChart ? true : false}
                             showHeaders = { canRenderChart ? !!showFilters : true}
                             headerCellContainerProps = {{
@@ -340,7 +342,7 @@ const DatagridFactory = (Factory)=>{
                             data = {this.state.data}
                             footers = {this.getFooterValues()}
                             renderHeaderCell={this.renderHeaderCell.bind(this)}
-                            //renderFilterCell={this.renderFilterCell.bind(this)}
+                            renderFilterCell={this.renderFilterCell.bind(this)}
                             renderFooterCell={this.renderFooterCell.bind(this)}
                             renderEmpty = {this.renderEmpty.bind(this)}
                         />}

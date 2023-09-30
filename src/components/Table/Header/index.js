@@ -13,6 +13,7 @@ const Component = isNative ? View : "tr";
 import { useTable } from "../hooks";
 import styles from "../styles";
 import CellWrapper from "./CellWrapper";
+import Filters from "./Filters";
 
 export default function RowHeaderComponent({isFilter,isFooter,isHeader,className,children:cChildren,...rest}){
     const {showHeaders,visibleColsNames,colsWidths,filterable,visibleColsNamesStr,headerContainerProps,footerContainerProps,filtersContainerProps,showFilters,filters,showFooters} = useTable();
@@ -25,7 +26,7 @@ export default function RowHeaderComponent({isFilter,isFooter,isHeader,className
             return <CellWrapper width={colsWidths[columnField]} isFilter={isFilter} isFooter={isFooter} key={columnField} columnField={columnField} columIndex={index}/>
         });
     },[visibleColsNamesStr]);
-    if(!visible) return null;
+    if(!visible && !isFilter) return null;
     const rP = isNative ? rest : {className:classNames(className,"table-footer-or-header-row")}
     return <Component {...rP} {...containerProps} style={StyleSheet.flatten([styles.header,style,rest.style,containerProps.style,!visible && hStyle.hidden])}>
         {children}
@@ -38,5 +39,5 @@ RowHeaderComponent.propTypes = {
 
 
 const hStyle = StyleSheet.create({
-    hidden : {height:0,opacity:0,display:'none'}
+    hidden : {opacity:0,display:'none'}
 });

@@ -203,9 +203,8 @@ export default class Field extends AppComponent {
         Object.defineProperties(this,{
             name : {value:name,override:false,writable:false},
             formName : {value:formName,override:false,writable : false},
-            canValidate : {value : defaultVal(props.validate,true),override:false,writable:false},
         })
-        if(this.canValidate !== false){
+        if(this.canRegisterField()){
              Forms.trigger("registerField",name,formName,this);
              this.initObservers();
         }
@@ -226,6 +225,12 @@ export default class Field extends AppComponent {
         this.state.isFieldVisible = typeof this.props.visible =='boolean'? this.props.visible : true;
         this.state.wrapperStyle = this.getMediaQueryUpdateStyle();
         this.state.currentMedia = Dimensions.getDimensionsProps().currentMedia;
+    }
+    canRegisterField(){
+        return !this.isFilter() && this.canValidate();
+    }
+    canValidate(){
+        return this.props.validate !== false;
     }
     validatorBeforeValidate({value,validRule,validParams,event,...rest}){
         let _result = undefined;
@@ -541,7 +546,7 @@ export default class Field extends AppComponent {
     validate ({value,event,...rest}){
         value = this.parseDecimal(value);
         this.validatingValue = value;
-        if((!this.canValidate) && !this.isSelectField()){
+        if((!this.canValidate()) && !this.isSelectField()){
             if(this._isInitialized && !this.hasValueChanged(value)) {
                 return;
             }
@@ -618,7 +623,7 @@ export default class Field extends AppComponent {
     componentDidMount (validate){
         super.componentDidMount();
         this.mediaQueryUpdateStyleSubscription = addMediaQueryUpdateStyeSubscription(this.doUpdateMediaQueryStyle.bind(this));
-        if(this.canValidate !== false){
+        if(this.canRegisterField()){
             Forms.trigger("registerField",this.getName(),this.getFormName(),this);
         }
         if(defaultVal(validate,true) && !this.isFilter()) this.validate({context:this,value:defaultVal(this.props.defaultValue)});
@@ -631,7 +636,7 @@ export default class Field extends AppComponent {
         if(this.mediaQueryUpdateStyleSubscription && this.mediaQueryUpdateStyleSubscription?.remove){
             this.mediaQueryUpdateStyleSubscription.remove();
         }
-        if(this.canValidate !== false){
+        if(this.canRegisterField()){
             Forms.trigger("unregisterField",this.getName(),this.getFormName());
         }
     }
@@ -656,7 +661,7 @@ export default class Field extends AppComponent {
     }
     onKeyEvent(key,event){
         let form = this.getForm();
-        if(!this.canValidate) return; 
+        if(!this.canValidate()) return; 
         let {keyboardEvents,onKeyEvent} = this.props;
         const formInstance = this.getForm();
         const data = formInstance ? formInstance.getData() : {};

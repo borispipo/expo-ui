@@ -22,7 +22,6 @@ const manualRunKey = "manual-run";
 
 export * from "$cfilters";
 
-  
 /***** Coposant Filter, pour les filtres de données */
 export default class Filter extends AppComponent {
   constructor(props) {
@@ -117,9 +116,12 @@ export default class Filter extends AppComponent {
     const t = defaultStr(this.type,this.props.type).toLowerCase();
     return t =="number" || t =='decimal' ? true : false;
   }
+  compareValues(v1,v2,...args){
+      return compareValues(this.prepareValue(v1),this.prepareValue(v2),...args);
+  }
   onFilterValidate(arg){
      arg = defaultObj(arg);
-     if(JSON.stringify(this.state.defaultValue) === JSON.stringify(arg.value)){
+     if(this.compareValues(this.state.defaultValue, arg.value)){
         return;
      }
      this.setState({defaultValue:arg.value},()=>{
@@ -168,24 +170,33 @@ export default class Filter extends AppComponent {
     if(!action){
         action = this.getDefaultAction(type);
     } 
+    let defaultValue = defaultVal(this.props.defaultValue);
     operator = defaultVal(operator,"$and");
-    return {actions,action,ignoreCase,operator,operators,manualRun:defaultBool(this.props.manualRun,false),defaultValue:defaultVal(this.props.defaultValue),isTextFilter};
+    if(actions == _inActions || type.contains("select") || this.props.multiple){
+        defaultValue = isNonNullString(defaultValue)? defaultValue.split(",") : Array.isArray(defaultValue)? defaultValue : !isNullOrEmpty(defaultValue)? [defaultValue] : {};
+    }
+    return {actions,action,ignoreCase,operator,operators,manualRun:defaultBool(this.props.manualRun,false),defaultValue,isTextFilter};
+  }
+  /**** prepare la valeur afin qu'elle soit soumise au composant qui implémente le filtre en question */
+  prepareValue(value){
+    if(!isObjOrArray(value) && (isNullOrEmpty(value,true) || String(value).trim() ==='undefined') ){
+        value = undefined;
+    }
+    if(this.isDecimal()){
+      value = parseDecimal(value)
+      if(value == 0){
+        value = undefined;
+      }
+    }
+    return value;
   }
   fireValueChanged (forceRun){
       if(this.willRunManually() && !forceRun) return;
       let {defaultValue:value,action,ignoreCase,operator} = this.state;
       let force = forceRun ===true ? true : false;
-      if(!isObjOrArray(value) && (isNullOrEmpty(value,true) || value ==='undefined') ){
-          value = undefined;
-      }
+      value = this.prepareValue(value);
       if(action =="$today" || action =='$yesterday'){
          force = true;
-      }
-      if(this.isDecimal()){
-        value = parseDecimal(value)
-        if(value == 0){
-          value = undefined;
-        }
       }
       const prev = JSON.stringify(this.previousRef.current), current = {value,operator,action,ignoreCase};
       if(prev == JSON.stringify(current) && (force !== true)){
@@ -222,12 +233,15 @@ export default class Filter extends AppComponent {
                 }
              }
           }
-          this.props.onChange({...this.getStateValues(),value,field:this.props.field,action,operator,selector,originAction,context:this});
+          this.props.onChange({...this.getStateValues(),value,field:this.props.field,columnField:this.props.field,action,operator,selector,originAction,context:this});
       }
   }
   componentDidUpdate (){
       super.componentDidUpdate();
       this.canBindEvent = true;
+  }
+  componentDidMount(){
+    super.componentDidMount();
   }
   setIgnoreCase(ignoreCase){
     if(!(this.searchFilter.current) ) return;
@@ -690,3 +704,13 @@ Filter.propTypes = {
     onClearFilter : PropTypes.func,
     onResetFilter : PropTypes.func, //idem à onClearFilter
 }
+/****
+  compare 
+*/
+export const compareValues = (v1,v2)=>{
+  if(v1 === v2) return true;
+  if(Array.isArray(v1) && v1.length ==0 || v1 === null || v1 =="" || String(v1).trim() =="") v1 = undefined;
+  if(Array.isArray(v2) && v2.length ==0 || v2 === null || v2 == "" || String(v2).trim() =="") v2 = undefined;
+  return v1 === v2 || JSON.stringify(v1) === JSON.stringify(v2);
+}
+Filter.compareValues = compareValues;

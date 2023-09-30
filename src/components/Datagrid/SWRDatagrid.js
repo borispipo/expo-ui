@@ -14,7 +14,7 @@ import DateLib from "$lib/date";
 import {getFetchOptions} from "$cutils/filters";
 import {setQueryParams} from "$cutils/uri";
 import {uniqid} from "$cutils";
-import { getFetcherOptions } from "$capi/fetch";
+import apiFetch,{ getFetcherOptions,prepareFetchOptions } from "$capi/fetch";
 import Icon from "$ecomponents/Icon";
 import Label from "$ecomponents/Label";
 import { StyleSheet,View } from "react-native";
@@ -26,6 +26,7 @@ import PropTypes from "prop-types";
 import {Menu} from "$ecomponents/BottomSheet";
 import session from "$session";
 import useContext from "$econtext/hooks";
+import notify from "$cnotify";
 
 export const getSessionKey = ()=>{
     return Auth.getSessionKey("swrDatagrid");
@@ -188,19 +189,15 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                 delete opts.page;
                 delete opts.offset;
             }
+            opts.url = opts.path = url;
+            if(showProgressRef.current ===false){
+                opts.showError = false;
+            }
             if(typeof fetcher =='function'){
                 return fetcher(url,opts);
             }
-            const {url:fUrl,fetcher:cFetcher,...rest} = getFetcherOptions(url,opts);
-            if(showProgressRef.current ===false){
-                rest.showError = false;
-            }
-            return cFetcher(fUrl,rest).catch((e)=>{
-                console.log(e," is swr fetching data");
-                throw e;
-            });
+            return apiFetch(url,opts);
         },
-        showError  : false,
         swrOptions : getSWROptions(swrConfig.refreshTimeout)
     });
     const dataRef = React.useRef(null);
@@ -232,7 +229,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         },500);
     },[error]);
     const doRefresh = (showProgress)=>{
-        showProgressRef.current = showProgress ? typeof showProgress ==='boolean' : false;
+        showProgressRef.current = showProgress ? typeof showProgress ==='boolean' : isLoading;
         refresh();
     }
     const canPaginate = ()=>{

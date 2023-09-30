@@ -425,7 +425,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
         if(hasTabs){
             if(isMobOrTab){
                 renderingTabsProps.firstTab = <Tab.Item testID={testID+"_MainTab"} label={"Principal"} {...firstTabProps} key={tabKey}>
-                    <View testID={testID+"_MainTab_Content"} {...contentProps} style={[styles.noMarging,contentProps.style,styles.h100,styles.noPadding]}>
+                    <View testID={testID+"_MainTab_Content"} {...contentProps} style={[styles.noMargin,contentProps.style,styles.h100,styles.noPadding]}>
                         {header}
                         {content}
                     </View>
@@ -435,7 +435,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
             }
             const ct = renderTabsContent(renderingTabsProps);
             if(isMobOrTab && ct){
-                contentProps.style = [contentProps.style,styles.noMarging,styles.noPadding,styles.content]
+                contentProps.style = [contentProps.style,styles.noMargin,styles.noPadding,styles.content]
                 mainContent = ct;
             } else {
                 mainContent = <View  {...contentProps} testID={testID+"_ContentContainer"} style={[styles.container,styles.noPadding,contentProps.style]}>
@@ -907,7 +907,7 @@ const styles = StyleSheet.create({
         paddingHorizontal : 0,
         paddingVertical : 0,
     },
-    noMarging : {
+    noMargin : {
         margin : 0,
         marginVertical : 0,
         marginHorizontal : 0,

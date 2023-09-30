@@ -33,7 +33,7 @@ const propTypes = {
     isScrolling : PropTypes.func,
 };
 /***@see : https://virtuoso.dev/virtuoso-api-reference/ */
-const VirtuosoListComponent = React.forwardRef(({onRender,id,fixedHeaderContent,numColumns:cNumCol,rowProps,renderTable,listClassName,components,itemProps,windowWidth,responsive,testID,renderItem,onEndReached,onLayout,onContentSizeChange,onScroll,isScrolling,estimatedItemSize,onEndReachedThreshold,containerProps,style,autoSizedStyle,...props},ref)=>{
+const VirtuosoListComponent = React.forwardRef(({onRender,id,tableHeadId,fixedHeaderContent,numColumns:cNumCol,rowProps,renderTable,listClassName,components,itemProps,windowWidth,responsive,testID,renderItem,onEndReached,onLayout,onContentSizeChange,onScroll,isScrolling,estimatedItemSize,onEndReachedThreshold,containerProps,style,autoSizedStyle,...props},ref)=>{
     if(renderTable){
         responsive = false;
     }
@@ -56,7 +56,7 @@ const VirtuosoListComponent = React.forwardRef(({onRender,id,fixedHeaderContent,
     const idRef = React.useRef(defaultStr(id,uniqid("virtuoso-list-id")));
     id = idRef.current; 
     const containerId = `${id}-container`;
-    const headId = `${id}-table-head`;
+    const headId = React.useRef(defaultStr(tableHeadId,`${id}-table-head`)).current;
     testID = defaultStr(testID,containerProps.testID,"RN_VirtuosoListComponent");
     const listId = `${id}-list`;
     const listRef = React.useRef(null);
@@ -158,6 +158,7 @@ const VirtuosoListComponent = React.forwardRef(({onRender,id,fixedHeaderContent,
         }
         return null;
     }
+    components = defaultObj(components);
     return <View {...containerProps} {...props} id={containerId} className={classNames("virtuoso-list-container",renderTable&& "virtuoso-list-container-render-table")} style={[{flex:1},containerProps.style,style,autoSizedStyle,{minWidth:'100%',height:'100%',maxWidth:'100%'}]} onLayout={onLayout} testID={testID}>
         <Component
             {...r2}
@@ -188,11 +189,12 @@ const VirtuosoListComponent = React.forwardRef(({onRender,id,fixedHeaderContent,
                 ...(renderTable ? {
                     TableRow: TableRowComponent,
                 }:{}),
-                ...defaultObj(components),
+                ...components,
                 ...(renderTable ? {
                     TableHead : React.forwardRef((props,ref)=>{
                         const restProps = {id:headId,className:classNames(props.className,"virtuoso-list-render-table-thead")};
-                        return <thead ref={ref} {...props} {...restProps}/>
+                        const Thead = React.useMemo(()=>React.isComponent(components.TableHead)? components.TableHead : "thead",[]);
+                        return <Thead ref={ref} {...props} {...restProps}/>
                     })
                 } : {})
             }}
@@ -202,6 +204,7 @@ const VirtuosoListComponent = React.forwardRef(({onRender,id,fixedHeaderContent,
 
 VirtuosoListComponent.propTypes = {
     ...propTypes,
+    tableHeadId : PropTypes.string,//l'id du header de la table virtuoso
     fixedHeaderContent : PropTypes.func,//la fonction rendant le contenu fixe du tableau
     renderTable : PropTypes.bool,//si le composant Table sera rendu
     numColumns : PropTypes.number,

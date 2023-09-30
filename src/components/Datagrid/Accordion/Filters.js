@@ -13,20 +13,19 @@ import { Dimensions } from "react-native";
 import Grid from "$ecomponents/Grid";
 import { Pressable } from "react-native";
 import Tooltip from "$ecomponents/Tooltip";
+import { useDatagrid } from "../hooks";
 
 const MIN_WIDTH = 250;
 let windowWidth = Dimensions.get("window").width;
 
-const FiltersAccordionComponent = React.forwardRef((props,ref)=>{
-    const {filters,isLoading,filteredColumns,children,label,testID:cTestID,filterTitle:customFilterTitle,visible:customVisible,orOperator,andOperator,onToggleFilters,context:customContext,...restProps} = props;
-    const context = defaultObj(customContext);
+const FiltersAccordionComponent = React.forwardRef(({children,label,testID:cTestID,filterTitle:customFilterTitle,visible:customVisible,orOperator,andOperator,onToggleFilters,...rest},ref)=>{
+    const {filters,filteredColumns,context} = useDatagrid();
     const testID = defaultStr(testID,"RN_AccordionFilters");
     const [visibleColumns,setVisibleColumns] = React.useState(filteredColumns);
     const [visible,setVisible] = React.useState(defaultBool(customVisible,false));
     const valuesRefs = React.useRef({});
     windowWidth = Dimensions.get("window").width;
     const innerRef = React.useRef(null);
-    const rest = defaultObj(restProps);
     const filterTitle = defaultStr(customFilterTitle,'Filtres');
     const canHandlerFilterRef = React.useRef(0);
     const filteredRef = React.useRef({});
@@ -74,9 +73,6 @@ const FiltersAccordionComponent = React.forwardRef((props,ref)=>{
                             {...rest}
                             {...(isObj(valuesRefs.current[key]) ? valuesRefs.current[key] : {})}
                             dynamicRendered
-                            //isLoading = {isLoading && filteredRef.current[key] ? true : false}
-                            orOperator = {defaultBool(orOperator,filter.orOperator,true)}
-                            andOperator = {defaultBool(andOperator,filter.andOperator,true)}
                             onChange = {(arg)=>{
                                 if(!arg.action && !arg.operator || !arg.field) return;
                                 const canHandle = canHandleFilter(arg);

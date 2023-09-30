@@ -25,7 +25,6 @@ export default class FormSelectField extends Field{
             this.validate({context:this,value});
         }
         return;
-     
     }
     getDefaultValue(){
         if(this._field){

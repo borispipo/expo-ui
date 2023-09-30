@@ -16,6 +16,7 @@ import {getRowStyle} from "$ecomponents/Datagrid/utils";
 import ScrollNative from "./ScrollNative";
 import VirtuosoTableComponent from "./VirtuosoTable";
 import EmptyPlaceholder from "./EmptyPlaceholder";
+import Headers from "./Headers";
 export {styles};
 
 const isSCrollingRef = React.createRef();
@@ -52,7 +53,7 @@ const getOnScrollCb = (refs,pos,cb2)=>{
     return isMobileNative()? cb : debounce(cb,200);
 }
 
-const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRender,height,progressBar,renderListContent,children,renderEmpty,renderItem,headerScrollViewProps,footerScrollViewProps,scrollViewProps,renderFooterCell,footerCellContainerProps,filterCellContainerProps,headerCellContainerProps,headerProps,rowProps:customRowProps,cellContainerProps,hasFooters,renderHeaderCell,renderFilterCell,columnProps,getRowKey,columnsWidths,colsWidths,columns,...props},tableRef)=>{
+const TableComponent = React.forwardRef(({containerProps,tableHeadId,fixedHeaderContent,listContainerStyle,onRender,height,progressBar,renderListContent,children,renderEmpty,renderItem,headerScrollViewProps,footerScrollViewProps,scrollViewProps,renderFooterCell,footerCellContainerProps,filterCellContainerProps,headerCellContainerProps,headerProps,rowProps:customRowProps,cellContainerProps,hasFooters,renderHeaderCell,renderFilterCell,columnProps,getRowKey,columnsWidths,colsWidths,columns,...props},tableRef)=>{
     containerProps = defaultObj(containerProps);
     cellContainerProps = defaultObj(cellContainerProps);
     scrollViewProps = defaultObj(scrollViewProps);
@@ -142,13 +143,6 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
             }
         }
     };
-    const headerFootersFilters = React.useMemo(()=>{
-        return <>
-            <Header isHeader={true} testID={testID+"_TableHeader"}/>
-            <Header isFilter={true} testID={testID+"_TableFilters"} style={[styles.header,styles.filters,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}/>
-            <Header isFooter testID={testID+"_TableFooter"}  style={[styles.header,styles.footers,theme.styles.pt0,theme.styles.pb0,theme.styles.ml0,theme.styles.mr0]}/>
-        </>
-    },[])
     return <View testID= {testID+"_Container"}  {...containerProps} onLayout={(e)=>{
         layoutRef.current = e.nativeEvent.layout;
         if(containerProps.onLayout){
@@ -167,7 +161,7 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
                     showsHorizontalScrollIndicator
             >
                     <View testID={testID+"Header2FootersWrapper"} style={[theme.styles.w100]}>
-                        {headerFootersFilters}
+                        {<Headers/>}
                     </View>
                 </ScrollView>
             </RNView>}
@@ -200,6 +194,7 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
                         renderTable
                         columns = {columns}
                         {...props}
+                        tableHeadId = {tableHeadId}
                         onContentSizeChange = {(width,height)=>{
                             if(props.onContentSizeChange){
                                 props.onContentSizeChange(width,height);
@@ -247,10 +242,9 @@ const TableComponent = React.forwardRef(({containerProps,listContainerStyle,onRe
                         renderItem = {({item,index})=>{
                             return <Row rowData={item} index={index} testID={testID+"_Row_"+index}/>
                         }}
-                        fixedHeaderContent={(index, user) => {
-                            return headerFootersFilters;
-                        }}
+                        fixedHeaderContent={undefined}
                         components = {{
+                            TableHead,
                             TableRow: (props) => {
                                 const index = props['data-index'];
                                 const item = getRowByIndex(index) || props?.item || null;
@@ -287,6 +281,12 @@ const ColumnType = PropTypes.shape({
     label : PropTypes.text,
     text : PropTypes.string,
 });
+
+const TableHead = React.forwardRef((p,ref)=>{
+    return <thead {...p} ref={ref} className={classNames(p.className,"virtuoso-table-head")}/>
+});
+
+TableHead.displayName = "VirtuosoTableHeaderTableComponent";
 
 
 TableComponent.popTypes = {
@@ -337,10 +337,11 @@ TableComponent.popTypes = {
 
 TableComponent.displayName = "TableComponent";
 
-const TableComponentProvider = React.forwardRef(({children,id,renderCell,testID,withDatagridContext,getRowKey,filter,data,...props},ref)=>{
+const TableComponentProvider = React.forwardRef(({children,id,tableHeadId,renderCell,testID,withDatagridContext,getRowKey,filter,data,...props},ref)=>{
     testID = props.testID = defaultStr(testID,"RN_TableComponent");
     const idRef = React.useRef(defaultStr(id,uniqid("virtuoso-table-list-id")));
     id = idRef.current;
+    tableHeadId = defaultStr(tableHeadId,`${id}-table-head`)
     const prepatedColumns = usePrepareColumns({...props,id});
     const keyExtractor = typeof getRowKey =='function'? getRowKey : React.getKey;
     const items = React.useMemo(()=>{
@@ -348,11 +349,11 @@ const TableComponentProvider = React.forwardRef(({children,id,renderCell,testID,
         return data.filter((i,...rest)=>isObj(i) && !!filter(i,...rest));
     },[data]);
     const getItem = (index)=>items[index]||null;
-    return <TableContext.Provider value={{...props,...prepatedColumns,id,getItem,getRowByIndex:getItem,testID,data,withDatagridContext,keyExtractor,
+    return <TableContext.Provider value={{...props,...prepatedColumns,id,tableHeadId,getItem,getRowByIndex:getItem,testID,data,withDatagridContext,keyExtractor,
         renderCell,
         items
     }}>
-        <TableComponent {...props} id={id} ref={ref}/>
+        <TableComponent {...props} id={id} tableHeadId={tableHeadId} ref={ref}/>
     </TableContext.Provider>
 });
 TableComponentProvider.displayName = "TableComponentProvider";

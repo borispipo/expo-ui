@@ -111,7 +111,6 @@ class DropdownComponent extends AppComponent {
         const previousSelected = this.state.selected;
         const prevValueKey = this.getValueKey(previousSelected);
         const prevItem = prevValueKey ? this.state.valuesKeys[prevValueKey] : null;
-        //if(this.countEee ===5) return
         return this.setState(nState,()=>{
             ///vérifie s'il y a eu changement call on change par exemple
             let selectedItem = null;
@@ -151,7 +150,7 @@ class DropdownComponent extends AppComponent {
             if(this.props.onChange){
                 this.props.onChange({value:this.state.selected,selectedKey:valueKey,selectedItems : this.getSelectedItems(),selectedItem,item:selectedItem,items:this.state.data});
             }
-        });
+        },force);
     }
     selectItem ({value,select,valueKey}){
         let selected = this.canHandleMultiple ? [...this.state.selected] : undefined;
@@ -604,7 +603,7 @@ class DropdownComponent extends AppComponent {
         const {items,defaultValue,selected} = nextProps;
         if(!React.areEquals(items,this.props.items)){
             const nState = this.prepareItems({items,defaultValue,selected});
-            return this.updateSelected(nState);
+            return this.updateSelected(nState,true);
         }
         let value = this.prepareSelected({defaultValue});
         let areEquals = !this.canHandleMultiple ? this.compare(value,this.state.selected) : false;

@@ -7,7 +7,13 @@ export const useDatagrid = x=> {
     if(!t || !t?.context || !t?.context?.state || !t?.context?.state?.data){
         throw "Le composant Datagrid actions doit être enfant d'un contexe de datagrid valide";
     }
-    return t;
+    const {context} = t;
+    const isLoading = context && context.isLoading() || false;
+    const r = typeof context?.getPreparedColumns =='function'? context?.getPreparedColumns() : {};
+    const columns = typeof context?.getColumns =='function' && context.getColumns() || {}
+    r.filtersByColumnsNames = isObj(r.filtersByColumnsNames) ? r.filtersByColumnsNames : {};
+    r.filteredValues = isObj(r.filteredValues) ? r.filteredValues : {};
+    return {...t,...r,isLoading,context,columns}
 };
 export const useDatagridContext = ()=>{
     return useDatagrid()?.context;

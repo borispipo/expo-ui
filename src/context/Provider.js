@@ -10,6 +10,7 @@ import Login from "$eauth/Login";
 import {modes} from "$ecomponents/TextField";
 import {isMobileMedia} from "$cdimensions";
 import { prepareScreens } from "./TableData";
+import {extendFormFields} from "$ecomponents/Form/Fields";
 
 
 /*****
@@ -28,6 +29,7 @@ import { prepareScreens } from "./TableData";
            image{ReactComponent} :,
            text {ReactComponent}
         },
+        customFormFields{Object}, //les composant personalisés des forms fields
         loginPropsMutator : ({object})=><{object}>, la fonction permettant de muter les props du composant Login,
         tableLinkPropsMutator : ({object})=><{object}>, la fonction permettant de muter les props du composant TableLink,
         TableDataScreen | TableDataScreenItem : {ReactComponent}, le composant TableDataScreenItem, à utiliser pour le rendu des écrans
@@ -41,11 +43,12 @@ import { prepareScreens } from "./TableData";
     },
     realm : {}, //les options de configurations de la base de données realmdb
 */
-const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,components,convertFiltersToSQL,getStructData,tablesData,structsData,...props})=>{
+const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,components:cComponents,convertFiltersToSQL,getStructData,tablesData,structsData,...props})=>{
     const {extendAppTheme} = appConfig;
     const { theme : pTheme } = useMaterial3Theme();
     navigation = defaultObj(navigation);
-    components = defaultObj(components);
+    const {customFormFields,...components} = defaultObj(cComponents);
+    extendFormFields(customFormFields);
     structsData = isObj(structsData)? structsData : null;
     appConfig.tablesData = tablesData;
     handleHelpScreen = handleHelpScreen === false ? false : true;

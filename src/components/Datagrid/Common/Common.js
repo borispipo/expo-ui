@@ -15,7 +15,7 @@ import {sortBy,isDecimal,defaultVal,sanitizeSheetName,extendObj,isObjOrArray,isO
 import {Datagrid as DatagridContentLoader} from "$ecomponents/ContentLoader";
 import React from "$react";
 import DateLib from "$lib/date";
-import Filter,{canHandleFilter,prepareFilters} from "$ecomponents/Filter";
+import Filter,{canHandleFilter,prepareFilters,compareValues} from "$ecomponents/Filter";
 import {CHECKED_ICON_NAME} from "$ecomponents/Checkbox";
 import { COLUMN_WIDTH,DATE_COLUMN_WIDTH,willConvertFiltersToSQL } from "../utils";
 import { StyleSheet,Dimensions,useWindowDimensions} from "react-native";
@@ -1209,8 +1209,12 @@ export default class CommonDatagridComponent extends AppComponent {
     toggleFilterColumnVisibility(field,visible){
         if(!isNonNullString(field)) return;
         const filteredColumns = {...this.state.filteredColumns};
+        if(typeof visible !=='boolean'){
+            visible = !!!filteredColumns[field];
+        }
         filteredColumns[field] = visible;
         this.setSessionData("filteredColumns"+this.getSessionNameKey(),filteredColumns);
+        this.trigger("toggleFilterColumnVisibility",{field,columnField:field,visible});
         return visible;
     }
     
@@ -2501,9 +2505,10 @@ export default class CommonDatagridComponent extends AppComponent {
                 datagridMenuItems,
                 ...restCol
             } = header;
+            this.filteredValues = defaultObj(this.filteredValues);
             restCol = Object.clone(defaultObj(restCol));
             let colFilter = defaultVal(restCol.filter,true);
-            field = header.field = restCol.field = defaultStr(header.field,field,headerIndex);
+            const columnField = field = restCol.field = header.field = restCol.field = defaultStr(field,headerIndex);
             delete restCol.filter;
             
             const type = defaultStr(header.jsType,header.type,"text").toLowerCase();
@@ -2529,20 +2534,21 @@ export default class CommonDatagridComponent extends AppComponent {
                 width = Math.max(width,minWidth);
             }
             totalWidths +=width;
-            widths[header.field] = width;
+            widths[columnField] = width;
             const colProps = {id,key}
-            colProps.key = isNonNullString(key)?key : (header.field||("datagrid-column-header-"+headerIndex))
+            colProps.key = isNonNullString(key)?key : (columnField||("datagrid-column-header-"+headerIndex))
             colProps.style = Object.assign({},StyleSheet.flatten(restCol.style));
             if(!visible){
                 colProps.style.display = 'none';
             }
-            const title = header.text = header.text || header.label || header.title||header.field
-            visibleColumnsNames[header.field] = visible ? true : false;
-           
+            visibleColumnsNames[columnField] = visible ? true : false;
+            const label = header.label = header.text = restCol.label = header.text && React.isValidElement(header.text,true) ? header.text : header.label && React.isValidElement(header.label,true)? header.label : columnField;
+            const title = label || header.title && React.isValidElement(header.title,true)? header.title : columnField
+            
             visibleColumns.push({
                 onPress : ()=>{
                     setTimeout(() => {
-                        this.toggleColumnVisibility(header.field);
+                        this.toggleColumnVisibility(columnField);
                     },100);
                     return false;
                 },
@@ -2552,9 +2558,6 @@ export default class CommonDatagridComponent extends AppComponent {
                     onPress = {(e)=>{console.log(e," is pressed toddd config")}}
                 /> : undefined
             });
-            restCol.field = header.field;
-            
-            restCol.label = defaultStr(header.text,header.label) ;
             restCol.type = type;
             if(!restCol.label){
                 console.error(header," has not label or text in datagrid",columns,this.props)
@@ -2584,12 +2587,31 @@ export default class CommonDatagridComponent extends AppComponent {
             const sortedProps =  isColumnSorted ? {...sortedColumn} : {};
             let filterProps = {};
             if(colFilter){
-                const fCol = defaultObj(this.filters[header.field]);
-                this.filters[header.field] = fCol;
-                filterableColumnsNames.push(header.field);
+                const fCol = defaultObj(this.filters[columnField]);
+                this.filters[columnField] = fCol;
+                filterableColumnsNames.push(columnField);
                 delete restCol.sortable;
+                const defaultFilterProps = {
+                    operator : fCol.operator,
+                    action : defaultStr(fCol.originAction,fCol.action),
+                    defaultValue : defaultVal(fCol.defaultValue,restCol.defaultValue),
+                }
+                const filteringVal = this.filteredValues[columnField];
+                if(!isObj(filteringVal)){
+                    this.filteredValues[columnField] = defaultFilterProps;
+                } else {
+                    if("value" in filteringVal){
+                        defaultFilterProps.defaultValue = filteringVal.value;
+                    }
+                    if("operator" in filteringVal){
+                        defaultFilterProps.operator = filteringVal.operator;
+                    }
+                    if("action" in filteringVal){
+                        defaultFilterProps.action = filteringVal.action;
+                    }
+                }
                 filterProps = {
-                    ...restCol,
+                    ...Object.clone(restCol),
                     type,
                     columnIndex,
                     visibleColumnIndex,
@@ -2598,23 +2620,22 @@ export default class CommonDatagridComponent extends AppComponent {
                     sortedColumn :sortedProps,///les props de la columns triée
                     sortedProps,
                     width,
-                    columnField : field,
+                    columnField,
+                    field,
                     index : headerIndex,
                     visible,
-                    key : header.field,
-                    label : defaultStr(header.label,header.text),
-                    orOperator : filterOrOperator,
-                    andOperator : filterAndOperator,
+                    key : columnField,
+                    label,
+                    orOperator : defaultBool(filterOrOperator,header.orOperator,true),
+                    andOperator : defaultBool(this.props.filterAndOperator,header.andOperator,true),
                     searchIconTooltip : 'Filtre',
                     searchIcon : 'filter_list',  
-                    defaultValue : defaultVal(fCol.defaultValue,restCol.defaultValue),
-                    name : header.field,
+                    name : columnField,
                     onClearFilter : this.onClearFilter.bind(this),
                     onChange : this.onFilterChange.bind(this),
-                    operator : fCol.operator,
-                    action : defaultStr(fCol.originAction,fCol.action),
+                    ...defaultFilterProps,
                 };
-                this.currentFilteringColumns[header.field] = filterProps;
+                this.currentFilteringColumns[columnField] = filterProps;
                 this.prepareFilter(filterProps,headerFilters); 
             }
             this.prepareColumn({
@@ -2633,11 +2654,11 @@ export default class CommonDatagridComponent extends AppComponent {
                 //columnDef : header,
                 index : headerIndex,
                 filterProps,
-                key : header.field,
+                key : columnField,
                 filter :colFilter, 
             },headerFilters)
             
-            if(this.props.groupable !== false && header.groupable !== false && !this.isSelectableColumn(header,header.field) && !this.isIndexColumn(header,header.field)){
+            if(this.props.groupable !== false && header.groupable !== false && !this.isSelectableColumn(header,columnField) && !this.isIndexColumn(header,columnField)){
                 const isInSectionListHeader = isObj(sListColumns[field]);
                 if(isInSectionListHeader){
                     nSectionList[field] = {
@@ -2692,6 +2713,8 @@ export default class CommonDatagridComponent extends AppComponent {
         this.preparedColumns.sectionListColumns = sectionListColumns;
         this.preparedColumns.sectionListColumnsMenuItems = sectionListColumnsMenuItems;
         this.preparedColumns.filterableColumnsNames = filterableColumnsNames;
+        this.preparedColumns.filteredValues = this.filteredValues;
+        this.preparedColumns.filtersByColumnsNames = this.currentFilteringColumns; //l'objet contenant pour chaqun des field name, le filterProp correspondant
         return this.preparedColumns;
    }
    getFooterValues(){
@@ -2728,6 +2751,9 @@ export default class CommonDatagridComponent extends AppComponent {
     }
     getPreparedColumns(){
         return this.preparedColumns;
+    }
+    getColumns(){
+        return isObj(this.state.columns)? this.state.columns : {};
     }
     prepareData(args,cb){
         let {pagination,config,aggregatorFunction:customAggregatorFunction,displayOnlySectionListHeaders:cdisplayOnlySectionListHeaders,data,force,sectionListColumns,sectionListCollapsedStates,updateFooters} = defaultObj(args);

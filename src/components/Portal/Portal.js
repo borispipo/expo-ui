@@ -4,7 +4,7 @@
     @see : https://github.com/gorhom/react-native-portal
  */
 import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
-import {uniqid}  from "$utils";
+import {uniqid}  from "$cutils";
 import { usePortal } from './hooks';
 
 const PortalComponent = ({

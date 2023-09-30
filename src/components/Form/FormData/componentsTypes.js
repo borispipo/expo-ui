@@ -92,6 +92,7 @@ export const getFilterComponentProps = (_props)=>{
     const sanitizedType = type.replaceAll("_","").toLowerCase().trim();
     props = defaultObj(props);
     props.label = defaultStr(label,text);
+    const SelectTableData = React.isComponent(componentTypes['selecttabledata']) ? componentTypes['selecttabledata'] : componentTypes.SelectTableData
     if(sanitizedType.startsWith("select")){
         props.inputProps = Object.assign({},props.inputProps);
         props.inputProps.placeholder = defaultStr(props.inputProps.placeholder,i18n.lang("search.."))
@@ -99,7 +100,7 @@ export const getFilterComponentProps = (_props)=>{
         if(sanitizedType ==='selectcountry'){
             component = componentTypes.SelectCountry;
         } else if(sanitizedType ==='selecttabledata'){
-            component = componentTypes.SelectTableData;
+            component = SelectTableData;
         } else if(React.isComponent(componentTypes[type])){
             component = componentTypes[type];
         } else if(React.isComponent(componentTypes[sanitizedType])){
@@ -122,7 +123,7 @@ export const getFilterComponentProps = (_props)=>{
     } else if(type == 'dateformat' || type =='select_dateformat' || type =='select_date_format') {
         component = componentTypes.SelectDateFormat;
     } else if(isNonNullString(props.foreignKeyColumn) && isNonNullString(props.foreignKeyTable)) {
-        component = componentTypes.SelectTableData;
+        component = SelectTableData;
         type = "select";
     } else if(React.isComponent(componentTypes[type]) && componentTypes[type] !== false) {
         component = componentTypes[type];

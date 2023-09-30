@@ -1489,7 +1489,7 @@ export default class CommonDatagridComponent extends AppComponent {
                         type : "switch",
                         text  : "Afficher les libelés de groupées",
                         tooltip : "Afficher/Masquer les noms de colonnes sur les entêtes des valeurs groupées",
-                        defaultValue : 1,
+                        defaultValue : 0,
                     },
                     displayGroupLabelsSeparator : {
                         type : "text",
@@ -2904,7 +2904,7 @@ export default class CommonDatagridComponent extends AppComponent {
            return this.getSectionListHeaderProp(args);
         }
         const config = isObj(args.config) && Object.size(args.config,true)? args.config : this.getConfig();
-        const displayGroupLabels = "displayGroupLabels" in config? config.displayGroupLabels : true;
+        const displayGroupLabels = "displayGroupLabels" in config? config.displayGroupLabels : false;
         const displayGroupLabelsSeparator = typeof config.displayGroupLabelsSeparator =='string'? config.displayGroupLabelsSeparator : arrayValueSeparator;
         const {fields} = args;
         const d = [];

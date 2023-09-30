@@ -456,8 +456,13 @@ const DatagridFactory = (Factory)=>{
                         {this.isFilterable() ? <View>
                             <FiltersAccordionComponent
                                 testID={testID+"_HeaderFilters"}
+                                isLoading = {isLoading}
+                                filters = {headerFilters}
+                                visibleColumns = {visibleColumnsNames}
                                 orOperator = {filterOrOperator}
                                 andOperator = {filterAndOperator}
+                                filteredColumns = {filteredColumns}
+                                context = {this}
                             />
                         </View> : null}
                         <View pointerEvents={pointerEvents} testID={testID+"_HeaderPagination"} style = {styles.paginationItem}>

@@ -35,29 +35,21 @@ export default function DatagridTableFilterComponent({columnField,visible:cVisib
         delete filteredProps.value;
     }
     label = label || text;
-    const left = React.isValidElement(label,true) ? (p)=>{
-        <Label style={[styles.filterLabel]}>
-            {label} 
-        </Label>
-    }:undefined;
-    return <Filter
-        {...rest}
-        {...filteredProps}
-        withLabel={false}
-        containerProps = {{
-            style : [styles.filterContainer]
-        }}
-        testID={testID+"_DatagridFilterComponent_"+columnField}
-        anchorProps = {{size:20,style:[theme.styles.noMargin,theme.styles.noPadding]}}
-        left = {left}
-        inputProps = {{left}}
-    />
     return <View testID={testID+"_DatagridFilterTableContainer"} style={[styles.filter,getMenuStyle(),!visible && styles.hidden]}>
         <View testID={testID+"_DatagridTableFilterContent"} style={[theme.styles.row,theme.styles.alignItemsCenter,theme.styles.justifyContentStart,!visible && styles.hidden]}>
             {React.isValidElement(label,true) ? <Label style={[styles.filterLabel]}>
                 {label} 
             </Label>:null}
-            
+            <Filter
+                {...rest}
+                {...filteredProps}
+                withLabel={false}
+                containerProps = {{
+                    style : [styles.filterContainer]
+                }}
+                testID={testID+"_DatagridFilterComponent_"+columnField}
+                anchorProps = {{size:20,style:[theme.styles.noMargin,theme.styles.noPadding]}}
+            />
         </View>
     </View>;
 }

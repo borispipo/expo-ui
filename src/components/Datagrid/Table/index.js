@@ -15,7 +15,7 @@ import Footer from "../Footer/Footer";
 import theme from "$theme";
 import Table,{styles as tableStyles} from "$ecomponents/Table";
 import DatagridProvider from "../hooks/Provider";
-import Filters from "./Filters";
+import Filters from "../Filters";
 
 
 const DatagridFactory = (Factory)=>{
@@ -298,13 +298,6 @@ const DatagridFactory = (Factory)=>{
                             /> : null}
                             {rPagination}
                             {progressBar}  
-                            {/**
-                                <Filters
-                                testID={testID+"_DatagridTableHeaderFilters"}
-                                orOperator = {this.props.filterOrOperator}
-                                andOperator = {this.props.filterAndOperator}
-                            />
-                            */}
                         </View>
                         {canRenderChart ?
                             <View testID={testID+"_ChartContainer"} {...chartContainerProps} style={[theme.styles.w100,chartContainerProps.style]}>

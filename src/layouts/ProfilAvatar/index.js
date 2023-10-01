@@ -109,7 +109,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,chevronIconProps
                     secondary : true,
                     ...customChevronIconProps,
                     ...aProps,
-                    style : [styles.icon,withLabel=== false && {color:theme.colors.primaryText},customChevronIconProps.style],
+                    style : [styles.icon,withLabel=== false && {color:theme.colors.onPrimary},customChevronIconProps.style],
                 }
                 if(!withLabel){
                     return <View testID={"RNProfilAvatar_AvatarContainer"} style={[theme.styles.row,theme.styles.alignItemsCenter]}>

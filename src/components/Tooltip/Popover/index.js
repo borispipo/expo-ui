@@ -167,7 +167,7 @@ const TooltipPopoverComponent = React.forwardRef(({
                   >
                   <Label 
                     onLayout={onInnerContentLayout} 
-                    style={[{color:theme.colors.primaryText,backgroundColor:theme.colors.primary,padding:10,borderRadius:5}]}>{content}</Label>
+                    style={[{color:theme.colors.onPrimary,backgroundColor:theme.colors.primary,padding:10,borderRadius:5}]}>{content}</Label>
               </View>
             </Pressable>
           </View>

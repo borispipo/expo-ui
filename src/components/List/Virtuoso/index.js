@@ -139,9 +139,9 @@ const VirtuosoListComponent = React.forwardRef(({onRender,id,tableHeadId,fixedHe
             window.removeEventListener('scroll', handleScroll,true);
         }
     },[]);
-    React.useOnRender((a,b,c)=>{
+    React.useOnRender((...args)=>{
         updateTableHeadCss();
-        if(onRender && onRender(a,b,c));
+        if(onRender && onRender(...args));
     },Math.max(Array.isArray(items) && items.length/10 || 0,500));
     const listP = responsive ? {
         listClassName : classNames(listClassName,"rn-virtuoso-list",responsive && gridClassName)

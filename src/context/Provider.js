@@ -1,9 +1,10 @@
 import React from "$react";
 import appConfig from "$capp/config";
 import {MD3LightTheme,MD3DarkTheme} from "react-native-paper";
-import { useMaterial3Theme } from '@pchmn/expo-material3-theme';
+import { useMaterial3Theme,isDynamicThemeSupported} from '@pchmn/expo-material3-theme';
+import { useColorScheme } from 'react-native';
 import {colorsAlias,Colors} from "$theme";
-import {isObj,isNonNullString,defaultStr} from "$cutils";
+import {isObj,isNonNullString,defaultStr,extendObj} from "$cutils";
 import {getMainScreens} from "$escreens/mainScreens";
 import {ExpoUIContext} from "./hooks";
 import Login from "$eauth/Login";
@@ -60,10 +61,13 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,c
     if(convertFiltersToSQL !== undefined){
       appConfig.set("convertFiltersToSQL",convertFiltersToSQL);
     }
-    //const colorScheme = useColorScheme();
-    appConfig.extendAppTheme = (theme)=>{
+    const colorScheme = useColorScheme();
+    const isColorShemeDark = colorScheme ==="dark";
+    appConfig.extendAppTheme = (theme,Theme,...rest)=>{
         if(!isObj(theme)) return;
-        const newTheme = theme.dark || theme.isDark ? { ...MD3DarkTheme, colors: pTheme.dark } : { ...MD3LightTheme, colors: pTheme.light };
+        const isDark = theme.dark || theme.isDark || isDynamicThemeSupported && isColorShemeDark ;
+        const elevation = defaultObj(theme.elevation,isDark ? pTheme.dark?.elevation : pTheme.light?.elevation)
+        const newTheme = isDark ? { ...MD3DarkTheme, colors: pTheme.dark } : { ...MD3LightTheme, colors: pTheme.light };
         for(let i in newTheme){
           if(i !== 'colors' && !(i in theme)){
             theme[i] = newTheme[i];
@@ -87,9 +91,15 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,c
           }
         }
         theme.fonts = newTheme.fonts;
-        const r = typeof extendAppTheme == 'function'? extendAppTheme(theme)  : theme;
+        const r = typeof extendAppTheme == 'function'? extendAppTheme(theme,Theme,...rest)  : theme;
         const _theme = (isObj(r) ? r : theme);
         const customCSS = _theme.customCSS;
+        extendObj(Theme,{
+          elevations : elevation,
+          elevation,
+          colorScheme,
+          isDynamicThemeSupported,
+        })
         return {
           ..._theme,
           get customCSS(){

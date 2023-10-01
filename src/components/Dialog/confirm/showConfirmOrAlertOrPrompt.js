@@ -70,7 +70,7 @@ export default function showConfirm (p,cb){
             no.text  = defaultStr(no.text,'Non');
             const {onPress} = no;
             no.testID = testID+"_NoCancelButton";
-            no.style = [{color:theme.colors.errorText,backgroundColor:theme.colors.error},no.style];
+            no.style = [{color:theme.colors.onError,backgroundColor:theme.colors.error},no.style];
             no.onPress = (args)=>{
                 args = React.getOnPressArgs(args);
                 setArgsValue(args);
@@ -83,7 +83,7 @@ export default function showConfirm (p,cb){
             yes = defaultObj(yes,ok)
             yes.text = defaultStr(yes.text,alert?'OK':'Oui');
             yes.testID = testID+"_YesOkButton";
-            yes.style = [{color:theme.colors.primaryText,backgroundColor:theme.colors.primary},yes.style]
+            yes.style = [{color:theme.colors.onPrimary,backgroundColor:theme.colors.primary},yes.style]
             const {onPress} = yes;
             yes.onPress = (args)=>{
                 args = React.getOnPressArgs(args);

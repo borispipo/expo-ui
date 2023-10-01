@@ -7,7 +7,7 @@ export * from "./RLoader";
 
 const RContentLoader = React.forwardRef((props,ref)=>{
     const rest = theme.isDark()? {
-        backgroundColor : theme.colors.surfaceText,
+        backgroundColor : theme.colors.onSurface,
         foregroundColor : theme.colors.text,
     } : {};
     return <ContentLoader

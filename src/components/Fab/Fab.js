@@ -13,10 +13,10 @@ const FabComponent = React.forwardRef((props,ref)=>{
     let backgroundColor = Colors.isValid(style.backgroundColor)? style.backgroundColor : undefined;
     if(!backgroundColor || primary){
         backgroundColor = theme.colors.primary;
-        color = theme.colors.primaryText;
+        color = theme.colors.onPrimary;
     } else if(secondary){
         backgroundColor = theme.colors.secondary;
-        color = theme.colors.secondaryText;
+        color = theme.colors.onSecondary;
     }
     return  <FAB
         testID='RN_FabComponent'

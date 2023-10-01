@@ -16,8 +16,10 @@ import Icon from "$ecomponents/Icon";
 import {open,close} from "$preloader";
 import {fields,getThemeData} from "$theme/utils";
 import {modes} from "$ecomponents/TextField/utils";
-import {createMaterial3Theme,getMaterial3Theme} from "@pchmn/expo-material3-theme";
+import { useColorScheme } from "react-native";
+import {createMaterial3Theme,useMaterial3Theme,getMaterial3Theme,isDynamicThemeSupported} from "@pchmn/expo-material3-theme";
 import notify from "$cnotify";
+import appConfig from "$capp/config";
 
 const mColors = [
     {
@@ -56,6 +58,8 @@ const isDocEditing = ({data})=>{
     return data && isNonNullString(data.name)? true : false;
 };
 
+
+
 export const getThemeFieldProps = (props,ref)=>{
     props = defaultObj(props);
     let {user,showAdd,onValidate,onChange,onUpsert,...rest} = props;
@@ -68,24 +72,65 @@ export const getThemeFieldProps = (props,ref)=>{
     const userThemeName = defaultStr(userTheme.name,defaultTheme.name);
     const isDark = theme.isDark() || theme.isDarkUI();
     const defTheme = isDark ? {...defaultDarkTheme.colors,dark:true} : {...defaultLightTheme.colors,dark:false};
-    const customColors = React.useMemo(()=>{
-        const colors = getColors();
-        if(false && userThemeName){
-            const t = `${userThemeName}`;
-            const c = Colors.isValid(defaultTheme?.colors?.primary)? createMaterial3Theme(defaultTheme.colors.primary) : null,
-            c2 = Colors.isValid(defaultTheme?.colors.secondary)? createMaterial3Theme(defaultTheme?.colors.secondary) :null;
-            ['light','dark'].map((l)=>{
-                if(c && c[l]){
-                    const name = `${t}-primary-${l}`;
-                    colors[name] = {name,primaryName:userThemeName,secondaryName:`primary-${l}`,...c[l]};
-                }
-                if(c2 && c2[l]){
-                    const name2 = `${t}-secondary-${l}`;
-                    colors[name2] = {name:name2,primaryName:userThemeName,secondaryName:`secondary-${l}`,...c2[l]};
-                }
-            })
+    const colorScheme = useColorScheme();
+    const prepareTheme = (_theme)=>{
+        if(!isObj(_theme)) return _theme;
+        const dark = _theme.dark;
+        const cols = dark ? darkColors : lightColors;
+        _theme.divider = Colors.isValid(_theme.divider)? _theme.divider : cols.divider;
+        _theme.text = Colors.isValid(_theme.text) ? _theme.text : _theme.onBackground || _theme.onSurface;
+        ["primary","secondary"].map((p)=>{
+            const k = `on${p.ucFirst()}`;
+            if(_theme[k] && _theme[p]){
+                if(Colors.getContrast(_theme[k]) === Colors.getContrast(_theme[p])){
+                    _theme[k] = dark ? Colors.lighten(_theme[k]) : Colors.darken(_theme[k]);
+                } 
+            }
+        });
+        ["warning","error","info","success","divider"].map((c)=>{
+            if(!Colors.isValid(_theme[c])){
+                _theme[c] = cols[c];
+            }
+            const onKey = `on${c.ucFirst()}`;
+            _theme[onKey] = _theme[onKey] || cols[onKey];
+        });
+        if(!Colors.isValid(_theme.primaryOnSurface)){
+            if( Colors.getContrast(_theme.primary) === Colors.getContrast(_theme.onSurface)){
+                _theme.primaryOnSurface = _theme.primary;
+            } else {
+                _theme.primaryOnSurface = _theme.onSurface;
+            }
         }
-        return colors;
+        if(!Colors.isValid(_theme.secondaryOnSurface)){
+            if(Colors.getContrast(_theme.secondary) == Colors.getContrast(_theme.onSurface)){
+                _theme.secondaryOnSurface = _theme.secondary
+            } else {
+                _theme.secondaryOnSurface = _theme.onSurface;
+            }
+        }
+        return _theme;
+    }
+    const customColors = React.useMemo(()=>{
+        const colors = getColors({withNamed:false});
+        const namedColors = getColors({withDefaults:false});
+        const nColors = {};
+        mColors.map((c,index)=>{
+            try {
+                const name = `custom${index+1}`;
+                ['light','dark'].map((sheme)=>{
+                    const n = `${name}-${sheme}`;
+                    const t = getMaterial3Theme(c[sheme]);
+                    nColors[n] = prepareTheme({
+                        name:n,
+                        primaryName : c[sheme],
+                        secondaryName : n,
+                        ...t[sheme],
+                        dark:sheme ==="dark",
+                    });
+                });
+            } catch(e){console.log(e," preparing theme")}
+        });
+        return {...colors,...nColors,...namedColors};
     },[]);
     const itemsRef = React.useRef({...defaultObj(user.customThemes),...customColors});
     fields.textFieldMode = {
@@ -93,8 +138,10 @@ export const getThemeFieldProps = (props,ref)=>{
         items : {...modes,none:{code:'',label:'Dynamique'}},
         text : 'Mode d\'affichage des champs de texte'
     }
+    fields.dark =  Object.assign({},fields.dark);
+    fields.dark.defaultValue = colorScheme =="dark"? 1 : 0;
     const showThemeExplorer = (data)=>{
-        data = defaultObj(data,defTheme);
+        const dat2 = data = defaultObj(data,defTheme);
         fields.name.disabled = ({data})=> data && isNonNullString(data.name);
         const title = data && data.name ? ("Modifier ["+data.name+"]") : ('Nouv theme['+loginId+"]");
         const isEditing = isDocEditing(data);
@@ -172,23 +219,11 @@ export const getThemeFieldProps = (props,ref)=>{
                 onSuccess : ({data})=>{
                     try {
                         const theme = createMaterial3Theme(data.color)
-                        const dat = {...data,...Object.assign({},(data.dark? theme.dark : theme?.light))};
-                        dat.text = Colors.isValid(dat.text)? dat.text : dat.onBackground || dat.onSurface;
-                        const cols = dat.dark ? darkColors : lightColors;
-                        ["warning","error","info","success","divider"].map((c)=>{
-                            if(!Colors.isValid(dat[c])){
-                                dat[c] = cols[c];
-                                const onKey = `on${c.ucFirst()}`;
-                                dat[onKey] = dat[onKey] || cols[onKey];
-                            }
-                        })
-                        if(isObj(dat)){
-                            delete dat.color;
-                            //Provider.close();
-                            setTimeout(()=>{
-                                showThemeExplorer(dat);
-                            },500);
-                        }
+                        const dat = prepareTheme({...data,...Object.assign({},(data.dark? theme.dark : theme?.light))});
+                        delete dat.color;
+                        setTimeout(()=>{
+                            showThemeExplorer(dat);
+                        },200);
                     } catch(e){
                         notify.error(e);
                         Provider.close();

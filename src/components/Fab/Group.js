@@ -165,10 +165,10 @@ const FabGroupComponent = React.forwardRef((props,innerRef)=>{
     color = Colors.isValid(color)? color : undefined;
     if(!backgroundColor || primary){
         backgroundColor = theme.colors.primary;
-        color = theme.colors.primaryText;
+        color = theme.colors.onPrimary;
     } else if(secondary){
         backgroundColor = theme.colors.secondary;
-        color = theme.colors.secondaryText;
+        color = theme.colors.onSecondary;
     }
     const actions = React.useMemo(()=>{
         if(!open) return []
@@ -183,9 +183,9 @@ const FabGroupComponent = React.forwardRef((props,innerRef)=>{
                 if(typeof isAllowed =='function' && isAllowed() === false) return null;
                 if(isNonNullString(perm) && !isAllowedFromStr(perm)) return false;
                 if(primary){
-                    restItem.style = StyleSheet.flatten([restItem.style,{color:theme.colors.primaryText,backgroundColor:theme.colors.primary}])
+                    restItem.style = StyleSheet.flatten([restItem.style,{color:theme.colors.onPrimary,backgroundColor:theme.colors.primary}])
                 } else if(secondary){
-                    restItem.style = StyleSheet.flatten([restItem.style,{color:theme.colors.secondaryText,backgroundColor:theme.colors.secondary}])
+                    restItem.style = StyleSheet.flatten([restItem.style,{color:theme.colors.onSecondary,backgroundColor:theme.colors.secondary}])
                 }
                 if(isAllowed === false) return null;
                 actions.push(restItem);

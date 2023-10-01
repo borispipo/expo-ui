@@ -42,19 +42,13 @@ export default function showConfirm (p,cb){
         no = defaultObj(no)
         if(!alert && no !== false){
             no.text  = defaultStr(no.text,'Non')
-            /*if(typeof no.onClick !=='function'){
-                no.onClick = defaultFunc(onCancel,cb);
-            }*/
-            no.style = flattenStyle([{color:theme.secondaryText,backgroundColor:theme.secondary},no.style]);
+            no.style = flattenStyle([{color:theme.colors.onSecondary,backgroundColor:theme.colors.secondary},no.style]);
             buttons.push(no);
         } else no = null;
         if(yes !== false){
             yes = defaultObj(yes,ok)
             yes.text = defaultStr(yes.text,alert?'OK':'Oui');
-            yes.style = flattenStyle([{color:theme.primaryText,backgroundColor:theme.primary},yes.style]);
-            /*if(typeof yes.onClick !=='function'){
-                yes.onClick = defaultFunc(onSuccess,cb);
-            }*/
+            yes.style = flattenStyle([{color:theme.colors.onPrimary,backgroundColor:theme.colors.primary},yes.style]);
             buttons.push(yes);
         }
     } else {

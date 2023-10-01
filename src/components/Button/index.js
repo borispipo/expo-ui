@@ -145,7 +145,7 @@ const ButtonComponent = React.forwardRef((prs,ref) => {
 
   labelStyle = StyleSheet.flatten([labelStyle]);
   const disabled = isDisabled || isLoading;
-  let textColor = Colors.isValid(style.color)? style.color : Colors.isValid(buttonColor)?buttonColor : isCancelButton? theme.colors.errorText   : Colors.isValid(labelStyle.color) ? labelStyle.color : theme.colors.primary,
+  let textColor = Colors.isValid(style.color)? style.color : Colors.isValid(buttonColor)?buttonColor : isCancelButton? theme.colors.onError   : Colors.isValid(labelStyle.color) ? labelStyle.color : theme.colors.primary,
     borderWidth;
     const restButtonStyle = {
       opacity : disabled ? DISABLED_OPACITY : undefined
@@ -156,7 +156,7 @@ const ButtonComponent = React.forwardRef((prs,ref) => {
   contentProps = defaultObj(contentProps);
   if (!disabled && hasElevation) {
     backgroundColor = Colors.isValid(style.backgroundColor)?style.backgroundColor : Colors.isValid(backgroundColor)? backgroundColor : isCancelButton ? style.backgroundColor = theme.colors.error : undefined;
-    borderColor = Colors.isValid(style.borderColor)? style.borderColor : isCancelButton ? theme.styles.errorText : Colors.isValid(borderColor)? borderColor : undefined;
+    borderColor = Colors.isValid(style.borderColor)? style.borderColor : isCancelButton ? theme.styles.onError : Colors.isValid(borderColor)? borderColor : undefined;
   }
   if(theme.isDark() && !hasElevation){
     textColor = white;

@@ -27,7 +27,7 @@ const AppbarContent = ({
   ...rest
 }) => {
   
-    const titleTextColor = Colors.isValid(titleColor) ? titleColor : theme.colors.primaryText;
+    const titleTextColor = Colors.isValid(titleColor) ? titleColor : theme.colors.onPrimary;
     titleProps = defaultObj(titleProps);
     subtitleProps = defaultObj(subtitleProps);
     testID = defaultStr(testID)+"_RN_AppBarContent";

@@ -20,17 +20,26 @@ export const getMaxActions = (windowWidth) => {
 
 export const isSplitedActions = (actions)=> isObj(actions) && Array.isArray(actions.actions) && Array.isArray(actions.menus);
 
+export const getThemeColors = ()=>{
+    const isDark = theme.isDark(),onPrimary = isDark? theme.colors.onSurface : theme.colors.onPrimary;
+    return {
+        onPrimary,
+        color : onPrimary,
+        backgroundColor : isDark? theme.colors.surface : theme.colors.primary
+    }
+}
+
 const renderAction = ({action,isAlert,actionProps,opts,isAppBarAction,isAppBarActionStyle,key,ActionComponent,isMobile}) => {
     let {Component,isFormAction,...rest} = action;
     actionProps = defaultObj(actionProps);
     rest = Object.assign({},rest);
     rest.accessibilityLabel = defaultStr(rest.accessibilityLabel,rest.title,rest.text,rest.label,rest.children);
-    const color = theme.colors.primaryText;
+    const {color} = getThemeColors();
     
     rest.style = {...defaultObj(StyleSheet.flatten(actionProps.style)),elevation:0,...defaultObj(StyleSheet.flatten(rest.style))};
     if(isAppBarActionStyle !== false && (isAppBarAction || opts.isAppBarAction)){
-        rest.color = defaultVal(color);
-        rest.style.color = defaultVal(rest.style.color,color)
+        rest.color = defaultStr(color);
+        rest.style.color = defaultVal(rest.style.color,color);
     }
     if(isAppBarAction && isMobile){
         rest.tooltip = defaultVal(rest.title,rest.label,rest.text);

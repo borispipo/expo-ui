@@ -2,7 +2,7 @@ import React from "$react"
 import { Appbar} from 'react-native-paper';
 import {defaultObj,defaultVal,defaultStr} from "$cutils";
 import APP from "$capp/instance"
-import {isSplitedActions,renderSplitedActions,splitActions,TITLE_FONT_SIZE} from "./utils";
+import {isSplitedActions,renderSplitedActions,splitActions,TITLE_FONT_SIZE,getThemeColors} from "./utils";
 import theme,{Colors,flattenStyle} from "$theme";
 import {StyleSheet} from "react-native";
 import {goBack as navGoBack,useNavigation,useRoute,useScreenOptions } from "$cnavigation";
@@ -42,10 +42,8 @@ const AppBarComponent = React.forwardRef((props,ref)=> {
     route = defaultObj(route,useRoute());
     options = defaultObj(options,useScreenOptions());
     const navigation = useNavigation();
-    const isDark = theme.isDark();
-    const primaryText = isDark? theme.colors.surfaceText : theme.colors.primaryText,
-    backgroundColor = isDark? theme.colors.surface : theme.colors.primary;
-    const anchorStyle = {color:primaryText};
+    const {onPrimary,backgroundColor} = getThemeColors();
+    const anchorStyle = {color:onPrimary};
     const params = defaultObj(route.params);
     appBarProps = Object.assign({},appBarProps);
     const getCallAgs = ()=>{
@@ -120,7 +118,7 @@ const AppBarComponent = React.forwardRef((props,ref)=> {
         {backAction}
          <Content {...defaultObj(appBarProps.contentProps)} 
             title={title}
-            titleProps = {{...titleProps,style:[styles.title,{color:primaryText},titleProps.style]}}
+            titleProps = {{...titleProps,style:[styles.title,{color:onPrimary},titleProps.style]}}
             subtitle = {defaultVal(subtitle,params.subtitle,options.subtitle)}
             subtitleProps = {subtitleProps}
             testID={testID+"_Content"}

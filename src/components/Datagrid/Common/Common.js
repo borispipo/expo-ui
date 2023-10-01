@@ -2390,20 +2390,16 @@ export default class CommonDatagridComponent extends AppComponent {
             const showFooters = true;
             const displayOnlySectionListHeaders = !!!this.state.displayOnlySectionListHeaders;
             this.setSessionData("displayOnlySectionListHeaders",displayOnlySectionListHeaders);
+            this.toggleHidePreloaderOnRender(true);
             if(!displayOnlySectionListHeaders){
                 return this.setIsLoading(true,()=>{
                     this.prepareData({data:this.INITIAL_STATE.data,displayOnlySectionListHeaders},(state)=>{
                         this.setState({...state,showFooters});
                     })
-                })
+                },true);
             } else {
                 this.setIsLoading(true,()=>{
-                    const data = [];
-                    this.state.data.map((d)=>{
-                        if(isObj(d) && d.isSectionListHeader === true){
-                            data.push(d);
-                        }
-                    });
+                    const data = this.state.data.filter((d)=>d?.isSectionListHeader === true);
                     this.setState({data,displayOnlySectionListHeaders,showFooters});
                 },true)
             }
@@ -3574,7 +3570,9 @@ export default class CommonDatagridComponent extends AppComponent {
         this[this.hidePreloaderOnRenderKey] = !!toggle;
     }
     onRender(){
-        if(!this.canHidePreloaderOnRender() && this.isTableData() && this.canFetchOnlyVisibleColumns()) return ;
+        if(!this.canHidePreloaderOnRender() && this.isTableData() && this.canFetchOnlyVisibleColumns()) {
+            return;
+        }
         if(typeof this.props.onRender ==='function' && this.props.onRender({context:this}) === false){
             return ;
         }
@@ -3605,8 +3603,8 @@ export default class CommonDatagridComponent extends AppComponent {
                 this.isRenderingRef.current = true;
             } else if(this.isRenderingRef.current === true){
                   return setTimeout(cb,timeout);;
-              }
-               return this.progressBarRef.current.setIsLoading(loading,()=>{
+            }
+            return this.progressBarRef.current.setIsLoading(loading,()=>{
                 setTimeout(cb,timeout);
             });
         } else {

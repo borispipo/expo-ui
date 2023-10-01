@@ -21,7 +21,7 @@ export const getMaxActions = (windowWidth) => {
 export const isSplitedActions = (actions)=> isObj(actions) && Array.isArray(actions.actions) && Array.isArray(actions.menus);
 
 export const getThemeColors = ()=>{
-    const isDark = theme.isDark(),onPrimary = isDark? theme.colors.onSurface : theme.colors.onPrimary;
+    const isDark = theme.isDark() || theme.colors.dark ,onPrimary = isDark? theme.colors.onSurface : theme.colors.onPrimary;
     return {
         onPrimary,
         color : onPrimary,

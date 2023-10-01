@@ -9,6 +9,7 @@ import Label from "$ecomponents/Label";
 import theme,{Colors} from "$theme";
 import {isIos,isWeb} from "$cplatform";
 import {defaultObj,defaultStr} from "$cutils";
+import { getThemeColors} from './utils';
 const AppbarContent = ({
   color: titleColor,
   subtitle,
@@ -26,8 +27,8 @@ const AppbarContent = ({
   testID,
   ...rest
 }) => {
-  
-    const titleTextColor = Colors.isValid(titleColor) ? titleColor : theme.colors.onPrimary;
+    const {color:tColor} = getThemeColors();
+    const titleTextColor = Colors.isValid(titleColor) ? titleColor : tColor;
     titleProps = defaultObj(titleProps);
     subtitleProps = defaultObj(subtitleProps);
     testID = defaultStr(testID)+"_RN_AppBarContent";

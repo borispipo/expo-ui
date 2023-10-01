@@ -15,7 +15,7 @@ import {MAX_WIDTH,SCREEN_INDENT,MIN_HEIGHT} from "./utils";
 import {isMobileOrTabletMedia,isMobileMedia} from "$cplatform/dimensions"; 
 import Platform,{isMobileNative} from "$cplatform";
 import Icon,{BACK_ICON} from "$ecomponents/Icon";
-import {ACTION_ICON_SIZE} from "$ecomponents/AppBar";
+import {ACTION_ICON_SIZE,getThemeColors} from "$ecomponents/AppBar";
 import DialogFooter from "./DialogFooter";
 import { Dimensions } from "react-native";
 import Surface from "$ecomponents/Surface";
@@ -88,7 +88,7 @@ const DialogComponent = React.forwardRef((props,ref)=>{
     appBarProps = defaultObj(appBarProps);
     subtitle = subtitle !== false ? defaultVal(appBarProps.subtitle,modalProps.subtitle,subtitle) : null;
     backActionProps = Object.assign({},backActionProps);
-    backActionProps.color =  Colors.isValid(backActionProps.color)? backActionProps.color : theme.colors.onPrimary;
+    backActionProps.color =  Colors.isValid(backActionProps.color)? backActionProps.color : getThemeColors().onPrimary;
     cancelButton = cancelButton === false || modalProps.cancelButton === false ? null : isObj(cancelButton)? {...cancelButton} : {};
     if(isNonNullString(no)){
         no = {label:no};

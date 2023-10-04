@@ -42,6 +42,7 @@ import * as XLSX from "xlsx";
 import {convertToSQL} from "$ecomponents/Filter";
 import events from "../events";
 import {MORE_ICON} from "$ecomponents/Icon"
+import ActivityIndicator from "$ecomponents/ActivityIndicator";
 
 export const TIMEOUT = 100;
 
@@ -3648,7 +3649,7 @@ export default class CommonDatagridComponent extends AppComponent {
         },0);
     }
     getDefaultPreloader(props){
-        return CommonDatagridComponent.getDefaultPreloader();
+        return CommonDatagridComponent.getDefaultPreloader({isDashboard:this.isDashboard()});
     }
     isLoading (){
         if(this.state.isReady === false) return true;
@@ -3842,8 +3843,9 @@ export default class CommonDatagridComponent extends AppComponent {
 
 export const ProgressBar = CommonDatagridComponent.LinesProgressBar;
 
-CommonDatagridComponent.getDefaultPreloader = (props)=>{
-    return <Preloader {...defaultObj(props)}/>
+CommonDatagridComponent.getDefaultPreloader = (r)=>{
+    const {isDashboard,...props} = defaultObj(r);
+    return isDashboard? <ActivityIndicator size={"large"} {...props} style={[theme.styles.pb10,props.style]}/> : <Preloader {...props}/>
 }
 
 const chartDisplayType = PropTypes.oneOf(Object.keys(displayTypes).filter(type=>{

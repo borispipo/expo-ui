@@ -21,6 +21,7 @@ import Menu from "$ecomponents/Menu/Menu";
 import Chip from "$ecomponents/Chip";
 import {Content as BottomSheet,Menu as BottomSheetMenu,getContentHeight} from "$ecomponents/BottomSheet";
 import {isWeb} from "$cplatform";
+import Tooltip from "$ecomponents/Tooltip";
 
 const _isIos = isIos();
 
@@ -1102,8 +1103,13 @@ class DropdownComponent extends AppComponent {
                                 self.selectItem({value,valueKey,select:!multiple?true:select});
                             };
                             return (
-                                <Fragment key={key}>
-                                    <TouchableRipple
+                                <Tooltip key={key} 
+                                    title = {content}
+                                    testID = {testID+"_DropdownTooltipContainer"}
+                                    style = {[[theme.styles.h100]]}
+                                    tooltipProps = {{style:[theme.styles.h100],testID:testID+"_DropdownTooltipPopoverContainer"}}
+                                >
+                                    <TouchableRipple   
                                         testID={testID+"Container"}
                                         style={{
                                             flexDirection: "row",
@@ -1119,7 +1125,7 @@ class DropdownComponent extends AppComponent {
                                         </View>
                                     </TouchableRipple>
                                     <Divider disabled={isDisabled}/>
-                            </Fragment>
+                            </Tooltip>
                         )}}
                     />
                 </View>

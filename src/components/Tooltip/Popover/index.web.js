@@ -9,7 +9,8 @@ import {isDOMElement} from "$cutils/dom";
 import {uniqid,defaultStr,defaultObj} from "$cutils";
 
 const TippyTooltipComponent  = React.forwardRef((props,ref)=>{
-    let {children,content,...rest} = props;
+    let {children,content,testID,...rest} = props;
+    testID = defaultStr(testID,"RN_TooltipPopoverComponent")
     const instanceIdRef = React.useRef(uniqid("tippy-instance-id")); 
     const buttonRef = React.useRef(null);
     const innerRef = React.useMergeRefs(ref,buttonRef);
@@ -48,7 +49,7 @@ const TippyTooltipComponent  = React.forwardRef((props,ref)=>{
     if(typeof children =='function'){
         return children(cProps,innerRef);
     }
-    return  <Label {...cProps} ref={innerRef}>
+    return  <Label {...cProps} testID={testID} ref={innerRef}>
         {children}
     </Label>
 });

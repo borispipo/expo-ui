@@ -40,7 +40,7 @@ const CommonListComponent = React.forwardRef((props,ref)=>{
             }
             let ret = renderItem({item,numColumns,index,section,numColumns,itemContainerWidth:itemWindowWidth,itemWindowWidth,...rest,isScrolling:listRef.current?.isScrolling?true:false,items:defaultArray(context.items)});
             if(typeof ret =='string' || typeof ret =='number'){
-                return <Label children = {ret}/>
+                return <Label testID={testID+"_ListItemLabel"} children = {ret}/>
             } 
             return (React.isValidElement(ret)) ? ret : null; 
         },

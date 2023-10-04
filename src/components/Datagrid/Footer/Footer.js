@@ -88,8 +88,7 @@ const formatValue = ({value,format,abreviate,aggregatorFunction})=>{
     }
     return abreviate? value.abreviate():value.formatNumber();
 }
-export default function DGGridFooterValue (props){
-    let {label,text,displayLabel,withLabel,abreviate,style,aggregatorFunctions,aggregatorFunction,format,testID,anchorProps} = props;
+export default function DGGridFooterValue ({label,text,displayLabel,isFooterCell,withLabel,abreviate,style,aggregatorFunctions,aggregatorFunction,format,testID,anchorProps,...props}){
     aggregatorFunctions = defaultObj(aggregatorFunctions);
     anchorProps = defaultObj(anchorProps);
     testID = defaultStr(testID,"RN_DatagridFooterComponent");

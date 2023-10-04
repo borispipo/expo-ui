@@ -45,7 +45,7 @@ export const usePrepareColumns = ({columns,testID,columnsWidths,headerCellContai
 import useTable from "./useTable";
 
 export const useGetColumnProps = ({columnField,isFilter,isFooter})=>{
-  const {renderFilterCell,renderFooterCell,filtersValues,renderHeaderCell,sortedColumn,columns,filterCellContainerProps,footerCellContainerProps,headerCellContainerProps,testID,colsWidths} = useTable();
+  const {renderFilterCell,renderFooterCell,filtersValues,renderHeaderCell,data,sortedColumn,columns,filterCellContainerProps,footerCellContainerProps,headerCellContainerProps,testID,colsWidths} = useTable();
   const columnDef = columns[columnField];
   const props = isFilter ? {
     containerProps : defaultObj(filterCellContainerProps),
@@ -57,6 +57,7 @@ export const useGetColumnProps = ({columnField,isFilter,isFooter})=>{
     containerProps : defaultObj(headerCellContainerProps),
     render : renderHeaderCell
   }
+  props.data = data;
   props.width = colsWidths[columnField];
   props.columnField = columnField;
   props.columnDef = columnDef;

@@ -7,10 +7,10 @@ import Label from "$ecomponents/Label";
 import theme from "$theme";
 
 export default function HeaderCellWrapper({columnField,isFilter,isFooter}){
-    const {render,sortedColumn,filtersValues,...props} = useGetColumnProps({columnField,isFilter,isFooter});
+    const {render,sortedColumn,filtersValues,data,...props} = useGetColumnProps({columnField,isFilter,isFooter});
     const columnDef = props.columnDef;
     const isHeader = !isFilter && !isFooter;
-    const rProps = isHeader ? sortedColumn : undefined;
+    const rProps = isHeader ? sortedColumn : isFooter ? data : undefined;
     const width = props.width;
     const {containerProps} = props;
     return React.useMemo(()=>{

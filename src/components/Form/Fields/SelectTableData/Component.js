@@ -223,8 +223,20 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabel
                 let itv = p.item[fk];
                 if(typeof render =='function'){
                     itv = render(p);
-                } else if(typeof itv =='string' && itv && DateLib.isIsoDateStr(itv)){
-                    itv = DateLib.format(itv,DateLib.defaultDateFormat);
+                } else {
+                    ///render c'est le type de données
+                    if(isNonNullString(render)){
+                        const t = render?.toLowerCase().trim();
+                        if(["date","datetime"].includes(t)){
+                            itv = DateLib.format(itv,t=='date'?DateLib.defaultDateFormat:DateLib.defaultDateTimeFormat);
+                        } else if(typeof itv =='number'){
+                            itv = t =='money'? itv.formatMoney()  : itv.formatNumber();
+                        }
+                    }  else {
+                        if(typeof itv =='string' && itv && DateLib.isIsoDateStr(itv)){
+                            itv = DateLib.format(itv,DateLib.defaultDateFormat);
+                        }
+                    }
                 }
                 itl+= (itl?" ":"")+ (itv || defaultStr(itv))
             });
@@ -308,7 +320,10 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabel
 TableDataSelectField.propTypes = {
     ...Dropdown.propTypes,
     /*** permet de faire le mappage entre les foreignKeyLabel et les type correspondants */
-    foreignKeyLabelRenderers : PropTypes.object,
+    foreignKeyLabelRenderers : PropTypes.objectOf(PropTypes.oneOfType([
+        PropTypes.string, //représente le type de données associée à la colone dont le nom la clé 
+        PropTypes.func, //la fonction utilisée pour le rendu des colonnes de ce type
+    ])),
     prepareFilters : PropTypes.bool,//si les filtres seront customisé
     bindUpsert2RemoveEvents : PropTypes.bool,//si le composant écoutera l'évènement de rafraichissement des données
     onAdd : PropTypes.func, //({})=>, la fonction appelée lorsque l'on clique sur le bouton add

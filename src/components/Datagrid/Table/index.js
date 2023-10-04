@@ -50,7 +50,7 @@ const DatagridFactory = (Factory)=>{
         }
         renderFooterCell(props){
             const {columnField,style} = props;
-            let footersValues = this.getFooterValues();
+            const footersValues = this.getFooterValues();
             const footerFields = this.getFootersFields();
             if(isObj(footerFields[columnField])){
                 return <Footer
@@ -59,7 +59,8 @@ const DatagridFactory = (Factory)=>{
                     displayLabel = {false}
                     style = {[style]}
                     aggregatorFunction = {this.getActiveAggregatorFunction().code}   
-                    aggregatorFunctions = {this.aggregatorFunctions}                               
+                    aggregatorFunctions = {this.aggregatorFunctions}   
+                    isFooterCell
                 />
             }
             return null;

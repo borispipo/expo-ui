@@ -1,4 +1,4 @@
-import useExpoUI from "$econtext";
+import useExpoUI from "$econtext/hooks";
 import React from "$react";
 
 export default function ExpoUIRealmProvider({children,...props}){

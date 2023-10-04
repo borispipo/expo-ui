@@ -159,7 +159,6 @@ const DatagridFactory = (Factory)=>{
             const hasFootersFields = this.hasFootersFields();
             const {columnsWidths:widths} = this.state;
             const showFooters = this.canShowFooters(), showFilters = this.canShowFilters();
-            const progressBar = this.getProgressBar();
             const pointerEvents = this.getPointerEvents(); 
 
             const restItems = [...this.renderCustomMenu()];
@@ -297,7 +296,7 @@ const DatagridFactory = (Factory)=>{
                                 actions = {actions}
                             /> : null}
                             {rPagination}
-                            {progressBar}  
+                            {this.renderProgressBar()}  
                         </View>
                         {canRenderChart ?
                             <View testID={testID+"_ChartContainer"} {...chartContainerProps} style={[theme.styles.w100,chartContainerProps.style]}>

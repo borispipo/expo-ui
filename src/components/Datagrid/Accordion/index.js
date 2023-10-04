@@ -395,7 +395,6 @@ const DatagridFactory = (Factory)=>{
                 ]
             }
             const isLoading = this.isLoading();
-            const _progressBar = this.getProgressBar();
             const pointerEvents = this.getPointerEvents(); 
             const {
                 sortedColumns:sortColumns,
@@ -522,7 +521,7 @@ const DatagridFactory = (Factory)=>{
                             actions = {actions}
                         /> : null}
                         {datagridHeader}
-                        {_progressBar}
+                        {this.renderProgressBar()}
                         {!canRenderChart && showFooters ? (
                             <View  testID={testID+"_FooterContainer"} pointerEvents={pointerEvents} style={[theme.styles.justifyContentCenter,theme.styles.pv1]}>
                                 <View  testID={testID+"_FooterContentContainer"} style={[styles.footersContainer]}>

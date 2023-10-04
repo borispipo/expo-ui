@@ -11,7 +11,7 @@ import {useMemo,useEffect,useRef} from "react";
 import { screenName as aboutScreenName} from "$escreens/Help/About";
 import theme from "$theme";
 import APP from "$capp/instance";
-import useExpoUI from "$econtext";
+import useExpoUI from "$econtext/hooks";
 
 const useGetItems = (options)=>{
     const {navigation:{drawerItems}} = useContext(); 

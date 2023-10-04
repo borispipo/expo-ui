@@ -30,6 +30,9 @@ import {extendFormFields} from "$ecomponents/Form/Fields";
            image{ReactComponent} :,
            text {ReactComponent}
         },
+        datagrid : {
+          ///les props par défaut à passer au composant Datagrid
+        },
         customFormFields{Object}, //les composant personalisés des forms fields
         loginPropsMutator : ({object})=><{object}>, la fonction permettant de muter les props du composant Login,
         tableLinkPropsMutator : ({object})=><{object}>, la fonction permettant de muter les props du composant TableLink,
@@ -155,7 +158,8 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,c
             },
             tableLinkPropsMutator : (props)=>{
                 return extendProps(components.tableLinkPropsMutator,props);
-            }
+            },
+            datagrid : Object.assign({},components.datagrid),
         },
         getTableData,
         getTable : getTableData,

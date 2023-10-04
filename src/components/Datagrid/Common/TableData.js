@@ -57,9 +57,9 @@ export default class CommonTableDatagrid extends CommonDatagrid{
     isTableData(){
         return true;
     }
-    getProgressBar(props){
+    renderProgressBar(props){
         if(this.isDataJustComeToUpsert) return null;
-        return super.getProgressBar(props);
+        return super.renderProgressBar(props);
     }
 }
 

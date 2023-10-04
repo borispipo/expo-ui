@@ -20,7 +20,6 @@ import Label from "$ecomponents/Label";
 import { StyleSheet,View } from "react-native";
 import theme from "$theme";
 import useSWR from "$swr";
-import appConfig from "$capp/config";
 import {getRowsPerPagesLimits} from "./Common/utils";
 import PropTypes from "prop-types";
 import {Menu} from "$ecomponents/BottomSheet";
@@ -392,7 +391,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             handleQueryLimit = {false}
             handlePagination = {false}
             autoSort = {canSortRemotely()? false : true}
-            isLoading = {loading && !error && showProgressRef.current && true || false}
+            isLoading = {loading /*&& !error*/ && showProgressRef.current && true || false}
             beforeFetchData = {(args)=>{
                 if(typeof beforeFetchData =="function" && beforeFetchData(args)==false) return;
                 let {fetchOptions:opts,force} = args;

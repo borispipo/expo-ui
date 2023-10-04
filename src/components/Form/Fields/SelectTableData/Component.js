@@ -9,9 +9,9 @@ import actions from "$cactions";
 import {navigateToTableData} from "$enavigation/utils";
 import {getFetchOptions,prepareFilters} from "$cutils/filters";
 import fetch from "$capi"
-import {willConvertFiltersToSQL} from "$ecomponents/Datagrid/utils";
 import React from "$react";
 import useApp from "$econtext/hooks";
+import DateLib from "$lib/date";
 
 /*** la tabledataSelectField permet de faire des requêtes distantes pour rechercher les données
  *  Elle doit prendre en paramètre et de manière requis : les props suivante : 
@@ -19,11 +19,11 @@ import useApp from "$econtext/hooks";
  *  foreignKeyTable : la tableData dans laquelle effectuer les donées de la requêtes
  *  foreignKeyLabel : Le libélé dans la table étrangère
  */
-const TableDataSelectField = React.forwardRef(({foreignKeyColumn,isStructData,getForeignKeyTable:cGetForeignKeyTable,prepareFilters:cPrepareFilters,bindUpsert2RemoveEvents,onAdd,showAdd:customShowAdd,canShowAdd,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,convertFiltersToSQL,mutateFetchedItems,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchOptions,...props},ref)=>{
+const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabelRenderers,isStructData,getForeignKeyTable:cGetForeignKeyTable,prepareFilters:cPrepareFilters,bindUpsert2RemoveEvents,onAdd,showAdd:customShowAdd,canShowAdd,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,convertFiltersToSQL,mutateFetchedItems,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchOptions,...props},ref)=>{
     props.data = defaultObj(props.data);
     const type = defaultStr(props.type)?.toLowerCase();
     isStructData = isStructData || type?.replaceAll("-","").replaceAll("_","").trim().contains("structdata");
-    const {getTableData:appGetForeignKeyTable,getStructData} = useApp();
+    const {getTableData:appGetForeignKeyTable,getStructData,components:{datagrid}} = useApp();
     if(!foreignKeyColumn && isNonNullString(props.field)){
         foreignKeyColumn = props.field;
     }
@@ -31,11 +31,13 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,isStructData,ge
         foreignKeyColumn = foreignKeyColumn.trim();
     }
     if(isNonNullString(foreignKeyLabel)){
-        foreignKeyLabel = foreignKeyLabel.trim();
-        foreignKeyLabel = foreignKeyLabel.ltrim("[").rtrim("]").split(",");
+        foreignKeyLabel = foreignKeyLabel.trim().ltrim("[").rtrim("]").split(",");
+        if(!isNonNullString(foreignKeyColumn)){
+            foreignKeyLabel = foreignKeyLabel.filter((f)=>f?.toLowerCase()?.trim() !== foreignKeyColumn.toLowerCase().trim());
+        }
     }
     const getForeignKeyTable = typeof cGetForeignKeyTable =='function'? cGetForeignKeyTable : isStructData ? getStructData: appGetForeignKeyTable;
-    convertFiltersToSQL = defaultVal(convertFiltersToSQL,willConvertFiltersToSQL());
+    convertFiltersToSQL = defaultVal(convertFiltersToSQL,datagrid.convertFiltersToSQL);
     const foreignKeyTableStr = defaultStr(foreignKeyTable,props.tableName,props.table);
     if(typeof getForeignKeyTable !=='function'){
         console.error("la fonction getTableData non définie des les paramètres d'initialisation de l'application!!! Rassurez vous d'avoir définier cette fonction!!, options : foreignKeyTable:",foreignKeyTable,"foreignKeyColumn:",foreignKeyColumn,props)
@@ -209,6 +211,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,isStructData,ge
     } else {
         dropdownActions.trefreshItem = refreshItem;
     }
+    foreignKeyLabelRenderers = defaultObj(foreignKeyLabelRenderers);
     const rItem = (p)=>{
         if(!isObj(p) || !isObj(p.item)) return null;
         let itemLabel = typeof foreignKeyLabel =='function'? foreignKeyLabel(p) : undefined;
@@ -216,12 +219,15 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,isStructData,ge
             let itl = "";
             foreignKeyLabel.map(fk=>{
                 if(!isNonNullString(fk)) return;
+                const render = foreignKeyLabelRenderers[fk.trim()];
                 let itv = p.item[fk];
-                if(typeof itv =='number'){
-                    itv = String(itv);
+                if(typeof render =='function'){
+                    itv = render(p);
+                } else if(typeof itv =='string' && itv && DateLib.isIsoDateStr(itv)){
+                    itv = DateLib.format(itv,DateLib.defaultDateFormat);
                 }
                 itl+= (itl?" ":"")+ (itv || defaultStr(itv))
-            })
+            });
             if(itl){
                 itemLabel = itl;
             }
@@ -301,6 +307,8 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,isStructData,ge
 
 TableDataSelectField.propTypes = {
     ...Dropdown.propTypes,
+    /*** permet de faire le mappage entre les foreignKeyLabel et les type correspondants */
+    foreignKeyLabelRenderers : PropTypes.object,
     prepareFilters : PropTypes.bool,//si les filtres seront customisé
     bindUpsert2RemoveEvents : PropTypes.bool,//si le composant écoutera l'évènement de rafraichissement des données
     onAdd : PropTypes.func, //({})=>, la fonction appelée lorsque l'on clique sur le bouton add

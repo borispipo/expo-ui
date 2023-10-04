@@ -8,11 +8,13 @@ import {isDesktopMedia,isMobileMedia} from "$cplatform/dimensions";
 import {isFunction,defaultVal,defaultStr} from "$cutils";
 import React from "$react";
 import {getRenderType} from "./utils";
+import useExpoUI from "$econtext/hooks";
 
 
 const DatagridMainComponent = React.forwardRef((props,ref)=>{
     const isDesk = isDesktopMedia();
     const isMob = defaultStr(isMobileMedia());
+    const {components:{datagrid}} = useExpoUI();
     const isTableData = typeof props.isTableData =='boolean'? props.isTableData  : defaultStr(props.tableName,props.table).trim() || typeof props.fetchData ==='function'?true : false;
     const rType = defaultStr(getRenderType()).toLowerCase().trim();
     const renderType = defaultStr(rType && ['table','accordion'].includes(rType) ? rType : "",isDesk? "table":'accordion').trim().toLowerCase();
@@ -24,6 +26,7 @@ const DatagridMainComponent = React.forwardRef((props,ref)=>{
         return isTableData ? DatagridTableData : Table;
     },[isTableData,renderType,canRenderAccordion,isMob])
     return <Component
+        {...datagrid}
         {...props}
         ref = {ref}
     />;

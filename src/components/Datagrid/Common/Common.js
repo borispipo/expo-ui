@@ -17,7 +17,7 @@ import React from "$react";
 import DateLib from "$lib/date";
 import Filter,{canHandleFilter,prepareFilters,compareValues} from "$ecomponents/Filter";
 import {CHECKED_ICON_NAME} from "$ecomponents/Checkbox";
-import { COLUMN_WIDTH,DATE_COLUMN_WIDTH,willConvertFiltersToSQL } from "../utils";
+import { COLUMN_WIDTH,DATE_COLUMN_WIDTH,DATE_TIME_COLUMN_WIDTH } from "../utils";
 import { StyleSheet,Dimensions,useWindowDimensions} from "react-native";
 import Preloader from "$ecomponents/Preloader";
 import Checkbox from "../Checkbox";
@@ -26,7 +26,7 @@ import { evalSingleValue,Footer,getFooterColumnValue,isValidAggregator,extendAgg
 import { makePhoneCall,canMakePhoneCall as canMakeCall} from "$makePhoneCall";
 import copyToClipboard from "$capp/clipboard";
 import { Pressable } from "react-native";
-import DatagridProgressBar from "$ecomponents/Table/ProgressBar";
+import DatagridProgressBar from "../ProgressBar";
 import View from "$ecomponents/View";
 import {Menu} from "$ecomponents/BottomSheet";
 import {styles as tableStyles} from "$ecomponents/Table";
@@ -40,7 +40,6 @@ import Button from "$ecomponents/Button";
 import stableHash from "stable-hash";
 import * as XLSX from "xlsx";
 import {convertToSQL} from "$ecomponents/Filter";
-import appConfig from "$capp/config";
 import events from "../events";
 import {MORE_ICON} from "$ecomponents/Icon"
 
@@ -241,7 +240,7 @@ export default class CommonDatagridComponent extends AppComponent {
             [footerFieldName] : {
                 value : uniqid(footerFieldName),override:false, writable: false
             },
-            progressBarRef : {
+            renderProgressBarRef : {
                 value : {current : null}
             },
             isLoadingRef : {
@@ -268,7 +267,6 @@ export default class CommonDatagridComponent extends AppComponent {
             chartRef : {value : {current:null}},
             layoutRef : {value : {}},
             hidePreloaderOnRenderKey : {value : uniqid("hide-preloader-on-render")},
-            isRenderingRef : {value : {current:false}},
             chartSeriesNamesColumnsMapping : {value : {}},//le mappage entre les index des series et les colonnes coorespondantes
         });
         this.setSelectedRows(selectedRows);
@@ -283,7 +281,7 @@ export default class CommonDatagridComponent extends AppComponent {
         const sessionAggregator = this.getSessionData("aggregatorFunction"); 
         this.state.aggregatorFunction= this.isValidAggregator(config.aggregatorFunction) && config.aggregatorFunction || this.isValidAggregator(this.props.aggregatorFunction) && this.props.aggregatorFunction || this.isValidAggregator(sessionAggregator) && sessionAggregator || Object.keys(this.aggregatorFunctions)[0];;
         this.isLoading = this.isLoading.bind(this);
-        this.getProgressBar = this.getProgressBar.bind(this);
+        this.renderProgressBar = this.renderProgressBar.bind(this);
         this.sortRef.current.dir = defaultStr(this.sortRef.current.dir,this.sortRef.current.column == "date"?"desc":'asc')
         this.hasColumnsHalreadyInitialized = false;
         this.initColumns(props.columns);
@@ -356,13 +354,10 @@ export default class CommonDatagridComponent extends AppComponent {
             return Promise.reject({});
         }
         const fetchOnlyVisibleColumns = !this.isFetchOnlyVisibleColumnsEnabled();
-        setTimeout(()=>{
-            this.setIsLoading(true,()=>{
-                this.toggleHidePreloaderOnRender(true);
-                this.setSessionData("fetchOnlyVisibleColumns",fetchOnlyVisibleColumns);
-                this.setState({fetchOnlyVisibleColumns},this.fetchDataIfCanFetchColumnsIfVisible.bind(this))
-            },true) 
-        },TIMEOUT)
+        this.setIsLoading(true,()=>{
+            this.setSessionData("fetchOnlyVisibleColumns",fetchOnlyVisibleColumns);
+            this.setState({fetchOnlyVisibleColumns},this.fetchDataIfCanFetchColumnsIfVisible.bind(this))
+        },TIMEOUT);
     }
     isValidAggregator(aggregatorFunction){
         return isNonNullString(aggregatorFunction) && isValidAggregator(this.aggregatorFunctions[aggregatorFunction])
@@ -971,7 +966,7 @@ export default class CommonDatagridComponent extends AppComponent {
         };
         const max = isMobileOrTabletMedia()? 200 : 5000;
         if(this.INITIAL_STATE.data.length > max){
-            return this.setIsLoading(true,call,true);
+            return this.setIsLoading(true,call);
         }
         return call();
     }
@@ -1156,7 +1151,7 @@ export default class CommonDatagridComponent extends AppComponent {
                             this.setSessionData({showFooters:showOrHide});
                         })
                     })
-                },true)
+                },)
             }
             this.setState( {showFooters:showOrHide},()=>{
                 this.isUpdating = false;
@@ -1181,7 +1176,7 @@ export default class CommonDatagridComponent extends AppComponent {
                     this.updateLayout();
                     this.setSessionData("fixedTable",fixedTable);
                 })
-            },true)
+            })
        },TIMEOUT)
    }
    getSessionNameKey (){
@@ -1190,20 +1185,18 @@ export default class CommonDatagridComponent extends AppComponent {
    /*** affiche ou masque une colonne filtrée */
    toggleFilterColumnVisibility1(field){
         if(!isNonNullString(field)) return;
-        setTimeout(()=>{
-            this.setIsLoading(true,()=>{
-                const filteredColumns = {...this.state.filteredColumns};
-                filteredColumns[field] = defaultBool(filteredColumns[field],false) == false ? true : false;
-                this.prepareColumns({filteredColumns});
-                this.setState({filteredColumns},()=>{
-                    this.setSessionData("filteredColumns"+this.getSessionNameKey(),filteredColumns);
-                    if(!filteredColumns[field]){
-                        this.filters[field] = defaultObj(this.filters[field]);
-                        this.filters[field].value = this.filters[field].defaultValue = undefined;
-                        this.doFilter({value:undefined,field})
-                    }
-                });
-            },true)
+        this.setIsLoading(true,()=>{
+            const filteredColumns = {...this.state.filteredColumns};
+            filteredColumns[field] = defaultBool(filteredColumns[field],false) == false ? true : false;
+            this.prepareColumns({filteredColumns});
+            this.setState({filteredColumns},()=>{
+                this.setSessionData("filteredColumns"+this.getSessionNameKey(),filteredColumns);
+                if(!filteredColumns[field]){
+                    this.filters[field] = defaultObj(this.filters[field]);
+                    this.filters[field].value = this.filters[field].defaultValue = undefined;
+                    this.doFilter({value:undefined,field})
+                }
+            });
         },TIMEOUT);
     }
     toggleFilterColumnVisibility(field,visible){
@@ -1223,19 +1216,16 @@ export default class CommonDatagridComponent extends AppComponent {
    */
    toggleColumnVisibility(field,removeFocus){
         if(!isNonNullString(field)) return;
-        setTimeout(()=>{
-            let columns = {...this.state.columns};
-            columns[field].visible = !columns[field].visible;
-            const footers = this.getFootersFields();
-            if(isObj(footers[field])){
-                footers[field].visible = columns[field].visible;
-            }
-            this.setIsLoading(true,()=>{
-                this.prepareColumns({columns});
-                this.toggleHidePreloaderOnRender(this.canFetchOnlyVisibleColumns());
-                this.setState({columns},this.fetchDataIfCanFetchColumnsIfVisible.bind(this));
-            })
-        },TIMEOUT)
+        let columns = {...this.state.columns};
+        columns[field].visible = !columns[field].visible;
+        const footers = this.getFootersFields();
+        if(isObj(footers[field])){
+            footers[field].visible = columns[field].visible;
+        }
+        this.setIsLoading(true,()=>{
+            this.prepareColumns({columns});
+            this.setState({columns},this.fetchDataIfCanFetchColumnsIfVisible.bind(this));
+        },TIMEOUT);
    }
    /****le nombre maximum de courbes supportées */
    getMaxSeriesSize(){
@@ -1322,21 +1312,19 @@ export default class CommonDatagridComponent extends AppComponent {
         if(!isObj(this.state.sectionListColumns) || !Array.isArray(this.preparedColumns?.sectionListColumnsMenuItems))return;
         const menuItems = this.preparedColumns?.sectionListColumnsMenuItems;
         if(!menuItems.length) return;
-        setTimeout(()=>{
-            this.setIsLoading(true,()=>{
-                const sectionListColumns = {...this.state.sectionListColumns};
-                if(enable !== true && isObj(sectionListColumns[columnName])){
-                    delete sectionListColumns[columnName];
-                } else {
-                    sectionListColumns[columnName] = {field:columnName};
-                }
-                const {sectionListColumns:pSListColumns} = this.prepareColumns({sectionListColumns});
-                this.prepareData({data:this.INITIAL_STATE.data,sectionListColumns:pSListColumns},(state)=>{
-                    this.setState({...state,sectionListColumns:pSListColumns},()=>{
-                        this.setSessionData("sectionListColumns",Object.keys(pSListColumns));
-                    });
+        this.setIsLoading(true,()=>{
+            const sectionListColumns = {...this.state.sectionListColumns};
+            if(enable !== true && isObj(sectionListColumns[columnName])){
+                delete sectionListColumns[columnName];
+            } else {
+                sectionListColumns[columnName] = {field:columnName};
+            }
+            const {sectionListColumns:pSListColumns} = this.prepareColumns({sectionListColumns});
+            this.prepareData({data:this.INITIAL_STATE.data,sectionListColumns:pSListColumns},(state)=>{
+                this.setState({...state,sectionListColumns:pSListColumns},()=>{
+                    this.setSessionData("sectionListColumns",Object.keys(pSListColumns));
                 });
-            },true);
+            });
         },TIMEOUT);
    }
    removeAllColumnsInSectionList(){
@@ -1348,7 +1336,7 @@ export default class CommonDatagridComponent extends AppComponent {
                     this.setSessionData("displayOnlySectionListHeaders",false);
                 });
             });
-        },true);
+        });
    }
    canDisplayOnlySectionListHeaders(){
         return this.hasFootersFields() && this.isSectionList() && this.hasSectionListData();
@@ -1378,15 +1366,13 @@ export default class CommonDatagridComponent extends AppComponent {
                 this.setState({displayType},()=>{
                     this.persistDisplayType(displayType);
                 });
-            },true)
+            })
         } else {
             const cb = (config)=>{
-                setTimeout(()=>{
-                    this.setIsLoading(true,()=>{
-                        this.setState({config,displayType},()=>{
-                            this.persistDisplayType(displayType);
-                        })
-                    },true);
+                this.setIsLoading(true,()=>{
+                    this.setState({config,displayType},()=>{
+                        this.persistDisplayType(displayType);
+                    })
                 },200);
             }
             if(!this.isValidChartConfig()){
@@ -1404,15 +1390,13 @@ export default class CommonDatagridComponent extends AppComponent {
         return this.aggregatorFunctions[Object.keys(this.aggregatorFunctions)[0]];
    }
    toggleAbreviateValues(){
-        setTimeout(()=>{
-            this.setIsLoading(true,()=>{
-                this.prepareData({data:this.INITIAL_STATE.data},(state)=>{
-                    const abreviateValues = !this.state.abreviateValues;
-                    this.setState({abreviateValues,...state},()=>{
-                        this.setSessionData("abreviateValues",abreviateValues);
-                    })
-                });
-            },true);
+        this.setIsLoading(true,()=>{
+            this.prepareData({data:this.INITIAL_STATE.data},(state)=>{
+                const abreviateValues = !this.state.abreviateValues;
+                this.setState({abreviateValues,...state},()=>{
+                    this.setSessionData("abreviateValues",abreviateValues);
+                })
+            });
         },TIMEOUT);
    }
    /**** récupère l'item de menu permettant lié à la sélection de la fonction d'aggggrégation */
@@ -1506,12 +1490,13 @@ export default class CommonDatagridComponent extends AppComponent {
                             const nConfig = {...config,...data};
                             this.setSessionData("config",nConfig);
                             DialogProvider.close();
-                            this.setIsLoading(true,true);
-                            this.prepareData({data:this.INITIAL_STATE.data,config:nConfig},(state)=>{
-                                this.setState({...state,config:nConfig},()=>{
-                                    resolve(nConfig)
+                            this.setIsLoading(true, ()=>{
+                                this.prepareData({data:this.INITIAL_STATE.data,config:nConfig},(state)=>{
+                                    this.setState({...state,config:nConfig},()=>{
+                                        resolve(nConfig)
+                                    });
                                 })
-                            })
+                            });
                         }
                     }
                 ]
@@ -1990,7 +1975,7 @@ export default class CommonDatagridComponent extends AppComponent {
                             this.configureChart(false).then((config)=>{
                                 this.setIsLoading(true,()=>{
                                     this.setState({config});
-                                },true)
+                                })
                             })
                         }
                     });
@@ -2390,18 +2375,17 @@ export default class CommonDatagridComponent extends AppComponent {
             const showFooters = true;
             const displayOnlySectionListHeaders = !!!this.state.displayOnlySectionListHeaders;
             this.setSessionData("displayOnlySectionListHeaders",displayOnlySectionListHeaders);
-            this.toggleHidePreloaderOnRender(true);
             if(!displayOnlySectionListHeaders){
                 return this.setIsLoading(true,()=>{
                     this.prepareData({data:this.INITIAL_STATE.data,displayOnlySectionListHeaders},(state)=>{
                         this.setState({...state,showFooters});
                     })
-                },true);
+                });
             } else {
                 this.setIsLoading(true,()=>{
                     const data = this.state.data.filter((d)=>d?.isSectionListHeader === true);
                     this.setState({data,displayOnlySectionListHeaders,showFooters});
-                },true)
+                })
             }
         },0);
    }
@@ -2517,7 +2501,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 width = COLUMN_WIDTH;
             }
             if(type.contains("date")|| type.contains("time")){
-                const mWidth = type.toLowerCase().contains('datetime')? (DATE_COLUMN_WIDTH+30) : DATE_COLUMN_WIDTH;
+                const mWidth = type.toLowerCase().contains('datetime')? DATE_TIME_COLUMN_WIDTH : DATE_COLUMN_WIDTH;
                 width = Math.max(width,mWidth);
             } else if((type.contains("number") || type.contains("decimal") && this.props.format)){
                 width = Math.max(width,DATE_COLUMN_WIDTH-30);
@@ -2752,7 +2736,7 @@ export default class CommonDatagridComponent extends AppComponent {
     getColumns(){
         return isObj(this.state.columns)? this.state.columns : {};
     }
-    prepareData(args,cb){
+    prepareData (args,cb){
         let {pagination,config,aggregatorFunction:customAggregatorFunction,displayOnlySectionListHeaders:cdisplayOnlySectionListHeaders,data,force,sectionListColumns,sectionListCollapsedStates,updateFooters} = defaultObj(args);
         cb = typeof cb ==='function'? cb : typeof args.cb == 'function'? args.cb : undefined;
         config = isObj(config) && Object.size(config,true)? config : this.getConfig();
@@ -2938,11 +2922,9 @@ export default class CommonDatagridComponent extends AppComponent {
         const s = getSectionListCollapsedStates;
         if(!isNonNullString(sectionKey)) return;
         s[sectionKey] = !!!s[sectionKey];
-        setTimeout(()=>{
-            this.setIsLoading(true,()=>{
-               this.setState({sectionListCollapsedStates:{...s}});
-            },true);
-        },TIMEOUT)
+        this.setIsLoading(true,()=>{
+            this.setState({sectionListCollapsedStates:{...s}});
+        },TIMEOUT);
     }
     /****permet de faire le rendu flashlist */
     renderFlashListItem(args){
@@ -3046,22 +3028,23 @@ export default class CommonDatagridComponent extends AppComponent {
        return sRows;
     }
    
-    getProgressBar(props){
-        if(typeof props !=='object' || !props){
+    renderProgressBar(props){
+        if(typeof props !=='object' || !props || Array.isArray(props)){
             props = {};
         }
-        const ProgressBar = this.props.progressBar;
+        const ProgressBar = this.props.renderProgressBar;
         const children = React.isValidElement(ProgressBar) ? ProgressBar : 
-            this.props.useLinesProgressBar === true || this.props.useLineProgressBar === true ? CommonDatagridComponent.LineProgressBar(props)
+            this.props.useLinesProgressBar === true || this.props.withLineProgressBar ===true || this.props.useLineProgressBar === true ? CommonDatagridComponent.LineProgressBar(props)
             : React.isComponent(ProgressBar) ?<ProgressBar/> : this.getDefaultPreloader(props);
         return <DatagridProgressBar
             {...props}
+            datagridContext = {this}
             onChange = {(context)=>{
                 this.isLoadingRef.current = context.isLoading;
             }}
-            isLoading = {defaultBool(this.props.isLoading,this.isLoading())}
+            isLoading = {this.isLoading()}
             children = {children}  
-            ref = {this.progressBarRef}
+            ref = {this.renderProgressBarRef}
         />
     }
     handlePagination(start, limit, page) {
@@ -3146,7 +3129,7 @@ export default class CommonDatagridComponent extends AppComponent {
     }
     ///si les filtres devront être convertis au format SQL
     willConvertFiltersToSQL(){
-        return !!defaultVal(this.props.convertFiltersToSQL,willConvertFiltersToSQL());;
+        return !!defaultVal(this.props.convertFiltersToSQL);;
     }
     /*** retourne la liste des colonnes sur lesquelles on peut effectuer un filtre*/
     getFilterableColumnsNames(){ 
@@ -3298,7 +3281,7 @@ export default class CommonDatagridComponent extends AppComponent {
                             reject(e);
                         });
                     }     
-                },true);
+                });
             },1);
         })
         return this.fetchingPromiseData;
@@ -3322,9 +3305,8 @@ export default class CommonDatagridComponent extends AppComponent {
                         cb(data)
                     } 
                     resolve(data);
-                    this.isRenderingRef.current = false;
                     this.isFetchingData = undefined;
-                    this.setIsLoading(false,false);
+                    this.setIsLoading(false);
                 })
             });
         })
@@ -3418,7 +3400,7 @@ export default class CommonDatagridComponent extends AppComponent {
         fetchOptions.dataSources = this.currentDataSources;
         fetchOptions.selector = fetchFilters;
         fetchOptions.sort = this.getSort();
-        const canIncludeField = typeof this.props.includeFieldsInFetchOptions =='boolean'? this.props.includeFieldsInFetchOptions : defaultBool(appConfig.get("includeFieldsInDatagridFetchOptions")) !== false;
+        const canIncludeField = typeof this.props.includeFieldsInFetchOptions =='boolean'? this.props.includeFieldsInFetchOptions : true;
         if(canIncludeField){
             const ff = this.getFilterableColumnsNames();
             let fields = ff;
@@ -3560,7 +3542,7 @@ export default class CommonDatagridComponent extends AppComponent {
         return Math.max(max-this.getSectionListDataSize(),0);
     }
     canSetIsLoading(){
-        return isObj(this.progressBarRef.current) && typeof this.progressBarRef.current.setIsLoading =='function' ? true : false;
+        return (this.renderProgressBarRef.current) && typeof this.renderProgressBarRef.current.setIsLoading =='function' ? true : false;
     }
     canHidePreloaderOnRender(){
         const cH = this[this.hidePreloaderOnRenderKey];
@@ -3570,60 +3552,22 @@ export default class CommonDatagridComponent extends AppComponent {
         this[this.hidePreloaderOnRenderKey] = !!toggle;
     }
     onRender(){
-        if(!this.canHidePreloaderOnRender() && this.isTableData() && this.canFetchOnlyVisibleColumns()) {
+        if(!this.props.isLoading && this.isLoadingRef.current){
+            this.setIsLoading(false);
             return;
         }
-        if(typeof this.props.onRender ==='function' && this.props.onRender({context:this}) === false){
-            return ;
-        }
-        if(this.isTableData() && this.isRenderingRef.current !== true){
-            return;
-        }
-        this.isRenderingRef.current = false;
-        return this.setIsLoading(false,undefined,undefined);
     }
     /***
      * @param {boolean} loading
      * @param {function | boolean} cb | enablePointerEvents
-     * @param {boolean|function} enablePointerEvents
      */
-    setIsLoading (loading,cb,enablePointerEvents,timeout){
-        if(typeof cb =='boolean'){
-            const t = enablePointerEvents;
-            enablePointerEvents = cb;
-            cb = t;
-        }
-        if(typeof enablePointerEvents =='boolean'){
-            this.enablePointerEventsRef.current = enablePointerEvents;
-        }
+    setIsLoading (loading,cb,timeout){
+        loading = this.props.isLoading === true ? true : typeof loading =='boolean'? loading : false;
         timeout = typeof timeout =='number'? timeout : 500;
         cb = typeof cb =='function'? cb : x=>true;
-        if(this.canSetIsLoading() && typeof loading =='boolean'){
-            if(loading === true){
-                this.isRenderingRef.current = true;
-            } else if(this.isRenderingRef.current === true){
-                  return setTimeout(cb,timeout);;
-            }
-            return this.progressBarRef.current.setIsLoading(loading,()=>{
-                setTimeout(cb,timeout);
-            });
-        } else {
-           setTimeout(cb,timeout);
-        }
-    }
-     /**** met à jour l'état de progression de la mise à jour du tableau */
-     updateProgress(isLoading,cb){
-        this.isLoadingRef.current = defaultBool(isLoading,!!!this.isLoadingRef.current);
-        cb = typeof cb =='function'?cb : typeof isLoading =='function'? isLoading : null
-        if(isLoading){
-            this.isRenderingRef.current = true;
-        }
-        if(this.canSetIsLoading()){
-            return this.setIsLoading(isLoading,cb);
-        }
-        cb && setTimeout(() => {
-            cb();
-        }, 200);
+        this.isLoadingRef.current = loading;
+        this.trigger("toggleIsLoading",{isLoading:loading});
+        return setTimeout(cb,timeout);
     }
     isAllRowsSelected(){
         const count = this.getSelectedRowsCount() - this.getSectionListDataSize();
@@ -3684,25 +3628,32 @@ export default class CommonDatagridComponent extends AppComponent {
         return false;
     }
     UNSAFE_componentWillReceiveProps(nextProps){
-        if(nextProps.data === this.props.data || React.areEquals(nextProps.data,this.props.data)) {
+        const cb = ()=>{
+            if(typeof nextProps.isLoading =='boolean' && nextProps.isLoading !== this.isLoading()){
+                this.setIsLoading(nextProps.isLoading);
+            }
             return false;
+        }
+        if(nextProps.data === this.props.data || React.areEquals(nextProps.data,this.props.data)) {
+            return cb();
         }
         const newStableHash = stableHash(nextProps.data);
         this.prevStableDataHash = this.prevStableDataHash !== undefined ? this.prevStableDataHash : stableHash(this.props.data);
-        if(newStableHash == this.prevStableDataHash) return false;
+        if(newStableHash == this.prevStableDataHash) return cb();
         this.prevStableDataHash = newStableHash;
-        this.setIsLoading(true,true);
-        this.prepareData({...nextProps,force:true},(state)=>{
-            this.setState(state)
-        });
+        this.setIsLoading(true,()=>{
+            this.prepareData({...nextProps,force:true},(state)=>{
+                this.setState(state)
+            })
+        },0);
     }
     getDefaultPreloader(props){
         return CommonDatagridComponent.getDefaultPreloader();
     }
     isLoading (){
-        if(this.state.isReady === false || this.isRenderingRef.current) return true;
+        if(this.state.isReady === false) return true;
         if(typeof this.props.isLoading =='boolean') return this.props.isLoading;
-        return this.isLoadingRef.current === true ? true : false;
+        return !!this.isLoadingRef.current;
     }
     getLinesProgressBar(){
         return CommonDatagridComponent.LinesProgressBar(this.props);
@@ -4014,7 +3965,7 @@ CommonDatagridComponent.propTypes = {
     */
     filter : PropTypes.func, 
     /*** la barre de progression */
-    progressBar : PropTypes.node,
+    renderProgressBar : PropTypes.node,
     /*** fonction permettant de retourner l'unique clé des éléments du tableau */
     getRowKey : PropTypes.func,
     ///la fonction utilisée pour l'impression du datagrid

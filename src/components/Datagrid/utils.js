@@ -120,6 +120,8 @@ export const ROW_BORDER_STYLE = {
 
 export const DATE_COLUMN_WIDTH = 200;
 
+export const DATE_TIME_COLUMN_WIDTH = 280;
+
 export {LINE_HEIGHT}
 
 export const styles = ({
@@ -189,5 +191,3 @@ export const getRowStyle = ({row,bordered,numColumns,rowData,isAccordion,isTable
     }
     return style;
 }
-
-export const willConvertFiltersToSQL = x=>!!appConfig.get("convertFiltersToSQL");

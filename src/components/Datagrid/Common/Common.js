@@ -4016,8 +4016,8 @@ CommonDatagridComponent.propTypes = {
     handleQueryLimit : PropTypes.bool, ///si le datagrid devra gérer les queryLimit
     /**** les menus customisés à ajouter au composant Datagrid */
     customMenu : PropTypes.oneOfType([
-        PropTypes.arrayOf(PropTypes.object),
-        PropTypes.objectOf(PropTypes.object),
+        PropTypes.array,
+        PropTypes.object,
     ]),
     /****les colonnes via lesquelles le tableau est groupé par defaut */
     sectionListColumns : PropTypes.oneOfType([

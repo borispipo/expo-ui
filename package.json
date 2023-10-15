@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "6.55.5",
+  "version": "6.56.0",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "main",
   "scripts": {
@@ -80,7 +80,7 @@
     "@react-navigation/native-stack": "^6.9.14",
     "@react-navigation/stack": "^6.3.18",
     "@shopify/flash-list": "1.4.3",
-    "apexcharts": "^3.43.0",
+    "apexcharts": "^3.43.2-0",
     "expo": "^49.0.13",
     "expo-camera": "~13.4.4",
     "expo-clipboard": "~4.3.1",
@@ -117,7 +117,7 @@
     "react-native-svg": "13.9.0",
     "react-native-web": "^0.19.9",
     "react-native-webview": "13.2.2",
-    "react-virtuoso": "^4.6.0",
+    "react-virtuoso": "^4.6.1",
     "sharp-cli": "^2.1.0",
     "tippy.js": "^6.3.7",
     "websql": "^2.0.3",

@@ -28,6 +28,7 @@ const ListComponent =  React.forwardRef((props,ref)=>{
             getItemLayout = {getItemLayout}
             itemHeight = {itemHeight}
             Component = {BigList}
+            isBigList
         />
 })
 ListComponent.prototypes = {

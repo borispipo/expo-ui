@@ -13,7 +13,7 @@ import { useList,useGetNumColumns } from "./hooks";
 
 const CommonListComponent = React.forwardRef((props,ref)=>{
     const context = useList(props);
-    let {testID,defaultItemHeight,itemHeight,onRender,componentProps,columnWrapperStyle,onViewableItemsChanged,withFlatListItem,Component,withBackToTop,backToTopRef:customBackToTopRef,withBackToTopButton,onScroll,onScrollEnd,onMount,onUnmount,renderScrollViewWrapper,prepareItems,getItemKey,getKey,keyExtractor,items,filter,renderItem,numColumns,containerProps,bindResizeEvents,...rest} = props;
+    let {testID,isBigList,defaultItemHeight,itemHeight,onRender,componentProps,columnWrapperStyle,onViewableItemsChanged,withFlatListItem,Component,withBackToTop,backToTopRef:customBackToTopRef,withBackToTopButton,onScroll,onScrollEnd,onMount,onUnmount,renderScrollViewWrapper,prepareItems,getItemKey,getKey,keyExtractor,items,filter,renderItem,numColumns,containerProps,bindResizeEvents,...rest} = props;
     withBackToTopButton = withBackToTop === true || withBackToTopButton == true || isMobileMedia()? true : false;
     rest = defaultObj(rest);
     containerProps = defaultObj(containerProps);
@@ -144,8 +144,10 @@ const CommonListComponent = React.forwardRef((props,ref)=>{
     const restP = numColumns > 1 && isFlatList ? {
         columnWrapperStyle : [styles.columnWrapperStyle,props.columnWrapperStyle]
     } : {};
+    const itemsLength = context.items?.length;
+    const isNotVirtual = false && isBigList && itemsLength <=10;
     return <View testID={testID+"_CommonListContainer"} {...containerProps} style={[styles.container,containerProps.style]}>
-        <Component
+        {!isNotVirtual ? <Component
             onEndReachedThreshold={0}
             scrollEventThrottle={16}
             {...rest}
@@ -160,8 +162,13 @@ const CommonListComponent = React.forwardRef((props,ref)=>{
             itemHeight = {itemHeight === false ? undefined : context.itemHeight}
             onViewableItemsChanged={onViewableItemsChanged}
             {...defaultObj(componentProps)}
-        />
-        {!hasCustomBackToTop && customBackToTopRef !== false ? <BackToTop ref={backToTopRef} onPress={context.onBackActionPress} /> : null}
+        /> : context.items.map((item,index)=>{
+            const key = context.keyExtractor(item,index);
+            return <View key={key} testID={`${testID}_RN_RealBigList_${index}_${key}`} style={[styles.realListItem]}>
+                {context.renderItem({item,index})}
+            </View> 
+        })}
+        {!isNotVirtual && !hasCustomBackToTop && customBackToTopRef !== false ? <BackToTop ref={backToTopRef} onPress={context.onBackActionPress} /> : null}
     </View>
 })
 
@@ -211,7 +218,13 @@ const styles = StyleSheet.create({
     },
     columnWrapperStyle : {
         flex : 1,
-    }
+    },
+    realListItem : {
+        width : "100%",
+        paddingVertical : 0,
+        paddingHorizontal : 0,
+        minHeight : 40,
+    },
   });
 export default CommonListComponent;
 

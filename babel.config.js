@@ -54,9 +54,9 @@ module.exports = function(api,opts) {
       ['babel-preset-expo']
     ],
     plugins : [
-      ['react-native-reanimated/plugin'],
       ["inline-dotenv",inlineDovOptions],
       ["module-resolver", {"alias": alias}],
+      'react-native-reanimated/plugin',
     ],
   };
 };

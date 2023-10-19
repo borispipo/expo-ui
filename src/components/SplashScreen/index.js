@@ -19,9 +19,7 @@ import styles, {
 import {useAppComponent} from "$econtext/hooks";
 
 const SplashScreenComponent = ({isLoaded,children , duration, delay,logoWidth,logoHeight,backgroundColor,imageBackgroundSource,imageBackgroundResizeMode,
-  testID,
-  disableAppScale,
-  disableImageBackgroundAnimation,preload})=>{
+  testID})=>{
   const [state,setState] = React.useState({
     animationDone: false,
     loadingProgress: new Animated.Value(0)
@@ -29,7 +27,7 @@ const SplashScreenComponent = ({isLoaded,children , duration, delay,logoWidth,lo
   const { loadingProgress, animationDone } = state;
   const prevIsLoaded = React.usePrevious(isLoaded);
   React.useEffect(()=>{
-    if(prevIsLoaded == isLoaded || !isLoaded) return;
+    if(animationDone && (prevIsLoaded == isLoaded || !isLoaded)) return;
     if(!isNativeMobile()){
       setState({...state,animationDone:true});
     } else {
@@ -69,20 +67,8 @@ const SplashScreenComponent = ({isLoaded,children , duration, delay,logoWidth,lo
       extrapolate: "clamp",
     }),
   }
-
-  const appScale = {
-    transform: [
-      {
-        scale: loadingProgress.interpolate({
-          inputRange: [0, 7, 100],
-          outputRange: [1.1, 1.05, 1],
-        }),
-      },
-    ],
-  }
   const child = (animationDone && isLoaded)? React.isValidElement(children) && children : null;
   if(animationDone && isLoaded) return child;
-  const hasComponent = React.isComponent(Component);
   return <View style={[styles.container]} testID={testID} id={testID}>
       {!animationDone ? <View style={StyleSheet.absoluteFill} testID={testID+"_Animation"}/> : null}
       <View style={styles.containerGlue} testID={testID+"_ContainerGlue"}>

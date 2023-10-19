@@ -124,8 +124,7 @@ const CheckboxComponent = React.forwardRef((props,ref)=>{
             testID = {testID}
             disabled = {disabled}
             readOnly = {!isEditable}
-            pointerEvents = {pointerEvents}
-            style = {[styles.checkbox,style]}
+            style = {[styles.checkbox,style,{pointerEvents}]}
             position = {position}
             status = {status}
             color = {cColor}

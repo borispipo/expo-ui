@@ -9,7 +9,7 @@ import PropTypes from "prop-types";
 import stableHash from "stable-hash";
 import {defaultNumber,isNumber} from "$cutils";
 
-const styles = StyleSheet.create({container: { flex: 1 }});
+const styles = StyleSheet.create({container: { flex: 1,pointerEvents:"box-none" }});
 
 const AutoResizerComponent = React.forwardRef((props,ref) =>{
     const {
@@ -80,7 +80,6 @@ const AutoResizerComponent = React.forwardRef((props,ref) =>{
         {...viewProps}
         ref={React.useMergeRefs(innerRef,ref)}
         onLayout={onLayout}
-        pointerEvents="box-none"
         style={[styles.container, viewProps.style]}
       >
         {canRender() && children({...result,left:result.x,top:result.y}) || null}

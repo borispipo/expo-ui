@@ -3,7 +3,7 @@ import {
   StyleSheet,
   Animated,
   SafeAreaView,
-  Pressable
+  TouchableWithoutFeedback
 } from 'react-native';
 import View from "$ecomponents/View";
 import {FAB,Text,Card,withTheme} from "react-native-paper";
@@ -116,17 +116,19 @@ const FABGroup = ({
   const itemComponentProps = isFormAction ? {Component : FabItem} : {};
   return (
     <View testID={testID+"_Container"} pointerEvents="box-none" style={[styles.container, style]}>
-      {open ? <Pressable testID={testID+"_TouchableOpacity"} onPress={close}
-        pointerEvents={open ? 'auto' : 'none'}
-        style={[
-          styles.backdrop,
-          {
-            opacity: backdropOpacity,
-            backgroundColor: colors.backdrop,
-          },
-        ]}
-      >
-      </Pressable>:null}
+      <TouchableWithoutFeedback testID={testID+"_TouchableOpacity"} onPress={close}>
+        <Animated.View
+          testID={testID+"_AnimatedView"}
+          pointerEvents={open ? 'auto' : 'none'}
+          style={[
+            styles.backdrop,
+            {
+              opacity: backdropOpacity,
+              backgroundColor: colors.backdrop,
+            },
+          ]}
+        />
+      </TouchableWithoutFeedback>
       <SafeAreaView testID={testID+"_SafeAreaView"} pointerEvents="box-none" style={styles.safeArea}>
         <View testID={testID+"_ItemsContainer"} style={[styles.itemsContainer]} pointerEvents={open ? 'box-none' : 'none'}>
           {actions.map((it, i) => {
@@ -171,7 +173,7 @@ const FABGroup = ({
           accessibilityLabel={accessibilityLabel}
           // @ts-expect-error We keep old a11y props for backwards compat with old RN versions
           accessibilityTraits="button"
-          //accessibilityComponentType="button"
+          accessibilityComponentType="button"
           //role="button"
           accessibilityState={{ expanded: open }}
           style={StyleSheet.flatten([styles.fab, fabStyle])}

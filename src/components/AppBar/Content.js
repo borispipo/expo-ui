@@ -2,7 +2,7 @@ import * as React from 'react';
 import {
   Platform,
   StyleSheet,
-  TouchableWithoutFeedback,
+  Pressable,
   View,
 } from 'react-native';
 import Label from "$ecomponents/Label";
@@ -83,17 +83,17 @@ const AppbarContent = ({
 
   if (onPress) {
     return (
-      <TouchableWithoutFeedback
+      <Pressable
         testID={testID+"_Container"}
         {...containerProps}
         role={touchableRole}
         accessibilityTraits={touchableRole}
-        accessibilityComponentType="button"
+        //accessibilityComponentType="button"
         onPress={onPress}
         disabled={disabled}
       >
         {content}
-      </TouchableWithoutFeedback>
+      </Pressable>
     );
   }
   return content;

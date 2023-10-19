@@ -22,7 +22,7 @@ import {extendFormFields} from "$ecomponents/Form/Fields";
     getTableData : ()=>{object|array}
     getStructData : ()=>{object|array}
     tablesData : {object}, la liste des tables de données
-    strucsData : {object}, la liste des données de structures
+    structsData : {object}, la liste des données de structures
     handleHelpScreen : {boolean}, //si l'écran d'aide sera pris en compte, l'écran d'aide ainsi que les écrans des termes d'utilisations et autres
     convertFiltersToSQL : {boolean}, si les filtres de datagrid ou filtres seront convertis au format SQL
     components : {

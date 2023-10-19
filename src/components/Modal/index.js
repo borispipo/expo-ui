@@ -2,7 +2,7 @@ import React from "$react";
 import {
   StyleSheet,
   View,
-  TouchableWithoutFeedback,
+  Pressable,
 } from 'react-native';
 import BackHandler from "$ecomponents/BackHandler";
 import PropTypes from "prop-types";
@@ -41,8 +41,10 @@ const ModalComponent = React.forwardRef((props,ref)=>{
         onDismiss,
         isPreloader,
         children,
+        testID,
         ...rest
     } = props;
+    testID = defaultStr(testID,'RN__ModalComponent');
     if(animate !== false && isMobileNative() && defaultStr(animationType).toLowerCase().trim() !=='slide'){
        animate = false;
     }
@@ -109,7 +111,7 @@ const ModalComponent = React.forwardRef((props,ref)=>{
     return !visible?null: <Portal>
       <Anim
         ref={ref}
-        testID={'RN__ModalComponent'}
+        testID={testID+"_RNModalComponent"}
         {...rest}
         pointerEvents={visible ? 'auto' : 'none'}
         accessibilityViewIsModal
@@ -120,25 +122,21 @@ const ModalComponent = React.forwardRef((props,ref)=>{
         animationDuration = {animationDuration}
         animationPosition = {animationPosition}
       >
-          <TouchableWithoutFeedback
+          <Pressable
             accessibilityLabel={overlayAccessibilityLabel}
             //role="button"
             disabled={!dismissable}
             onPress={dismissable ? hideModal : undefined}
             importantForAccessibility="no"
-            testID="RN__ModalComponent__backdrop_Container"
-          >
-            <View
-              testID="RN__ModalComponent__backdrop"
-              {...backdropProps}
-              style={[
-                styles.backdrop,
-                {backgroundColor:theme.colors.backdrop},
-                backdropProps.style,
-              ]}
-            />
-          </TouchableWithoutFeedback>
-          <Surface testID="RN__ModalComponent__ContentContainer"
+            testID={testID+"_ModalComponent__backdrop"}
+            {...backdropProps}
+            style={[
+              styles.backdrop,
+              {backgroundColor:theme.colors.backdrop},
+              backdropProps.style,
+            ]}
+          />
+          <Surface testID={testID+"_ModalComponent__ContentContainer"}
               elevation = {5}
               {...contentContainerProps}
               {...wrapperProps}

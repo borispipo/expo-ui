@@ -1,7 +1,7 @@
 import Icon from "$ecomponents/Icon";
 import {defaultObj,isPlainObject,} from "$cutils";
 import React from "$react";
-import {TouchableWithoutFeedback,StyleSheet} from "react-native";
+import {Pressable,StyleSheet} from "react-native";
 import PropTypes from "prop-types";
 import { renderItems } from "./utils";
 
@@ -55,7 +55,7 @@ const MenuComponent = React.forwardRef((props,ref)=>{
     if(typeof anchor =='function'){
         anchor = anchor({onPress:openMenu});
     } else if(React.isValidElement(anchor)){
-        anchor = <TouchableWithoutFeedback {...anchorProps} onPress={onPress}>{anchor}</TouchableWithoutFeedback>
+        anchor = <Pressable {...anchorProps} onPress={onPress}>{anchor}</Pressable>
     } else if(React.isComponent(anchor)){
         const A = anchor;
         anchor = <A 

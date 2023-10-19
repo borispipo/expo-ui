@@ -243,7 +243,7 @@ const ButtonComponent = React.forwardRef((prs,ref) => {
                     // @ts-expect-error We keep old a11y props for backwards compat with old RN versions
                     accessibilityTraits={disabled ? ['button', 'disabled'] : 'button'}
                     accessibilityComponentType="button"
-                    role={disabled?role || "button":undefined}
+                    //role={disabled?role ||undefined}
                     accessibilityState={{ disabled }}
                     accessible={accessible}
                     disabled={disabled}

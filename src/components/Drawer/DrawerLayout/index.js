@@ -5,11 +5,9 @@ import {
     Keyboard,
     PanResponder,
     StyleSheet,
-    Pressable,
-    I18nManager,
     TouchableWithoutFeedback,
+    I18nManager,
 } from 'react-native';
-import { TouchableRipple } from 'react-native-paper';
 import PropTypes from "prop-types";
 import View from "$ecomponents/View";
 import {defaultStr} from "$cutils";
@@ -162,6 +160,7 @@ export default class DrawerLayout extends React.PureComponent {
             outputRange: [0, 0.7],
             extrapolate: 'clamp',
         });
+        const animatedOverlayStyles = { opacity: overlayOpacity };
         const pointerEvents = drawerShown || permanent ? 'auto' : 'none';
         position = defaultStr(position).toLowerCase();
         if(position !=='left' && position !=='right'){
@@ -174,19 +173,22 @@ export default class DrawerLayout extends React.PureComponent {
         return (
             <View
                 testID = {testID}
-                style={[styles.mainWrapper,permanent ? styles.mainWrapperPermanent : styles.mainWrapperTemporary]}
+                style={{ flex: 1, backgroundColor: 'transparent',flexDirection:permanent?'row':'column'}}
                 {...this._panResponder.panHandlers}
             >
-                {!permanent && this.isOpen() ? <Pressable
-                    testID={testID+"_Backdrow"}
+                {!permanent && <TouchableWithoutFeedback
                     pointerEvents={pointerEvents}
-                    ref = {this._backdropRef}
-                    style={[styles.overlay,{backgroundColor:theme.colors.backdrop,opacity: overlayOpacity}]}
-                    //pointerEvents={pointerEvents}
-                    //testID = {testID+"_TouchableWithoutFeedBack"}
+                    testID = {testID+"_TouchableWithoutFeedBack"}
                     onPress={this._onOverlayClick}
-                /> : null}
-                {posRight ? this.renderContent({testID}):null}
+                >
+                    <Animated.View
+                        testID={testID+"_Backdrow"}
+                        pointerEvents={pointerEvents}
+                        ref = {this._backdropRef}
+                        style={[styles.overlay,{backgroundColor:theme.colors.backdrop}, animatedOverlayStyles]}
+                    />
+                </TouchableWithoutFeedback>}
+                {posRight && this.renderContent({testID})}
                 <Animated.View
                     testID={testID+"_NavigationViewContainer"}
                     ref={React.mergeRefs(navigationViewRef,this._navigationViewRef)}
@@ -448,20 +450,6 @@ const styles = StyleSheet.create({
         right: 0,
         zIndex: 1000,
     },
-    mainWrapper : {
-        flex: 1, backgroundColor: 'transparent'
-    },
-    mainWrapperPermanent : {
-        flexDirection : "row",
-    },
-    mainWrapperTemporary : {
-        flexDirection : "column",
-    },
-    touchableWithoutFeedBack : {
-        //backgroundColor:'transparent',
-        height : "100%",
-        width : '100%',
-    }
 });
 
 DrawerLayout.propTypes = {

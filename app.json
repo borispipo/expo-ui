@@ -1,11 +1,19 @@
 {
   "expo": {
-    "name": "@fto-consult/expo-ui",
+    "name": "expo-ui",
     "slug": "fto-consult-expo-ui",
     "version": "1.0.0",
     "orientation": "portrait",
     "web": {
       "bundler": "webpack"
+    },
+    "android": {
+      "package": "com.borispipo.ftoconsultexpoui"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b895ce11-4941-4ea9-80da-b24d5abb4483"
+      }
     }
   },
   "userInterfaceStyle": "automatic"

@@ -56,7 +56,7 @@ module.exports = function(api,opts) {
     plugins : [
       ["inline-dotenv",inlineDovOptions],
       ["module-resolver", {"alias": alias}],
-      'react-native-reanimated/plugin',
+      ['react-native-reanimated/plugin'],
     ],
   };
 };

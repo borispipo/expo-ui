@@ -23,7 +23,7 @@ module.exports = function(opts){
   }
   config.watchFolders = Array.isArray(config.watchFolders) && config.watchFolders || [];
   const isLocalTest = require("./is-local-dev")();
-  if(!isLocalTest){
+  if(!isLocalTest && isDev){
     config.watchFolders.push(localDir);
   }
   // 2. Let Metro know where to resolve packages and in what order

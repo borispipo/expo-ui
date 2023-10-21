@@ -13,7 +13,7 @@ import App from "./AppEntry";
  * }
  */
 
-export default function ExpoUIAppEntryProvider({swrConfig,render,children,init,...rest}){
+export default function ExpoUIAppEntryProvider({render,children,init,...rest}){
     return  <Provider {...rest}>
         <App init={init} children={children} render={render}/>
     </Provider>

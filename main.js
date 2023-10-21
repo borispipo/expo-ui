@@ -1,2 +1,2 @@
-require("expo/AppEntry");
+module.exports = require("expo/AppEntry");
 

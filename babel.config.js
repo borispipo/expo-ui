@@ -54,8 +54,10 @@ module.exports = function(api,opts) {
       ['babel-preset-expo']
     ],
     plugins : [
+      ...(Array.isArray(opts.plugins) ? options.plugins : []),
       ["inline-dotenv",inlineDovOptions],
       ["module-resolver", {"alias": alias}],
+      ["@babel/plugin-proposal-export-namespace-from"],
       ['react-native-reanimated/plugin'],
     ],
   };

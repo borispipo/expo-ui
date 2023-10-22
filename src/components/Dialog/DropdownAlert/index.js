@@ -673,7 +673,7 @@ export default class DropdownAlert extends Component {
               accessible={accessible}>
             <View style={style} testID={testID+"_ContentContainer"}>
                   <View testID={testID+"_ContentWrapper"} style={[contentContainerStyle]}
-                     mediaQueryUpdateStyle={({isMobile,isTablet,width,...rest})=>{
+                     mediaQueryUpdateStyle={({isMobile,isTablet,width})=>{
                        return {
                           maxWidth  : isMobile ? (90*width)/100 : isTablet? Math.max((70*width/100),350) : 500
                        }

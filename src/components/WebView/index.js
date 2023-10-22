@@ -32,11 +32,11 @@ WebViewComponent.propTypes = {
 WebViewComponent.LocalHtml = React.forwardRef(({file,source,...props},ref)=>{
     const prevLocalHtml = React.usePrevious(file);
     const isInitializedRef = React.useRef(false);
-    const [html, setHtml] = useState("");
+    const [html, setHtml] = React.useState("");
     React.useEffect(()=>{
         if(isInitializedRef.current && prevLocalHtml == file) return;
         isInitializedRef.current = true;
-        FileSystem.readFile(y).then((data)=>{
+        FileSystem.readFile(file).then((data)=>{
             setHtml(data);
         });
     },file)

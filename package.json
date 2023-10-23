@@ -87,6 +87,7 @@
     "expo-font": "~11.4.0",
     "expo-image-picker": "~14.3.2",
     "expo-linking": "~5.0.2",
+    "expo-sharing": "~11.5.0",
     "expo-sqlite": "~11.3.3",
     "expo-status-bar": "~1.6.0",
     "expo-system-ui": "~2.4.0",
@@ -121,8 +122,7 @@
     "sharp-cli": "^2.1.0",
     "tippy.js": "^6.3.7",
     "websql": "^2.0.3",
-    "xlsx": "^0.18.5",
-    "expo-sharing": "~11.5.0"
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@babel/plugin-proposal-export-namespace-from": "^7.18.9",

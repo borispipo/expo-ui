@@ -5,7 +5,7 @@ import {defaultStr,base64toBlob,dataURLToBlob,getTypeFromDataURL,isNonNullString
 const mime = require('react-native-mime-types')
 const XLSX = require("xlsx");
 import Preloader from "$preloader";
-import FileSaver from "./FileSaver";
+import * as FileSaver from "./FileSaver";
 
 
 /**** sauvegarde un fichier sur le disque 
@@ -87,3 +87,4 @@ export const writeImage = ({content,fileName,...rest})=>{
 }
 
 
+export {FileSaver};

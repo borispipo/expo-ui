@@ -111,11 +111,10 @@ const ModalComponent = React.forwardRef((props,ref)=>{
         ref={ref}
         testID={'RN__ModalComponent'}
         {...rest}
-        pointerEvents={visible ? 'auto' : 'none'}
         accessibilityViewIsModal
         role="polite"
         onAccessibilityEscape={hideModal}
-        style = {[styles.modal,rest.style]}
+        style = {[styles.modal,rest.style,{pointerEvents:visible ? 'auto' : 'none'}]}
         animationType = {animationType}
         animationDuration = {animationDuration}
         animationPosition = {animationPosition}
@@ -144,7 +143,6 @@ const ModalComponent = React.forwardRef((props,ref)=>{
               {...wrapperProps}
               ref = {contentContainerRef}
               style={[styles.contentContainer,{ marginTop: TOP_INSET, marginBottom: BOTTOM_INSET,backgroundColor:'transparent' },contentContainerProps.style]}
-              pointerEvents="box-none"
           >
             {children}  
           </Surface>
@@ -162,6 +160,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     ...StyleSheet.absoluteFillObject,
+    pointerEvents : "box-none",
     alignItems : 'center',
     justifyContent : 'center',
     flex : 1,

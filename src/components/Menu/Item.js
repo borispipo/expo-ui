@@ -96,10 +96,10 @@ const MenuItemComponent = React.forwardRef(({
         ) : null}
         <View
           testID={testID+"_Right2LabelContainer"}
-          pointerEvents={!right?"none":"auto"}
           {...contentContainerProps}
           style={[
             styles.item,
+            {pointerEvents:!right?"none":"auto"},
             styles.content,
             !maxWidthStyle && icon ? styles.widthWithIcon : null,
             contentStyle,

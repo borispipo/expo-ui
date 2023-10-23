@@ -177,15 +177,14 @@ export default class DrawerLayout extends React.PureComponent {
                 {...this._panResponder.panHandlers}
             >
                 {!permanent && <TouchableWithoutFeedback
-                    pointerEvents={pointerEvents}
+                    style={{pointerEvents}}
                     testID = {testID+"_TouchableWithoutFeedBack"}
                     onPress={this._onOverlayClick}
                 >
                     <Animated.View
                         testID={testID+"_Backdrow"}
-                        pointerEvents={pointerEvents}
                         ref = {this._backdropRef}
-                        style={[styles.overlay,{backgroundColor:theme.colors.backdrop}, animatedOverlayStyles]}
+                        style={[styles.overlay,{backgroundColor:theme.colors.backdrop},{pointerEvents}, animatedOverlayStyles]}
                     />
                 </TouchableWithoutFeedback>}
                 {posRight && this.renderContent({testID})}

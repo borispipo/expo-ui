@@ -277,17 +277,18 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
     const renderingItems = getItems();
     const autoFocus = canAutoFocusSearchField({visible,items:renderingItems});
     testID = defaultStr(testID, "RN_SimpleSelectComponent");
+    anchorContainerProps = defaultObj(anchorContainerProps);
     anchor =  <Pressable
         //role="button"
         activeOpacity={0.3}
         testID = {testID}
-        {...defaultObj(anchorContainerProps)}
+        {...anchorContainerProps}
         onPress={show}
         disabled = {!isEditable}
-        pointerEvents = {pointerEvents}
         accessibilityLabel={defaultStr(label,text)}
         rippleColor={undefined}
         onLayout={onLayout}
+        style = {[{pointerEvents},anchorContainerProps.style]}
     >
         {anchor}
     </Pressable>
@@ -323,10 +324,10 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
                     },
                     isMob && {flex:1},
                     !isMob && {paddingRight : 0},
-                    contentContainerProps.style
+                    contentContainerProps.style,
+                    {pointerEvents:contentContainerProps.pointerEvents||pointerEvents||undefined},
                 ]
                 }
-                pointerEvents = {pointerEvents}
             >
                 {showSearch !== false && <>
                     <TextField

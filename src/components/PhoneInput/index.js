@@ -162,10 +162,8 @@ export default function PhoneInputComponent(props){
                     disabled = {props.disabled}
                     pointerEvents = {pointerEvents}
                     left = {
-                        <Pressable testID={testID+"_Left"} style={[styles.flag,disabledStyle,!isFlatMode && styles.notFlatModeFlag]}
-                            //role="button"
+                        <Pressable testID={testID+"_Left"} style={[styles.flag,{pointerEvents},disabledStyle,!isFlatMode && styles.notFlatModeFlag]}
                             disabled = {props.disabled}
-                            pointerEvents = {pointerEvents}
                             onPress={onPressFlag}
                         >
                             <>

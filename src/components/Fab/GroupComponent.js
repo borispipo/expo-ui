@@ -115,22 +115,22 @@ const FABGroup = ({
   const Item = isFormAction ? Action : FabItem;
   const itemComponentProps = isFormAction ? {Component : FabItem} : {};
   return (
-    <View testID={testID+"_Container"} pointerEvents="box-none" style={[styles.container, style]}>
+    <View testID={testID+"_Container"} style={[styles.container, style]}>
       <TouchableWithoutFeedback testID={testID+"_TouchableOpacity"} onPress={close}>
         <Animated.View
           testID={testID+"_AnimatedView"}
-          pointerEvents={open ? 'auto' : 'none'}
           style={[
             styles.backdrop,
             {
               opacity: backdropOpacity,
               backgroundColor: colors.backdrop,
+              pointerEvents : open ? 'auto' : 'none',
             },
           ]}
         />
       </TouchableWithoutFeedback>
-      <SafeAreaView testID={testID+"_SafeAreaView"} pointerEvents="box-none" style={styles.safeArea}>
-        <View testID={testID+"_ItemsContainer"} style={[styles.itemsContainer]} pointerEvents={open ? 'box-none' : 'none'}>
+      <SafeAreaView testID={testID+"_SafeAreaView"} style={styles.safeArea}>
+        <View testID={testID+"_ItemsContainer"} style={[styles.itemsContainer,{pointerEvents:open ? 'box-none' : 'none'}]}>
           {actions.map((it, i) => {
              const itemProps = {
                 ...it,
@@ -148,9 +148,9 @@ const FABGroup = ({
                   {
                     marginHorizontal:
                       typeof it.small || it.small ? 24 : 16,
+                      pointerEvents : open ? 'box-none' : 'none',
                   },
                 ]}
-                pointerEvents={open ? 'box-none' : 'none'}
               >
                 <Item
                   {...itemProps}
@@ -288,7 +288,7 @@ const _FabItem = function({children,label,disabled:customDisabled,pointerEvents,
   const dStyle = disabled ? disabledStyle : null;
   return <>
        {label ? (
-         <View testID = {testID+"_LabelContainer"} style={dStyle} pointerEvents={pointerEvents}>
+         <View testID = {testID+"_LabelContainer"} style={[dStyle,{pointerEvents}]}>
                <Card
                 testID={testID+"_Card"}
                  style={
@@ -323,7 +323,6 @@ const _FabItem = function({children,label,disabled:customDisabled,pointerEvents,
              icon={icon}
              color={color}
              disabled = {disabled}
-             pointerEvents={pointerEvents}
              style={
                [
                  style,
@@ -333,6 +332,7 @@ const _FabItem = function({children,label,disabled:customDisabled,pointerEvents,
                   transform: [{ scale}],
                   opacity,
                   backgroundColor,
+                  pointerEvents,
                 },
                ] 
              }
@@ -356,6 +356,7 @@ export const FabItem = theme.withStyles(_FabItem,{displayName:"FabItemComponent"
 const styles = StyleSheet.create({
   safeArea: {
     alignItems: 'flex-end',
+    pointerEvents : "box-none",
   },
   itemsContainer : {
     marginBottom : 70,
@@ -363,6 +364,7 @@ const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'flex-end',
+    pointerEvents : "box-none",
   },
   fab: {
     marginHorizontal: 16,

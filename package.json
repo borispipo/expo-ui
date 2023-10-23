@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "6.62.0",
+  "version": "6.62.1",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "main",
   "scripts": {
@@ -121,7 +121,8 @@
     "sharp-cli": "^2.1.0",
     "tippy.js": "^6.3.7",
     "websql": "^2.0.3",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "expo-sharing": "~11.5.0"
   },
   "devDependencies": {
     "@babel/plugin-proposal-export-namespace-from": "^7.18.9",

@@ -39,8 +39,10 @@ WebViewComponent.LocalHtml = React.forwardRef(({file,source,...props},ref)=>{
         FileSystem.readFile(file).then((data)=>{
             setHtml(data);
         });
-    },file)
+    },[file]);
     return <WebViewComponent
+        testID={"RN_WebviewComponent_LocalHTML"}
+        {...props}
         ref = {ref}
         source={{...defaultObj(source),html}}
     />
@@ -56,6 +58,7 @@ WebViewComponent.Local = WebViewComponent.LocalHtml;
 WebViewComponent.Url = React.forwardRef(({url,source,...props},ref)=>{
     const isU = isValidUrl(url);
     return <WebViewComponent
+        testID={"RN_WebviewComponent_URL"}
         ref = {ref}
         {...props}
         source = {{...defaultObj(source),url:isU?url:undefined}}
@@ -69,6 +72,7 @@ WebViewComponent.Url.propTypes = {
 
 WebViewComponent.Html = React.forwardRef(({html,source,...props},ref)=>{
     return <WebViewComponent
+        testID={"RN_WebviewComponent_HTML"}
         ref = {ref}
         {...props}
         source = {{...defaultObj(source),html}}

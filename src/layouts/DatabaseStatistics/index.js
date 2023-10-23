@@ -7,11 +7,14 @@ import theme from "$theme";
 import PropTypes from "prop-types";
 import Auth from "$cauth";
 import Surface from "$ecomponents/Surface";
+import { StyleSheet } from "react-native";
 
 export const title = 'Statistiques en BD';
-export default function DatabaseStatisticScreen ({withScreen,fetchDataProps,tableFilter,fetchCount,fetchData,title:customTitle,contentProps,containerProps,tables,Component,...props}){
+export default function DatabaseStatisticScreen ({withScreen,fetchDataProps,itemProps,itemContainerProps,tableFilter,fetchCount,fetchData,title:customTitle,contentProps,containerProps,tables,Component,...props}){
         Component = React.isComponent(Component)? Component : Grid;
         containerProps = defaultObj(containerProps);
+        itemContainerProps = defaultObj(itemContainerProps);
+        itemProps = defaultObj(itemProps);
         const title = containerProps.title = defaultStr(containerProps.title,DatabaseStatisticScreen.title);
         contentProps = defaultObj(contentProps);
         if(Component == Cell){
@@ -34,7 +37,7 @@ export default function DatabaseStatisticScreen ({withScreen,fetchDataProps,tabl
             const testID = "RN_DatabaseStatisticsCell_"+index;
             if((chartAllowedPerm && !Auth.isAllowedFromStr(chartAllowedPerm)) || (!Auth.isTableDataAllowed({table:tableName}))) return null;
             content.push(<Cell elevation = {5} withSurface mobileSize={12} desktopSize={3} tabletSize={6} {...contentProps} testID={testID} key = {index} >
-                <Surface testID = {testID+"_Surface"} elevation = {5} style={[theme.styles.w100]}>
+                <Surface testID = {testID+"_Surface"} elevation = {5} {...itemContainerProps} style={[theme.styles.w100,styles.itemContainer,itemContainerProps.style]}>
                     <DatabaseStatistic
                         icon = {table.icon}
                         key = {index}
@@ -46,7 +49,8 @@ export default function DatabaseStatisticScreen ({withScreen,fetchDataProps,tabl
                         fetchCount = {table.fetchCount|| typeof fetchCount =='function'? (a,b)=>{
                             return fetchCount({table,tableName})
                         }:undefined}
-                    ></DatabaseStatistic>
+                        {...itemProps}
+                    />
                 </Surface>
             </Cell>
             )
@@ -68,6 +72,8 @@ DatabaseStatisticScreen.propTypes = {
     fetchDataProps : PropTypes.oneOfType([
         PropTypes.object,
     ]),
+    itemContainerProps : PropTypes.object, //les props à appliquer au container surface de chaque database statistics item
+    itemProps : PropTypes.object,//les props à appliquer à chaque database statistic item
     getTable : PropTypes.func,//la fonction permettant de récupérer la table à partir du nom
     tables : PropTypes.oneOfType([
         PropTypes.arrayOf(PropTypes.object),
@@ -76,3 +82,9 @@ DatabaseStatisticScreen.propTypes = {
     /*** la fonction de filtre utilisée pour filtrer les table devant figurer sur le databaseStatistics */
     tableFilter : PropTypes.func,
 }
+
+const styles = StyleSheet.create({
+    itemContainer : {
+        minHeight : 80,
+    },
+})

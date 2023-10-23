@@ -1,7 +1,10 @@
 const FileSaver = require('file-saver');
 import {defaultNumber} from "$cutils";
 
-export const saveBlob = ({content,fileName,timeout,delay})=>{
+/*** 
+    sauvegarde par défaut un fichier blob
+*/
+export const save = ({content,fileName,timeout,delay})=>{
     return new Promise((resolve,reject)=>{
         try {
             FileSaver.saveAs(content, fileName);

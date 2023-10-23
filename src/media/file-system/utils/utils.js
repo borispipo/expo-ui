@@ -6,6 +6,7 @@ const mime = require('react-native-mime-types')
 const XLSX = require("xlsx");
 import Preloader from "$preloader";
 import * as FileSaver from "./FileSaver";
+import {isWeb,isMobileNative} from "$cplatform";
 
 
 /**** sauvegarde un fichier sur le disque 
@@ -21,22 +22,28 @@ import * as FileSaver from "./FileSaver";
      *      isBinary : si c'est un fichier binaire
      *  }
     */
- export const write = ({content,type,share,contentType,fileName,...rest})=>{    
+ export const write = ({content,type,contentType,fileName,...rest})=>{    
     fileName = sanitizeFileName(fileName);
     contentType = defaultStr(contentType)  || mime.contentType(fileName) || mime.contentType(".txt");
     if(!isNonNullString(fileName)){
         return Promise.reject({status:false,msg:'Nom de fichier invalide'});
     }
     if(isBase64(content)){
+       if(isMobileNative()){
+         return FileSaver.save({content,contentType,isBase64:true,fileName,...rest});
+       }
        content = new Blob([base64toBlob(content,contentType)], {});
     } else if(isDataURL(content)){
+        if(isMobileNative()){
+            return FileSaver.save({content:dataURLToBase64(content),contentType,isBase64:true,fileName,...rest});
+        }
         const type = getTypeFromDataURL(content);
         content = dataURLToBlob(content);
         if(isNonNullString(type)){
             contentType = type;
         }
     }
-    return FileSaver.saveBlob({content:isBlob(content)? content : new Blob([content], { type: content?.type||contentType}),share:defaultBool(share,true),fileName,contentType,...rest})
+    return FileSaver.save({content:isBlob(content)? content : new Blob([content], { type: content?.type||contentType}),fileName,contentType,...rest})
 }
 
 export const writeText = (args)=>{
@@ -46,6 +53,7 @@ export const writeText = (args)=>{
 /***
  * @see https://ourtechroom.com/tech/mime-type-for-excel/ for excel mimesTypes
  * .xls	 : application/vnd.ms-excel
+   @see : https://docs.sheetjs.com/docs/demos/mobile/reactnative
  */
 export const writeExcel = ({workbook,content,contentType,fileName,...rest})=>{
     let ext = defaultStr(getFileExtension(fileName,true),"xlsx");
@@ -53,22 +61,28 @@ export const writeExcel = ({workbook,content,contentType,fileName,...rest})=>{
     if(!isNonNullString(fileName)){
         return Promise.reject({status:false,message:'Nom de fichier invalide pour le contenu excel à créer'});
     }
+    
+    Preloader.open("génération du fichier excel "+fileName);
     if(isBase64(content)){
+        if(isMobileNative()) return FileSaver.save({content,isBase64:true,contentType,fileName,...rest}).finally(Preloader.close);
         content = new Blob([base64toBlob(content, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')], {});
     }
     if(isBlob(content)){
-        return write({...rest,content,fileName,contentType})
+        return write({...rest,content,fileName,contentType}).finally(Preloader.close)
+    }
+    if(isMobileNative()){
+        return FileSaver.save({...rest,content:XLSX.write(workbook, {type:'base64', bookType:ext}),fileName}).finally(Preloader.close).finally(Preloader.close);
     }
     return new Promise((resolve,reject)=>{
-        Preloader.open("génération du fichier excel "+fileName);
         try {
             XLSX.writeFile(workbook, fileName);
             setTimeout(()=>{
-                Preloader.close();
                 resolve({fileName});
             },1000);
         } catch(e){
             reject(e);
+        } finally{
+            Preloader.close();
         }
     })
 }

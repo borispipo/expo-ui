@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 import {defaultStr,base64toBlob,dataURLToBlob,getTypeFromDataURL,isNonNullString,getFileName,getFileExtension,defaultNumber,defaultBool,dataURLToBase64,isBlob,isBase64,isDataURL} from "$cutils";
-const FileSaver = require('file-saver');
 const mime = require('react-native-mime-types')
 const XLSX = require("xlsx");
 import Preloader from "$preloader";
+import FileSaver from "./FileSaver";
 
 
 /**** sauvegarde un fichier sur le disque 
@@ -14,49 +14,35 @@ import Preloader from "$preloader";
      *      charset {string}: L'encodage à utiliser pour l'enregistrement du fichier, par défaut utf-8
      *      directory || dir {string} : le répertoire dans lequel enregistrer le fichier
      *      systemDirectory || SystemDirectory : le répertoire racine au device, où enregistrer la données
+            path {string}, le chemin de sauvegarde des données
      *      fileName {string} : le nom du fichier à enregistrer
      *      success {function} : la fonction de rappel à appeler en cas de success
      *      error {function} la fonction de rappel à appeler en cas d'erreur
      *      isBinary : si c'est un fichier binaire
      *  }
     */
- export const write = ({content,type,isBinary,timeout,delay,share,contentType,path,directory,fileName})=>{    
-    share = defaultBool(share,true);
+ export const write = ({content,type,share,contentType,fileName,...rest})=>{    
     fileName = sanitizeFileName(fileName);
     contentType = defaultStr(contentType)  || mime.contentType(fileName) || mime.contentType(".txt");
-    return new Promise((resolve,reject)=>{
-        if(!isNonNullString(fileName)){
-            reject({status:false,msg:'Nom de fichier invalide'});
-            return;
+    if(!isNonNullString(fileName)){
+        return Promise.reject({status:false,msg:'Nom de fichier invalide'});
+    }
+    if(isBase64(content)){
+       content = new Blob([base64toBlob(content,contentType)], {});
+    } else if(isDataURL(content)){
+        const type = getTypeFromDataURL(content);
+        content = dataURLToBlob(content);
+        if(isNonNullString(type)){
+            contentType = type;
         }
-        if(isDataURL(content)){
-            const type = getTypeFromDataURL(content);
-            content = dataURLToBlob(content);
-            if(isNonNullString(type)){
-                contentType = type;
-            }
-        }
-        content = isBlob(content)? content : new Blob([content], { type: content?.type||contentType})
-        try {
-            FileSaver.saveAs(content, fileName);
-            setTimeout(() => {
-                resolve({path:fileName,isWeb : true});
-            }, defaultNumber(timeout,delay,3000));
-        } catch(e){
-            reject(e);
-        }
-    })
+    }
+    return FileSaver.saveBlob({content:isBlob(content)? content : new Blob([content], { type: content?.type||contentType}),share:defaultBool(share,true),fileName,contentType,...rest})
 }
 
 export const writeText = (args)=>{
     return write({...args,contentType:mime.contentType(".txt")});
 }
-function s2ab(s) {
-  var buf = new ArrayBuffer(s.length);
-  var view = new Uint8Array(buf);
-  for (var i=0; i!=s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
-  return buf;
-}
+
 /***
  * @see https://ourtechroom.com/tech/mime-type-for-excel/ for excel mimesTypes
  * .xls	 : application/vnd.ms-excel

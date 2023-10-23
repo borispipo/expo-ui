@@ -167,7 +167,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
     React.setRef(ref,context);
     React.useEffect(()=>{
         if(onMount ==='function'){
-             onMount({context})
+             onMount({context,props})
         }
         return ()=>{
             React.setRef(ref,null);

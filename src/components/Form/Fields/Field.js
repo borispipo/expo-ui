@@ -182,17 +182,6 @@ export default class Field extends AppComponent {
         }
         this.INITIAL_STATE.validType = this.INITIAL_STATE.validRule = validType;
         this.INITIAL_STATE.validParams = validParams;
-        Object.defineProperties(this.INITIAL_STATE,{
-            beforeValidate : {
-                value : defaultFunc(beforeValidate),override : false,
-            },
-            onValidate : {
-                value : defaultFunc(onValidate),override : false,
-            },
-            onNoValidate : {
-                value : defaultFunc(onNoValidate),override : false,
-            },
-        })
         if(!this.isValidRuleDynamic()){
             Object.defineProperties(this.INITIAL_STATE,{
                 validType : {value:validType,override:false},
@@ -241,7 +230,7 @@ export default class Field extends AppComponent {
                     return context;
                 }
             }
-            this.INITIAL_STATE.beforeValidate.call(this,{...defaultObj(rest),value,name:this.name,field:this.name,formName:this.formName,context:this,event,validRule,validParams});
+            typeof this.props.beforeValidate=="function" && this.props.beforeValidate.call(this,{...defaultObj(rest),value,name:this.name,field:this.name,formName:this.formName,context:this,event,validRule,validParams});
         });
         return _result;
     }
@@ -284,7 +273,7 @@ export default class Field extends AppComponent {
                     actions[k][action]();
                 }
                 let form = Forms.getForm(this.formName);
-                this.INITIAL_STATE.onValidate.call(this,{...defaultObj(rest),isFilter:this.isFilter(),props:this.props,formName:this.formName,form,name:this.name,field:this.name,value,event,context:this});
+                typeof this.props.onValidate=="function" && this.props.onValidate.call(this,{...defaultObj(rest),isFilter:this.isFilter(),props:this.props,formName:this.formName,form,name:this.name,field:this.name,value,event,context:this});
                 this.callOnChange({value,event,isValid:true,...rest});
                 if(form && form.props){
                     if(canEnable){
@@ -357,7 +346,7 @@ export default class Field extends AppComponent {
                 for(var k in actions){
                     actions[k].disable();
                 }
-                this.INITIAL_STATE.onNoValidate.call(this,{...defaultObj(rest),isFilter:this.isFilter(),props:this.props,msg,value,formName:this.formName,field:this.name,name:this.name,context:this,event,validRule,validType:validRule,validParams,context:this});
+                typeof this.props.onNoValidate=="function" && this.props.onNoValidate.call(this,{...defaultObj(rest),isFilter:this.isFilter(),props:this.props,msg,value,formName:this.formName,field:this.name,name:this.name,context:this,event,validRule,validType:validRule,validParams,context:this});
                 let form = Forms.getForm(this.formName);
                 this.callOnChange({value,validRule,validParams,event,isValid:false,...rest});
                 if(form){

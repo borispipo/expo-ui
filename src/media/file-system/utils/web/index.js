@@ -31,4 +31,4 @@ export const readAsStringAsync = async (asset)=>{
     return readAs(asset);
 }
 
-export * from "./write";
+export const Directories = {};

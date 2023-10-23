@@ -7,3 +7,5 @@ import * as FileSystem from "./exports";
 export default FileSystem;
 
 export * from "./exports";
+
+export {default as path} from "./path";

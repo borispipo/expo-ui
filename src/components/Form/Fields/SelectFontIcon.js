@@ -8,8 +8,11 @@ export default class FormFieldSelectFontIcon extends SelectField{
             ref = {(el)=>{
                 this._field = el;
             }}
-            onMount = {({context})=>{
+            onMount = {({context,...rest})=>{
                 this._field = context;
+                if(typeof props.onMount =='function'){
+                    props.onMount({context,...rest});
+                 }
             }}
             onChange = {(args)=>{
                 this.validateWithCallOnChange(args);

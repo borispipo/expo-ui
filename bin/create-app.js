@@ -125,6 +125,8 @@ const createAPPJSONFile = (projectRoot,{name,version})=>{
         "supportsTablet": true
       },
       "android": {
+        "blockedPermissions": [],
+        "softwareKeyboardLayoutMode": "pan",
         "adaptiveIcon": {
           "foregroundImage": "./assets/adaptive-icon.png",
           "backgroundColor": "#ffffff"

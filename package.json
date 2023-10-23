@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "6.61.0",
+  "version": "6.61.1",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "main",
   "scripts": {
@@ -77,8 +77,8 @@
     "@react-native-community/netinfo": "9.3.10",
     "@react-native/assets-registry": "^0.72.0",
     "@react-navigation/native": "^6.1.9",
-    "@react-navigation/native-stack": "^6.9.15",
-    "@react-navigation/stack": "^6.3.19",
+    "@react-navigation/native-stack": "^6.9.16",
+    "@react-navigation/stack": "^6.3.20",
     "@shopify/flash-list": "1.4.3",
     "apexcharts": "^3.44.0",
     "expo": "^49.0.16",

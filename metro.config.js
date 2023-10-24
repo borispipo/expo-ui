@@ -39,7 +39,7 @@ module.exports = function(opts){
     nodeModulesPaths.unshift(nodeModulePath);
   }
   config.resolver.nodeModulesPaths = nodeModulesPaths;
-  config.projectRoot = projectRoot;
+  //config.projectRoot = projectRoot;
   config.resolver.assetExts = [
      ...config.resolver.assetExts,
      ...assetExts,

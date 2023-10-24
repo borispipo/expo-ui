@@ -17,7 +17,9 @@ module.exports = (projectRoot,forceCreate)=>{
         catch (e){}
     } 
     if(!fs.existsSync(localEnv) && forceCreate !==false){
-        writeFile(localEnv,"");
+        try {
+            writeFile(localEnv,"");
+        } catch(e){}
     }
     return localEnv;
 }

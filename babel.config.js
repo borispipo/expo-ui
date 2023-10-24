@@ -47,8 +47,6 @@ module.exports = function(api,opts) {
      }
     
   }
-  
-  
   return {
     presets: [
       ['babel-preset-expo']
@@ -57,8 +55,8 @@ module.exports = function(api,opts) {
       ...(Array.isArray(opts.plugins) ? options.plugins : []),
       ["inline-dotenv",inlineDovOptions],
       ["module-resolver", {"alias": alias}],
-      ["@babel/plugin-proposal-export-namespace-from"],
-      ['react-native-reanimated/plugin'],
+      "@babel/plugin-proposal-export-namespace-from",
+      'react-native-reanimated/plugin',
     ],
   };
 };

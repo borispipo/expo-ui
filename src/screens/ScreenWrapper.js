@@ -69,7 +69,7 @@ export default function ScreenWrapperNavComponent(_props){
         groupName = {groupName}
         {...rest}
         key = {sanitizedName}
-        authRequired={authRequired === false ? false : authRequired || allowDrawer} 
+        authRequired={authRequired === false || Screen.authRequired ===false ? false : authRequired || allowDrawer} 
         backAction={options.backAction === false || Screen.backAction ===false ? false : isModal} 
         modal={isModal} 
         navigation = {navigation}

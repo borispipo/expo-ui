@@ -112,6 +112,7 @@ const createAPPJSONFile = (projectRoot,{name,version})=>{
       "version":"${version}",
       "orientation": "portrait",
       "icon": "./assets/icon.png",
+      "jsEngine": "hermes",
       "splash": {
         "image": "./assets/splash.png",
         "resizeMode": "contain",

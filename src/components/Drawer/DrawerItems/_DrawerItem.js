@@ -62,7 +62,7 @@ const DrawerItem = ({icon,iconProps,borderRadius,color,minimized,contentContaine
       ],
     }
     const labelContent = typeof label =='function'? label(lProps) : label;
-    return React.isValidElement(labelContent,true)? <Label testID={testID+"_Label"} {...lProps}>
+    return React.isValidElement(labelContent,true)? <Label testID={testID+"_DrawerItemLabel"} {...lProps}>
       {labelContent}
     </Label> : null;
   },[labelProps,typeof label =='function'?true:label,theme.name,theme.colors.primary,minimized]);
@@ -87,11 +87,11 @@ const DrawerItem = ({icon,iconProps,borderRadius,color,minimized,contentContaine
         accessibilityState={{ selected: active }}
         accessibilityLabel={accessibilityLabel}
       >
-        <View  {...contentContainerProps} style={[styles.contentContainer,contentContainerProps.style]} testID={testID+"_Wrapper"}>
-          <View {...contentProps} style={[styles.content,contentProps.style]} testID={testID+"_Content"}>
+        <View  {...contentContainerProps} style={[styles.contentContainer,contentContainerProps.style]} testID={testID+"_DrawerItemContentContainer"}>
+          <View {...contentProps} style={[styles.content,contentProps.style]} testID={testID+"_DrawerItemContent"}>
             {left}
             {icon ? (
-              <Icon testID={testID+"_Icon"} icon={icon} {...iconProps} 
+              <Icon testID={testID+"_DrawerItemIcon"} icon={icon} {...iconProps} 
               style={[iconProps.style,styles.icon,!minimized?{
                  alignItems : 'flex-start'
               }:{alignItems:isExpandable?'flex-end':'center'}]} tooltip={minimized?defaultStr(title,label,accessibilityLabel):""} 
@@ -162,6 +162,8 @@ const icTye = PropTypes.oneOfType([
 DrawerItem.propTypes = {
   icon : icTye,
   active : PropTypes.bool,
+  contentProps : PropTypes.object,///les props du content
+  contentContainerProps : PropTypes.object,///les props du contentContainer
   borderRadius : PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.number,

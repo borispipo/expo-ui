@@ -21,7 +21,11 @@ import {extendFormFields} from "$ecomponents/Form/Fields";
     beforeExit : ()=><Promise>     
     getTableData : ()=>{object|array}
     getStructData : ()=>{object|array}
-    tablesData : {object}, la liste des tables de données
+    tablesData : {object:{
+      table1:{drawerSortOrder:{number,l'ordre d'apparition dans le drawer},showInDrawer:{boolean|{funct<{boolean}>},si l'on affichera la table de données dans le drawers}},
+      table2:{},
+      table3:{},...[tableN]:{}}
+    }, la liste des tables de données
     structsData : {object}, la liste des données de structures
     handleHelpScreen : {boolean}, //si l'écran d'aide sera pris en compte, l'écran d'aide ainsi que les écrans des termes d'utilisations et autres
     convertFiltersToSQL : {boolean}, si les filtres de datagrid ou filtres seront convertis au format SQL
@@ -42,7 +46,13 @@ import {extendFormFields} from "$ecomponents/Form/Fields";
     navigation : {
       screens : {Array}, les écrans de navigation,
       screenOptions : {object}, les options du composant Stack.Navigator, voir https://reactnavigation.org/docs/native-stack-navigator/
-      drawerItems : {object|array|function}, la fonction permettant d'obtenir les items du drawer principal de l'application,
+      drawerItems : {object|array|function}, la fonction permettant d'obtenir les items du drawer principal de l'application, Chaque item du drawer doit avoir la chaine drawerSection, chaine de caractère determinant le code de la section dans lequel l'afficher
+      drawerSections : {object : {
+          [key{string}]:{string}} |
+          [key{string}] : {object { code:{string},label:{Node},order:{number, l'ordre de trie de la section}}}
+      } //les différentes sections à utiliser pour le rendu du drawer, deux sections par défaut existent : 
+      les sectionis help et dashboard; help pour le rendu des items de la section Aide et Dashboard pour le rendu des items de la section Dashboard/Home
+      drawerItemsMutator  : {function}, la fonction permettant de muter les drawerItems à chaque fois qu'on appelle la fonction de récupératioin des drawerItems
       containerProps : {object}, les props à passer au composant NavigationContainer de react-navigation
     },
     realm : {}, //les options de configurations de la base de données realmdb

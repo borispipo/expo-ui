@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 import { isRouteActive} from "$cnavigation";
-import {defaultObj} from "$cutils";
+import {defaultObj,sortBy,defaultStr,isObj} from "$cutils";
 import appConfig from "$capp/config";
 import useContext from "$econtext/hooks";
 import {useMemo,useEffect,useRef} from "react";
@@ -12,9 +12,12 @@ import { screenName as aboutScreenName} from "$escreens/Help/About";
 import theme from "$theme";
 import APP from "$capp/instance";
 import useExpoUI from "$econtext/hooks";
+import Auth from "$cauth";
+import {getTableDataListRouteName} from "$enavigation/utils";
+import {isValidElement} from "$react";
 
 const useGetItems = (options)=>{
-    const {navigation:{drawerItems}} = useContext(); 
+    const {navigation:{drawerItems,drawerSections,drawerItemsMutator},tablesData} = useContext(); 
     options = defaultObj(options);
     const {refresh,force} = options;
     const showProfilOnDrawer = theme.showProfilAvatarOnDrawer;
@@ -42,38 +45,100 @@ const useGetItems = (options)=>{
     return useMemo(()=>{
         const name = !showProfilOnDrawer ? 'Dashboard' : appConfig.name;
         const itx = typeof drawerItems === "function" ? drawerItems() : drawerItems;
-        const r = [
-            {
-                label : name,
-                icon : 'view-dashboard',
-                title : 'Dashboard',
-                routeName : "Home",
-                divider : true,
-            },
-        ];
+        let items = {};
+        const tables = Object.size(tablesData,true)? sortBy(tablesData,{
+            column : "drawerSortOrder",
+            dir : "asc"
+        }) : null;
+        let hasDrawerSectionOrder = false;
+        Object.map(drawerSections,(section,s)=>{
+            if(typeof(section) =='string' && section){
+                section = {label:section.trim(),code:String(s)};
+            }
+            if(!isObj(section)) return null;
+            const sCode = defaultStr(section.code,s);
+            const sLabel = isValidElement(section.label,true) && section.label || isValidElement(section.text,true) && section.text || null;
+            if(!sLabel || !sCode) return null;
+            items[sCode] = {section:true,divider:true,...section,label:sLabel,code:sCode,items : Array.isArray(section.items)? section.items : []};
+            if(typeof section.order =="number"){
+                hasDrawerSectionOrder = true;
+            }
+        });
+        if(hasDrawerSectionOrder){
+            items = sortBy(items,{column:"order",dir:"asc"});
+        }
+        let sections = null;
+        Object.map(tables,(table,index)=>{
+            if(!isObj(table) || !isNonNullString(table.drawerSection)) return null;
+            const tableName = defaultStr(table.table,table.tableName,index).trim();
+            if(typeof table.showInDrawer =='function' && table.showInDrawer() === false) return;
+            if(!tableName || table.showInDrawer === false || !Auth.isTableDataAllowed({resource:tableName})){
+                return;
+            }
+            if(isNonNullString(table.perm) && !Auth.isAllowedFromStr(table.perm)) return;
+            const section = (table.drawerSection).trim();
+            if(!items[section]){
+                if(!sections) sections = Object.keys(items);
+                console.error("invalid drawer section ",section,"for table's drawer item ",table," please provide any section from the list of sections : ",sections)
+                return;
+            }
+            const tProps = {};
+            ["icon","label","text","desc","table","title","dbName","dataFileType","data","routeParams"].map((v)=>{
+                if(v in table){
+                    tProps[v] = table[v];
+                }
+            })
+            const toP = {
+                routeName : defaultStr(table.routeName,getTableDataListRouteName(tableName)),
+                ...tProps,
+                routeParams : {tableName,...Object.assign({},tProps.routeParams)}
+            };
+            items[section].items.push(toP);
+        });
         Object.map(itx,(item,i)=>{
-            if(isObj(item)){
-                r.push(item);
+            if(isObj(item) && isNonNullString(item.drawerSection) && (item.drawerSection.trim()) in items){
+                items[item.drawerSection.trim()].items.push(item);
             }
         })
         if(handleHelp){
-            r.push({divider:true});
-            const dataHelp = {
-                key : 'dataHelp',
+            const dHelp = isObj(items.help)? items.help : {};
+            items.help = {
+                key : 'help',
                 label : 'Aide',
                 section : true,
                 divider : false,
-                items : [
-                    {
-                        icon : 'help',
-                        label : 'A propos de '+APP.getName(),
-                        routeName : aboutScreenName,
-                    }
-                ]
+                ...dHelp,
+                items : Array.isArray(dHelp.items)? dHelp.items : [],
             };
-            r.push(dataHelp);
+            items.help.items.push({
+                icon : 'help',
+                label : 'A propos de '+APP.getName(),
+                routeName : aboutScreenName,
+            });
         }
-        return r;
+        const dashboard = isObj(items.dashboard) ? items.dashboard : {};
+        const dash = {
+            icon : 'view-dashboard',
+            title : 'Dashboard',
+            routeName : "Home",
+            divider : true,
+            ...dashboard,
+            label : isValidElement(dashboard.label,true) && dashboard.label || isValidElement(dashboard.text,true) && dashboard.text || name,
+        };
+        items = {
+            dashboard : dash?.showInDrawer === false || typeof dash.showInDrawer ==='function' && dash.showInDrawer() === false ? null : dash,
+            ...items,
+        };
+        if(typeof drawerItemsMutator ==='function'){
+            items = drawerItemsMutator(items);
+        }
+        Object.map(items,(item,section)=>{
+            if(!isObj(item) || item.section !== true) return;
+            if(!Array.isArray(item.items) || !item.items.length){
+                delete items[section];
+            }
+        });
+        return items;
     },[showProfilOnDrawer,handleHelp,refreshItemsRef.current,force])
 }
 

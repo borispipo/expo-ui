@@ -16,7 +16,7 @@ module.exports = function(opts){
   const config = getDefaultConfig(projectRoot,{
     // Enable CSS support.,
     isCSSEnabled: true,
-    mode: hasTranspilePath && 'exotic' || undefined,
+    //mode: hasTranspilePath && 'exotic' || undefined,
   });
   if(hasTranspilePath){
     config.transformer.babelTransformerPath = transpilePath;
@@ -25,6 +25,9 @@ module.exports = function(opts){
   const isLocalTest = require("./is-local-dev")();
   if(!isLocalTest && isDev){
     config.watchFolders.push(localDir);
+  }
+  if(isDev){
+    config.watchFolders.push(path.resolve(projectRoot,"node_modules","fto-consult","common"));
   }
   // 2. Let Metro know where to resolve packages and in what order
   const nodeModulesPaths = (Array.isArray(config.resolver.nodeModulesPaths)?config.resolver.nodeModulesPaths : []);

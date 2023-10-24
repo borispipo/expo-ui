@@ -27,7 +27,10 @@ module.exports = function(opts){
     config.watchFolders.push(localDir);
   }
   if(isDev){
-    config.watchFolders.push(path.resolve(projectRoot,"node_modules","fto-consult","common"));
+    const commonP = path.resolve(projectRoot,"node_modules","@fto-consult","common");
+    if(fs.existsSync(commonP)){
+      config.watchFolders.push();
+    }
   }
   // 2. Let Metro know where to resolve packages and in what order
   const nodeModulesPaths = (Array.isArray(config.resolver.nodeModulesPaths)?config.resolver.nodeModulesPaths : []);

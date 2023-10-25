@@ -29,7 +29,7 @@ module.exports = function(opts){
   if(isDev){
     const commonP = path.resolve(projectRoot,"node_modules","@fto-consult","common");
     if(fs.existsSync(commonP)){
-      config.watchFolders.push();
+      config.watchFolders.push(commonP);
     }
   }
   // 2. Let Metro know where to resolve packages and in what order
@@ -39,7 +39,7 @@ module.exports = function(opts){
     nodeModulesPaths.unshift(nodeModulePath);
   }
   config.resolver.nodeModulesPaths = nodeModulesPaths;
-  //config.projectRoot = projectRoot;
+  config.projectRoot = projectRoot;
   config.resolver.assetExts = [
      ...config.resolver.assetExts,
      ...assetExts,

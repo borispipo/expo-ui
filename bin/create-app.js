@@ -1,6 +1,6 @@
 const {exec,thowError,copy,writeFile,createDirSync,getDependencyVersion} = require("./utils");
 const fs = require("fs"), path = require("path");
-const createAppDir = path.resolve(__dirname,"create-app");
+const createAppDir = path.resolve("./create-app");
 module.exports = function(parsedArgs,{projectRoot:root}){
     const argvName = process.argv[3];
     const packageObj = require("../package.json");
@@ -76,6 +76,7 @@ module.exports = function(parsedArgs,{projectRoot:root}){
         }
     });
     createAPPJSONFile(projectRoot,{...mainPackage,name});
+    createEntryFile(projectRoot);
     copy(path.resolve(createAppDir,"src"),path.resolve(projectRoot,"src"),{recursive:true,overwrite:false});
     console.log("intalling dependencies ...");
     return exec(`npm install`,{projectRoot}).finally(()=>{
@@ -90,10 +91,9 @@ const defaultDevDependencies = {
  "@expo/metro-config" : "latest", 
 }
 const createEntryFile = (projectRoot)=>{
-    return;
-    const mainEntry = path.join(projectRoot,"index.js");
+    const mainEntry = path.join(projectRoot,"App.js");
     if(!fs.existsSync(mainEntry)){
-        writeFile(mainEntry,fs.readFileSync(path.join(createAppDir,"registerApp.js")));
+        writeFile(mainEntry,fs.readFileSync(path.join(createAppDir,"App.js")));
         return true;
     }
     return false;
@@ -101,8 +101,8 @@ const createEntryFile = (projectRoot)=>{
 
 const createAPPJSONFile = (projectRoot,{name,version})=>{
     version = version ||"1.0.0";
-    copy(path.join(createAppDir,"assets"),path.resolve(projectRoot,"assets"),{overwrite:false});
-    copy(path.join(createAppDir,".gitignore"),path.resolve(projectRoot,".gitignore"),{overwrite:false});
+    copy(path.join(createAppDir,"assets"),path.resolve(projectRoot,"assets"),{overwrite:false}).catch((e)=>{});
+    copy(path.join(createAppDir,".gitignore"),path.resolve(projectRoot,".gitignore"),{overwrite:false}).catch((e)=>{});
     const appJSONPath = path.join(projectRoot,"app.json");
         if(!fs.existsSync(appJSONPath)){
             writeFile(appJSONPath,`

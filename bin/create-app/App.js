@@ -1,8 +1,8 @@
 import ExpoUIProvider from "$expo-ui"; 
-import screens from "./src/screens";
-import drawerItems from "./src/navigation/drawerItems";
-import Logo from "./src/components/Logo";
-import drawerSections from "./src/navigation/drawerSections";
+import screens from "$screens";
+import drawerItems from "$navigation/drawerItems";
+import Logo from "$components/Logo";
+import drawerSections from "$navigation/drawerSections";
 
 export default function AppMainEntry(){
     return <ExpoUIProvider    

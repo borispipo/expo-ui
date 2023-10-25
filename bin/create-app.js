@@ -103,7 +103,12 @@ const createEntryFile = (projectRoot)=>{
 const createAPPJSONFile = (projectRoot,{name,version})=>{
     version = version ||"1.0.0";
     copy(path.join(getAppDir(),"assets"),path.resolve(projectRoot,"assets"),{overwrite:false}).catch((e)=>{});
-    copy(path.join(getAppDir(),".gitignore"),path.resolve(projectRoot,".gitignore"),{overwrite:false}).catch((e)=>{});
+    const gP = path.resolve(projectRoot,".gitignore"), gSpath = fs.existsSync(path.join(getAppDir(),".gitignore")) ;
+    if(fs.existsSync(gSpath) && !fs.existsSync(gP)){
+      try {
+        writeFile(gP,fs.readFileSync(gSpath));
+      } catch{};
+    }
     const appJSONPath = path.join(projectRoot,"app.json");
         if(!fs.existsSync(appJSONPath)){
             writeFile(appJSONPath,`

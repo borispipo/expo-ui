@@ -1,6 +1,6 @@
 const {exec,thowError,copy,writeFile,createDirSync,getDependencyVersion} = require("./utils");
 const fs = require("fs"), path = require("path");
-const createAppDir = path.resolve("./create-app");
+const getAppDir = x=>path.resolve(__dirname,"create-app");
 module.exports = function(parsedArgs,{projectRoot:root}){
     const argvName = process.argv[3];
     const packageObj = require("../package.json");
@@ -71,14 +71,14 @@ module.exports = function(parsedArgs,{projectRoot:root}){
     console.log("creating application .....");
     ["babel.config.js","metro.config.js","webpack.config.js"].map((p)=>{
         const rP = path.join(projectRoot,p);
-        const pp = path.join(createAppDir,p);
+        const pp = path.join(getAppDir(),p);
         if(!fs.existsSync(rP) && fs.existsSync(pp)){
           copy(pp,rP,{overwrite:false}).catch((e)=>{});
         }
     });
     createAPPJSONFile(projectRoot,{...mainPackage,name});
     createEntryFile(projectRoot);
-    copy(path.resolve(createAppDir,"src"),path.resolve(projectRoot,"src"),{recursive:true,overwrite:false});
+    copy(path.resolve(getAppDir(),"src"),path.resolve(projectRoot,"src"),{recursive:true,overwrite:false});
     console.log("intalling dependencies ...");
     return exec(`npm install`,{projectRoot}).finally(()=>{
       setTimeout(()=>{
@@ -94,7 +94,7 @@ const defaultDevDependencies = {
 const createEntryFile = (projectRoot)=>{
     const mainEntry = path.join(projectRoot,"App.js");
     if(!fs.existsSync(mainEntry)){
-        writeFile(mainEntry,fs.readFileSync(path.join(createAppDir,"App.js")));
+        writeFile(mainEntry,fs.readFileSync(path.join(getAppDir(),"App.js")));
         return true;
     }
     return false;
@@ -102,8 +102,8 @@ const createEntryFile = (projectRoot)=>{
 
 const createAPPJSONFile = (projectRoot,{name,version})=>{
     version = version ||"1.0.0";
-    copy(path.join(createAppDir,"assets"),path.resolve(projectRoot,"assets"),{overwrite:false}).catch((e)=>{});
-    copy(path.join(createAppDir,".gitignore"),path.resolve(projectRoot,".gitignore"),{overwrite:false}).catch((e)=>{});
+    copy(path.join(getAppDir(),"assets"),path.resolve(projectRoot,"assets"),{overwrite:false}).catch((e)=>{});
+    copy(path.join(getAppDir(),".gitignore"),path.resolve(projectRoot,".gitignore"),{overwrite:false}).catch((e)=>{});
     const appJSONPath = path.join(projectRoot,"app.json");
         if(!fs.existsSync(appJSONPath)){
             writeFile(appJSONPath,`

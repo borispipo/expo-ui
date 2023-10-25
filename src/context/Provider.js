@@ -6,7 +6,8 @@ import { useColorScheme } from 'react-native';
 import {colorsAlias,Colors} from "$theme";
 import {isObj,isNonNullString,defaultStr,extendObj} from "$cutils";
 import {getMainScreens} from "$escreens/mainScreens";
-import {ExpoUIContext,disableAuth} from "./hooks";
+import {ExpoUIContext} from "./hooks";
+import {enableAuth,disableAuth} from "$cauth/session";
 import Login from "$eauth/Login";
 import {modes} from "$ecomponents/TextField";
 import {isMobileMedia} from "$cdimensions";
@@ -79,7 +80,7 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,c
     const isColorShemeDark = colorScheme ==="dark";
     if(components.authEnabled === false){
       disableAuth();
-    }
+    } else enableAuth();
     appConfig.extendAppTheme = (theme,Theme,...rest)=>{
         if(!isObj(theme)) return;
         const isDark = theme.dark || theme.isDark || isDynamicThemeSupported && isColorShemeDark ;

@@ -51,11 +51,12 @@ const useGetItems = (options)=>{
             dir : "asc"
         }) : null;
         let hasDrawerSectionOrder = false;
-        Object.map(drawerSections,(section,s)=>{
-            if(typeof(section) =='string' && section){
-                section = {label:section.trim(),code:String(s)};
+        Object.map(drawerSections,(ss,s)=>{
+            if(typeof(ss) =='string' && ss){
+                ss = {label:ss.trim(),code:String(s)};
             }
-            if(!isObj(section)) return null;
+            if(!isObj(ss)) return null;
+            const section= Object.clone(ss);
             const sCode = defaultStr(section.code,s);
             const sLabel = isValidElement(section.label,true) && section.label || isValidElement(section.text,true) && section.text || null;
             if(!sLabel || !sCode) return null;
@@ -101,7 +102,7 @@ const useGetItems = (options)=>{
             }
         })
         if(handleHelp){
-            const dHelp = isObj(items.help)? items.help : {};
+            const dHelp = isObj(items.help)? Object.clone(items.help) : {};
             items.help = {
                 key : 'help',
                 label : 'Aide',
@@ -116,7 +117,7 @@ const useGetItems = (options)=>{
                 routeName : aboutScreenName,
             });
         }
-        const dashboard = isObj(items.dashboard) ? items.dashboard : {};
+        const dashboard = isObj(items.dashboard) ? Object.clone(items.dashboard) : {};
         const dash = {
             icon : 'view-dashboard',
             title : 'Dashboard',

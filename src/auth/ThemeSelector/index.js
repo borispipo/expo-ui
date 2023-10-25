@@ -17,7 +17,7 @@ import {open,close} from "$preloader";
 import {fields,getThemeData} from "$theme/utils";
 import {modes} from "$ecomponents/TextField/utils";
 import { useColorScheme } from "react-native";
-import {createMaterial3Theme,useMaterial3Theme,getMaterial3Theme,isDynamicThemeSupported} from "@pchmn/expo-material3-theme";
+import {createMaterial3Theme,getMaterial3Theme} from "@pchmn/expo-material3-theme";
 import notify from "$cnotify";
 import appConfig from "$capp/config";
 

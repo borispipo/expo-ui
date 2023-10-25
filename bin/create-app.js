@@ -69,10 +69,11 @@ module.exports = function(parsedArgs,{projectRoot:root}){
         writeFile(mainPackagePath,JSON.stringify(mainPackage,null,2),{overwrite:true});
     }
     console.log("creating application .....");
-    [path.join(projectRoot,"babel.config.js"),path.join(projectRoot,"metro.config.js"),path.join(projectRoot,"webpack.config.js")].map((p)=>{
-        if(!fs.existsSync(p)){
-            const file = path.basename(p);
-            writeFile(p,fs.readFileSync(`${path.join(createAppDir,file)}`));
+    ["babel.config.js","metro.config.js","webpack.config.js"].map((p)=>{
+        const rP = path.join(projectRoot,p);
+        const pp = path.join(createAppDir,p);
+        if(!fs.existsSync(rP) && fs.existsSync(pp)){
+          copy(pp,rP,{overwrite:false}).catch((e)=>{});
         }
     });
     createAPPJSONFile(projectRoot,{...mainPackage,name});

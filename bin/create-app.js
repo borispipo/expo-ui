@@ -25,6 +25,7 @@ module.exports = function(parsedArgs,{projectRoot:root}){
     const expoVersion = getDependencyVersion(packageObj,"expo");
     const euModule = "@fto-consult/expo-ui";
     let hasUpdateDeps = false;
+    console.log("creating application name "+name);
     if(!hasPackage){
         mainPackage = {
           name,

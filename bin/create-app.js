@@ -69,7 +69,6 @@ module.exports = function(parsedArgs,{projectRoot:root}){
         writeFile(mainPackagePath,JSON.stringify(mainPackage,null,2),{overwrite:true});
     }
     console.log("creating application .....");
-    createEntryFile(projectRoot);
     [path.join(projectRoot,"babel.config.js"),path.join(projectRoot,"metro.config.js"),path.join(projectRoot,"webpack.config.js")].map((p)=>{
         if(!fs.existsSync(p)){
             const file = path.basename(p);
@@ -91,6 +90,7 @@ const defaultDevDependencies = {
  "@expo/metro-config" : "latest", 
 }
 const createEntryFile = (projectRoot)=>{
+    return;
     const mainEntry = path.join(projectRoot,"index.js");
     if(!fs.existsSync(mainEntry)){
         writeFile(mainEntry,fs.readFileSync(path.join(createAppDir,"registerApp.js")));

@@ -37,6 +37,10 @@ export default function AppMainEntry(){
             loginPropsMutator : {},//({object})=><{object}>, la fonction permettant de muter les props du composant Login,
             authEnabled : true,//si le module d'authentification sera requis
             customFormFields : {},//custom form fields
+            /*** la fonction permettant de muter les props du composant TableLink, permetant de lier les tables entre elles */
+            tableLinkPropsMutator : (props)=>{ 
+                return props;
+            }
         }}
         /*** //for application initialization
             @param {

@@ -7,7 +7,7 @@ import DateLib from "$date";
 import Image from "$ecomponents/Image";
 import React from "$react";
 import Label from "$ecomponents/Label";
-import TableLink from "$components/TableLink";
+import TableLink from "$ecomponents/TableLink";
 import {Flag} from "$ecomponents/Countries";
 import { StyleSheet } from "react-native";
 import {isDesktopMedia} from "$dimensions";

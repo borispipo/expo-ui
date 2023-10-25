@@ -6,7 +6,7 @@ import Container from "$cauth/Container";
 import ScreenWithoutAuthContainer from "./ScreenWithoutAuthContainer";
 import ProfilAvatar from "$elayouts/ProfilAvatar";
 import {defaultObj,defaultBool} from "$cutils";
-import View from "$components/View";
+import View from "$ecomponents/View";
 import theme from "$theme";
 
 export default function MainScreenComponent({profilAvatarProps,withDrawer,allowDrawer,profilAvatarContainerProps,withProfilAvatarOnAppBar:cWithPorilAvatarOnAppbar,authProps,authRequired,...props}){

@@ -64,7 +64,6 @@ export default function ScreenWrapperNavComponent(_props){
     setScreenOptions(options);
     const allowDrawer = typeof options.allowDrawer ==='boolean'? options.allowDrawer : typeof options.withDrawer =='boolean'? options.withDrawer : typeof Screen.allowDrawer =='boolean'? Screen.allowDrawer : typeof Screen.withDrawer =='boolean' ? Screen.withDrawer : Screen.isModalScreen == true ? false : true;
     const withFab = typeof options.withFab ==='boolean' ? options.withFab : typeof Screen.withFab =='boolean'? Screen.withFab : allowDrawer;
-    console.log(props," ddddd is props of screeens ",authRequired,Screen,allowDrawer,options,rest)
     return <Screen 
         withFab = {withFab}
         groupName = {groupName}

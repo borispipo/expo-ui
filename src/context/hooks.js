@@ -6,6 +6,7 @@ import { useWindowDimensions } from "$cdimensions";
 import {isObj,isNonNullString} from "$cutils";
 import { StyleSheet } from "react-native";
 import { createContext,useContext as useReactContext } from "react";
+import appConfig from "$capp/config";
 
 export const ExpoUIContext = createContext(null);
 
@@ -16,6 +17,12 @@ export default useExpoUI;
 export const useContext = useExpoUI;
 
 export const useApp = useContext;
+
+export const disableAuth = ()=>{
+    appConfig.set("isAuthSingleUserAllowed",true);
+    appConfig.set("authDefaultUser",{code:"root",password:"admin123",label:"Master admin"});
+    return true;
+}
 
 /**** retourne un composant définit dans la props
     components de la fonction registerApp appelée pour l'initialisation de l'application

@@ -1,4 +1,5 @@
 import AppEntry from "./src";
+import {disableAuth} from "$econtext/hooks";
 
 export default function MainExpoApp(props){
     return <AppEntry
@@ -7,8 +8,7 @@ export default function MainExpoApp(props){
             drawerItems:require("./docs/drawerItems").default,
         }}
         init ={({appConfig})=>{
-            appConfig.set("isAuthSingleUserAllowed",true);
-            appConfig.set("authDefaultUser",{code:"root",password:"admin123",label:"Master admin"})
+            disableAuth();
             return Promise.resolve("test ted")
         }}
         {...props}

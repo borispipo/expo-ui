@@ -5,7 +5,7 @@ import appConfig from "$capp/config";
 
 export default function HomeScreen(props){
     return <Screen {...props} style={[styles.container,props.style]}>
-        <Label primary style={[styles.label]}>Hello world! {appConfig.name}, version {appConfig.version}</Label>
+        <Label primary style={[styles.label]}>Hello world {appConfig.name}, version {appConfig.version}!</Label>
     </Screen>
 }
 

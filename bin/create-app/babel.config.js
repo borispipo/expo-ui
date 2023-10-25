@@ -5,7 +5,7 @@ module.exports = function(api) {
     const alias = {
       $src,
       $component : path.resolve($src,"component"),
-      $navigation : path.relative($src,"navigation"),
+      $navigation : path.resolve($src,"navigation"),
       $screens : path.resolve($src,"screens"),
       //...your custom module resolver alias, @see : https://www.npmjs.com/package/babel-plugin-module-resolver
     }

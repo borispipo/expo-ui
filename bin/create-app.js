@@ -103,10 +103,10 @@ const createEntryFile = (projectRoot)=>{
 const createAPPJSONFile = (projectRoot,{name,version})=>{
     version = version ||"1.0.0";
     copy(path.join(getAppDir(),"assets"),path.resolve(projectRoot,"assets"),{overwrite:false}).catch((e)=>{});
-    const gP = path.resolve(projectRoot,".gitignore"), gSpath = fs.existsSync(path.join(getAppDir(),".gitignore")) ;
-    if(fs.existsSync(gSpath) && !fs.existsSync(gP)){
+    const gP = path.resolve(projectRoot,".gitignore") ;
+    if(!fs.existsSync(gP)){
       try {
-        writeFile(gP,fs.readFileSync(gSpath));
+        writeFile(gP,gitignore);
       } catch{};
     }
     const appJSONPath = path.join(projectRoot,"app.json");
@@ -154,3 +154,38 @@ const createAPPJSONFile = (projectRoot,{name,version})=>{
         }
     return fs.existsSync(appJSONPath);
 }
+
+const gitignore = `
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+
+# Native
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+
+# typescript
+*.tsbuildinfo
+`

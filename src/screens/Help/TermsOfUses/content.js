@@ -12,6 +12,6 @@ export default function ContentTermsOfUses (){
     : React.isValidElement(TermsOfUses) ? TermsOfUses : 
     <Label primary style={{fontSize:15,fontWeight:'bold',padding:10}}>
         Pour modifier le contenu des Termes et contrat d'utilisation, il suffit de déclarer dans la propriété "components" 
-        de la fonction "registerApp", initialisant l'application, un attribut "TermsOfUses|termsOfUses", pointant vers le composant/l'élément react, dont le contenu, une fois rendu devra remplacer celui ci (le décrivant);
+        du provider "ExpoUIProvider", initialisant l'application, un attribut "TermsOfUses|termsOfUses", pointant vers le composant/l'élément react, dont le contenu, une fois rendu devra remplacer celui ci (le décrivant);
     </Label>
 }

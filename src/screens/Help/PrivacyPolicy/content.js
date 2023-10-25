@@ -11,6 +11,6 @@ export default function ContentPrivacy (){
     : React.isValidElement(PrivacyPolicy) ? PrivacyPolicy : 
     <Label primary style={{fontSize:15,fontWeight:'bold',padding:10}}>
         Pour modifier le contenu de la politique de confidentialité, il suffit de déclarer dans la propriété "components" 
-        de la fonction "registerApp", initialisant l'application, un attribut "PrivacyPolicy|privacyPolicy", pointant vers le composant/l'élément react, dont le contenu , une fois rendu devra remplacer celui ci (le décrivant);
+        du provider "ExpoUIProvider", initialisant l'application, un attribut "PrivacyPolicy|privacyPolicy", pointant vers le composant/l'élément react, dont le contenu , une fois rendu devra remplacer celui ci (le décrivant);
     </Label>
 }

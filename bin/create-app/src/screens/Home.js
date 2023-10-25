@@ -1,9 +1,11 @@
 import Screen from "$eScreen";
 import Label from "$ecomponents/Label";
-import { StyleSheet } from "react-native-web";
+import { StyleSheet } from "react-native";
+import appConfig from "$capp/config";
+
 export default function HomeScreen(props){
     return <Screen {...props} style={[styles.container,props.style]}>
-        <Label style={[styles.label]}>Hello world!</Label>
+        <Label primary style={[styles.label]}>Hello world! {appConfig.name}, version {appConfig.version}</Label>
     </Screen>
 }
 

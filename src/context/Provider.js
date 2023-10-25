@@ -55,6 +55,7 @@ import {extendFormFields} from "$ecomponents/Form/Fields";
       drawerItemsMutator  : {function}, la fonction permettant de muter les drawerItems à chaque fois qu'on appelle la fonction de récupératioin des drawerItems
       containerProps : {object}, les props à passer au composant NavigationContainer de react-navigation
     },
+    swrConfig : {object},//les paramètres de configuration de l'objet swr utilisée dans le composant SWRDatagrid
     realm : {}, //les options de configurations de la base de données realmdb
 */
 const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,components:cComponents,convertFiltersToSQL,getStructData,tablesData,structsData,...props})=>{

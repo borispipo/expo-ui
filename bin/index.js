@@ -2,7 +2,9 @@
 
 /**
   toujours ajouter l'instruction ci-dessus à la première ligne de chaque script npx
-@see : https://blog.shahednasser.com/how-to-create-a-npx-tool/ */
+  @see : https://blog.shahednasser.com/how-to-create-a-npx-tool/ 
+  @see : https://www.npmjs.com/package/commander, for command parsing
+*/
 'use strict';
 process.on('unhandledRejection', err => {
   throw err;

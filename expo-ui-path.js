@@ -17,23 +17,21 @@ module.exports = function (){
     if(require("./is-local-dev")()){//le programme s'exécute en environnement fix bugs sur electron
         return path.resolve(__dirname,suffix).replace(sep,(sep+sep));///pour la résolution du module expo-ui en mode test
     }
+    const isDevEnv = process?.env?.WEBPACK_SERVE && 'development' === process.env.NODE_ENV;
+    const packageJSON = require(process.cwd(),"package.json");
     const expoUIPath = path.resolve(process.cwd(),"node_modules","@fto-consult","expo-ui");
-    if(process?.env?.WEBPACK_SERVE && 'development' === process.env.NODE_ENV){
-        const rootPath = process.cwd();
-        const src = path.resolve(rootPath,"src");
+    if(isDevEnv && fs.existsSync(packageJSON)){
         try {
-            const envObj = require("./parse-env")();
-            const euPathm = typeof envObj.EXPO_UI_ROOT_PATH =="string" && envObj.EXPO_UI_ROOT_PATH && path.resolve(envObj.EXPO_UI_ROOT_PATH)||'';
-            const eu = euPathm && fs.existsSync(euPathm)? euPathm : null;
-            if(eu &&  fs.existsSync(path.resolve(eu,"src")) && fs.existsSync(path.resolve(eu,"webpack.config.js"))){
-                return path.resolve(eu,suffix).replace(sep,(sep+sep));
+            const package = require(`${packageJSON}`);
+            if(package && typeof package =='objects' && package?.expoUIRootPath && typeof package.expoUIRootPath ==='string'){
+                const p = path.resolve(package.expoUIRootPath);
+                if(fs.existsSync(p) && fs.existsSync(path.resolve(p,"src")) && fs.existsSync(path.resolve(p,"webpack.config.js"))){
+                    return path.resolve(p,suffix).replace(sep,(sep+sep));
+                }
             }
+            
         } catch{}
-        const expoUi = path.resolve(rootPath,"expo-ui");
-        if(fs.existsSync(src) && fs.existsSync(expoUi) && fs.existsSync(path.resolve(expoUi,"webpack.config.js"))){
-            return path.resolve(expoUi,suffix).replace(sep,(sep+sep));
-        }
     }
+    /***** old dev env */
     return suffix ? path.join(expoUIPath,suffix).replace(sep,"/"): expoUIPath;
 };
-

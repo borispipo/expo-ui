@@ -14,6 +14,7 @@ import {isMobileMedia} from "$cdimensions";
 import { prepareScreens } from "./TableData";
 import {extendFormFields} from "$ecomponents/Form/Fields";
 import {AuthProvider} from '$cauth';
+import { signInRef } from "$cauth/authSignIn2SignOut";
 
 /*****
     les utilitaires disponibles à passer au provider : 
@@ -73,6 +74,7 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
         return extendProps(cAuth.loginPropsMutator,props);
       },
     }
+    extendObj(signInRef.current,auth);
     extendFormFields(customFormFields);
     structsData = isObj(structsData)? structsData : null;
     appConfig.tablesData = tablesData;

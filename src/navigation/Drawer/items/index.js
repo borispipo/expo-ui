@@ -73,9 +73,10 @@ const useGetItems = (options)=>{
             if(!isObj(table) || !isNonNullString(table.drawerSection)) return null;
             const tableName = defaultStr(table.table,table.tableName,index).trim();
             if(typeof table.showInDrawer =='function' && table.showInDrawer() === false) return;
-            if(!tableName || table.showInDrawer === false || !Auth.isTableDataAllowed({resource:tableName})){
+            if(!tableName || table.showInDrawer === false || !Auth.isTableDataAllowed({table:tableName})){
                 return;
             }
+            console.log("is table allowed ",table);
             if(isNonNullString(table.perm) && !Auth.isAllowedFromStr(table.perm)) return;
             const section = (table.drawerSection).trim();
             if(!items[section]){
@@ -130,7 +131,6 @@ const useGetItems = (options)=>{
             dashboard : dash?.showInDrawer === false || typeof dash.showInDrawer ==='function' && dash.showInDrawer() === false ? null : dash,
             ...items,
         };
-        console.log(drawerSections," dddd is d sections for ",drawerItems);
         if(typeof drawerItemsMutator ==='function'){
             items = drawerItemsMutator(items,{drawerItems,drawerSections});
         }

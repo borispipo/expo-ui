@@ -56,7 +56,7 @@ import {extendFormFields} from "$ecomponents/Form/Fields";
       containerProps : {object}, les props à passer au composant NavigationContainer de react-navigation
     },
     auth : {
-      profileFieldsMutator : {({object})=><{object}> | {object})}, la fonction permettant de muter les champs  à passer à l'écran de mise à jour du profil utilisateur
+      profilePropsMutator : {({object})=><{object}> | {object})}, la fonction permettant de muter les champs  à passer à l'écran de mise à jour du profil utilisateur
       loginPropsMutator : ({object})=><{object}>, la fonction permettant de muter les props du composant Login,
     }
     swrConfig : {object},//les paramètres de configuration de l'objet swr utilisée dans le composant SWRDatagrid

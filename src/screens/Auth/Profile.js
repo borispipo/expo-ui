@@ -1,5 +1,5 @@
 import FormDataScreen from "$elayouts/Screen/FormData";
-import {defaultStr,defaultObj,isObjOrArray,isObj} from "$cutils";
+import {defaultStr,defaultObj,isObjOrArray,extendObj,isObj} from "$cutils";
 import Auth from "$cauth";
 import {navigate} from "$cnavigation";
 import SelectTheme from "$ethemeSelectorComponent";
@@ -11,18 +11,11 @@ import useContext from "$econtext/hooks";
 
 import {screenName} from "./utils";
 
-export default function UserProfileScreen(props){
-    const user = defaultObj(props.user,Auth.getLoggedUser());
-    const testID = defaultStr(props.testID,"RN_UserProfile_FormData");
-    const themeRef = React.useRef(defaultObj(user.theme));
-    const hasChangeRef = React.useRef(false);
-    const {auth:{profileFieldsMutator}} = useContext();
-    const authProfileFields = typeof profileFieldsMutator =='function'?profileFieldsMutator(props) : profileFieldsMutator;
-    const fields = isObj(authProfileFields)? Object.clone(authProfileFields) : {};
-    const formFields = {
+export default function UserProfileScreen({fields,...p}){
+    const {auth:{profilePropsMutator}} = useContext();
+    fields = extendObj({},fields,{
         avatar : {
             ...avatarProps,
-            ...(isObj(fields.avatar)?fields.avatar:{}),
             text : undefined,
             label : undefined,
             responsive : false,
@@ -33,13 +26,21 @@ export default function UserProfileScreen(props){
                     justifyContent : 'center',
                 }
             },
+            ...defaultObj(fields?.avatar),
         },
-    }
+    })
+    const p2 = {...p,fields};
+    const props = typeof profilePropsMutator =='function'? extendObj({},p,profilePropsMutator(p2)) : p2;
+    const user = defaultObj(props.user,Auth.getLoggedUser());
+    const testID = defaultStr(props.testID,"RN_UserProfile_FormData");
+    const themeRef = React.useRef(defaultObj(user.theme));
+    const hasChangeRef = React.useRef(false);
+    const formFields = isObj(props.fields)? props.fields : fields;
     Object.map(fields,(field,i)=>{
         if(i !='avatar' && isObj(field)){
             formFields[i] = field;
         }
-    })
+    });
     formFields.theme = {
         type  : 'html',
         text : 'Theme',

@@ -32,7 +32,7 @@ export default function AppMainEntry(){
         auth = {{
             enabled : false,//la gestion de l'authentification est désactivée par défaut
             loginPropsMutator : {},//({object})=><{object}>, la fonction permettant de muter les props du composant Login,
-            profileFieldsMutator : (fields)=>fields,//la fonction permettant de muter les champs liés à l'écran de mise à jour d'un profil utilisateur
+            profilePropsMutator : ({fields,...props})=>({fields,...props}),//la fonction permettant de muter les champs liés à l'écran de mise à jour d'un profil utilisateur
         }}
         components = {{
             /*** logo : ReactNode|ReactElement | ReactComponent | object {

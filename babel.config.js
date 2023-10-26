@@ -1,7 +1,6 @@
 module.exports = function(api,opts) {
   opts = typeof opts =='object' && opts ? opts : {};
   api = api && typeof api =='object'? api : {};
-  const isLocalDev = require("./is-local-dev")();//si l'application est en developpement local
   ///les chemin vers la variable d'environnement, le chemin du fichier .env,@see : https://github.com/brysgo/babel-plugin-inline-dotenv
   //console.log(environmentPath," is envvv ",opts);
   const path = require("path");
@@ -15,16 +14,12 @@ module.exports = function(api,opts) {
   }
   /*** par défaut, les variables d'environnements sont stockés dans le fichier .env situé à la racine du projet, référencée par la prop base  */
   const alias =  require("./babel.config.alias")(options);
-  const $eelectron = alias.$eelectron || null;
-  const expoRoot = alias["$expo-ui-root-path"] || null;
-  const aDistPath = path.join("apexcharts","dist","apexcharts.min.js");
-  const expoRootModulesP = expoRoot && fs.existsSync(path.resolve(expoRoot,"node_modules")) && path.resolve(expoRoot,"node_modules") || null;
-  const nodeModulesPath = expoRootModulesP && fs.existsSync(path.resolve(expoRootModulesP,aDistPath)) ? expoRootModulesP :   alias.$enodeModulesPath;
+  const $eelectron = path.resolve(__dirname,"electron");
   const packageRootPath = path.resolve(process.cwd(),"package.json");
   const packageJSON = fs.existsSync(packageRootPath) && require(`${packageRootPath}`) || {};
   const envObj = require("./parse-env")();
   const writeFilePath = path.resolve($eelectron,"utils","writeFile.js");
-  if(nodeModulesPath && fs.existsSync(nodeModulesPath) && $eelectron && fs.existsSync($eelectron)){
+  if($eelectron && fs.existsSync($eelectron)){
      if(fs.existsSync(writeFilePath)){
         const writeFile = require(`${writeFilePath}`);
         //generate getTable.js file

@@ -130,8 +130,9 @@ const useGetItems = (options)=>{
             dashboard : dash?.showInDrawer === false || typeof dash.showInDrawer ==='function' && dash.showInDrawer() === false ? null : dash,
             ...items,
         };
+        console.log(drawerSections," dddd is d sections for ",drawerItems);
         if(typeof drawerItemsMutator ==='function'){
-            items = drawerItemsMutator(items);
+            items = drawerItemsMutator(items,{drawerItems,drawerSections});
         }
         Object.map(items,(item,section)=>{
             if(!isObj(item) || item.section !== true) return;

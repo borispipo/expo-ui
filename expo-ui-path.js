@@ -23,14 +23,14 @@ module.exports = function (){
     if(isDevEnv && fs.existsSync(packageJSON)){
         try {
             const package = require(`${packageJSON}`);
-            if(package && typeof package =='objects' && package?.expoUIRootPath && typeof package.expoUIRootPath ==='string'){
+            if(package && typeof package =='object' && package?.expoUIRootPath && typeof package.expoUIRootPath ==='string'){
                 const p = path.resolve(package.expoUIRootPath);
                 if(fs.existsSync(p) && fs.existsSync(path.resolve(p,"src")) && fs.existsSync(path.resolve(p,"webpack.config.js"))){
                     return path.resolve(p,suffix).replace(sep,(sep+sep));
                 }
             }
             
-        } catch{}
+        } catch (e){}
     }
     /***** old dev env */
     return suffix ? path.join(expoUIPath,suffix).replace(sep,"/"): expoUIPath;

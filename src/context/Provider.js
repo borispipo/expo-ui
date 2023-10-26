@@ -13,7 +13,7 @@ import {modes} from "$ecomponents/TextField";
 import {isMobileMedia} from "$cdimensions";
 import { prepareScreens } from "./TableData";
 import {extendFormFields} from "$ecomponents/Form/Fields";
-
+import {AuthProvider} from '$cauth';
 
 /*****
     les utilitaires disponibles à passer au provider : 
@@ -80,7 +80,6 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
     appConfig.structsData = appConfig.structsData = isObj(structsData)? structsData : null;
     getTableData = appConfig.getTable = appConfig.getTableData = getTableOrStructDataCall(tablesData,getTableData);
     getStructData = appConfig.getStructData = getTableOrStructDataCall(structsData,getStructData);
-    appConfig.LoginComponent = Login;
     swrConfig = defaultObj(swrConfig);
     if(convertFiltersToSQL !== undefined){
       appConfig.set("convertFiltersToSQL",convertFiltersToSQL);
@@ -191,7 +190,7 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
         appConfig,
         swrConfig,
       }} 
-      children={children}
+      children={<AuthProvider {...auth} LoginComponent={Login}>{children}</AuthProvider>}
     />;
 }
 const getTableOrStructDataCall = (tablesOrStructDatas,getTableOrStructDataFunc)=>{

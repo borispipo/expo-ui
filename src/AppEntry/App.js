@@ -30,7 +30,6 @@ import { DialogProvider as FormDataDialogProvider } from '$eform/FormData';
 import ErrorBoundaryProvider from "$ecomponents/ErrorBoundary/Provider";
 import notify, {notificationRef} from "$notify";
 import DropdownAlert from '$ecomponents/Dialog/DropdownAlert';
-import {AuthProvider} from '$cauth';
 import { PreferencesContext } from '../Preferences';
 import ErrorBoundary from "$ecomponents/ErrorBoundary";
 import  {updateTheme,defaultTheme} from "$theme";
@@ -63,7 +62,7 @@ const NAVIGATION_PERSISTENCE_KEY = 'NAVIGATION_STATE';
  */
 function App({init:initApp,initialRouteName:appInitialRouteName,render}) {
   AppStateService.init();
-  const {FontsIconsFilter,beforeExit,preferences:appPreferences,navigation,getStartedRouteName,auth} = useContext();
+  const {FontsIconsFilter,beforeExit,preferences:appPreferences,navigation,getStartedRouteName} = useContext();
   const {containerProps} = navigation;
   const [initialState, setInitialState] = React.useState(undefined);
   const appReadyRef = React.useRef(true);
@@ -271,8 +270,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,render}) {
         />
   </NavigationContainer>  : null;
   const content = isLoaded ? typeof render == 'function'? render({children:child,appConfig,config:appConfig}) : child : null;
-  return <AuthProvider {...auth}>
-        <SafeAreaProvider>
+  return <SafeAreaProvider>
             <GestureHandlerRootView testID={"RN_MainAppGestureHanleRootView"}  style={styles.gesture}>
                 <AppEntryRootView>
                     <PaperProvider 
@@ -303,8 +301,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,render}) {
                   </PaperProvider>
                 </AppEntryRootView>
             </GestureHandlerRootView>
-        </SafeAreaProvider>
-  </AuthProvider>;
+   </SafeAreaProvider>
 }
 
 export default App;

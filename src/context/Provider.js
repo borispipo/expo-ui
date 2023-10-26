@@ -7,7 +7,7 @@ import {colorsAlias,Colors} from "$theme";
 import {isObj,isNonNullString,defaultStr,extendObj} from "$cutils";
 import {getMainScreens} from "$escreens/mainScreens";
 import {ExpoUIContext} from "./hooks";
-import {enableAuth,disableAuth} from "$cauth/session";
+import {enableAuth,disableAuth} from "$cauth/perms";
 import Login from "$eauth/Login";
 import {modes} from "$ecomponents/TextField";
 import {isMobileMedia} from "$cdimensions";

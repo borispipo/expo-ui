@@ -76,7 +76,6 @@ const useGetItems = (options)=>{
             if(!tableName || table.showInDrawer === false || !Auth.isTableDataAllowed({table:tableName})){
                 return;
             }
-            console.log("is table allowed ",table);
             if(isNonNullString(table.perm) && !Auth.isAllowedFromStr(table.perm)) return;
             const section = (table.drawerSection).trim();
             if(!items[section]){

@@ -1,5 +1,5 @@
 import AppEntry from "./src";
-import {disableAuth} from "$econtext/hooks";
+import {disableAuth} from "$cauth/perms";
 
 export default function MainExpoApp(props){
     return <AppEntry

@@ -7,6 +7,7 @@ import Preloader from "$epreloader";
 import {SignIn2SignOut} from "$cauth";
 import React from "$react";
 import avatarProps from "$eauth/avatarProps";
+import useContext from "$econtext/hooks";
 
 import {screenName} from "./utils";
 
@@ -15,7 +16,8 @@ export default function UserProfileScreen(props){
     const testID = defaultStr(props.testID,"RN_UserProfile_FormData");
     const themeRef = React.useRef(defaultObj(user.theme));
     const hasChangeRef = React.useRef(false);
-    const authProfileFields = typeof SignIn2SignOut.authProfileFields =='function'?SignIn2SignOut.authProfileFields(props) : SignIn2SignOut.authProfileFields;
+    const {auth:{profileFieldsMutator}} = useContext();
+    const authProfileFields = typeof profileFieldsMutator =='function'?profileFieldsMutator(props) : profileFieldsMutator;
     const fields = isObj(authProfileFields)? Object.clone(authProfileFields) : {};
     const formFields = {
         avatar : {

@@ -29,13 +29,16 @@ export default function AppMainEntry(){
             },
             screenOptions : {},//les options du composant Stack.Navigator de react-navigation, voir https://reactnavigation.org/docs/native-stack-navigator/
         }}
+        auth = {{
+            enabled : false,//la gestion de l'authentification est désactivée par défaut
+            loginPropsMutator : {},//({object})=><{object}>, la fonction permettant de muter les props du composant Login,
+            profileFieldsMutator : (fields)=>fields,//la fonction permettant de muter les champs liés à l'écran de mise à jour d'un profil utilisateur
+        }}
         components = {{
             /*** logo : ReactNode|ReactElement | ReactComponent | object {
                image{ReactComponent} :,text {ReactComponent}
             },*/
             logo : Logo,//logo component's properties
-            loginPropsMutator : {},//({object})=><{object}>, la fonction permettant de muter les props du composant Login,
-            authEnabled : false,//la gestion de l'authentification est désactivée par défaut
             customFormFields : {},//custom form fields
             /*** la fonction permettant de muter les props du composant TableLink, permetant de lier les tables entre elles */
             tableLinkPropsMutator : (props)=>{ 

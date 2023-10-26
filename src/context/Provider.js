@@ -39,7 +39,6 @@ import {extendFormFields} from "$ecomponents/Form/Fields";
           ///les props par défaut à passer au composant Datagrid
         },
         customFormFields{Object}, //les composant personalisés des forms fields
-        loginPropsMutator : ({object})=><{object}>, la fonction permettant de muter les props du composant Login,
         tableLinkPropsMutator : ({object})=><{object}>, la fonction permettant de muter les props du composant TableLink,
         TableDataScreen | TableDataScreenItem : {ReactComponent}, le composant TableDataScreenItem, à utiliser pour le rendu des écrans
         TableDataScreenList | TableDataListScreen {ReactComponent}, le composant TableDataList à utiliser pour le rendu des écrans listants les éléments du table data
@@ -56,14 +55,24 @@ import {extendFormFields} from "$ecomponents/Form/Fields";
       drawerItemsMutator  : {function}, la fonction permettant de muter les drawerItems à chaque fois qu'on appelle la fonction de récupératioin des drawerItems
       containerProps : {object}, les props à passer au composant NavigationContainer de react-navigation
     },
+    auth : {
+      profileFieldsMutator : {({object})=><{object}> | {object})}, la fonction permettant de muter les champs  à passer à l'écran de mise à jour du profil utilisateur
+      loginPropsMutator : ({object})=><{object}>, la fonction permettant de muter les props du composant Login,
+    }
     swrConfig : {object},//les paramètres de configuration de l'objet swr utilisée dans le composant SWRDatagrid
     realm : {}, //les options de configurations de la base de données realmdb
 */
-const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,components:cComponents,convertFiltersToSQL,getStructData,tablesData,structsData,...props})=>{
+const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,auth:cAuth,components:cComponents,convertFiltersToSQL,getStructData,tablesData,structsData,...props})=>{
     const {extendAppTheme} = appConfig;
     const { theme : pTheme } = useMaterial3Theme();
     navigation = defaultObj(navigation);
     const {customFormFields,...components} = defaultObj(cComponents);
+    const auth = {
+      ...Object.assign({},cAuth),
+      loginPropsMutator : (props)=>{
+        return extendProps(cAuth.loginPropsMutator,props);
+      },
+    }
     extendFormFields(customFormFields);
     structsData = isObj(structsData)? structsData : null;
     appConfig.tablesData = tablesData;
@@ -78,7 +87,7 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,c
     }
     const colorScheme = useColorScheme();
     const isColorShemeDark = colorScheme ==="dark";
-    if(components.authEnabled === false){
+    if(auth.enabled === false){
       disableAuth();
     } else enableAuth();
     appConfig.extendAppTheme = (theme,Theme,...rest)=>{
@@ -166,11 +175,9 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,c
         handleHelpScreen,
         navigation,
         convertFiltersToSQL,
+        auth,
         components : {
             ...components,
-            loginPropsMutator : (props)=>{
-               return extendProps(components.loginPropsMutator,props);
-            },
             tableLinkPropsMutator : (props)=>{
                 return extendProps(components.tableLinkPropsMutator,props);
             },

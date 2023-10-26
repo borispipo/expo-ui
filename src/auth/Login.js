@@ -27,7 +27,7 @@ const WIDTH = 400;
 
 export default function LoginComponent(props){
     let {formName,step,appBarProps,onSuccess,withPortal,testID} = props;
-    const {components:{loginPropsMutator}} = useContext();
+    const {auth:{loginPropsMutator}} = useContext();
     const loginTitle = getTitle();
     testID = defaultStr(testID,"RN_Auth.LoginComponent");
     formName = React.useRef(uniqid(defaultStr(formName,"login-formname"))).current;

@@ -18,7 +18,7 @@ module.exports = function (){
         return path.resolve(__dirname,suffix).replace(sep,(sep+sep));///pour la résolution du module expo-ui en mode test
     }
     const isDevEnv = process?.env?.WEBPACK_SERVE && 'development' === process.env.NODE_ENV;
-    const packageJSON = require(process.cwd(),"package.json");
+    const packageJSON = path.resolve(process.cwd(),"package.json");
     const expoUIPath = path.resolve(process.cwd(),"node_modules","@fto-consult","expo-ui");
     if(isDevEnv && fs.existsSync(packageJSON)){
         try {

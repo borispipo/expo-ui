@@ -9,7 +9,7 @@ module.exports = function(api,opts) {
   const inlineDovOptions = { unsafe: true};
   const options = {...opts,platform:"expo"};
   const environmentPath = require("./copy-env-file")();
-  if(fs.existsSync(environmentPath)){
+  if(environmentPath && fs.existsSync(environmentPath)){
     inlineDovOptions.path ='./.env';
   }
   /*** par défaut, les variables d'environnements sont stockés dans le fichier .env situé à la racine du projet, référencée par la prop base  */

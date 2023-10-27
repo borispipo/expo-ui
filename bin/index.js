@@ -15,9 +15,10 @@ const supportedScript = {
   "start" : true,//start electron
   "build" : true, //script pour faire un build,
   "package" : true, ///script pour le packagin de l'application
+  "generate-getTable" : true,/// script pour la génération de la fonction getTable des tables de l'application
   [createAppScript] : true,//les script de création de l'application
 }
-const  {createDir,writeFile,electronDir,copy,exec,throwError} = require("./utils");
+const  {createDir,electronDir,copy,exec,throwError} = require("./utils");
 const path= require("path");
 const fs = require("fs");
 const dir = path.resolve(__dirname);
@@ -123,6 +124,9 @@ if(parsedArgs.electron){
            return start();
           break;
         case "build":
+          break;
+        case "generate-getTable" : 
+          require("./generate-tables")();
           break;
         default :
           if(!fs.existsSync(packagePath)){

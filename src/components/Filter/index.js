@@ -18,6 +18,7 @@ import { ActivityIndicator } from "react-native-paper";
 import DialogProvider from "$ecomponents/Form/FormData/DialogProvider";
 import FilterBetweenComponent from "./BetweenComponent";
 
+
 const manualRunKey = "manual-run";
 
 export * from "$cfilters";
@@ -308,7 +309,13 @@ export default class Filter extends AppComponent {
           },
         },
         onSuccess : ({data})=>{
-            if(data.start !== undefined && data.start !== null && data.end !== undefined && data.end !== null && data.start> data.end){
+            const compare = (a,b)=>{
+              if(isNonNullString(a) && isNonNullString(b)){
+                 return a.localeCompare(b) > 0;
+              }
+              return a > b;
+            }
+            if(data.start !== undefined && data.start !== null && data.end !== undefined && data.end !== null && compare(data.start,data.end)){
                 return notify.error("La {0} doit être supérieure à la {1}".sprintf(willHandleDate?"date de fin":"valeur supérieure",willHandleDate?"date de début":"valeur inférieure"));
             }
             if(typeof(success) =="function"){
@@ -550,6 +557,7 @@ export default class Filter extends AppComponent {
      rest.anchorProps = anchorProps;
      rest.withLabel = withLabel;
      rest.pointerEvents = "auto";
+     rest.contentContainerProps = {pointerEvents:"auto"};
      rest.right = isLoading ? <ActivityIndicator color={theme.colors.secondaryOnSurface} animating/> :<>
         <Menu 
              testID = {testID+"_Menu"}

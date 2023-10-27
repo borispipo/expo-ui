@@ -546,7 +546,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
                 {label}
             </Label>}
             <>
-                <Surface elevation={isAndroid?undefined:elevation} testID={testID+"_TextFieldContentContainer"}  {...contentContainerProps}  style={[styles.contentContainer,{pointerEvents},!left? styles.paddingLeft:null,styles.row,contentContainerStyle,contentContainerProps.style]}>
+                <Surface elevation={isAndroid?undefined:elevation} testID={testID+"_TextFieldContentContainer"}  {...contentContainerProps}  style={[styles.contentContainer,{pointerEvents:isFilter?"auto":pointerEvents},!left? styles.paddingLeft:null,styles.row,contentContainerStyle,contentContainerProps.style]}>
                     {left ? (<View testID={testID+"_Left"} {...leftContainerProps} style={[styles.AdornmentContainer,styles.leftAdornment,leftContainerProps.style,disabledStyle]}>
                         {left}
                     </View>) : null}

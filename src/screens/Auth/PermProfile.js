@@ -2,7 +2,7 @@ import showConfirm from "$ecomponents/Dialog/confirm";
 import notify from "$notify";
 import {defaultArray,arrayValueExists,defaultStr,uniqid} from "$cutils";
 import userDbName from "$database/tables/users/dbName";
-import Auth from "$auth";
+import Auth from "$cauth";
 import getData from "$database/getData";
 import getDB from "$database/getDB";
 import Icon from "$ecomponents/Icon";

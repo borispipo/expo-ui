@@ -7,9 +7,10 @@ import Label from "$ecomponents/Label";
 import { TIPPY_THEME } from '$theme/updateNative/utils';
 import {isDOMElement} from "$cutils/dom";
 import {uniqid,defaultStr,defaultObj} from "$cutils";
+import {Pressable} from "react-native";
 
-const TippyTooltipComponent  = React.forwardRef((props,ref)=>{
-    let {children,content,testID,...rest} = props;
+const TippyTooltipComponent  = React.forwardRef(({children,onPress,onPressOut,content,onPressIn,onLongPress,testID,...rest},ref)=>{
+    const hasPress = onPress || onPressOut || onPressIn || onLongPress;
     testID = defaultStr(testID,"RN_TooltipPopoverComponent")
     const instanceIdRef = React.useRef(uniqid("tippy-instance-id")); 
     const buttonRef = React.useRef(null);
@@ -46,12 +47,21 @@ const TippyTooltipComponent  = React.forwardRef((props,ref)=>{
         ...defaultObj(rest),
         id:instanceIdRef.current,
     }
-    if(typeof children =='function'){
-        return children(cProps,innerRef);
+    const isChildF = typeof children =='function';
+    children = isChildF ? children(cProps,innerRef) : children;
+    if(!hasPress){
+        if(isChildF) return children;
+        return <Label {...cProps} testID={testID} ref={innerRef}>
+            {children}
+        </Label>
     }
-    return  <Label {...cProps} testID={testID} ref={innerRef}>
+    if(!React.isValidElement(children)){
+        return null;
+    }
+    return <Pressable {...{onPress,onLongPress,onPressIn,onPressOut}} {...cProps} testID={testID} ref={innerRef}>
         {children}
-    </Label>
+    </Pressable>
+    return  
 });
 TippyTooltipComponent.propTypes = {
     content: PropTypes.any, //le contenu du tooltip

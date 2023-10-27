@@ -1103,29 +1103,27 @@ class DropdownComponent extends AppComponent {
                                 self.selectItem({value,valueKey,select:!multiple?true:select});
                             };
                             return (
-                                <Tooltip key={key} 
-                                    title = {content}
-                                    testID = {testID+"_DropdownTooltipContainer"}
-                                    style = {[[theme.styles.h100]]}
-                                    tooltipProps = {{style:[theme.styles.h100],testID:testID+"_DropdownTooltipPopoverContainer"}}
-                                >
-                                    <TouchableRipple   
-                                        testID={testID+"Container"}
-                                        style={{
-                                            flexDirection: "row",
-                                            height : '100%',
-                                            fontWeight : _isSelected ? 'bold' : 'normal',
-                                            alignItems: "center",
-                                        }}
+                                <>
+                                    <Tooltip key={key} 
+                                        title = {content}
+                                        testID = {testID+"_DropdownTooltipContainer"}
+                                        //style = {[[theme.styles.h100]]}
+                                        tooltipProps = {{style:[theme.styles.h100,theme.styles.w100],testID:testID+"_DropdownTooltipPopoverContainer"}}
                                         onPress={onItemPress}
+                                        Component={TouchableRipple}
+                                        //testID={testID+"Container"}
+                                        style={[
+                                            styles.itemContainer,{minHeight:!isBigList?MIN_HEIGHT:undefined},
+                                            _isSelected && styles.itemContainerBold
+                                        ]}
                                     >
-                                        <View testID={testID+"contentContainer"} {...itemContainerProps} style={[styles.itemContainer,{minHeight:!isBigList?MIN_HEIGHT:undefined},itemContainerProps.style]}>
+                                        <>
                                             {_isSelected ? <Icon onPress={onItemPress} name={isNonNullString(checkedIcon)?checkedIcon : (multiple || _isIos?"check":'radiobox-marked')} style={[styles.checkedIcon]} color={selectedColor} /> : null}
                                             {content}
-                                        </View>
-                                    </TouchableRipple>
-                                    <Divider disabled={isDisabled}/>
-                            </Tooltip>
+                                        </>
+                                </Tooltip>
+                                <Divider disabled={isDisabled}/>
+                                </>
                         )}}
                     />
                 </View>
@@ -1151,6 +1149,10 @@ const styles = StyleSheet.create({
         flex : 1,
         alignItems : 'center',
         paddingHorizontal : 8,
+        fontWeight : "normal",
+    },
+    itemContainerBold : {
+        fontWeight : "bold",
     },
     left : {
         paddingHorizontal:0,

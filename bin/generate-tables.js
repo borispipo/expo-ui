@@ -51,7 +51,7 @@ const generateTableOrStructDataStr = (tableDataPath)=>{
             if(!indexContent || (!indexContent.includes("table") && !indexContent.includes("tableName"))){
                 return;
             }
-            getTableJSContent+=`\t\tif(tableName === "${tableName}"){return require("./${table}").default;}\n`;
+            getTableJSContent+=`\tif(tableName === "${tableName}"){return require("./${table}").default;}\n`;
           });
           //on génère le fichier getTable des tables data de l'application
           if(getTableJSContent){

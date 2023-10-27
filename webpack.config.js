@@ -63,7 +63,6 @@ module.exports = async function(env, argv,opts) {
     config.performance.maxAssetSize = typeof config.performance.maxAssetSize =='number'? config.performance.maxAssetSize : 512000;
     config.devtool = (config.mode === 'development') ? 'inline-source-map' : false;
     require("./compiler.config.js")({config,...opts});
-    require("./copy-env-file")();
     const extensions = config.resolve.extensions;
     if(isElectron){
       mainExtensions.map((ex)=>{

@@ -14,7 +14,7 @@ module.exports = function(api,opts) {
   }
   /*** par défaut, les variables d'environnements sont stockés dans le fichier .env situé à la racine du projet, référencée par la prop base  */
   const alias =  require("./babel.config.alias")(options);
-  require("@fto-consult/expo-ui/bin/generate-tables")();//génère les tables des bases de données
+  require(`${path.resolve(__dirname,"bin","generate-tables")}`)();//génère les tables des bases de données
   return {
     presets: [
       ['babel-preset-expo']

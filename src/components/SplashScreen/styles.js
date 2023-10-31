@@ -70,4 +70,14 @@ export default {
     alignItems: "center",
     justifyContent: "center",
   },
+  mainContent : {
+    flex : 1,
+    width : "100%",
+    height : "100%",
+  },
+  animationNotFinished : {
+    opacity : 0,
+    width : 0,
+    height : 0,
+  },
 }

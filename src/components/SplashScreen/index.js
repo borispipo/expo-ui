@@ -7,6 +7,7 @@ import View from "$ecomponents/View";
 import {isNativeMobile} from "$cplatform";
 import {defaultDecimal} from "$cutils";
 import {LogoProgress} from "$ecomponents/Logo";
+import { Portal } from "react-native-paper";
 import {defaultStr} from "$cutils";
 import styles, {
   _solidBackground,
@@ -17,29 +18,28 @@ import styles, {
   _dynamicBackgroundOpacity,
 } from "./styles"
 import {useAppComponent} from "$econtext/hooks";
+import theme from "$theme";
 
 const SplashScreenComponent = ({isLoaded,children , duration, delay,logoWidth,logoHeight,backgroundColor,imageBackgroundSource,imageBackgroundResizeMode,
   testID})=>{
   const [state,setState] = React.useState({
     animationDone: false,
-    loadingProgress: new Animated.Value(0)
+    loadingProgress: new Animated.Value(0),
   });
-  const { loadingProgress, animationDone } = state;
-  const prevIsLoaded = React.usePrevious(isLoaded);
+  const { loadingProgress, animationDone} = state;
   React.useEffect(()=>{
-    if(animationDone && (prevIsLoaded == isLoaded || !isLoaded)) return;
-    if(!isNativeMobile()){
-      setState({...state,animationDone:true});
+    if(!isLoaded){
+      setState({...state,loadingProgress : new Animated.Value(0),animationDone:false});
     } else {
       Animated.timing(loadingProgress, {
           toValue: 100,
-          duration: duration || 1000,
+          duration: duration || 5000,
           delay: delay || 0,
-          useNativeDriver: true,
+          useNativeDriver: isNativeMobile(),
       }).start(() => {
           setState({
             ...state,
-            animationDone: true,
+            animationDone:true,
           })
       })
     }
@@ -67,34 +67,37 @@ const SplashScreenComponent = ({isLoaded,children , duration, delay,logoWidth,lo
       extrapolate: "clamp",
     }),
   }
-  const child = (animationDone && isLoaded)? React.isValidElement(children) && children : null;
-  if(animationDone && isLoaded) return child;
-  return <View style={[styles.container]} testID={testID} id={testID}>
-      {!animationDone ? <View style={StyleSheet.absoluteFill} testID={testID+"_Animation"}/> : null}
+  if(animationDone && isLoaded){
+      return React.isValidElement(children)?children:null;
+  }
+  return <Portal>
+    <View style={[styles.container,{backgroundColor}]} testID={testID} id={testID}>
+      {<View style={[StyleSheet.absoluteFill,{backgroundColor}]} testID={testID+"_Animation"}/>}
       <View style={styles.containerGlue} testID={testID+"_ContainerGlue"}>
-        {!animationDone && (
+        {(
           <Animated.View
             style={_staticBackground(logoOpacity, backgroundColor)}
             testID={testID+"_AnimationDone"}
           />
         )}
-        {!animationDone && (
-            React.isComponent(Component)? <Component testID={testID+"_CustomSplashComponent"}/> : 
-            <View testID={testID+"_LogoContainer"} style={[StyleSheet.absoluteFill, styles.logoStyle]}>
-                <Animated.View
-                  testID={testID+"_Logo"}
-                  style={_dynamicCustomComponentStyle(
-                        logoScale,
-                        logoOpacity,
-                        logoWidth,
-                        logoHeight
-                    )}>
-                  {<LogoProgress />}
-                </Animated.View>
-            </View>
+        {(
+          React.isComponent(Component)? <Component testID={testID+"_CustomSplashComponent"}/> : 
+          <View testID={testID+"_LogoContainer"} style={[StyleSheet.absoluteFill,{backgroundColor}, styles.logoStyle]}>
+              <Animated.View
+                testID={testID+"_Logo"}
+                style={_dynamicCustomComponentStyle(
+                      logoScale,
+                      logoOpacity,
+                      logoWidth,
+                      logoHeight
+                  )}>
+                {<LogoProgress />}
+              </Animated.View>
+          </View>
         )}
       </View>
     </View>
+  </Portal>
 }
 
 

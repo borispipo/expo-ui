@@ -52,8 +52,15 @@ module.exports = function(opts){
       'jsx', 'js','tsx',
   ]
   
+  // 3. Force Metro to resolve (sub)dependencies only from the `nodeModulesPaths`
+  config.resolver.disableHierarchicalLookup = true;
+  
   // Remove all console logs in production...
   config.transformer.minifierConfig.compress.drop_console = false;
+  
+  // 3. Force Metro to resolve (sub)dependencies only from the `nodeModulesPaths`, @see : https://docs.expo.dev/guides/monorepos/
+  config.resolver.disableHierarchicalLookup = true;
+  
   /*config.platforms = Array.isArray(config.platforms) && config.platforms || [];
   ['ios', 'android', 'windows', 'web',"electron"].map(p=>{
     if(!config.platforms.includes(p)){
@@ -61,6 +68,6 @@ module.exports = function(opts){
     }
   });*/
   ///on génère les librairies open sources utilisées par l'application
-  require("./find-licenses");
+  //require("./find-licenses");
   return config;
 }

@@ -70,34 +70,36 @@ const SplashScreenComponent = ({isLoaded,children , duration, delay,logoWidth,lo
   if(animationDone && isLoaded){
       return React.isValidElement(children)?children:null;
   }
-  return <Portal>
-    <View style={[styles.container,{backgroundColor}]} testID={testID} id={testID}>
-      {<View style={[StyleSheet.absoluteFill,{backgroundColor}]} testID={testID+"_Animation"}/>}
-      <View style={styles.containerGlue} testID={testID+"_ContainerGlue"}>
-        {(
-          <Animated.View
-            style={_staticBackground(logoOpacity, backgroundColor)}
-            testID={testID+"_AnimationDone"}
-          />
-        )}
-        {(
-          React.isComponent(Component)? <Component testID={testID+"_CustomSplashComponent"}/> : 
-          <View testID={testID+"_LogoContainer"} style={[StyleSheet.absoluteFill,{backgroundColor}, styles.logoStyle]}>
-              <Animated.View
-                testID={testID+"_Logo"}
-                style={_dynamicCustomComponentStyle(
-                      logoScale,
-                      logoOpacity,
-                      logoWidth,
-                      logoHeight
-                  )}>
-                {<LogoProgress />}
-              </Animated.View>
+  return <>
+      {!animationDone || !isLoaded ? <Portal>
+          <View style={[styles.container,{backgroundColor}]} testID={testID} id={testID}>
+            {<View style={[StyleSheet.absoluteFill,{backgroundColor}]} testID={testID+"_Animation"}/>}
+            <View style={styles.containerGlue} testID={testID+"_ContainerGlue"}>
+              {(
+                <Animated.View
+                  style={_staticBackground(logoOpacity, backgroundColor)}
+                  testID={testID+"_AnimationDone"}
+                />
+              )}
+              {(
+                React.isComponent(Component)? <Component testID={testID+"_CustomSplashComponent"}/> : 
+                <View testID={testID+"_LogoContainer"} style={[StyleSheet.absoluteFill,{backgroundColor}, styles.logoStyle]}>
+                    <Animated.View
+                      testID={testID+"_Logo"}
+                      style={_dynamicCustomComponentStyle(
+                            logoScale,
+                            logoOpacity,
+                            logoWidth,
+                            logoHeight
+                        )}>
+                      {<LogoProgress />}
+                    </Animated.View>
+                </View>
+              )}
+            </View>
           </View>
-        )}
-      </View>
-    </View>
-  </Portal>
+      </Portal> : null}
+  </>
 }
 
 

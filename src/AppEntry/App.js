@@ -69,6 +69,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,render}) {
   const [state,setState] = React.useState({
      isLoading : true,
      isInitialized:false,
+     hasCallInitApp : false,
   });
    React.useEffect(() => {
     const loadResources = ()=>{
@@ -189,11 +190,11 @@ function App({init:initApp,initialRouteName:appInitialRouteName,render}) {
            Auth.loginUser(false);
         }
         setState({
-          ...state,hasGetStarted:true,...defaultObj(args && args?.state),isInitialized:true,isLoading : false,
+          ...state,hasGetStarted:true,...defaultObj(args && args?.state),hasCallInitApp:true,isInitialized:true,isLoading : false,
         });  
       }).catch((e)=>{
           console.error(e," loading resources for app initialization");
-          setState({...state,isInitialized:true,isLoading : false,hasGetStarted:false});
+          setState({...state,isInitialized:true,hasCallInitApp,isLoading : false,hasGetStarted:false});
       })
     });
 
@@ -246,7 +247,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,render}) {
         theme,
         ...defaultObj(pref),
     }),[theme,pref]);
-  const isLoaded = !isLoading;
+  const isLoaded = !isLoading && state.hasCallInitApp;
   const child = isLoaded ? <NavigationContainer 
     ref={navigationRef}
     initialState={initialState}

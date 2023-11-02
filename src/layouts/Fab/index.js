@@ -7,26 +7,28 @@ import {navigateToTableData} from "$enavigation/utils";
 import PropTypes from "prop-types";
 import theme from "$theme";
 import {isLoggedIn as isAuthLoggedIn} from "$cauth/utils/session";
+import useExpoUI from "$econtext/hooks";
+import Auth from "$cauth";
 
 export * from "./utils";
 
-const FabLayoutComponent = React.forwardRef(({style,screenName,tables,...props},ref)=>{
+const FabLayoutComponent = React.forwardRef((p,ref)=>{ 
+  const {components:{fabPropsMutator},tablesData} = useExpoUI();
+  const {style,actions:fabActions,...props} = typeof fabPropsMutator == 'function'? extendObj({},p,fabPropsMutator({...p,isLoggedIn})) : p;
   const [isLoggedIn,setIsLoggedIn] = React.useState(isAuthLoggedIn());
   const isMounted = React.useIsMounted();
+  const tables = isObjOrArray(fabActions)? fabActions : tablesData;
   const actions = React.useMemo(()=>{
+      if(Array.isArray(fabActions)) return fabActions;
       if(!isLoggedIn) return null;
       const a = [];
       Object.map(tables,(table,i,index)=>{
-          if(!isObj(table) || table.showInFab === false) return;
+          if(!isObj(table) || table.showInFab === false || typeof  table.showInFab =="function" && table.showInFab() === false) return;
           const icon  = defaultStr(table.addIcon,"material-add");
           const text = defaultStr(table.text,table.label);
           const addText = defaultStr(table.newElementLabel,"Nouveau");
           const tableName = defaultStr(table.table,table.tableName);
-          let auth = true;
-          if(typeof Auth !=='undefined' && Auth && Auth.isTableDataAllowed){
-             auth = Auth.isTableDataAllowed({table:tableName,action:'create'});
-          }
-          if(!table || !icon || !text || !auth) return;
+          if(!table || !icon || !text || !Auth.isTableDataAllowed({table:tableName,action:'create'})) return;
           let fabProps = typeof table.getFabProps ==='function'? table.getFabProps({tableName}) : defaultObj(table.fabProps);;
           if(fabProps === false) return;
           fabProps = defaultObj(fabProps);
@@ -48,7 +50,8 @@ const FabLayoutComponent = React.forwardRef(({style,screenName,tables,...props},
           })
       })
       return a.length ? a : null;
-  },[isLoggedIn]);
+  },[isLoggedIn,fabActions,tables]);
+
   React.useEffect(()=>{
       const onLogin = ()=>{
           if(!isMounted())return;
@@ -66,7 +69,6 @@ const FabLayoutComponent = React.forwardRef(({style,screenName,tables,...props},
   },[])
   return actions ? <Fab.Group
         {...props}
-        screenName = {screenName}
         ref = {ref}
         style={[styles.fab,style]}
         actions = {actions}
@@ -86,9 +88,7 @@ const styles = StyleSheet.create({
   FabLayoutComponent.displayName = "FabLayoutComponent";
 
   FabLayoutComponent.propTypes = {
-    tables : PropTypes.oneOfType([
-        PropTypes.objectOf(PropTypes.object),
-        PropTypes.arrayOf(PropTypes.object)
-    ]),
+    ...Fab.propTypes,
+    actions : PropTypes.array, //les actions du fab layout
     screenName : PropTypes.string,
   }

@@ -19,9 +19,6 @@ export default function MainScreenComponent({profilAvatarProps,withDrawer,allowD
        withDrawer = false;
     }
     const withProfilAvatarOnAppBar = cWithPorilAvatarOnAppbar !== false && withDrawer && !theme.showProfilAvatarOnDrawer ? true : false;
-    if(authRequired === false){
-      props.withFab = false;
-    }
     return <Container authProps={authProps} required={authRequired}>
         <ScreenWithoutAuthContainer
           {...props}

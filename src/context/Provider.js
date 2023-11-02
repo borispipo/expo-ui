@@ -57,6 +57,7 @@ Object.map(Utils,(v,i)=>{
         },
         customFormFields{Object}, //les composant personalisés des forms fields
         tableLinkPropsMutator : ({object})=><{object}>, la fonction permettant de muter les props du composant TableLink,
+        fabPropsMutator : ({object})=><{object}>, la fonction permettant de muter les props du composant Fab, affiché dans les écrans par défaut,
         TableDataScreen | TableDataScreenItem : {ReactComponent}, le composant TableDataScreenItem, à utiliser pour le rendu des écrans
         TableDataScreenList | TableDataListScreen {ReactComponent}, le composant TableDataList à utiliser pour le rendu des écrans listants les éléments du table data
     },

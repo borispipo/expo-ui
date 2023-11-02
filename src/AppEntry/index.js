@@ -62,7 +62,7 @@ const NAVIGATION_PERSISTENCE_KEY = 'NAVIGATION_STATE';
  *  initialRouteName : la route initiale par défaut
  *  getStartedRouteName : la route par défaut de getStarted lorsque l'application est en mode getStarted, c'est à dire lorsque la fonction init renvoie une erreur (reject)
  */
-function App({init:initApp,initialRouteName:appInitialRouteName,render}) {
+function App({init:initApp,initialRouteName:appInitialRouteName,children}) {
   AppStateService.init();
   const {FontsIconsFilter,beforeExit,preferences:appPreferences,navigation,getStartedRouteName} = useContext();
   const {containerProps} = navigation;
@@ -289,7 +289,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,render}) {
           }}
         />
   </NavigationContainer>  : null;
-  const content = isLoaded ? typeof render == 'function'? render({children:child,appConfig,config:appConfig}) : child : null;
+  const content = isLoaded ? typeof children == 'function'? children({children:child,appConfig,config:appConfig}) : child : null;
   return <SafeAreaProvider>
             <GestureHandlerRootView testID={"RN_MainAppGestureHanleRootView"}  style={styles.gesture}>
                 <AppEntryRootView>

@@ -55,8 +55,8 @@ export default function AppMainEntry(){
             return Promise.resolve("app is initialized");
         }}
         /*** if you need to wrap main application content with some custom react Provider*/
-        render = {function({render,appConfig}){
-            return render;           
+        children = {function({children,appConfig}){
+            return children;           
         }}
         ///fonction de rappel appelée avant d'exit l'application, doit retourner une promesse que lorsque résolue, exit l'application
         beforeExit = {()=>Promise.resolve(true)}    

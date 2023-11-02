@@ -1,0 +1,2 @@
+
+export const SWR_REFRESH_TIMEOUT = 5000*60;

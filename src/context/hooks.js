@@ -6,7 +6,6 @@ import { useWindowDimensions } from "$cdimensions";
 import {isObj,isNonNullString} from "$cutils";
 import { StyleSheet } from "react-native";
 import { createContext,useContext as useReactContext } from "react";
-import appConfig from "$capp/config";
 
 export const ExpoUIContext = createContext(null);
 

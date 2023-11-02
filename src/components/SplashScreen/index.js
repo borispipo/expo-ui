@@ -27,13 +27,12 @@ const SplashScreenComponent = ({isLoaded,children , duration, delay,logoWidth,lo
     loadingProgress: new Animated.Value(0),
   });
   const { loadingProgress, animationDone} = state;
+  const prevIsLoaded = React.usePrevious(isLoaded); 
   React.useEffect(()=>{
-    if(!isLoaded){
-      setState({...state,loadingProgress : new Animated.Value(0),animationDone:false});
-    } else {
+    if(isLoaded && !prevIsLoaded){
       Animated.timing(loadingProgress, {
           toValue: 100,
-          duration: duration || 5000,
+          duration: duration || 100,
           delay: delay || 0,
           useNativeDriver: isNativeMobile(),
       }).start(() => {
@@ -43,7 +42,7 @@ const SplashScreenComponent = ({isLoaded,children , duration, delay,logoWidth,lo
           })
       })
     }
-  },[isLoaded]);
+  });
   testID = defaultStr(testID,"RN_SplashscreenComponent")
   logoWidth = defaultDecimal(logoWidth,150);
   logoHeight = defaultDecimal(logoHeight,250);
@@ -67,7 +66,7 @@ const SplashScreenComponent = ({isLoaded,children , duration, delay,logoWidth,lo
       extrapolate: "clamp",
     }),
   }
-  if(animationDone && isLoaded){
+  if(isLoaded && animationDone){
       return React.isValidElement(children)?children:null;
   }
   return <>

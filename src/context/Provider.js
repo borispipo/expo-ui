@@ -4,7 +4,7 @@ import {MD3LightTheme,MD3DarkTheme} from "react-native-paper";
 import { useMaterial3Theme,isDynamicThemeSupported} from '@pchmn/expo-material3-theme';
 import { useColorScheme } from 'react-native';
 import {colorsAlias,Colors} from "$theme";
-import {isObj,isNonNullString,defaultStr,extendObj} from "$cutils";
+import {isObj,isNonNullString,defaultStr,extendObj,defaultNumber} from "$cutils";
 import {getMainScreens} from "$escreens/mainScreens";
 import {ExpoUIContext} from "./hooks";
 import {enableAuth,disableAuth} from "$cauth/perms";
@@ -15,6 +15,22 @@ import { prepareScreens } from "./TableData";
 import {extendFormFields} from "$ecomponents/Form/Fields";
 import {AuthProvider} from '$cauth';
 import { signInRef } from "$cauth/authSignIn2SignOut";
+import APP from "$capp/instance";
+import { AppState } from 'react-native'
+import {canFetchOffline} from "$capi/utils";
+import { SWR_REFRESH_TIMEOUT } from "./utils";
+import * as Utils from "$cutils";
+import {setDeviceIdRef} from "$capp";
+import {isMobileNative} from "$cplatform";
+import notify from "$cnotify";
+import {showPrompt} from "$ecomponents/Dialog/confirm";
+import {SWRConfig} from "$swr";
+
+Object.map(Utils,(v,i)=>{
+  if(typeof v =='function' && typeof window !='undefined' && window && !window[i]){
+     window[i] = v;
+  }
+});
 
 /*****
     les utilitaires disponibles à passer au provider : 
@@ -64,6 +80,7 @@ import { signInRef } from "$cauth/authSignIn2SignOut";
     realm : {}, //les options de configurations de la base de données realmdb
 */
 const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,auth:cAuth,components:cComponents,convertFiltersToSQL,getStructData,tablesData,structsData,...props})=>{
+    require('$session');///initializing session
     const {extendAppTheme} = appConfig;
     const { theme : pTheme } = useMaterial3Theme();
     navigation = defaultObj(navigation);
@@ -82,7 +99,62 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
     appConfig.structsData = appConfig.structsData = isObj(structsData)? structsData : null;
     getTableData = appConfig.getTable = appConfig.getTableData = getTableOrStructDataCall(tablesData,getTableData);
     getStructData = appConfig.getStructData = getTableOrStructDataCall(structsData,getStructData);
-    swrConfig = defaultObj(swrConfig);
+    
+    ///swr config settings
+    ///garde pour chaque écran sa date de dernière activité
+    const screensRef = React.useRef({});//la liste des écrans actifs
+    const isScreenFocusedRef = React.useRef(true);
+    const activeScreenRef = React.useRef('');
+    const prevActiveScreenRef = React.useRef('');
+    const appStateRef = React.useRef({});
+    const swrRefreshTimeout = defaultNumber(swrConfig?.refreshTimeout,SWR_REFRESH_TIMEOUT)
+    swrConfig = extendObj({
+      provider: () => new Map(),
+      isOnline() {
+        /* Customize the network state detector */
+        if(canFetchOffline) return true;
+        return APP.isOnline();
+      },
+      isVisible() {
+        const screen = activeScreenRef.current;
+        if(!screen) return false;
+        if(!screensRef.current[screen]){
+           screensRef.current[screen] = new Date();
+           return false;
+        }
+        const date = screensRef.current[screen];
+        const diff = new Date().getTime() - date.getTime();
+        screensRef.current[screen] = new Date();
+        return diff >= swrRefreshTimeout ? true : false;
+      },
+      initFocus(callback) {
+        let appState = AppState.currentState
+        const onAppStateChange = (nextAppState) => {
+          /* If it's resuming from background or inactive mode to active one */
+          const active = appState.match(/inactive|background/) && nextAppState === 'active';
+          if (active) {
+            callback()
+          }
+          appState = nextAppState;
+          appStateRef.current = !!active;
+        }
+        // Subscribe to the app state change events
+        const subscription = AppState.addEventListener('change', onAppStateChange);
+        return () => {
+          subscription?.remove()
+        }
+      },
+      initReconnect(cb) {
+        const callback = ()=>{
+          cb();
+        }
+        /* Register the listener with your state provider */
+        APP.on(APP.EVENTS.GO_ONLINE,callback);
+        return ()=>{
+          APP.off(APP.EVENTS.GO_ONLINE,callback);
+        }
+      }
+    },swrConfig);
     if(convertFiltersToSQL !== undefined){
       appConfig.set("convertFiltersToSQL",convertFiltersToSQL);
     }
@@ -158,6 +230,36 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
           }
         }
     }
+    /**** setDeviceRef */
+    setDeviceIdRef.current = ()=>{
+      return new Promise((resolve,reject)=>{
+        showPrompt({
+          title : 'ID unique pour l\'appareil',
+          maxLength :  30,
+          defaultValue : appConfig.getDeviceId(),
+          yes : 'Définir',
+          placeholder : isMobileNative()? "":'Entrer une valeur unique sans espace SVP',
+          no : 'Annuler',
+          onSuccess : ({value})=>{
+            let message = null;
+            if(!value || value.contains(" ")){
+              message = "Merci d'entrer une valeur non nulle ne contenant pas d'espace";
+            }
+            if(value.length > 30){
+              message = "la valeur entrée doit avoir au plus 30 caractères";
+            }
+            if(message){
+              notify.error(message);
+              return reject({message})
+            }
+            resolve(value);
+            notify.success("la valeur ["+value+"] a été définie comme identifiant unique pour l'application instalée sur cet appareil");
+          }
+        })
+      })
+    }
+    
+    
     const {screens} = navigation;
     navigation.screens = React.useMemo(()=>{
        const r = prepareScreens({
@@ -170,6 +272,25 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
     },[]);
     navigation.containerProps = defaultObj(navigation.containerProps);
     const {linking} = navigation;
+    React.useEffect(()=>{
+      const onScreenFocus = ({sanitizedName})=>{
+          prevActiveScreenRef.current = activeScreenRef.current;
+          if(activeScreenRef.current){
+             screensRef.current[activeScreenRef.current] = null;
+          }
+          screensRef.current[sanitizedName] = new Date();
+          activeScreenRef.current = sanitizedName;
+          isScreenFocusedRef.current = true;
+      }, onScreenBlur = ()=>{
+        isScreenFocusedRef.current = false;
+      }
+      APP.on(APP.EVENTS.SCREEN_FOCUS,onScreenFocus);
+      APP.on(APP.EVENTS.SCREEN_BLUR,onScreenBlur);
+      return ()=>{
+        APP.off(APP.EVENTS.SCREEN_FOCUS,onScreenFocus);
+        APP.off(APP.EVENTS.SCREEN_BLUR,onScreenBlur);
+      }
+    },[]);
     return <ExpoUIContext.Provider 
       value={{
         ...props,
@@ -189,10 +310,11 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
         getStructData,
         tablesData,
         structsData,
-        appConfig,
         swrConfig,
       }} 
-      children={<AuthProvider {...auth} LoginComponent={Login}>{children}</AuthProvider>}
+      children={<SWRConfig value={swrConfig}>
+        <AuthProvider {...auth} LoginComponent={Login}>{children}</AuthProvider>
+      </SWRConfig>}
     />;
 }
 const getTableOrStructDataCall = (tablesOrStructDatas,getTableOrStructDataFunc)=>{

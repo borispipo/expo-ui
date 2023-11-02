@@ -5,3 +5,4 @@ export {default} from "./hooks";
 export {default as Provider} from "./Provider";
 
 export  *  from "./TableData";
+export * from "./utils";

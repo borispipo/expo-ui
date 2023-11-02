@@ -25,6 +25,7 @@ import {getRowsPerPagesLimits} from "./Common/utils";
 import PropTypes from "prop-types";
 import {Menu} from "$ecomponents/BottomSheet";
 import session from "$session";
+import { SWR_REFRESH_TIMEOUT } from "$econtext/utils";
 import useContext from "$econtext/hooks";
 import notify from "$cnotify";
 
@@ -46,15 +47,13 @@ export const setSessionData = (key,value)=>{
 }
 
 
-
-export const timeout = 5000*60;//5 minutes
 /***@see : https://swr.vercel.app/docs/api */
 
 export const getSWROptions = (defTimeout)=>{
-    const delay = defaultNumber(defTimeout,timeout);
+    const delay = defaultNumber(defTimeout,SWR_REFRESH_TIMEOUT);
     return {
         dedupingInterval : delay,
-        errorRetryInterval : Math.max(delay*2,timeout),
+        errorRetryInterval : Math.max(delay*2,SWR_REFRESH_TIMEOUT),
         errorRetryCount : 5,
         revalidateOnMount : false,//enable or disable automatic revalidation when component is mounted
         revalidateOnFocus : true, //automatically revalidate when window gets focused (details)

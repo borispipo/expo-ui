@@ -26,11 +26,7 @@ export default class CommonTableDatagrid extends CommonDatagrid{
 
     /*** lorsque la données est modifiée */
     onUpsertData =(arg) =>{
-        if(!this._isMounted()) return;
-        this.isDataJustComeToUpsert = true; ///on empêche d'afficher le progress bar
-        this.fetchData({force:true}).finally(()=>{
-            this.isDataJustComeToUpsert = undefined;
-        });
+        return this.refresh({force:true,renderProgressBar:false});
     }
 
     componentDidMount(){
@@ -56,10 +52,6 @@ export default class CommonTableDatagrid extends CommonDatagrid{
     }
     isTableData(){
         return true;
-    }
-    renderProgressBar(props){
-        if(this.isDataJustComeToUpsert) return null;
-        return super.renderProgressBar(props);
     }
 }
 

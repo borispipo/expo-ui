@@ -268,6 +268,7 @@ export default class CommonDatagridComponent extends AppComponent {
             chartRef : {value : {current:null}},
             layoutRef : {value : {}},
             hidePreloaderOnRenderKey : {value : uniqid("hide-preloader-on-render")},
+            canRenderProgressBarKey : {value : uniqid("can-render-pgroessbar")},
             chartSeriesNamesColumnsMapping : {value : {}},//le mappage entre les index des series et les colonnes coorespondantes
         });
         this.setSelectedRows(selectedRows);
@@ -3030,6 +3031,7 @@ export default class CommonDatagridComponent extends AppComponent {
     }
    
     renderProgressBar(props){
+        if(this.props.renderProgressBar === false || !this.canRenderProgressBar()) return null;
         if(typeof props !=='object' || !props || Array.isArray(props)){
             props = {};
         }
@@ -3215,8 +3217,9 @@ export default class CommonDatagridComponent extends AppComponent {
         example common[articles], dans ce cas, la fonction fetchData, aura pour rôle de chercher toutes les données qui match
         la table dans la base common.
         Elle pourra éventuellement passer directement la limite et les filtres à la fonction fetchdata
+        si renderProgressBar est à false alors la progression ne sera pas affiché
     */
-    fetchData ({cb,callback,force,fetchOptions,...rest}){
+    fetchData ({cb,callback,force,renderProgressBar,fetchOptions,...rest}){
         const sData = this.INITIAL_STATE.data || (!this.isTableData() || typeof this.props.fetchData !='function') ? this.props.data : this.state.data;
         if(!this._isMounted()) return Promise.resolve(sData);
         if(this.isFetchingData) {
@@ -3227,6 +3230,7 @@ export default class CommonDatagridComponent extends AppComponent {
         };
         this.isFetchingData = true;
         cb = typeof cb =='function'? cb : typeof callback =='function'? callback : undefined;
+        this.toggleCanRenderProgressBar(renderProgressBar);
         this.fetchingPromiseData = new Promise((resolve,reject)=>{
             setTimeout(()=>{
                 if(typeof cb === 'boolean'){
@@ -3450,23 +3454,28 @@ export default class CommonDatagridComponent extends AppComponent {
         }
         return maxHeight;
     }
+    /***
+        @param {boolean|object}
+        @param {function|object}
+    */
     refresh (force,cb){
+        const opts = isObj(force)? force : isObj(cb)? cb : {};
         if(isFunction(force)){
             let t = cb;
             cb = force;
             force = isBool(t)? t : true;
         }
+        opts.onSuccess = cb = typeof cb =="function"? cb : typeof opts.onSuccess =='function'? opts.onSuccess : undefined;
+        opts.force = defaultBool(force,opts.force,true)
         return new Promise((resolve,reject)=>{
-            setTimeout(()=>{
-                return this.fetchData({force:defaultBool(force,true)}).then((data)=>{
-                    if(isFunction(cb)){
-                        cb(data);
-                    }
-                    if(typeof this.props.onRefreshDatagrid ==='function'){
-                        this.props.onRefreshDatagrid({context:this,force});
-                    }
-                }).then(resolve).catch(reject);
-            },100);
+            return this.fetchData(opts).then((data)=>{
+                if(isFunction(cb)){
+                    cb(data,{...opts,context:this});
+                }
+                if(typeof this.props.onRefresh ==='function'){
+                    this.props.onRefresh({...opts,context:this});
+                }
+            }).then(resolve).catch(reject);
         })
     }
     onResizePage(){
@@ -3548,6 +3557,14 @@ export default class CommonDatagridComponent extends AppComponent {
     canHidePreloaderOnRender(){
         const cH = this[this.hidePreloaderOnRenderKey];
         return typeof cH =='boolean'? cH : true;
+    }
+    toggleCanRenderProgressBar(toggle){
+        toggle = typeof toggle =='boolean'? toggle : true;
+        this[this.canRenderProgressBarKey] = toggle;
+        return toggle;
+    }
+    canRenderProgressBar(){
+        return this[this.canRenderProgressBarKey] !== false;
     }
     toggleHidePreloaderOnRender(toggle){
         this[this.hidePreloaderOnRenderKey] = !!toggle;
@@ -3967,7 +3984,11 @@ CommonDatagridComponent.propTypes = {
     */
     filter : PropTypes.func, 
     /*** la barre de progression */
-    renderProgressBar : PropTypes.node,
+    renderProgressBar : PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.bool, //si false, alors le progress bar ne sera pas rendu
+        PropTypes.element,
+    ]),
     /*** fonction permettant de retourner l'unique clé des éléments du tableau */
     getRowKey : PropTypes.func,
     ///la fonction utilisée pour l'impression du datagrid
@@ -4080,6 +4101,7 @@ CommonDatagridComponent.propTypes = {
         PropTypes.func,
         PropTypes.bool,
     ]),
+    onRefresh : PropTypes.func,//lorsque la fonction refresh est appelée
     displayType : chartDisplayType,
     /*** les types d'afichates supportés par l'application */
     displayTypes : PropTypes.arrayOf(chartDisplayType),

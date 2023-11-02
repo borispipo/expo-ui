@@ -289,7 +289,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,render}) {
           }}
         />
   </NavigationContainer>  : null;
-  const content = null//isLoaded ? typeof render == 'function'? render({children:child,appConfig,config:appConfig}) : child : null;
+  const content = isLoaded ? typeof render == 'function'? render({children:child,appConfig,config:appConfig}) : child : null;
   return <SafeAreaProvider>
             <GestureHandlerRootView testID={"RN_MainAppGestureHanleRootView"}  style={styles.gesture}>
                 <AppEntryRootView>

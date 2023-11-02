@@ -48,6 +48,7 @@ Object.map(Utils,(v,i)=>{
     handleHelpScreen : {boolean}, //si l'écran d'aide sera pris en compte, l'écran d'aide ainsi que les écrans des termes d'utilisations et autres
     convertFiltersToSQL : {boolean}, si les filtres de datagrid ou filtres seront convertis au format SQL
     components : {
+        MainProvider : {ReactComponent}, //le composant qui permet de wrapper le contenu de l'application expo. Nb, ce composant ne peut utiliser ni les routes, nis les DialogProvider,
         logo : ReactNode | ReactComponent | object {
            image{ReactComponent} :,
            text {ReactComponent}
@@ -61,6 +62,7 @@ Object.map(Utils,(v,i)=>{
         TableDataScreen | TableDataScreenItem : {ReactComponent}, le composant TableDataScreenItem, à utiliser pour le rendu des écrans
         TableDataScreenList | TableDataListScreen {ReactComponent}, le composant TableDataList à utiliser pour le rendu des écrans listants les éléments du table data
     },
+    
     navigation : {
       screens : {Array}, les écrans de navigation,
       screenOptions : {object}, les options du composant Stack.Navigator, voir https://reactnavigation.org/docs/native-stack-navigator/

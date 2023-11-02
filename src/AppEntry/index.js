@@ -64,7 +64,7 @@ const NAVIGATION_PERSISTENCE_KEY = 'NAVIGATION_STATE';
  */
 function App({init:initApp,initialRouteName:appInitialRouteName,children}) {
   AppStateService.init();
-  const {FontsIconsFilter,beforeExit,preferences:appPreferences,navigation,getStartedRouteName} = useContext();
+  const {FontsIconsFilter,beforeExit,AppWrapper,preferences:appPreferences,navigation,getStartedRouteName,components:{MainProvider}} = useContext();
   const {containerProps} = navigation;
   const [initialState, setInitialState] = React.useState(undefined);
   const appReadyRef = React.useRef(true);
@@ -292,7 +292,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,children}) {
   const content = isLoaded ? typeof children == 'function'? children({children:child,appConfig,config:appConfig}) : child : null;
   return <SafeAreaProvider>
             <GestureHandlerRootView testID={"RN_MainAppGestureHanleRootView"}  style={styles.gesture}>
-                <AppEntryRootView>
+                <AppEntryRootView MainProvider={MainProvider}>
                     <PaperProvider 
                       theme={theme}
                       settings={{

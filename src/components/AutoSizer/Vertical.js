@@ -81,6 +81,7 @@ const AutoSizerVerticalComponent = React.forwardRef(({onLayout,isScrollView,scre
   if(canUpdate && typeof getRenderingStyle ==='function'){
       getRenderingStyle({...cStyle,...restStyle});
   }
+  return children;
   return  <View ref={layoutRef} 
         onLayout={(a,b,c)=>{
             if(onLayout && onLayout(a,b,c) === false) return;

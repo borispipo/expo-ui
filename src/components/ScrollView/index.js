@@ -1,27 +1,9 @@
 import React from '$react';
 import { ScrollView} from 'react-native';
 import PropTypes from "prop-types";
-import {defaultStr,defaultObj} from "$cutils";
-import {Vertical as AutoSizeVertical} from "$ecomponents/AutoSizer";
-import {isWeb} from "$cplatform";
 
 const ScrollViewComponent = React.forwardRef(({withAutoSizer,autoSizerProps,testID,...rest},ref) => {
   return <ScrollView testID={testID} {...rest} ref={ref}/>
-  testID = defaultStr(testID,'RN_ScrollViewComponent');
-  const autoSize = React.useRef(withAutoSizer).current;
-  if(!autoSize || rest.horizontal === true || rest.vertical === false){
-      return <ScrollView testID={testID} ref={ref} {...rest}/>
-  }
-  autoSizerProps = defaultObj(autoSizerProps);
-  const autoSizerRef = React.useRef(null);
-  return  <AutoSizeVertical ref={autoSizerRef} isScrollView {...autoSizerProps} testID={testID+"_ScrollViewContainer"}>
-    <ScrollView 
-      ref={ref} {...rest} 
-      testID={testID}
-      style = {[{flex:1}]}
-      contentContainerStyle = {[{flex:1,height:'100%'},rest.contentContainerStyle]}
-    />
-  </AutoSizeVertical>
 });
 
 ScrollViewComponent.displayName = "ScrollViewComponent";

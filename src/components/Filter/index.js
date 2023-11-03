@@ -173,7 +173,7 @@ export default class Filter extends AppComponent {
     } 
     let defaultValue = defaultVal(this.props.defaultValue);
     operator = defaultVal(operator,"$and");
-    if(actions == _inActions || type.contains("select") || this.props.multiple){
+    if(actions == _inActions || type.contains("select")){
         defaultValue = isNonNullString(defaultValue)? defaultValue.split(",") : Array.isArray(defaultValue)? defaultValue : !isNullOrEmpty(defaultValue)? [defaultValue] : {};
     }
     return {actions,action,ignoreCase,operator,operators,manualRun:defaultBool(this.props.manualRun,false),defaultValue,isTextFilter};

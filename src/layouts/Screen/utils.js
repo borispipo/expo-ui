@@ -70,7 +70,7 @@ export const renderTabsContent = ({tabs,context,data,sessionName,isMobile,props,
 }
 export const readablePerms = ["read","print"];
 export const defaultArchivedPermsFilter = ({perm})=>!readablePerms.includes(perm) && !readablePerms.includes(perm.toLowerCase());
-export  function renderActions({context,isUpdate,newElementLabel,readablePerms:cReadablePerms,makePhoneCallProps,hasManyData,onPressCopyToClipboard,archived,archivedPermsFilter,canMakePhoneCall,onPressToMakePhoneCall,saveAction,save2newAction,save2closeAction,cloneAction,readOnly,printable,archivable,data,table,perm,tableName,saveButton,datas,rows,currentData,currentDataIndex,onPressToSave,onPressToCreateNew,onPressToPrint,onPressToPrevious,onPressToNext,onPressToArchive,...rest}){
+export  function renderActions({context,isUpdate,newElementLabel,readablePerms:cReadablePerms,makePhoneCallProps,hasManyData,onPressCopyToClipboard,archived,archivedPermsFilter,canMakePhoneCall,onPressToMakePhoneCall,saveAction,save2newAction,save2cloneAction,save2closeAction,cloneAction,readOnly,printable,archivable,data,table,perm,tableName,saveButton,datas,rows,currentData,currentDataIndex,onPressToSave,onPressToCreateNew,onPressToPrint,onPressToPrevious,onPressToNext,onPressToArchive,...rest}){
     let textSave = defaultStr(saveButton)
     table = defaultStr(tableName,table);
     datas = defaultArray(datas,rows);
@@ -133,7 +133,17 @@ export  function renderActions({context,isUpdate,newElementLabel,readablePerms:c
         icon : 'content-save-edit',
         flat : true,
         onPress : createCallback({context:self,action:'save2new',callback:onPressToSave})
+    } : null
+    ,save2clone = (save2cloneAction !== false && cloneAction !== false && !readOnly && save && permsObj.canCreate)?{
+        text : textSave+'& Dupliquer',
+        title : textSave+'& Dupliquer',
+        isAction : true,
+        shortcut : "save2clone",
+        icon : 'content-save-move',
+        flat : true,
+        onPress : createCallback({context:self,action:'save2clone',callback:onPressToSave})
     } : null;
+    
     return {
         print : (isUpdate && permsObj.canPrint)?{
             text : 'Imprimer',
@@ -155,6 +165,7 @@ export  function renderActions({context,isUpdate,newElementLabel,readablePerms:c
         } : null,
         save2close,
         save2new,
+        save2clone,
         save,
         previous : (hasManyData && datas.length > 0 && currentDataIndex > 0)?{
             icon : 'chevron-left',

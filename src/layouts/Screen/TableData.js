@@ -241,6 +241,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
             clone,
             isArchivable,clonable,isPrintable,print,data:customData,getRowKey,
             save2newAction,
+            save2cloneAction,
             saveAction,
             save2closeAction,
             cloneAction,
@@ -317,15 +318,17 @@ export default class TableDataScreenComponent extends FormDataScreen{
             isUpdated,
             fields,
         });
+        const cCloneAction = this.isClonable() && this.canCreateNew() && clonable !== false ? cloneAction : false;
         const rActionsArg = this.currentRenderingProps = {
             ...rest,
             ...formProps,
             context,
+            cloneAction : cCloneAction,
             save2newAction : this.canCreateNew() && save2newAction !== false ? true : false,
+            save2cloneAction : cloneAction && save2cloneAction !== false ? true : false,
             isMobile : isMobOrTab,
             saveAction,
             save2closeAction,
-            cloneAction : this.isClonable() && clonable !== false ? cloneAction : false,
             tableName,
             sessionName,
             table,
@@ -719,16 +722,17 @@ export default class TableDataScreenComponent extends FormDataScreen{
                     }
                     if(action == 'save2new'){
                         this.reset();
-                        closePreloader();
                     } else if(action === 'save'){
                         this.reset({data:savedData});
-                        closePreloader();
+                    } else if(action === 'save2clone'){
+                        this.clone(savedData);
+                        return;
                     } else if(willCloseAfterSave) {
                         close();
                     } else {
                         notify('Données modifiée avec succès!!','success');
-                        closePreloader();
                     }
+                    closePreloader();
                 }).catch((e)=>{
                     console.log('error on saving table data ',e);
                     closePreloader();

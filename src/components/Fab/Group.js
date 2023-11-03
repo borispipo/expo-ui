@@ -213,24 +213,22 @@ const FabGroupComponent = React.forwardRef((props,innerRef)=>{
             MANAGER.active = null;
         }
     },[display]);
-    return <Portal>
-        <Group
-          {...rest}
-          color = {color}
-          style = {[rest.style,styles.container]}
-          fabStyle = {[styles.fab,fabStyle,{backgroundColor},!display && styles.hidden]}
-          open={open ?true : false}
-          icon={open ? openedIcon : closedIcon}
-          actions={actions}
-          onStateChange={onStateChange}
-          onPress={(e) => {
-            context.opened = open;
-            if (open && onOpen) {
-              onOpen(e);
-            }
-          }}
-        />
-    </Portal>
+    return <Group
+        {...rest}
+        color = {color}
+        style = {[rest.style,styles.container]}
+        fabStyle = {[styles.fab,fabStyle,{backgroundColor},!display && styles.hidden]}
+        open={open ?true : false}
+        icon={open ? openedIcon : closedIcon}
+        actions={actions}
+        onStateChange={onStateChange}
+        onPress={(e) => {
+          context.opened = open;
+          if (open && onOpen) {
+            onOpen(e);
+          }
+        }}
+      />
 });
 const actionType = PropTypes.shape({
     icon : PropTypes.string,

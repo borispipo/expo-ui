@@ -14,7 +14,6 @@ const FabLayoutComponent = React.forwardRef((p,ref)=>{
   const {components:{fabPropsMutator},tablesData} = useExpoUI();
   const {style,actions:fabActions,...props} = typeof fabPropsMutator == 'function'? extendObj({},p,fabPropsMutator({...p,isLoggedIn})) : p;
   const isLoggedIn = useIsSignedIn();
-  const isMounted = React.useIsMounted();
   const tables = isObjOrArray(fabActions)? fabActions : tablesData;
   const actions = React.useMemo(()=>{
       if(Array.isArray(fabActions)) return fabActions;

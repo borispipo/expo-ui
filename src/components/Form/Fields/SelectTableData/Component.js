@@ -23,7 +23,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabel
     props.data = defaultObj(props.data);
     const type = defaultStr(props.type)?.toLowerCase();
     isStructData = isStructData || type?.replaceAll("-","").replaceAll("_","").trim().contains("structdata");
-    const {getTableData:appGetForeignKeyTable,getStructData,components:{datagrid}} = useApp();
+    const {getTableData:appGetForeignKeyTable,getStructData} = useApp();
     if(!foreignKeyColumn && isNonNullString(props.field)){
         foreignKeyColumn = props.field;
     }
@@ -37,7 +37,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabel
         }
     }
     const getForeignKeyTable = typeof cGetForeignKeyTable =='function'? cGetForeignKeyTable : isStructData ? getStructData: appGetForeignKeyTable;
-    convertFiltersToSQL = defaultVal(convertFiltersToSQL,datagrid.convertFiltersToSQL);
+    convertFiltersToSQL = defaultVal(convertFiltersToSQL);
     const foreignKeyTableStr = defaultStr(foreignKeyTable,props.tableName,props.table);
     if(typeof getForeignKeyTable !=='function'){
         console.error("la fonction getTableData non définie des les paramètres d'initialisation de l'application!!! Rassurez vous d'avoir définier cette fonction!!, options : foreignKeyTable:",foreignKeyTable,"foreignKeyColumn:",foreignKeyColumn,props)
@@ -145,7 +145,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabel
     const context = {
         refresh : (force,cb)=>{
             if(!isMounted()) return;
-            if(typeof beforeFetchItems ==='function' && beforeFetchItems(fetchOptions) === false) return;
+            if(typeof beforeFetchItems ==='function' && beforeFetchItems({fetchOptions}) === false) return;
             let opts = Object.clone(fetchOptions);
             if(cPrepareFilters !== false){
                 opts.selector = prepareFilters(fetchOptions.selector,{convertToSQL:convertFiltersToSQL});
@@ -233,9 +233,11 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabel
                             itv = t =='money'? itv.formatMoney()  : itv.formatNumber();
                         }
                     }  else {
-                        if(typeof itv =='string' && itv && DateLib.isIsoDateStr(itv)){
-                            itv = DateLib.format(itv,DateLib.defaultDateFormat);
-                        }
+                        /***
+                            if(typeof itv =='string' && itv && DateLib.isIsoDateStr(itv)){
+                                itv = DateLib.format(itv,DateLib.defaultDateFormat);
+                            }
+                        */
                     }
                 }
                 itl+= (itl?" ":"")+ (itv || defaultStr(itv))

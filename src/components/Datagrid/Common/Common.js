@@ -3131,8 +3131,8 @@ export default class CommonDatagridComponent extends AppComponent {
         return this.doFilter(arg);
     }
     ///si les filtres devront être convertis au format SQL
-    willConvertFiltersToSQL(){
-        return !!defaultVal(this.props.convertFiltersToSQL);;
+    canConvertFiltersToSQL(){
+        return !!(this.props.convertFiltersToSQL);;
     }
     /*** retourne la liste des colonnes sur lesquelles on peut effectuer un filtre*/
     getFilterableColumnsNames(){ 
@@ -3243,7 +3243,7 @@ export default class CommonDatagridComponent extends AppComponent {
                     return resolve(sData);
                 }
                 if(this.beforeFetchData({fetchOptions,force,context:this,renderProgressBar}) === false) return resolve(sData);
-                if(this.willConvertFiltersToSQL()){
+                if(this.canConvertFiltersToSQL()){
                     fetchOptions.selector = convertToSQL(fetchOptions.selector);
                 }
                 if(typeof this.props.beforeFetchData =='function' && this.props.beforeFetchData({...rest,renderProgressBar,context:this,force,fetchOptions,options:fetchOptions}) === false){

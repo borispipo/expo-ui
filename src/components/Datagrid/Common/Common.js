@@ -3242,11 +3242,11 @@ export default class CommonDatagridComponent extends AppComponent {
                     this.isFetchingData = false;
                     return resolve(sData);
                 }
-                if(this.beforeFetchData(fetchOptions) === false) return resolve(sData);
+                if(this.beforeFetchData({fetchOptions,force,context:this,renderProgressBar}) === false) return resolve(sData);
                 if(this.willConvertFiltersToSQL()){
                     fetchOptions.selector = convertToSQL(fetchOptions.selector);
                 }
-                if(typeof this.props.beforeFetchData =='function' && this.props.beforeFetchData({...rest,context:this,force,fetchOptions,options:fetchOptions}) === false){
+                if(typeof this.props.beforeFetchData =='function' && this.props.beforeFetchData({...rest,renderProgressBar,context:this,force,fetchOptions,options:fetchOptions}) === false){
                     this.isFetchingData = false;
                     return resolve(sData);
                 }

@@ -1,21 +1,19 @@
 import Fab from "$ecomponents/Fab";
 import { StyleSheet } from "react-native";
 import {isObjOrArray,isObj,defaultStr,defaultObj} from "$cutils";
-import APP from "$capp";
 import React from "$react";
 import {navigateToTableData} from "$enavigation/utils";
 import PropTypes from "prop-types";
 import theme from "$theme";
-import {isLoggedIn as isAuthLoggedIn} from "$cauth/utils/session";
 import useExpoUI from "$econtext/hooks";
-import Auth from "$cauth";
+import Auth,{useIsSignedIn} from "$cauth";
 
 export * from "./utils";
 
 const FabLayoutComponent = React.forwardRef((p,ref)=>{ 
   const {components:{fabPropsMutator},tablesData} = useExpoUI();
   const {style,actions:fabActions,...props} = typeof fabPropsMutator == 'function'? extendObj({},p,fabPropsMutator({...p,isLoggedIn})) : p;
-  const [isLoggedIn,setIsLoggedIn] = React.useState(isAuthLoggedIn());
+  const isLoggedIn = useIsSignedIn();
   const isMounted = React.useIsMounted();
   const tables = isObjOrArray(fabActions)? fabActions : tablesData;
   const actions = React.useMemo(()=>{
@@ -51,22 +49,6 @@ const FabLayoutComponent = React.forwardRef((p,ref)=>{
       })
       return a.length ? a : null;
   },[isLoggedIn,fabActions,tables]);
-
-  React.useEffect(()=>{
-      const onLogin = ()=>{
-          if(!isMounted())return;
-          setIsLoggedIn(true);
-      },onLogout = ()=>{
-          if(!isMounted()) return;
-          setIsLoggedIn(false);
-      }
-      APP.on(APP.EVENTS.AUTH_LOGIN_USER,onLogin);
-      APP.on(APP.EVENTS.AUTH_LOGOUT_USER,onLogout);
-      return ()=>{
-          APP.off(APP.EVENTS.AUTH_LOGIN_USER,onLogin);
-          APP.off(APP.EVENTS.AUTH_LOGOUT_USER,onLogout);
-      }
-  },[])
   return actions ? <Fab.Group
         {...props}
         ref = {ref}

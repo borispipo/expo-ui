@@ -166,6 +166,9 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     const limitRef = React.useRef(!canHandleLimit ?0 : defaultNumber(getSessionData("limit"),500));
     const isInitializedRef = React.useRef(false);
     testID = defaultStr(testID,"RNSWRDatagridComponent");
+    React.useEffect(()=>{
+        showProgressRef.current = false;
+    },[showProgressRef.current]);
     const {error, isValidating,isLoading,data:result,refresh} = useSWR(fetchPath,{
         fetcher : (url,opts)=>{
             if(!isInitializedRef.current) {
@@ -193,27 +196,15 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                 opts.showError = false;
             }
             if(typeof fetcher =='function'){
-                return fetcher(url,opts).then((r)=>{
-                    showProgressRef.current = false;
-                    return r;
-                }).catch((r)=>{
-                    showProgressRef.current = false;
-                    return r;
-                });
+                return fetcher(url,opts);
             }
-            return apiFetch(url,opts).then((r)=>{
-                showProgressRef.current = false;
-                return r;
-            }).catch((r)=>{
-                showProgressRef.current = false;
-                return r;
-            });
+            return apiFetch(url,opts);
         },
         swrOptions : getSWROptions(swrConfig.refreshTimeout)
     });
     const dataRef = React.useRef(null);
     const totalRef = React.useRef(0);
-    const loading = (customIsLoading === true || isLoading || (false && isValidating && showProgressRef.current));
+    const loading = (customIsLoading === true || isLoading || (isValidating && showProgressRef.current));
     const {data,total} = React.useMemo(()=>{
         if((loading && customIsLoading !== false) || !isObjOrArray(result)){
             return {data:dataRef.current,total:totalRef.current};

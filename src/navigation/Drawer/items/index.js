@@ -12,9 +12,9 @@ import { screenName as aboutScreenName} from "$escreens/Help/About";
 import theme from "$theme";
 import APP from "$capp/instance";
 import useExpoUI from "$econtext/hooks";
-import Auth from "$cauth";
+import Auth,{useIsSignedIn} from "$cauth";
 import {getTableDataListRouteName} from "$enavigation/utils";
-import {isValidElement} from "$react";
+import {isValidElement,usePrevious} from "$react";
 
 const useGetItems = (options)=>{
     const {navigation:{drawerItems,drawerSections,drawerItemsMutator},tablesData} = useContext(); 
@@ -24,6 +24,7 @@ const useGetItems = (options)=>{
     const {handleHelpScreen} = useExpoUI(); 
     const handleHelp =  handleHelpScreen !== false;
     const refreshItemsRef = useRef(false);
+    const isSignedIn = useIsSignedIn();
     useEffect(()=>{
         const refreshItems = (...a)=>{
             refreshItemsRef.current = !refreshItemsRef.current;
@@ -32,13 +33,9 @@ const useGetItems = (options)=>{
             }
         }
         APP.on(APP.EVENTS.REFRESH_MAIN_DRAWER,refreshItems);
-        APP.on(APP.EVENTS.AUTH_LOGIN_USER,refreshItems);
-        APP.on(APP.EVENTS.AUTH_LOGOUT_USER,refreshItems);
         //APP.on(APP.EVENTS.UPDATE_THEME,refreshItems);
         return ()=>{
             APP.off(APP.EVENTS.REFRESH_MAIN_DRAWER,refreshItems);
-            APP.off(APP.EVENTS.AUTH_LOGIN_USER,refreshItems);
-            APP.off(APP.EVENTS.AUTH_LOGOUT_USER,refreshItems);
             //APP.off(APP.EVENTS.UPDATE_THEME,refreshItems);
         }
     },[])
@@ -140,7 +137,7 @@ const useGetItems = (options)=>{
             }
         });
         return items;
-    },[showProfilOnDrawer,handleHelp,refreshItemsRef.current,force])
+    },[showProfilOnDrawer,handleHelp,refreshItemsRef.current,force,isSignedIn])
 }
 
 export default useGetItems;

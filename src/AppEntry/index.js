@@ -42,8 +42,7 @@ import { StyleSheet } from "react-native";
 import Logo from "$ecomponents/Logo";
 import AppEntryRootView from "./RootView";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { Dimensions,Keyboard } from 'react-native';
-import {isTouchDevice} from "$platform";
+import {Keyboard } from 'react-native';
 
 
 let MAX_BACK_COUNT = 1;

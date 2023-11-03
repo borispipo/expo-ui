@@ -100,7 +100,7 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
   const Wrapper = React.useMemo(()=>modal ? PortalCP : React.Fragment,[modal]);
   const WrapperProps = modal? {screenName} : {};
   const portalId = uniqid("screeen-container-"+screenName);
-  return <Wrapper {...WrapperProps}>
+  return <Wrapper {...WrapperProps} key={screenName}>
     <View  testID={testID+"_ScreenContentContainer"} id={portalId} {...containerProps} style={[styles.container,{backgroundColor},modal && styles.modal,containerProps.style]} >
       <KeyboardAvoidingView testID={testID} {...keyboardAvoidingViewProps} style={[styles.keyboardAvoidingView,keyboardAvoidingViewProps.style]}>
           {withStatusBar !== false ? <StatusBar/> : null}
@@ -134,8 +134,8 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
   </Wrapper>
 }
 
-const PortalCP = ({children})=>{
-  return <RNPortal>
+const PortalCP = ({children,screenName})=>{
+  return <RNPortal key={screenName}>
     {children}
   </RNPortal>
 }

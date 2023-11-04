@@ -1,7 +1,7 @@
 // Copyright 2023 @fto-consult/Boris Fouomene. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
-import {isNonNullString,isArray,isObjOrArray,defaultStr,defaultArray,defaultObj,isObj} from "$cutils";
+import {isNonNullString,isArray,isObjOrArray,maxItemsToRender,defaultStr,defaultArray,defaultObj,isObj} from "$cutils";
 import Hashtag from "$ecomponents/Hashtag";
 import DateLib from "$date";
 import Image from "$ecomponents/Image";
@@ -82,22 +82,36 @@ export const renderRowCell = (arg)=>{
                 const sepp = ",";
                 if(columnDef.multiple && id.contains(sepp)){
                     let hasC = false,sep2 ="";
+                    const maxItemsToRender = defaultNumber(columnDef?.datagrid?.maxItemsToRender,5);
+                    let renderedItems = 0;
+                    const idSplit = id.split(sepp);
                     _render = <View style={[style,theme.styles.row,theme.styles.flexWrap]} testID={"RN_RowCell_"+columnDef.field+"multiple_"}>
-                        {id.split(sepp).map((idd,index)=>{
-                            if(!isNonNullString(idd)) return null;
+                        {idSplit.map((idd,index)=>{
+                            if(!isNonNullString(idd) || maxItemsToRender === renderedItems) return null;
                             idd = idd.trim();
                             if(!idd) return null;
                             if(hasC){
                                 sep2=", ";
                             }
                             hasC = true;
-                            return <TableLink 
-                                key = {index}
-                                {...rProps}
-                                id = {idd}
-                            >
-                                {sep2+idd}
-                            </TableLink>
+                            renderedItems++;
+                            const suffix = renderedItems === maxItemsToRender && idSplit.length > maxItemsToRender ? <Label>...</Label> : null;
+                            return suffix ? <>
+                                <TableLink 
+                                    key = {index}
+                                    {...rProps}
+                                    id = {idd}
+                                >
+                                    {sep2+idd}
+                                </TableLink>
+                                {suffix}
+                            </> : <TableLink 
+                                    key = {index}
+                                    {...rProps}
+                                    id = {idd}
+                                >
+                                    {sep2+idd}
+                                </TableLink>
                         })}
                     </View>
                     

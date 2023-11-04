@@ -126,17 +126,17 @@ export  function renderActions({context,isUpdate,newElementLabel,readablePerms:c
         flat : true,
         onPress : createCallback({context:self,action:'save2close',callback:onPressToSave})
     }, save2new = (save2newAction !== false && !readOnly && permsObj.canSave2New && !hasManyData)?{
-        text : textSave+'& '+newElementLabel,
-        title : textSave+'& '+newElementLabel,
+        text : textSave+' & '+newElementLabel,
+        title : textSave+' & '+newElementLabel,
         isAction : true,
         shortcut : "save2new",
         icon : 'content-save-edit',
         flat : true,
         onPress : createCallback({context:self,action:'save2new',callback:onPressToSave})
     } : null
-    ,save2clone = (save2cloneAction !== false && cloneAction !== false && !readOnly && save && permsObj.canCreate)?{
-        text : textSave+'& Dupliquer',
-        title : textSave+'& Dupliquer',
+    ,save2clone = (save2cloneAction !== false && cloneAction !== false && !readOnly && permsObj.canSave && permsObj.canCreate)?{
+        text : textSave+' & Dupliquer',
+        title : textSave+' & Dupliquer',
         isAction : true,
         shortcut : "save2clone",
         icon : 'content-save-move',

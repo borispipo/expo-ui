@@ -318,14 +318,14 @@ export default class TableDataScreenComponent extends FormDataScreen{
             isUpdated,
             fields,
         });
-        const cCloneAction = this.isClonable() && this.canCreateNew() && clonable !== false ? cloneAction : false;
+        const cCloneAction = this.isClonable() && this.canCreateNew() && clonable !== false && cloneAction !== false && true || false;
         const rActionsArg = this.currentRenderingProps = {
             ...rest,
             ...formProps,
             context,
             cloneAction : cCloneAction,
             save2newAction : this.canCreateNew() && save2newAction !== false ? true : false,
-            save2cloneAction : cloneAction && save2cloneAction !== false ? true : false,
+            save2cloneAction : cCloneAction && save2cloneAction !== false ? true : false,
             isMobile : isMobOrTab,
             saveAction,
             save2closeAction,

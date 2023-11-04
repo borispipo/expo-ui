@@ -442,7 +442,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
                 mainContent = ct;
             } else {
                 mainContent = <View  {...contentProps} testID={testID+"_ContentContainer"} style={[styles.container,styles.noPadding,contentProps.style]}>
-                    <ScrollView  withAutoSizer testID={testID+"_MainContentScrollView"} contentProps={{style:theme.styles.p1}}>
+                    <ScrollView  testID={testID+"_MainContentScrollView"} contentProps={{style:theme.styles.p1}}>
                         <View testID={testID+"_ContentHeader"} style={[styles.screenContent,theme.styles.p1,header?styles.screenContentWithHeader:null]}>
                             {header}
                             {content}

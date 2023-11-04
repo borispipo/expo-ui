@@ -4,7 +4,6 @@ import PropTypes from "prop-types";
 import View from "$ecomponents/View";
 import theme from "$theme";
 import {defaultStr,defaultObj,defaultNumber} from "$cutils";
-import APP from "$capp/instance";
 import ActivityIndicator from "$ecomponents/ActivityIndicator";
 
 /***

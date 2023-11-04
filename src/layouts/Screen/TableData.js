@@ -13,7 +13,6 @@ import {canMakePhoneCall, makePhoneCall as makePCall} from "$app/makePhoneCall";
 import copyToClipboard from "$app/clipboard";
 import {isMobileOrTabletMedia} from "$platform/dimensions";
 import Tab  from "$ecomponents/Tab";
-import Surface from "$ecomponents/Surface";
 import View from "$ecomponents/View";
 import {goBack as navGoBack} from "$cnavigation";
 import {renderTabsContent,renderActions} from "./utils";
@@ -25,6 +24,7 @@ import {isDocEditing,checkPrimaryKey} from "$ecomponents/Form";
 import i18n from "$i18n";
 import fetch from "$capi/fetch";
 import appConfig from "$capp/config";
+import {Vertical} from "$ecomponents/AutoSizer";
 
 
 const HIDE_PRELOADER_TIMEOUT = 300;
@@ -416,14 +416,13 @@ export default class TableDataScreenComponent extends FormDataScreen{
         restProps.tabProps = tabProps = defaultObj(tabProps);
         const tabs = this.renderTabs(restProps);
         const tabKey = this.getTabsKey();
-        const isMobile = isMobileOrTabletMedia();
+        const isMobOrTab = isMobileOrTabletMedia();
+        tabsProps.tabContentProps.autoHeight = typeof tabsProps.tabContentProps.autoHeight =="boolean"? tabsProps.tabContentProps.autoHeight : isMobOrTab;
         const contentProps = restProps.contentProps;
-        const elevation = restProps.elevation;
-        const renderingTabsProps = {tabs,data:this.getCurrentData(),isMobile,sessionName:this.getSessionName(),props:restProps,tabProps,tabsProps,context,tabKey};
+        const renderingTabsProps = {tabs,data:this.getCurrentData(),isMobile:isMobOrTab,sessionName:this.getSessionName(),props:restProps,tabProps,tabsProps,context,tabKey};
         const hasTabs = Object.size(tabs,true);
         let mainContent = undefined;
         testID = defaultStr(testID,"RN_TableDataScreenItem_"+restProps.tableName);
-        const isMobOrTab = isMobileOrTabletMedia();
         firstTabProps = extendObj({},tabProps,firstTabProps);
         if(hasTabs){
             if(isMobOrTab){
@@ -441,7 +440,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
                 contentProps.style = [contentProps.style,styles.noMargin,styles.noPadding,styles.content]
                 mainContent = ct;
             } else {
-                mainContent = <View  {...contentProps} testID={testID+"_ContentContainer"} style={[styles.container,styles.noPadding,contentProps.style]}>
+                mainContent = <Vertical  {...contentProps} testID={testID+"_ContentContainer"} style={[styles.container,styles.noPadding,contentProps.style]}>
                     <ScrollView  testID={testID+"_MainContentScrollView"} contentProps={{style:theme.styles.p1}}>
                         <View testID={testID+"_ContentHeader"} style={[styles.screenContent,theme.styles.p1,header?styles.screenContentWithHeader:null]}>
                             {header}
@@ -451,7 +450,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
                             {ct}
                         </View> : null}
                     </ScrollView>
-                </View>
+                </Vertical>
             }
         } else {
             mainContent = <ScrollView testID={testID+"_MainContentScrollViewWithoutTab"}>

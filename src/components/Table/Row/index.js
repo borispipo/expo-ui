@@ -22,7 +22,7 @@ export default function TableRowComponent({cells,rowKey,rowData,index,...rest}){
             }
             return renderSectionHeader({isSectionListHeader:true,renderSectionListHeaderOnFirstCell:true,
             sectionListHeaderContainerProps : {
-                style : {position:"relative",paddingLeft:"10px",paddingRight:"10px"}
+                style : {position:"relative",paddingLeft:10,paddingRight:10}
             },
             sectionListHeaderProps:{className:"table-section-list-header",style:styles.sectionListHeaderAbsolute,testID:"RN_TableComponentSectionListHeader"}
             ,...nativeProps,rowData,item:rowData,index,rowIndex:index,isTable:true,rowKey})

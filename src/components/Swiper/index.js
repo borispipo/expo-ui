@@ -279,14 +279,14 @@ class SwiperComponent extends React.Component {
     contentContainerProps = defaultObj(contentContainerProps);
     swipeAreaProps = defaultObj(swipeAreaProps);
     contentProps = defaultObj(contentProps);
-    withScrollView = typeof withScrollView ==='boolean'? withScrollView : false;
+    withScrollView = true;//typeof withScrollView ==='boolean'? withScrollView : false;
     const Wrapper = withScrollView ? ScrollView : React.Fragment;
     const wrapperProps = withScrollView  ? Object.assign({},scrollViewProps) : {};
     testID = defaultStr(testID,'RN_SwiperComponent');
     childrenProps = Array.isArray(childrenProps)? childrenProps : [];
     const isReady = customHeight > 40 ? true : false;
     const autoHeight = !!this.props.autoHeight;
-    const height = autoHeight ? undefined : !isReady ? WIDTH_HEIGHT : customHeight;
+    const height = autoHeight ? this.state.height : !isReady ? WIDTH_HEIGHT : customHeight;
     if(withScrollView){
       if(typeof wrapperProps.showsVerticalScrollIndicator !=='boolean'){
         wrapperProps.showsVerticalScrollIndicator = !isNative;
@@ -373,6 +373,7 @@ class SwiperComponent extends React.Component {
 
 SwiperComponent.propTypes = {
   vertical: PropTypes.bool,
+  autoHeight : PropTypes.bool,//cette prop permet de redimensionner automatiquement le tab sur la page, utilise lorsque l'on souhaite que le tab aucupe toute les page
   activeIndex: PropTypes.number,
   autoHeight : PropTypes.bool,//si la valeur de la taille des éléments sera automatiquement réajusté
   loop: PropTypes.bool,
@@ -458,9 +459,9 @@ const styles = {
     left: 0,
     width:vertical ? width : width * count,
     flexDirection: vertical ? 'column' : 'row',
-  }),typeof height ==='number'? (vertical ? height * count : height) : undefiend,autoHeight),
+  }),typeof height ==='number'? (vertical ? height * count : height) : undefined,autoHeight),
   scrollViewContentContainer : {
-    paddingBottom : 40,
+    paddingBottom : 0,
     flex : 1,
   },
   preloaderContainer : {

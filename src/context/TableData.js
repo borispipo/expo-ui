@@ -54,7 +54,8 @@ export function prepareScreens ({tables,screens:screensProps,TableDataScreen,Tab
     TableDataScreenComponentRef.current = React.isComponent(TableDataScreen)? TableDataScreen : TableDataScreenComponentRef.current;
     TableDataScreenComponentRef.List = React.isComponent(TableDataScreenList)? TableDataScreenList : TableDataScreenComponentRef.List;
     const Modal = defaultBool(TableDataScreenComponentRef.current?.Modal,TableDataScreenComponentRef.current?.modal,true)
-    const withFab = typeof TableDataScreenComponentRef.current?.withFab =="boolean"? TableDataScreenComponentRef.current?.withFab : false;
+    const ModalList = defaultBool(TableDataScreenComponentRef.List?.Modal,TableDataScreenComponentRef.List?.modal)
+    const withFab = typeof TableDataScreenComponentRef.List?.withFab =="boolean"? TableDataScreenComponentRef.List?.withFab: undefined;
     loopForScreen(screensProps,screens,foundTables);
     Object.map(tables,(table,i)=>{
         if(!isObj(table) || !isNonNullString(i)) return;
@@ -64,18 +65,17 @@ export function prepareScreens ({tables,screens:screensProps,TableDataScreen,Tab
             screens.push({
                 Component : TableDataScreenItem,
                 screenName,
-                withFab,
                 Modal
             })
             foundTables[screenName] = TableDataScreenItem;
         } else if(React.isComponent(foundTables[screenName])){
             foundTables[screenName].Modal = defaultBool(foundTables[screenName]?.Modal,foundTables[screenName].modal,Modal)
-            foundTables[screenName].withFab = typeof foundTables[screenName]?.withFab ==="boolean" ? foundTables[screenName]?.withFab : withFab;
         }
         if(!foundTables[listScreenName] && table.datagrid !== false){
             screens.push({
                 Component : TableDataListScreen,
                 screenName : listScreenName,
+                Modal : ModalList,
                 withFab,
             });
             foundTables[listScreenName] = TableDataListScreen;

@@ -40,7 +40,13 @@ Object.map(Utils,(v,i)=>{
     getTableData : ()=>{object|array}
     getStructData : ()=>{object|array}
     tablesData : {object:{
-      table1:{drawerSortOrder:{number,l'ordre d'apparition dans le drawer},showInDrawer:{boolean|{funct<{boolean}>},si l'on affichera la table de données dans le drawers}},
+      table1:{
+        drawerSortOrder:{number,l'ordre d'apparition dans le drawer},showInDrawer:{boolean|{funct<{boolean}>,
+        showInFab{boolean},
+        showInDrawer{boolean},
+        fabProps {object|function({tableName})}, retourne les props à appliquer au composant fab lié à la tabl,
+          si elle définit une propriété nomée actions de types tableau, alors, ces actions seront utilisées commes actions personnalisées du fab
+      },si l'on affichera la table de données dans le drawers}},
       table2:{},
       table3:{},...[tableN]:{}}
     }, la liste des tables de données

@@ -12,12 +12,12 @@ export * from "./utils";
 
 const FabLayoutComponent = React.forwardRef((p,ref)=>{ 
   const {components:{fabPropsMutator},tablesData} = useExpoUI();
-  const {style,actions:fabActions,...props} = typeof fabPropsMutator == 'function'? extendObj({},p,fabPropsMutator({...p,isLoggedIn})) : p;
+  const {style,actions:fabActions,useTables,...props} = typeof fabPropsMutator == 'function'? extendObj({},p,fabPropsMutator({...p,isLoggedIn})) : p;
   const isLoggedIn = useIsSignedIn();
   const tables = isObjOrArray(fabActions)? fabActions : tablesData;
   const actions = React.useMemo(()=>{
       if(Array.isArray(fabActions)) return fabActions;
-      if(!isLoggedIn) return null;
+      if(!isLoggedIn || useTables === false) return null;
       const a = [];
       Object.map(tables,(table,i,index)=>{
           if(!isObj(table) || table.showInFab === false || typeof  table.showInFab =="function" && table.showInFab() === false) return;
@@ -26,12 +26,22 @@ const FabLayoutComponent = React.forwardRef((p,ref)=>{
           const addText = defaultStr(table.newElementLabel,"Nouveau");
           const tableName = defaultStr(table.table,table.tableName);
           if(!table || !icon || !text || !Auth.isTableDataAllowed({table:tableName,action:'create'})) return;
-          let fabProps = typeof table.getFabProps ==='function'? table.getFabProps({tableName}) : defaultObj(table.fabProps);;
+          let fabProps = typeof table.fabProps ==='function'? table.fabProps({tableName}) : defaultObj(table.fabProps);;
           if(fabProps === false) return;
           fabProps = defaultObj(fabProps);
           const cSuffix = theme.Colors.getSuffix(index);
           const color = theme.Colors.isValid(fabProps.color)? fabProps.color : theme.Colors.getContrast(cSuffix);
           const backgroundColor = theme.Colors.isValid(fabProps.backgroundColor)?fabProps.backgroundColor : cSuffix;
+          if(Array.isArray(fabProps.actions)){
+              return fabProps.actions.map((p)=>{
+                 if(!isObj(p) || (!p.label && !p.text)) return null;
+                 a.push({
+                    color,
+                    backgroundColor,
+                    ...p,
+                 });
+              })
+          }
           const label = defaultStr(fabProps.label,fabProps.text,"{0} | {1}".sprintf(addText,text));
           a.push({
               icon,
@@ -70,6 +80,7 @@ const styles = StyleSheet.create({
 
   FabLayoutComponent.propTypes = {
     ...Fab.propTypes,
+    useTables  : PropTypes.bool,//si les tables data seront exploités pour la génération du fab
     actions : PropTypes.array, //les actions du fab layout
     screenName : PropTypes.string,
   }

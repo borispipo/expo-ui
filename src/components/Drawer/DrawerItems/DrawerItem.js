@@ -4,6 +4,7 @@ import _DrawerItem from "./_DrawerItem";
 import {navigate,setActiveRoute} from "$cnavigation";
 import { useDrawer } from "../Provider";
 import { setActiveItem,getOnPressAction,closeDrawer as nCloseDrawer,previousActiveItemRef,activeItemRef} from "./utils";
+import {useIsScreenFocused} from "$enavigation/hooks";
 import React from "$react";
 
 
@@ -12,7 +13,7 @@ import React from "$react";
 export default function DrawerItem(props){
     let {navigation,closeOnPress,routeName,routeParams,...rest} = props;
     const {drawerRef,isItemActive} = useDrawer();
-    const isActive = isItemActive(props);
+    const isActive = useIsScreenFocused(routeName) || isItemActive(props);
     const [active,setActive] = React.useState(isActive);
     const isMounted = React.useIsMounted();
     const itemId = React.useState(uniqid("drawer-item-id"));
@@ -35,20 +36,6 @@ export default function DrawerItem(props){
             setActive(isActive); 
         }
     },[isActive])
-    React.useEffect(()=>{
-        const onScreenFocus = ({sanitizedName,screenName})=>{
-            if(screenName == routeName || sanitizedName === routeName){
-                setActiveRoute({name:routeName,params:routeParams})  
-                if(isMounted()){
-                    setActiveItem(context,true);
-                } 
-            }   
-        };
-        APP.on(APP.EVENTS.SCREEN_FOCUS,onScreenFocus);
-        return ()=>{
-            APP.off(APP.EVENTS.SCREEN_FOCUS,onScreenFocus);
-        }
-    },[])
     return <_DrawerItem 
         {...rest} 
         drawerRef = {drawerRef}

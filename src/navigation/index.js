@@ -7,8 +7,7 @@ import useContext from "$econtext/hooks";
 import { MainNavigationProvider } from "./hooks";
 import {isWeb,isAndroid} from "$cplatform";
 import Stack from "./Stack";
-import theme from "$theme";
-import {defaultObj} from "$cutils";
+import theme from "$theme";;
 
 export * from "./hooks";
 

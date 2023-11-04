@@ -8,8 +8,7 @@ import theme,{Colors} from "$theme";
 import Group from "./GroupComponent";
 import {Portal} from "react-native-paper";
 import {isAllowedFromStr} from "$cauth/perms";
-
-const activeRef = {current:null};
+import { useIsScreenFocused } from '$enavigation/hooks';
 
 export const isValid = (context)=>{
     if(!isObj(context) || !isNonNullString(context.fabId) || typeof context.show !=="function" || context.hide !="function") return false;
@@ -49,65 +48,6 @@ export const isActive = (fabId)=>{
     return isNonNullString(fabId) && fabIdRefs.current[fabIdRefs.current.length-1] == fabId && isValid(getFab(fabId));
 }
 
-export const MANAGER = {
-    get active (){
-        return activeRef.current;
-    },
-    ///la liste des fabs
-    get all (){
-        return allFabs;
-    },
-    ///la liste des fabs Id
-    get fabIds (){
-        return fabIdRefs.current;
-    },
-    set active(active){
-        active = isValid(active)? active : null;
-        if(active){
-            ///on désactive l'ancien fab qui était actif
-            if(isValid(activeRef.current)){
-                activeRef.current.hide();
-            }
-            activateFabId(active.fabId);
-            activeRef.current = active;
-        } else {
-            //l'ancien fab devient active
-            let length = fabIdRefs.current.length-1;
-            let prevActive = null,prevFabId = null;
-            ///ça veut dire que l'ancien fab active a été démonté
-            if(isValid(activeRef.current)){
-                prevFabId = activeRef.current.fabId
-            }
-            while(length >=0 && !isValid(prevActive)){
-                const fId = fabIdRefs.current[length];
-                if(isNonNullString(fId) && fId !== prevFabId){
-                    prevActive = allFabs[fId];
-                    if(isValid(prevActive)){
-                        break;
-                    }
-                }
-                length --;
-            }   
-            if(!prevActive){
-                fabIdRefs.current = [];
-                Object.map(allFabs,(f,i)=>{
-                    delete allFabs[i];
-                })
-            }
-            if(isValid(prevActive)){
-                prevActive.show();
-                activateFabId(prevActive.fabId);
-            }
-            activeRef.current = prevActive;
-        }
-    },
-    get hasActive(){
-        return isValid(activeRef.current);
-    },
-    get get (){
-        return getFab;
-    }
-};
 
 export const activate = (args)=>{
     const {context,fabId} = args;
@@ -125,6 +65,10 @@ const FabGroupComponent = React.forwardRef((props,innerRef)=>{
     const fabIdRef = React.useRef(defaultStr(fabId,uniqid("fab-id-ref")));
     fabId = fabIdRef.current;
     const isMountedRef = React.useRef(false);
+    let isFocused = useIsScreenFocused(screenName);
+    if(!isNonNullString(screenName)){
+        isFocused = true;
+    }
     const [state, setState] = React.useState({ 
         open: typeof customOpen =='boolean'? customOpen : false,
         display : typeof customDisplay ==='boolean'? customDisplay : true,
@@ -205,30 +149,25 @@ const FabGroupComponent = React.forwardRef((props,innerRef)=>{
             isMountedRef.current = false;
             React.setRef(innerRef,null);
         }
-    },[])
-    React.useEffect(()=>{
-        if(display){
-            MANAGER.active = context;
-        } else {
-            MANAGER.active = null;
-        }
-    },[display]);
-    return <Group
-        {...rest}
-        color = {color}
-        style = {[rest.style,styles.container]}
-        fabStyle = {[styles.fab,fabStyle,{backgroundColor},!display && styles.hidden]}
-        open={open ?true : false}
-        icon={open ? openedIcon : closedIcon}
-        actions={actions}
-        onStateChange={onStateChange}
-        onPress={(e) => {
-          context.opened = open;
-          if (open && onOpen) {
-            onOpen(e);
-          }
-        }}
-      />
+    },[]);
+    return <Portal>
+        <Group
+          {...rest}
+          color = {color}
+          style = {[rest.style,styles.container]}
+          fabStyle = {[styles.fab,fabStyle,{backgroundColor},!display || !isFocused  && styles.hidden]}
+          open={open ?true : false}
+          icon={open ? openedIcon : closedIcon}
+          actions={actions}
+          onStateChange={onStateChange}
+          onPress={(e) => {
+            context.opened = open;
+            if (open && onOpen) {
+              onOpen(e);
+            }
+          }}
+        />
+    </Portal>
 });
 const actionType = PropTypes.shape({
     icon : PropTypes.string,

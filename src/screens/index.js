@@ -23,7 +23,11 @@ export const handleScreen = ({Screen,Factory,ModalFactory,result,filter,index})=
         screenName = Screen.screenName;
         screenOptions = Screen.options;
         const Modal = typeof Screen.Modal =='boolean'? Screen.Modal : typeof Screen.modal =='boolean'? Screen.modal : undefined;
+        const withFab = typeof Screen.withFab =='boolean'? Screen.withFab : undefined;
         Screen = Screen.Component;
+        if(typeof withFab =='boolean'){
+            Screen.withFab = withFab;
+        }
         if(Modal !== undefined){
             Screen.Modal = Modal;
         }
@@ -68,6 +72,8 @@ export const handleScreen = ({Screen,Factory,ModalFactory,result,filter,index})=
                 const options = typeof Screen.options === 'function'? Screen.options(args) : typeof screenOptions ==='function'? screenOptions(args) : defaultObj(Screen.options,screenOptions);
                 options.screenName = screenName;
                 options.Screen = Screen;
+                options.Modal = typeof Screen.Modal =='boolean'? Screen.Modal : options.Modal;
+                options.withFab = typeof Screen.withFab =='boolean'? Screen.withFab : options.withFab;
                 options.groupName = groupName;
                 options.authRequired = authRequired;
                 SCREEN_OPTIONS[sanitizedName] = options;

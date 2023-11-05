@@ -36,8 +36,10 @@ const TableLinKComponent = React.forwardRef((props,ref)=>{
     const pointerEvents = disabled || readOnly ? 'none' : 'auto';
     const onPressLink = (event)=>{
         React.stopEventPropagation(event);
-        if((isNonNullString(perm) && !Auth.isAllowedFromString(perm)) || !Auth[isStructData?"isStructDataAllowed":"isTableDataAllowed"]({table:foreignKeyTable,action:'read'})){
-            return;
+        if((isNonNullString(perm))){
+            if(!Auth.isAllowedFromString(perm))return;
+        } else {
+            if(!Auth[isStructData?"isStructDataAllowed":"isTableDataAllowed"]({table:foreignKeyTable,action:'read'})) return;
         }
         const args = {...React.getOnPressArgs(event),...rest,type,columnType:type,isStructData,fetch,foreignKeyTable,foreignKeyColumn,data,id,value:id};
         let r = typeof onPress =='function'? onPress(args) : undefined;

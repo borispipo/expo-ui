@@ -122,8 +122,6 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     }
     canMakePhoneCall = defaultBool(canMakePhoneCall,table.canMakePhoneCall);
     makePhoneCallProps = isValidMakePhoneCallProps(makePhoneCallProps) && makePhoneCallProps || isValidMakePhoneCallProps(rest.makePhoneCallProps) && rest.makePhoneCallProps ||  isValidMakePhoneCallProps(table.makePhoneCallProps) && table.makePhoneCallProps || {};
-    const isExportable = !!Auth.isTableDataAllowed({table:tableName,action:'export'});
-    rest.exportable = isExportable;
     rowKey = defaultStr(rowKey,table.rowKey,table.primaryKeyColumnName);
     const title = React.isValidElement(customTitle,true) && customTitle || defaultStr(table.label,table.text)
     columns = table.fields;

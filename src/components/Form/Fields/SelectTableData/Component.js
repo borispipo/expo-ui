@@ -267,9 +267,8 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabel
     const showAdd = React.useMemo(()=>{
         if(isFilter || !foreignKeyTable) return false;
         if(typeof canShowAdd ==='function'){
-            return canShowAdd({...props,table:foreignKeyTable,foreignKeyColumn,foreignKeyLabel,sortDir,foreignKeyTableObj:fKeyTable,foreignKeyTable})
-        }
-        if(Auth[isStructData?"isStructDataAllowed":"isTableDataAllowed"]({table:foreignKeyTable,action:'create'})){
+            return !!canShowAdd({...props,table:foreignKeyTable,foreignKeyColumn,foreignKeyLabel,sortDir,foreignKeyTableObj:fKeyTable,foreignKeyTable})
+        } else if(Auth[isStructData?"isStructDataAllowed":"isTableDataAllowed"]({table:foreignKeyTable,action:'create'})){
             return !!defaultVal(customShowAdd,true);
         }
         return false;

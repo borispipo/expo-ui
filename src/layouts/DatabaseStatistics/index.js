@@ -35,7 +35,9 @@ export default function DatabaseStatisticScreen ({withScreen,fetchDataProps,item
             if(table.databaseStatistic === false || table.databaseStatistics === false) return null;
             const chartAllowedPerm =  defaultStr(table.chartAllowedPerm);
             const testID = "RN_DatabaseStatisticsCell_"+index;
-            if((chartAllowedPerm && !Auth.isAllowedFromStr(chartAllowedPerm)) || (!Auth.isTableDataAllowed({table:tableName}))) return null;
+            if(chartAllowedPerm){
+                if(!Auth.isAllowedFromStr(chartAllowedPerm)) return null;
+            } else if((!Auth.isTableDataAllowed({table:tableName}))) return null;
             content.push(<Cell elevation = {5} withSurface mobileSize={12} desktopSize={3} tabletSize={6} {...contentProps} testID={testID} key = {index} >
                 <Surface testID = {testID+"_Surface"} elevation = {5} {...itemContainerProps} style={[theme.styles.w100,styles.itemContainer,itemContainerProps.style]}>
                     <DatabaseStatistic

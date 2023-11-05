@@ -341,7 +341,7 @@ export default class CommonDatagridComponent extends AppComponent {
     }
     /*** si l'on peut récuperer à distance, les colonnes seulement visibles */
     canFetchOnlyVisibleColumns(){
-        return this.isTableData() && this.props.canFetchOnlyVisibleColumns !== false && this.props.filterable !==false && true || false;
+        return this.isTableData() && this.props.canFetchOnlyVisibleColumns !== false && this.isFilterable() && true || false;
     }
     isFetchOnlyVisibleColumnsEnabled(){
         return this.canFetchOnlyVisibleColumns() && !!this.state.fetchOnlyVisibleColumns;

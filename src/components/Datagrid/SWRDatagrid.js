@@ -166,7 +166,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     testID = defaultStr(testID,"RNSWRDatagridComponent");
     React.useEffect(()=>{
         showProgressRef.current = false;
-    },[showProgressRef.current]);
+    });
     const {error, isValidating,isLoading,data:result,refresh} = useSWR(fetchPath,{
         fetcher : (url,opts)=>{
             if(!isInitializedRef.current) {

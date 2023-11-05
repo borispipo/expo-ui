@@ -9,6 +9,7 @@ import appConfig from "$capp/config";
 import Table from "$ecomponents/Table";
 import React  from "$react";
 import AutoLink from "$ecomponents/AutoLink";
+import {Vertical} from "$ecomponents/AutoSizer";
 
 const openLibraries = require("./openLibraries");
 
@@ -52,7 +53,7 @@ export default function OpenLibrariesScreen({testID,...props}){
             <Label testID={testID+"_OpenLibraries_HeaderLabel"} primary textBold>{appConfig.name+"   "}</Label>
             <Label>est bâti sur un ensemble d'outils et librairies open Source</Label>
         </View>
-        <View testID={testID+"_OpenLibrariesContent"} style={[theme.styles.w100,theme.styles.pv1]}>
+        <Vertical testID={testID+"_OpenLibrariesContent"} style={[theme.styles.w100,theme.styles.pv1]}>
             <Table
                 sortable = {false}
                 columns = {columns}
@@ -79,7 +80,7 @@ export default function OpenLibrariesScreen({testID,...props}){
                     return null;
                 }}
             />
-        </View>
+        </Vertical>
     </Screen>
 }
 

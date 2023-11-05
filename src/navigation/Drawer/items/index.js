@@ -15,7 +15,6 @@ import useExpoUI from "$econtext/hooks";
 import Auth,{useIsSignedIn} from "$cauth";
 import {getTableDataListRouteName} from "$enavigation/utils";
 import {isValidElement,usePrevious} from "$react";
-
 const useGetItems = (options)=>{
     const {navigation:{drawerItems,drawerSections,drawerItemsMutator},tablesData} = useContext(); 
     options = defaultObj(options);
@@ -137,7 +136,7 @@ const useGetItems = (options)=>{
             }
         });
         return items;
-    },[showProfilOnDrawer,handleHelp,refreshItemsRef.current,force,isSignedIn])
+    },[showProfilOnDrawer,handleHelp,theme.name,theme.colors.primary,theme.colors.secondary,refreshItemsRef.current,force,isSignedIn])
 }
 
 export default useGetItems;

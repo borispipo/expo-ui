@@ -12,7 +12,7 @@ import { screenName as aboutScreenName} from "$escreens/Help/About";
 import theme from "$theme";
 import APP from "$capp/instance";
 import useExpoUI from "$econtext/hooks";
-import Auth,{useIsSignedIn} from "$cauth";
+import Auth,{useIsSignedIn,tableDataPerms} from "$cauth";
 import {getTableDataListRouteName} from "$enavigation/utils";
 import {isValidElement,usePrevious} from "$react";
 const useGetItems = (options)=>{

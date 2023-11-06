@@ -175,5 +175,5 @@ MainScreenScreenWithoutAuthContainer.propTypes = {
   contentContainerStyle : StyleProp,
   withFab : PropTypes.bool,
   withDrawer : PropTypes.bool,//si l'on doit afficher un drawer dans le contenu
-  fabProps : PropTypes.object,
+  //fabProps : PropTypes.object,
 }

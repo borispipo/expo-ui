@@ -26,7 +26,7 @@ const FabLayoutComponent = React.forwardRef((p,ref)=>{
           const addText = defaultStr(table.newElementLabel,"Nouveau");
           const tableName = defaultStr(table.table,table.tableName);
           if(!table || !icon || !text || !Auth.isTableDataAllowed({table:tableName,action:'create'})) return;
-          let fabProps = typeof table.fabProps ==='function'? table.fabProps({tableName}) : defaultObj(table.fabProps);;
+          let fabProps = typeof table.fabProps ==='function'? table.fabProps({tableName,table:tableName}) : defaultObj(table.fabProps);;
           if(fabProps === false) return;
           fabProps = defaultObj(fabProps);
           const cSuffix = theme.Colors.getSuffix(index);

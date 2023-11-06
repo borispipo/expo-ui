@@ -30,6 +30,9 @@ export default class FormComponent extends React.AppComponent {
     getErrorText(){
         return defaultStr(this.___errorText);
     }
+    getErrorLabel(){
+        return defaultStr(this.___errorText);
+    }
     /*** vérifie si la form est valide */
     isValid () {
         let fields = this.getFields();

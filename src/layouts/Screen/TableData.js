@@ -261,6 +261,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
             ...rest
         } = this.prepareComponentProps({...props,tableName,context:this,fields:extendObj(true,{},this.fields,props.fields),isUpdated,isUpdate:isUpdated,data,datas,currentIndex});
         const sessionName = this.getSessionName();
+        const generatedColumnsProps = this.getGeneratedColumnsProperties();
         ///on effectue une mutator sur le champ en cours de modification
         Object.map(preparedFields,(field,i,counterIndex)=>{
             const currentField = isObj(field)?Object.clone(field):field;
@@ -270,7 +271,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
                 if(currentField.visibleOnlyOnEditing === true && !isUpdated){
                     currentField.form = false;
                 }
-                generatedColumnsProperties.map((f)=>{
+                generatedColumnsProps.map((f)=>{
                     //on affiche les champs générés uniquement  en cas de mise à jour
                     if(currentField[f] === true){
                         currentField.visible = isUpdated ? true : false;
@@ -375,6 +376,10 @@ export default class TableDataScreenComponent extends FormDataScreen{
             }
         }
         return rActionsArg;
+    }
+    /*** retourne la liste des colones générées comme createdDate,updateDate et bien d'autres */
+    getGeneratedColumnsProperties(){
+        return generatedColumnsProperties;
     }
     renderTabs(args){
         const tabs = this.props.tabs;
@@ -573,7 +578,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
         if(typeof this.props.clone ==='function' && this.props.clone(data,this) === false) return data;
         this.showPreloader();
         delete data.approved;
-        Object.map(['_rev',...generatedColumnsProperties,...Object.keys(this.primaryKeyFields),'_id','code','updateBy',"created_at","updated_at",'updatedDate','createBy','updatedHour','createdHour','createdDate'],(idx)=>{
+        Object.map(['_rev','_id',this.getGeneratedColumnsProperties(),...Object.keys(this.primaryKeyFields)],(idx)=>{
             data[idx] = undefined;
             delete data[idx];
         });

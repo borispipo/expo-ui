@@ -7,7 +7,7 @@ import {defaultStr,extendObj,isFunction,defaultVal,isObjOrArray,defaultObj} from
 import PropTypes from "prop-types";
 import actions from "$cactions";
 import {navigateToTableData} from "$enavigation/utils";
-import {getFetchOptions,prepareFilters} from "$cutils/filters";
+import {getFetchOptions,prepareFilters,convertToSQL as convFiltersToSQL} from "$cutils/filters";
 import fetch from "$capi"
 import React from "$react";
 import useApp from "$econtext/hooks";
@@ -147,11 +147,12 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabel
             if(!isMounted()) return;
             if(typeof beforeFetchItems ==='function' && beforeFetchItems({fetchOptions}) === false) return;
             let opts = Object.clone(fetchOptions);
-            if(cPrepareFilters !== false){
-                opts.selector = prepareFilters(fetchOptions.selector,{convertToSQL:convertFiltersToSQL});
+            if(convertFiltersToSQL){
+                opts.selector = convFiltersToSQL(opts.selector);
                 opts = getFetchOptions(opts);
+                delete opts.selector;
             } else {
-                opts = {fetchOptions};
+                opts = {fetchOptions:opts};
             }
             const r = fetchItems(opts);
             if(r === false) return;

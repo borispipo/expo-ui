@@ -13,6 +13,12 @@ export const getFooterColumnValue = ({data,columnDef,field,result,columnField}) 
     columnDef = defaultObj(columnDef);
     columnField = defaultStr(columnField,columnDef.field,field);
     let val = data[columnField];
+    if(typeof val !=='number' && isObj(columnDef.datagrid) && typeof columnDef.datagrid.render =='function'){
+        const v = columnDef.datagrid.render({rowData:data,data,isDatagridFooter:true,columnDef,columnField,action:"footer",isFooterRendering:true});
+        if(typeof v ==='number'){
+            val = v;
+        }
+    }
     if(typeof columnDef.multiplicater ==='function'){
         val = defaultDecimal(columnDef.multiplicater({value:val,columnField,field,columnDef,rowData:data,item:data}),val)
     }

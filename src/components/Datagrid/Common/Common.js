@@ -3927,6 +3927,7 @@ CommonDatagridComponent.propTypes = {
     data : PropTypes.oneOfType([PropTypes.array, PropTypes.func,PropTypes.object]),//.isRequired,
     /****
         la prop column def contient dans la propriété datagrid, la prop maxItemsToRender, le nombre d'items maximal à rendre pour le composant de type select table data multiple
+        la prop column def de la colonne de type number, qui contient dans la prop datagrid, la fonction render doit retourner un nombre pour otenir les valeur léie à ladite colonne
     */
     columns:PropTypes.oneOfType([PropTypes.array,PropTypes.object]),//.isRequired,
     selectable : PropTypes.bool, //si les lignes sont sélectionnables,

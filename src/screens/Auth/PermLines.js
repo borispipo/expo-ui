@@ -1,7 +1,7 @@
 import React from "$react";
 import { StyleSheet } from "react-native";
 import {defaultObj,extendObj} from "$cutils";
-import Auth from "$cauth";
+import Auth,{getTableDataPermResourcePrefix} from "$cauth";
 import Expandable from "$ecomponents/Expandable";
 import PropTypes from "prop-types";
 import theme from "$theme";
@@ -9,7 +9,7 @@ import {defaultActions as mDefaultAction,hasResource} from "./utils";
 import PermLine from "./PermLine";
 import Grid from "$ecomponents/Grid";
 
-const PermLines = React.forwardRef(({user,gridProps,defaultActions:cDefaultActions,disabled,isUserMasterAdmin:cIsMasterAdmin,permLineProps,cellProps,containerProps,style,tablePermPrefix,tables,title,testID,perms,onChange:cOnChange,...props},ref)=>{
+const PermLines = React.forwardRef(({user,gridProps,defaultActions:cDefaultActions,disabled,isUserMasterAdmin:cIsMasterAdmin,permLineProps,cellProps,containerProps,style,tables,title,testID,perms,onChange:cOnChange,...props},ref)=>{
     const isUserMasterAdmin = !!cIsMasterAdmin;
     user = defaultObj(user,Auth.getLoggedUser());
     gridProps = defaultObj(gridProps);
@@ -22,7 +22,6 @@ const PermLines = React.forwardRef(({user,gridProps,defaultActions:cDefaultActio
     const defaultActions = React.useRef(extendObj(true,{},mDefaultAction,defaultActions)).current;
     const data = dataRef.current;
     disabled = !!disabled || isUserMasterAdmin;
-    tablePermPrefix = tablePermPrefix === false ? "" : typeof tablePermPrefix =="string" ? tablePermPrefix.trim() : defaultStr("table/").toLowerCase();
     const  onChange = disabled ? undefined : (arg)=>{
         let {data,resource} = arg;
         if(!isNonNullString(resource)) return;
@@ -58,7 +57,7 @@ const PermLines = React.forwardRef(({user,gridProps,defaultActions:cDefaultActio
             if(!isObj(table) || !isObj(table.perms)) return null;
             tableName = defaultStr(table.tableName,table.table,tableName).toLowerCase().trim();
             const text = defaultStr(table.text,table.label)
-            const resource = (tablePermPrefix+tableName.ltrim(tablePermPrefix)).toLowerCase();
+            const resource = getTableDataPermResourcePrefix(tableName);
             const perms = {};
             Object.map(table.perms,(perm,i)=>{
                 if(perm ===false) {
@@ -87,7 +86,6 @@ const PermLines = React.forwardRef(({user,gridProps,defaultActions:cDefaultActio
                 isUserMasterAdmin = {isUserMasterAdmin}
                 disabled = {disabled}
                 table = {tableName}
-                tablePermPrefix = {tablePermPrefix}
                 perms  = {perms}
                 data = {data}
                 defaultActions = {defaultActions}
@@ -100,7 +98,7 @@ const PermLines = React.forwardRef(({user,gridProps,defaultActions:cDefaultActio
             />);
         })
         return content;
-    },[tables,allPerms,isUserMasterAdmin,disabled,tablePermPrefix])
+    },[tables,allPerms,isUserMasterAdmin,disabled])
     return <Expandable withScrollView={false} {...props} testID={testID} style={[theme.styles.w100,style]} containerProps={containerProps} titleProps = {{style:[styles.expandable,theme.styles.w100]}} title={title}>
         <Grid testID={testID+"_Grid"} {...gridProps}>
             {content }
@@ -133,10 +131,6 @@ PermLines.propTypes = {
     perms : PropTypes.object,//la liste des permissions qui peuvent associer au compte d'un utilisaters
     /*** si les élements de permissions seront modifiable où non */
     disabled : PropTypes.bool,
-    tablePermPrefix : PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.bool,
-    ]),/*** le prefixe de permission à jouter à chaque permissions de table de donénes, exemple : 'table/', pour le prefix des permissions de type table de données */
     title : PropTypes.oneOfType([
         PropTypes.node,
         PropTypes.element,

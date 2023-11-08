@@ -526,7 +526,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
         return false;
     }
     getCurrentEditingData(data){
-        return this.isDocEditing(data)? data : this.getCurrentData();
+        return this.isDocEditing(data)? data : isObj(data) && Object.size(data,true) ? extendObj({},this.getCurrentData(),data) : this.getCurrentData();
     }
     approve (data){
         if(!this.isApprovable()) return;

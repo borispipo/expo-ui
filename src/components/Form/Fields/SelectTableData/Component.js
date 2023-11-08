@@ -23,7 +23,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabel
     props.data = defaultObj(props.data);
     const type = defaultStr(props.type)?.toLowerCase();
     isStructData = isStructData || type?.replaceAll("-","").replaceAll("_","").trim().contains("structdata");
-    const {getTableData:appGetForeignKeyTable,getStructData} = useApp();
+    const {getTableData:appGetForeignKeyTable,getStructData,components:{datagrid}} = useApp();
     if(!foreignKeyColumn && isNonNullString(props.field)){
         foreignKeyColumn = props.field;
     }
@@ -37,7 +37,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabel
         }
     }
     const getForeignKeyTable = typeof cGetForeignKeyTable =='function'? cGetForeignKeyTable : isStructData ? getStructData: appGetForeignKeyTable;
-    convertFiltersToSQL = defaultVal(convertFiltersToSQL);
+    convertFiltersToSQL = defaultBool(convertFiltersToSQL,datagrid?.convertFiltersToSQL);
     const foreignKeyTableStr = defaultStr(foreignKeyTable,props.tableName,props.table);
     if(typeof getForeignKeyTable !=='function'){
         console.error("la fonction getTableData non définie des les paramètres d'initialisation de l'application!!! Rassurez vous d'avoir définier cette fonction!!, options : foreignKeyTable:",foreignKeyTable,"foreignKeyColumn:",foreignKeyColumn,props)

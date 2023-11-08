@@ -24,9 +24,6 @@ export default function AppMainEntry(){
             drawerItemsMutator : (drawerItems)=>{
                 return drawerItems;
             },
-            datagrid : {
-                ///les props par défaut à passer au composant SWRDatagrid
-            },
             screenOptions : {},//les options du composant Stack.Navigator de react-navigation, voir https://reactnavigation.org/docs/native-stack-navigator/
         }}
         auth = {{
@@ -35,6 +32,9 @@ export default function AppMainEntry(){
             profilePropsMutator : ({fields,...props})=>({fields,...props}),//la fonction permettant de muter les champs liés à l'écran de mise à jour d'un profil utilisateur
         }}
         components = {{
+            datagrid : {
+                ///les props par défaut à passer au composant SWRDatagrid
+            },
             /**
              * ///le composant permettant de faire office de provider principal de l'application,
                //ce composatnn permet de wrapper le contenu principal de l'application, les utilitaires de navigation, de la boîte de dialogue et bien d'autre ne doivent pas être utilisé

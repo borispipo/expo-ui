@@ -220,7 +220,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         dataRef.current = data;
         totalRef.current = total;
         return {data,total};
-    },[result,customIsLoading,isLoading])
+    },[result,loading])
     React.useEffect(()=>{
         setTimeout(x=>{
             if(error && innerRef.current && innerRef.current.isLoading && innerRef.current.isLoading()){

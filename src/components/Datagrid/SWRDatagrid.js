@@ -407,7 +407,6 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                 if(force){
                     pageRef.current = firstPage;
                 }
-                console.log("will fetch ",force,props);
                 doRefresh(force);
                 return false;
             }}

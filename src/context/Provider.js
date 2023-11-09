@@ -112,9 +112,7 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
     ///swr config settings
     ///garde pour chaque écran sa date de dernière activité
     const screensRef = React.useRef({});//la liste des écrans actifs
-    const isScreenFocusedRef = React.useRef(true);
     const activeScreenRef = React.useRef('');
-    const prevActiveScreenRef = React.useRef('');
     const appStateRef = React.useRef({});
     const swrRefreshTimeout = defaultNumber(swrConfig?.refreshTimeout,SWR_REFRESH_TIMEOUT)
     swrConfig = extendObj({
@@ -133,8 +131,11 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
         }
         const date = screensRef.current[screen];
         const diff = new Date().getTime() - date.getTime();
-        screensRef.current[screen] = new Date();
-        return diff >= swrRefreshTimeout ? true : false;
+        const ret = diff >= swrRefreshTimeout ? true : false;
+        if(ret){
+          screensRef.current[screen] = new Date();
+        }
+        return ret;
       },
       initFocus(callback) {
         let appState = AppState.currentState
@@ -283,21 +284,15 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
     const {linking} = navigation;
     React.useEffect(()=>{
       const onScreenFocus = ({sanitizedName})=>{
-          prevActiveScreenRef.current = activeScreenRef.current;
           if(activeScreenRef.current){
              screensRef.current[activeScreenRef.current] = null;
           }
           screensRef.current[sanitizedName] = new Date();
           activeScreenRef.current = sanitizedName;
-          isScreenFocusedRef.current = true;
-      }, onScreenBlur = ()=>{
-        isScreenFocusedRef.current = false;
       }
       APP.on(APP.EVENTS.SCREEN_FOCUS,onScreenFocus);
-      APP.on(APP.EVENTS.SCREEN_BLUR,onScreenBlur);
       return ()=>{
         APP.off(APP.EVENTS.SCREEN_FOCUS,onScreenFocus);
-        APP.off(APP.EVENTS.SCREEN_BLUR,onScreenBlur);
       }
     },[]);
     return <ExpoUIContext.Provider 

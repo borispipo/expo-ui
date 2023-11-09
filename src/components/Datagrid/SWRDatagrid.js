@@ -167,9 +167,6 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     const limitRef = React.useRef(!canHandleLimit ?0 : defaultNumber(getSessionData("limit"),500));
     const isInitializedRef = React.useRef(false);
     testID = defaultStr(testID,"RNSWRDatagridComponent");
-    React.useEffect(()=>{
-        showProgressRef.current = false;
-    },[showProgressRef.current.current]);
     const {error, isValidating,isLoading,data:result,refresh} = useSWR(fetchPath,{
         fetcher : (url,opts)=>{
             if(!isInitializedRef.current) {
@@ -291,6 +288,9 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                 }, (500));
             }
         });
+    });
+    React.useEffect(()=>{
+        showProgressRef.current = false;
     });
     return (
         <Datagrid 

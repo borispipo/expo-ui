@@ -137,7 +137,7 @@ export default class Filter extends AppComponent {
       type = defaultStr(type,this.type,this.props.type).toLowerCase();
       if(type.contains('select')){
           return "$in";
-      } if(type !== 'date2time' && type !== 'time' && type !== 'number' && type !== 'decimal'){
+      } if(type !== 'date2time' && type !=="date" && type !== 'time' && type !== 'number' && type !== 'decimal'){
           return '$regexcontains';
       }
       return '$eq';

@@ -169,7 +169,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     testID = defaultStr(testID,"RNSWRDatagridComponent");
     React.useEffect(()=>{
         showProgressRef.current = false;
-    });
+    },[showProgressRef.current.current]);
     const {error, isValidating,isLoading,data:result,refresh} = useSWR(fetchPath,{
         fetcher : (url,opts)=>{
             if(!isInitializedRef.current) {
@@ -232,7 +232,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         },500);
     },[error]);
     const doRefresh = (showProgress)=>{
-        showProgressRef.current = showProgress ? typeof showProgress ==='boolean' : showProgressRef.current;
+        showProgressRef.current = showProgress ? typeof showProgress ==='boolean' : false;
         refresh();
     }
     const canPaginate = ()=>{
@@ -407,6 +407,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                 if(force){
                     pageRef.current = firstPage;
                 }
+                console.log("will fetch ",force,props);
                 doRefresh(force);
                 return false;
             }}

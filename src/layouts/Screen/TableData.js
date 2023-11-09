@@ -186,7 +186,10 @@ export default class TableDataScreenComponent extends FormDataScreen{
         return isObj(permsR) ? extendObj({},ePerms,permsR) : ePerms;
     }
     getRenderedActionPrefix (){}
-    renderActions(){
+    renderActions(args,...rest){
+        if(typeof this.props.renderActions =="function"){
+            return this.props.renderActions(args,...rest);
+        }
         return null;
     }
     isLoading(){

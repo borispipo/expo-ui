@@ -12,7 +12,7 @@ import DateLib from "$date";
 import { toDateObj } from "./utils";
 import PeriodActionComponent from "./PeriodAction";
 
-export default function DateTimePickerComponent({left,isPeriodAction,contentProps,withSeconds,right,format,dateFormat,timeFormat,defaultValue,onChange,testID,dateProps,disabled,readOnly,timeProps,...rest}){
+export default function DateTimePickerComponent({left,isPeriodAction,contentProps,withSeconds,right,format,displayDateFormat,displayTimeFormat,dateFormat,timeFormat,defaultValue,onChange,testID,dateProps,disabled,readOnly,timeProps,...rest}){
     if(!isPeriodAction){
         isPeriodAction = isNonNullString(defaultValue) && defaultValue.contains("=>");
     }
@@ -32,15 +32,6 @@ export default function DateTimePickerComponent({left,isPeriodAction,contentProp
     const anchorTimeProps = defaultObj(timeProps.anchorProps);
     const timePropsContainerProps = defaultObj(timeProps.containerProps);
     const dateObj = toDateObj(defaultValue);
-    if(isNonNullString(format)){
-        format = format.trim().split(" ");
-        if(!isNonNullString(dateFormat)){
-            dateFormat = format[0].trim();
-        }
-        if(!isNonNullString(timeFormat) && format[1]){
-            timeFormat = format[1].trim();
-        }
-    }
     const changeDateArgsRef = {current:{
         date : dateObj,
     }}
@@ -80,6 +71,7 @@ export default function DateTimePickerComponent({left,isPeriodAction,contentProp
         testID = {testID}
         {...rest}
         format = {dateFormat}
+        displayFormat = {displayDateFormat}
         {...dateProps}
         style = {dStyle}
         calendarIconBefore = {true}
@@ -97,6 +89,7 @@ export default function DateTimePickerComponent({left,isPeriodAction,contentProp
                     readOnly = {readOnly}       
                     testID={testID+"_Time"}    
                     format = {timeFormat}
+                    displayFormat = {displayTimeFormat}
                     {...timeProps}
                     onChange = {(args)=>{
                         changedTimeArgsRef.current = args;
@@ -130,6 +123,8 @@ DateTimePickerComponent.propTypes = {
     timeProps : PropTypes.object,
     dateFormat : PropTypes.string, //Le format de date
     timeFormat : PropTypes.string, //le format de time
+    displayDateFormat : PropTypes.string,//le format d'affichage de la date
+    displayTimeFormat : PropTypes.string, //le format d'affichage des heures
     defaultValue : PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.object,

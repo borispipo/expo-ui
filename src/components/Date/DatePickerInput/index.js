@@ -38,6 +38,7 @@ const DatePickerInput = React.forwardRef(({
     left : customLeft,
     helperText,
     format,
+    displayFormat,
     disabled,readOnly
     ,text,
     withLabel,
@@ -110,10 +111,10 @@ const DatePickerInput = React.forwardRef(({
     return {error,errorText};
   }
   React.useEffect(()=>{
-    const inputDate = toDateObj(defaultValue);
+    const inputDate = toDateObj(defaultValue,format);
     if(compareTwoDates(inputDate,prevInputDate)) return;
     setState({...state,inputDate});
-  },[defaultValue])
+  },[defaultValue,format]);
   const setEmptyValue = ()=>{
     setState({...state,inputDate:undefined});
   }

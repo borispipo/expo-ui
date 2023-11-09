@@ -39,5 +39,5 @@ export const useIsScreenFocused = (screenName)=>{
             APP.off(APP.EVENTS.SCREEN_BLUR,onScreenBlur);
         }
     },[])
-    return useMemo(()=>isFocused,[isFocused]);
+    return useMemo(()=>isFocused,[isFocused,sanitizeName]);
 }

@@ -13,7 +13,8 @@ import React from "$react";
 export default function DrawerItem(props){
     let {navigation,closeOnPress,routeName,routeParams,...rest} = props;
     const {drawerRef,isItemActive} = useDrawer();
-    const isActive = useIsScreenFocused(routeName) || isItemActive(props);
+    const isActive = isItemActive(props);
+    const isFocused = useIsScreenFocused(routeName);
     const [active,setActive] = React.useState(isActive);
     const isMounted = React.useIsMounted();
     const itemId = React.useState(uniqid("drawer-item-id"));
@@ -25,17 +26,26 @@ export default function DrawerItem(props){
         id:itemId,
         routeName
     });
-    if(active){
-        setActiveItem(context);
-    }
+    React.useEffect(()=>{
+        if(isMounted() && isNonNullString(routeName)){
+            if(isFocused !== active){
+                setActive(isFocused);
+            }
+        }
+    },[isFocused])
+    React.useEffect(()=>{
+        if(active && isMounted()){
+            setActiveItem(context);
+        }
+    },[active])
     const closeDrawer = (cb,force)=>{
         return nCloseDrawer(drawerRef,cb,force);
     }
     React.useEffect(()=>{
-        if(isActive !== active){
+        if(isMounted() && isActive !== active){
             setActive(isActive); 
         }
-    },[isActive])
+    },[isActive]);
     return <_DrawerItem 
         {...rest} 
         drawerRef = {drawerRef}

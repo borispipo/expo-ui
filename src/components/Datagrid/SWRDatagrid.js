@@ -101,15 +101,16 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         defaultSortColumn,
         defaultSortOrder,
         isLoading : customIsLoading,
+        icon : cIcon,
         ...rest
     } = props;
     const {swrConfig} = useContext();
     rest = defaultObj(rest);
     rest.exportTableProps = defaultObj(rest.exportTableProps)
     const firstPage = 1;
-    const tableName = defaultStr(table.tableName,table.table).trim().toUpperCase();
-    defaultSortColumn = defaultStr(defaultSortColumn,table.defaultSortColumn);
-    defaultSortOrder = defaultStr(defaultSortOrder,table.defaultSortOrder).toLowerCase().trim();
+    const tableName = defaultStr(table?.tableName,table?.table).trim().toUpperCase();
+    defaultSortColumn = defaultStr(defaultSortColumn,table?.defaultSortColumn);
+    defaultSortOrder = defaultStr(defaultSortOrder,table?.defaultSortOrder).toLowerCase().trim();
     sort = isNonNullString(sort)? {column:sort} : isObj(sort)?sort : {};
     const sColumn = defaultStr(sort.column,defaultSortColumn);
     if(sColumn){
@@ -120,26 +121,28 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     } else {
         delete sort.column;
     }
-    canMakePhoneCall = defaultBool(canMakePhoneCall,table.canMakePhoneCall);
-    makePhoneCallProps = isValidMakePhoneCallProps(makePhoneCallProps) && makePhoneCallProps || isValidMakePhoneCallProps(rest.makePhoneCallProps) && rest.makePhoneCallProps ||  isValidMakePhoneCallProps(table.makePhoneCallProps) && table.makePhoneCallProps || {};
-    rowKey = defaultStr(rowKey,table.rowKey,table.primaryKeyColumnName);
-    const title = React.isValidElement(customTitle,true) && customTitle || defaultStr(table.label,table.text)
-    columns = table.fields;
+    canMakePhoneCall = defaultBool(canMakePhoneCall,table?.canMakePhoneCall);
+    makePhoneCallProps = isValidMakePhoneCallProps(makePhoneCallProps) && makePhoneCallProps || isValidMakePhoneCallProps(rest.makePhoneCallProps) && rest.makePhoneCallProps ||  isValidMakePhoneCallProps(table?.makePhoneCallProps) && table?.makePhoneCallProps || {};
+    rowKey = defaultStr(rowKey,table?.rowKey,table?.primaryKeyColumnName);
+    const title = React.isValidElement(customTitle,true) && customTitle || defaultStr(table?.label,table?.text)
+    columns = (isObj(columns) || Array.isArray(columns)) && Object.size(columns,true) && columns || table?.fields;
     const fetchFields = [];
     Object.map(columns,(column,i)=>{
         if(isObj(column)){
             fetchFields.push(defaultStr(column.field,i));
         }
-    })
-    actions = defaultVal(table.actions,actions);
-    for(let i in Datagrid.propTypes){
-        if(i in table){
-            rest[i] = isObj(rest[i])? extendObj(true,{},rest[i],table[i]) : table[i];
+    });
+    actions = defaultVal(table?.actions,actions);
+    if(isObj(table) && isObj(table?.datagrid)){
+        for(let i in Datagrid.propTypes){
+            if(i in table){
+                rest[i] = isObj(rest[i])? extendObj({},rest[i],table[i]) : table[i];
+            }
         }
     }
     rest.actions = actions;
     rest.columns = columns || [];
-    const icon = defaultStr(table.icon);
+    const icon = defaultStr(cIcon,table?.icon);
     rest.tableName = tableName;
     rest.canMakePhoneCall = canMakePhoneCall;
     rest.makePhoneCallProps = makePhoneCallProps;
@@ -151,7 +154,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     },rest.exportTableProps.pdf);
     const fetchOptionsRef = React.useRef(defaultObj(customFetchOptions));
     const fPathRef = React.useRef(defaultStr(fetchPathKey,uniqid("fetchPath")));
-    fetchPath = defaultStr(fetchPath,table.queryPath,tableName.toLowerCase()).trim();
+    fetchPath = defaultStr(fetchPath,table?.queryPath,tableName.toLowerCase()).trim();
     if(fetchPath){
         fetchPath = setQueryParams(fetchPath,"SWRFetchPathKey",fPathRef.current)
     }
@@ -292,7 +295,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     return (
         <Datagrid 
             testID = {testID}
-            {...defaultObj(table.datagrid)} 
+            {...defaultObj(table?.datagrid)} 
             {...rest}
             title = {customTitle || title || undefined}
             sort = {sort}
@@ -448,7 +451,7 @@ SWRDatagridComponent.propTypes = {
             PropTypes.objectOf(PropTypes.object),
             PropTypes.arrayOf(PropTypes.object),
         ])
-    }).isRequired,
+    }),
 }
 
 const styles = StyleSheet.create({

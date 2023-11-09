@@ -710,7 +710,12 @@ export default class TableDataScreenComponent extends FormDataScreen{
             if(isPromise(upToDB)){
                 upToDB.then((upserted)=>{
                     const willCloseAfterSave =  action === 'save2close' || !hasManyData;
-                    let savedData = this.isDocEditing(upserted)? upserted : data;
+                    let hasUpserted = this.isDocEditing(upserted);
+                    if(!hasUpserted && isObj(upserted) && isObj(upserted.data) && this.isDocEditing(upserted.data)){
+                        upserted = upserted.data;
+                        hasUpserted = true;
+                    }
+                    const savedData = hasUpserted? upserted : data;
                     const newArgs = {tableName,actionName:action,action,table:this.table,data:savedData,result:upserted,context};
                     APP.trigger(cActions.upsert(tableName),newArgs);
                     if(this.onSaveTableData(newArgs) === false || (isFunction(this.props.onSave)&& this.props.onSave(newArgs) === false)){
@@ -738,6 +743,15 @@ export default class TableDataScreenComponent extends FormDataScreen{
                         close();
                     } else {
                         notify('Données modifiée avec succès!!','success');
+                    }
+                    if(hasUpserted){
+                        if(this.state.hasManyData && Array.isArray(this.state.datas)){
+                            const sData = [...this.state.datas];
+                            sData[this.state.currentIndex] = savedData;
+                            return this.setState({data:upserted,datas:sData},closePreloader);
+                        } else {
+                            return this.setState({data:savedData},closePreloader);
+                        }
                     }
                     closePreloader();
                 }).catch((e)=>{

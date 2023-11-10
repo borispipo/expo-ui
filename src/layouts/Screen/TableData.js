@@ -861,7 +861,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
         let ret = [];
         if(this.isDocEditing(args.data) && isObj(datagrid) && typeof (datagrid.selectedRowsActions) ==='function'){
             filterAction = defaultFunc(filterAction,(x)=>true);
-            Object.map(datagrid.selectedRowsActions({selectedRows : {[args.data._id]:args.data},Auth}),(v,i)=>{
+            Object.map(datagrid.selectedRowsActions({selectedRows : {[this.getRowKey(data,0)]:args.data},Auth}),(v,i)=>{
                 if(isObj(v) && filterAction(v,i)){
                     ret.push({...v},i);
                 }

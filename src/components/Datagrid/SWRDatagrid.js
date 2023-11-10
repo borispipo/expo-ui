@@ -398,7 +398,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             isLoading = {loading && showProgressRef.current || false}
             beforeFetchData = {(args)=>{
                 if(typeof beforeFetchData =="function" && beforeFetchData(args)==false) return;
-                let {fetchOptions:opts,force} = args;
+                let {fetchOptions:opts,force,renderProgressBar} = args;
                 opts = getFetchOptions({showError:showProgressRef.current,...opts});
                 isInitializedRef.current = true;
                 fetchOptionsRef.current = opts;
@@ -407,7 +407,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                 if(force){
                     pageRef.current = firstPage;
                 }
-                doRefresh(force);
+                doRefresh(typeof renderProgressBar =='boolean'? renderProgressBar : force);
                 return false;
             }}
             isSWRDatagrid

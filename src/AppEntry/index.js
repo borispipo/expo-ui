@@ -228,9 +228,6 @@ function App({init:initApp,initialRouteName:appInitialRouteName,children}) {
     return () => {
         keyBoardDidShowListener && keyBoardDidShowListener.remove && keyBoardDidShowListener.remove();
         keyBoardDidHideListener && keyBoardDidHideListener.remove && keyBoardDidHideListener.remove();
-        if(listener){
-          window.visualViewport.removeEventListener('resize', listener);
-        }
         APP.off(APP.EVENTS.BACK_BUTTON,backAction);
         if(subscription && subscription.remove){
           subscription.remove();

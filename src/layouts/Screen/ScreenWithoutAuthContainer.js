@@ -51,7 +51,6 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
     screenName,
     containerProps,
     testID,
-    right,
     keyboardAvoidingViewProps,
     backgroundColor,
     ...rest
@@ -105,13 +104,13 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
       <KeyboardAvoidingView testID={testID} {...keyboardAvoidingViewProps} style={[styles.keyboardAvoidingView,keyboardAvoidingViewProps.style]}>
           {withStatusBar !== false ? <StatusBar/> : null}
           {appBar === false ? null : React.isValidElement(appBar)? state.AppBar :  <AppBar 
-              testID={testID+'_AppBar'} {...appBarProps} 
+              testID={testID+'_AppBar'} 
+              {...appBarProps} 
               backAction = {defaultVal(appBarProps.backAction,backAction)} 
               elevation={defaultNumber(appBarProps.elevation,elevation)} 
               withDrawer={withDrawer} options={options} 
               ref={appBarRef} title={title} 
               subtitle={subtitle}
-              right = {right}
           />}
           {withScrollView !== false ? (
             <ScrollView

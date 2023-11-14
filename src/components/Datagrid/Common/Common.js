@@ -371,7 +371,7 @@ export default class CommonDatagridComponent extends AppComponent {
         const s = isObj(row) && row.isSectionListHeader !== true ? true : false;
         if(!s) return false;
         if(typeof this.props.isRowSelectable =='function'){
-            return !!this.isRowSelected({row,rowData:row,context:this});
+            return !!this.props.isRowSelectable({row,rowData:row,context:this});
         }
         return true;
     }

@@ -257,7 +257,6 @@ export default class FormDataComponent extends AppComponent{
             ignoreFields, //la liste des champs à ignorer lors du parcours des champs
             toolbarProps,
             text,
-            showActionsOnTop,
             getFieldProps, ///pour ajouter des champs supplémentaires aux props de la field
             title,
             onMount,

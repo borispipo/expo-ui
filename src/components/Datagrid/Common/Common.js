@@ -3781,6 +3781,9 @@ export default class CommonDatagridComponent extends AppComponent {
             key = {props.rowKey}
         />
     }
+    canRenderActions(){
+        return this.props.showActions !== false && this.props.renderActions !== false;
+    }
     renderSelectFieldCell(args){
         return this.renderSelectFieldCell(args);
     }
@@ -3917,6 +3920,11 @@ CommonDatagridComponent.propTypes = {
     filters : PropTypes.oneOfType([
         PropTypes.bool,
         PropTypes.object,
+    ]),
+    /*** alias à show actions */
+    renderActions : PropTypes.oneOfType([
+        PropTypes.bool,
+        PropTypes.func,
     ]),
     showActions : PropTypes.bool,//si on affichera les actions du datagrid
     /*** affiche ou masque les filtres */

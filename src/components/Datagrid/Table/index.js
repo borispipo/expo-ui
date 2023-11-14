@@ -291,7 +291,7 @@ const DatagridFactory = (Factory)=>{
             return <DatagridProvider context={this}>
                      <View style={[styles.container,{flex:1}]} testID={testID+"_TableContainer"} pointerEvents={pointerEvents}>
                         <View ref={(el)=>{this.layoutRef.current = el;}} testID={testID+"_LayoutContainer"}>
-                            {this.props.showActions !== false ? <DatagridActions 
+                            {this.canRenderActions() ? <DatagridActions 
                                 pointerEvents = {pointerEvents}
                                 title = {this.renderDataSourceSelector()}
                                 actions = {actions}

@@ -514,7 +514,7 @@ const DatagridFactory = (Factory)=>{
                      <View testID={testID+"_AccordionHeader"} style={[styles.accordionHeader]} ref={(el)=>{
                         this.layoutRef.current = el;
                      }} onLayout={this.updateLayout.bind(this)}>
-                        {this.props.showActions !== false ? <DatagridActions 
+                        {this.canRenderActions() ? <DatagridActions 
                             testID={testID+"_Actions"}
                             pointerEvents = {pointerEvents}
                             title = {this.renderDataSourceSelector()}

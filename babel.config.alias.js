@@ -27,8 +27,6 @@ module.exports = (opts)=>{
     r["$components"] = r["$components"] || r["$ecomponents"];
     r["$elayouts"] = path.resolve(expo,"layouts");
     r["$emedia"] = path.resolve(expo,"media");
-    r["$epdf"] = path.resolve(expo,"pdf");
-    r.$pdf = r.$pdf || r.$epdf;
     r["$enavigation"] = path.resolve(expo,"navigation");
     r["$escreens"] = path.resolve(expo,"screens");
     ///les screens principaux de l'application

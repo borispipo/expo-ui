@@ -33,6 +33,8 @@ const DEFAULT_TABS_KEYS = "main-tabs";
 
 const TIMEOUT = 50;
 
+const defaultRendersTypes = ["mobile","desktop"];
+
 
 export default class TableDataScreenComponent extends FormDataScreen{
     constructor(props){
@@ -228,7 +230,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
         const tableName = this.tableName;
         const isUpdated = this.isDocEditing(data);
         this.isDocEditingRef.current = !!isUpdated;
-        const isMobOrTab = isMobileOrTabletMedia();
+        const isMobOrTab = this.isMobileOrTabletMedia();
         let archived = this.isArchived(); 
         const fields = {};
         const {
@@ -424,7 +426,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
         restProps.tabProps = tabProps = defaultObj(tabProps);
         const tabs = this.renderTabs(restProps);
         const tabKey = this.getTabsKey();
-        const isMobOrTab = isMobileOrTabletMedia();
+        const isMobOrTab = this.isMobileOrTabletMedia();
         tabsProps.tabContentProps.autoHeight = typeof tabsProps.tabContentProps.autoHeight =="boolean"? tabsProps.tabContentProps.autoHeight : isMobOrTab;
         const contentProps = restProps.contentProps;
         const renderingTabsProps = {tabs,data:this.getCurrentData(),isMobile:isMobOrTab,sessionName:this.getSessionName(),props:restProps,tabProps,tabsProps,context,tabKey};
@@ -651,6 +653,17 @@ export default class TableDataScreenComponent extends FormDataScreen{
             return !!editingProps.newAction;
         }
         return this.props.newAction !== false ? true : false;
+    }
+    isMobileOrTabletMedia(){
+        const r = this.getRenderTabsType();
+        if(r =="mobile") return true;
+        if(r =="desktop") return false;
+        return isMobileOrTabletMedia();
+    }
+    getRenderTabsType (){
+        const r = defaultStr(this.props.renderTabsType).toLowerCase();
+        if(!r || !(defaultRendersTypes.includes(r))) return "responsive";
+        return r;
     }
     createNew(){
         return this.reset();
@@ -888,6 +901,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
 
 TableDataScreenComponent.propTypes = {
     ...defaultObj(FormData.propTypes),
+    renderTabsType : PropTypes.oneOf([...defaultRendersTypes,undefined,"responsive"]),//spécifie le type de rendue : mobile, alors le tab sera rendu en mobile, desktop, ce sera rendu en desktop, responsible ou undefined, alors les deux rendu seront possible
     prepareComponentProps : PropTypes.func, //permet d'appreter les components props à utiliser pour le rendu des données
     prepareField : PropTypes.func,//La fonction permettant de faire des mutations sur le champ field à passer au formulaire form. si elle retourne false alors la field ne sera pas pris een compte
     unique : PropTypes.bool,//si la validation de type unique sur le champ sera effective

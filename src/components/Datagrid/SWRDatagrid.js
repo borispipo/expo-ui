@@ -152,7 +152,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         fileName : rest.exportTableProps.fileName,
         title : React.getTextContent(title),
     },rest.exportTableProps.pdf);
-    const fetchOptionsRef = React.useRef(defaultObj(customFetchOptions));
+    const fetchOptionsRef = React.useRef({});
     const fPathRef = React.useRef(defaultStr(fetchPathKey,uniqid("fetchPath")));
     fetchPath = defaultStr(fetchPath,table?.queryPath,tableName.toLowerCase()).trim();
     if(fetchPath){
@@ -174,7 +174,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             }
             opts = defaultObj(opts);
             opts.fetchOptions = isObj(opts.fetchOptions)? Object.clone(opts.fetchOptions) : {};
-            extendObj(true,opts.fetchOptions,fetchOptionsRef.current?.fetchOptions);
+            extendObj(true,opts.fetchOptions,fetchOptionsRef.current);
             if(props.convertFiltersToSQL === false){
                 opts.fetchOptions.selector = extendObj(true,{},opts.fetchOptions.selector,fetchOptionsRef.current?.selector);
             }
@@ -297,6 +297,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             testID = {testID}
             {...defaultObj(table?.datagrid)} 
             {...rest}
+            fetchOptions = {customFetchOptions}
             title = {customTitle || title || undefined}
             sort = {sort}
             onSort = {({sort})=>{
@@ -397,16 +398,16 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             autoSort = {canSortRemotely()? false : true}
             isLoading = {loading && showProgressRef.current || false}
             beforeFetchData = {(args)=>{
-                if(typeof beforeFetchData =="function" && beforeFetchData(args)==false) return;
                 let {fetchOptions:opts,force,renderProgressBar} = args;
                 opts = getFetchOptions({showError:showProgressRef.current,...opts});
                 isInitializedRef.current = true;
-                fetchOptionsRef.current = opts;
-                opts.withTotal = true;
+                fetchOptionsRef.current = opts.fetchOptions;
+                opts.fetchOptions.withTotal = true;
                 sortRef.current = opts.fetchOptions.sort;
                 if(force){
                     pageRef.current = firstPage;
                 }
+                if(typeof beforeFetchData =="function" && beforeFetchData(args)==false) return;
                 doRefresh(typeof renderProgressBar =='boolean'? renderProgressBar : force);
                 return false;
             }}

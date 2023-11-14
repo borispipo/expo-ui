@@ -3398,8 +3398,8 @@ export default class CommonDatagridComponent extends AppComponent {
        </Tooltip>
     }
     /*** récupère les fetchOptions du datagrid */
-    getFetchOptions({fetchOptions,convertToSQL}){
-        const fetchFilters = this.getFilters({convertToSQL:typeof convertToSQL =='boolean'? convertToSQL : false});
+    getFetchOptions({fetchOptions}){
+        const fetchFilters = this.getFilters({convertToSQL : false});
         fetchOptions = Object.clone(isObj(fetchOptions)? fetchOptions : {});
         fetchOptions.selector = defaultObj(fetchOptions.selector);
         fetchOptions.dataSources = this.currentDataSources;

@@ -43,7 +43,7 @@ import {convertToSQL} from "$ecomponents/Filter";
 import events from "../events";
 import {MORE_ICON} from "$ecomponents/Icon"
 import ActivityIndicator from "$ecomponents/ActivityIndicator";
-import {createPDF,createTableHeader,fields as pdfFields,pageHeaderMargin} from "$cpdf";
+import {createPDF,createTableHeader,fields as pdfFields,pageHeaderMargin,sprintf as pdfSprintf} from "$cpdf";
 import {isWeb,isMobileNative} from "$cplatform";
 
 export const TIMEOUT = 100;
@@ -368,7 +368,12 @@ export default class CommonDatagridComponent extends AppComponent {
     }
     /*** si une ligne peut être selectionable */
     canSelectRow(row){
-        return isObj(row) && row.isSectionListHeader !== true ? true : false;
+        const s = isObj(row) && row.isSectionListHeader !== true ? true : false;
+        if(!s) return false;
+        if(typeof this.props.isRowSelectable =='function'){
+            return !!this.isRowSelected({row,rowData:row,context:this});
+        }
+        return true;
     }
     prepareSectionListColumns(props){
         props = defaultObj(props,this.props);
@@ -1843,21 +1848,18 @@ export default class CommonDatagridComponent extends AppComponent {
         const {data,config:cConfig,pdfConfig} = opts;
         const config = extendObj({},pdfConfig,cConfig);
         data[0] = createTableHeader(data[0],config);
-        const pdfDocumentTitle = defaultStr(APP.sprintf(config.pdfDocumentTitle)).trim();
+        const pT = defaultStr(config.pdfDocumentTitle).trim();
+        const pdfDocumentTitle = pT ? pdfSprintf(pT,{fontSize : 20,color : "red"}) : null;
         const content = [{
             table : {
                 body : data,
             }
         }];
         if(pdfDocumentTitle){
-            content.unshift({
-                text : pdfDocumentTitle,
-                fontSize : 16,
-                color : "red",
-                bold : true,
-                margin : pageHeaderMargin,
-            })
+            content.unshift(pdfDocumentTitle);
         }
+        config.showPreloader = typeof config.showPreloader ==="function"? config.showPreloader : Preloader.open;
+        config.hidePreloader = typeof config.hidePreloader =="function"? config.hidePreloader : Preloader.close;
         const pdf = createPDF({
             content,
         },config);
@@ -3934,6 +3936,7 @@ const chartDisplayType = PropTypes.oneOf(Object.keys(displayTypes).filter(type=>
     return typeof x =='object' && x && typeof x.disabled !== true && x.isChart === true && true || false;
 }));
 CommonDatagridComponent.propTypes = {
+    isRowSelectable : PropTypes.func,//spécifie si la ligne rowData est selectionable : function({row,rowData,context})=><boolean>
     title : PropTypes.oneOfType([
         PropTypes.func,
         PropTypes.string,

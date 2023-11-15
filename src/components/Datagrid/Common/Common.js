@@ -1874,7 +1874,8 @@ export default class CommonDatagridComponent extends AppComponent {
          })
     }).finally(Preloader.close);
 }
-   handleTableExport({sessionKeyName,excel,pdf,isOnlytotal,displayOnlyHeader,data:config}){
+   handleTableExport(args){
+        let {sessionKeyName,excel,pdf,isOnlytotal,displayOnlyHeader,data:config} = args;
         this.setSessionData(sessionKeyName,config);
         config.fileName = sprintf(config.fileName);
         config.sheetName = sanitizeSheetName(config.sheetName);
@@ -1979,7 +1980,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 }
             });
         }
-        return {data,headers,config}
+        return {...args,data,headers,config}
     }
    
    renderExportableMenu(){

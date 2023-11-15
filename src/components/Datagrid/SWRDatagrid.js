@@ -291,7 +291,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     });
     React.useEffect(()=>{
         showProgressRef.current = false;
-    });
+    },[showProgressRef.current]);
     return (
         <Datagrid 
             testID = {testID}

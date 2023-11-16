@@ -1,5 +1,5 @@
 import React from  '$react';
-import {Pressable,StyleSheet,useWindowDimensions} from 'react-native';
+import {Pressable,StyleSheet} from 'react-native';
 import {grid} from "$theme";
 import {defaultStr} from "$cutils";
 import PropTypes from "prop-types";

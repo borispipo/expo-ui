@@ -646,6 +646,9 @@ class DropdownComponent extends AppComponent {
             selectedText : this.getSelectedText(newSelected,selectedValuesKeys)
         });
     }
+    isVisible(){
+        return this.state.visible;
+    }
     getBackgroundColor(){
         return theme.surfaceBackground;
     }

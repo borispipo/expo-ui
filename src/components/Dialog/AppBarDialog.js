@@ -6,20 +6,6 @@ import {isIos,isAndroid,isWeb} from "$cplatform";
 
 const AppBarDialogComponent = React.forwardRef((props,ref)=>{
     const {actions,responsive,isFullScreen,fullScreen,actionsProps,...rest} = props;
-    const forceRender = React.useForceRender();
-    React.useEffect(()=>{
-        const onResize = ()=>{
-            return;
-            forceRender();
-        }
-        if(responsive){
-            APP.on(APP.EVENTS.RESIZE_PAGE,onResize);
-        }
-        return ()=>{
-            APP.off(APP.EVENTS.RESIZE_PAGE,onResize);
-        }
-    },[]);
-    
     if(responsive && !isFullScreen() || (typeof fullScreen =='boolean' && !fullScreen)){
         return null;
     }

@@ -25,6 +25,7 @@ import {isMobileNative} from "$cplatform";
 import notify from "$cnotify";
 import {showPrompt} from "$ecomponents/Dialog/confirm";
 import {SWRConfig} from "$swr";
+import {Keyboard } from 'react-native';
 
 Object.map(Utils,(v,i)=>{
   if(typeof v =='function' && typeof window !='undefined' && window && !window[i]){
@@ -269,7 +270,7 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
       })
     }
     
-    
+    const isKeyboardShownRef = React.useRef(false);
     const {screens} = navigation;
     navigation.screens = React.useMemo(()=>{
        const r = prepareScreens({
@@ -290,14 +291,34 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
           screensRef.current[sanitizedName] = new Date();
           activeScreenRef.current = sanitizedName;
       }
+      ///la fonction de rappel lorsque le composant est monté
+      const triggerKeyboardToggle = (status)=>{
+        APP.trigger(APP.EVENTS.KEYBOARD_DID_TOGGLE,{shown:status,status,visible:status,hide : !status});
+      }
+      const keyBoardDidShow = ()=>{
+        isKeyboardShownRef.current = true;
+        APP.trigger(APP.EVENTS.KEYBOARD_DID_SHOW);
+        triggerKeyboardToggle(true);
+      },keyBoardDidHide = ()=>{
+        isKeyboardShownRef.current = false;
+        APP.trigger(APP.EVENTS.KEYBOARD_DID_HIDE);
+        triggerKeyboardToggle(false);
+      }
+      const keyBoardDidShowListener = Keyboard.addListener("keyboardDidShow",keyBoardDidShow);
+      const keyBoardDidHideListener = Keyboard.addListener("keyboardDidHide",keyBoardDidHide);
       APP.on(APP.EVENTS.SCREEN_FOCUS,onScreenFocus);
       return ()=>{
+        keyBoardDidShowListener?.remove && keyBoardDidShowListener.remove();
+        keyBoardDidHideListener?.remove && keyBoardDidHideListener.remove();
         APP.off(APP.EVENTS.SCREEN_FOCUS,onScreenFocus);
       }
     },[]);
+    const isKeyboardShown = ()=> typeof Keyboard.isVisible =="function" && Keyboard.isVisible() || isKeyboardShownRef.current;
     return <ExpoUIContext.Provider 
       value={{
         ...props,
+        isKeyboardShown, //permet de déterminer si le clavier est visible
+        isKeyboardVisible : isKeyboardShown,
         handleHelpScreen,
         navigation,
         parseMangoQueries,

@@ -163,7 +163,7 @@ const DialogComponent = React.forwardRef((props,ref)=>{
     const maxHeight = getMaxHeight(),maxWidth = getMaxWidth();
     const backgroundColor = theme.surfaceBackgroundColor;
     borderRadius = fullScreen  || !(isMobileNative() || isMobileMedia()) || isPreloader ? 0 : typeof borderRadius =='number'? borderRadius : 5*theme.roundness;
-    const fullScreenStyle = fullScreen ? {width:dimensions.width,height:dimensions.height,marginHorizontal:0,paddingHorizontal:0}: {
+    const fullScreenStyle = fullScreen ? {width:dimensions.width,minHeight:MIN_HEIGHT,/*height:dimensions.height*/height:"100%",marginHorizontal:0,paddingHorizontal:0}: {
         maxWidth,
         maxHeight,
         borderRadius,

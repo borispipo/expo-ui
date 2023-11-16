@@ -42,7 +42,7 @@ import { StyleSheet } from "react-native";
 import Logo from "$ecomponents/Logo";
 import AppEntryRootView from "./RootView";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import {Keyboard } from 'react-native';
+
 
 
 let MAX_BACK_COUNT = 1;
@@ -73,19 +73,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,children}) {
      hasCallInitApp : false,
   });
    React.useEffect(() => {
-      ///la fonction de rappel lorsque le composant est monté
-      const triggerKeyboardToggle = (status)=>{
-        APP.trigger(APP.EVENTS.KEYBOARD_DID_TOGGLE,{shown:status,status,visible:status,hide : !status});
-      }
-      const keyBoardDidShow = ()=>{
-        APP.trigger(APP.EVENTS.KEYBOARD_DID_SHOW);
-        triggerKeyboardToggle(true);
-      },keyBoardDidHide = ()=>{
-        APP.trigger(APP.EVENTS.KEYBOARD_DID_HIDE);
-        triggerKeyboardToggle(false);
-      }
-      const keyBoardDidShowListener = Keyboard.addListener("keyboardDidShow",keyBoardDidShow);
-      const keyBoardDidHideListener = Keyboard.addListener("keyboardDidHide",keyBoardDidHide);
+      
       const loadResources = ()=>{
          return new Promise((resolve)=>{
             loadFonts(FontsIconsFilter).catch((e)=>{
@@ -226,8 +214,6 @@ function App({init:initApp,initialRouteName:appInitialRouteName,children}) {
     });
     APP.on(APP.EVENTS.BACK_BUTTON,backAction);
     return () => {
-        keyBoardDidShowListener && keyBoardDidShowListener.remove && keyBoardDidShowListener.remove();
-        keyBoardDidHideListener && keyBoardDidHideListener.remove && keyBoardDidHideListener.remove();
         APP.off(APP.EVENTS.BACK_BUTTON,backAction);
         if(subscription && subscription.remove){
           subscription.remove();

@@ -194,7 +194,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
             }
         } 
     };
-    const dimensions = Dimensions.get("window");// useWindowDimensions();
+    const dimensions = Dimensions.get("window");
     let contentContainerHeight = dimensions.height - defaultDecimal(layout?.top) - defaultDecimal(layout?.height)-20;
     contentContainerHeight = Math.max(contentContainerHeight,200);
     let marginTop = 0;

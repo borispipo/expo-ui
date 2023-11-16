@@ -1,6 +1,6 @@
 import { FAB} from 'react-native-paper';
 import React from "$react";
-import {StyleSheet,useWindowDimensions,Modal} from "react-native";
+import {StyleSheet} from "react-native";
 import {defaultStr,isNonNullString,isObj,defaultObj} from "$cutils";
 import PropTypes from "prop-types";
 import {MENU_ICON} from "$ecomponents/Icon";

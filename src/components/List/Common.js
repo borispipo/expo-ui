@@ -8,7 +8,6 @@ import {isMobileMedia} from "$cplatform/dimensions";
 import BackToTop from "$ecomponents/BackToTop";
 import {FlatList,StyleSheet,View} from "react-native";
 import Label from "$ecomponents/Label";
-import { useWindowDimensions,Dimensions } from "react-native";
 import { useList,useGetNumColumns } from "./hooks";
 
 const CommonListComponent = React.forwardRef((props,ref)=>{

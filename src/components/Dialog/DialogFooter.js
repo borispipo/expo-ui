@@ -2,20 +2,10 @@ import React from "$react";
 import {defaultObj} from "$cutils";;
 import View from "$ecomponents/View";
 import { StyleSheet } from "react-native";
+import {usePageDimensions} from "$cdimensions/utils";
 
 const DialogFullPageFooter = React.forwardRef(({responsive,containerProps,children,isFullScreen,fullScreen,...rest},ref)=>{
-    const forceRender = React.useForceRender();
-    React.useEffect(()=>{
-        const onResize = ()=>{
-            forceRender();
-         }
-        if(responsive){
-            APP.on(APP.EVENTS.RESIZE_PAGE,onResize);
-        }
-        return ()=>{
-            APP.off(APP.EVENTS.RESIZE_PAGE,onResize);
-        }
-    },[])
+    usePageDimensions();
     if(responsive && !isFullScreen() || (typeof fullScreen =='boolean' && !fullScreen) || !React.isValidElement(children)){
         return null;
     }

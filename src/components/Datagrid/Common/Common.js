@@ -39,7 +39,7 @@ import { renderRowCell,formatValue,arrayValueSeparator } from "./utils";
 import Button from "$ecomponents/Button";
 import stableHash from "stable-hash";
 import * as XLSX from "xlsx";
-import {convertToSQL} from "$ecomponents/Filter";
+import {parseMangoQueries} from "$ecomponents/Filter";
 import events from "../events";
 import {MORE_ICON} from "$ecomponents/Icon"
 import ActivityIndicator from "$ecomponents/ActivityIndicator";
@@ -3194,9 +3194,9 @@ export default class CommonDatagridComponent extends AppComponent {
         if(this.isClearingAllFilters) return;
         return this.doFilter(arg);
     }
-    ///si les filtres devront être convertis au format SQL
+    ///si les filtres devront être parsé, pour être preparés au format SQL
     canConvertFiltersToSQL(){
-        return !!(this.props.convertFiltersToSQL);;
+        return !!(this.props.parseMangoQueries);;
     }
     /*** retourne la liste des colonnes sur lesquelles on peut effectuer un filtre*/
     getFilterableColumnsNames(){ 
@@ -3205,15 +3205,15 @@ export default class CommonDatagridComponent extends AppComponent {
     }
     /*** récupère les filtres en cours du datagrid
      * @param {boolean} prepare si les filtres seront apprêtés grace à la méthode prepareFilters de $cFilters 
-     * @param {boolean} convertFiltersToSQL si les filtres seront convertis au formatSQL
+     * @param {boolean} parseMangoQueries, si l'on doit parser les filtres initialement au format mangoqueries, les preparer au format SQL
      */
     getFilters(args){
         args = defaultObj(args);
         const prepare = typeof args.prepare =='boolean'? args.prepare : typeof args.prepareFilters =='boolean' ? args.prepareFilters : true;
         this.filters = extendObj(true,{},this.filteredValues,this.filters);
-        const convertFiltersToSQL = typeof args.convertToSQL =="boolean"? args.convertToSQL : typeof args.convertFiltersToSQL =="boolean"? args.convertFiltersToSQL : false;
+        const parseMangoQueries = typeof args.parseMangoQueries =="boolean"? args.parseMangoQueries : typeof args.parseMangoQueries =="boolean"? args.parseMangoQueries : false;
         if(prepare === false) return this.filters;
-        return prepareFilters(this.filters,{filter:this.canHandleFilterVal.bind(this),convertToSQL:convertFiltersToSQL});
+        return prepareFilters(this.filters,{filter:this.canHandleFilterVal.bind(this),parseMangoQueries});
     }
     hasFilters (){
         if(!this.isFilterable()) return false;
@@ -3301,14 +3301,14 @@ export default class CommonDatagridComponent extends AppComponent {
                     force = cb;
                     cb = undefined;
                 }
-                fetchOptions = this.getFetchOptions({fetchOptions,convertToSQL:false});
+                fetchOptions = this.getFetchOptions({fetchOptions,parseMangoQueries:false});
                 if(typeof this.props.fetchOptionsMutator =='function' && this.props.fetchOptionsMutator(fetchOptions) === false){
                     this.isFetchingData = false;
                     return resolve(sData);
                 }
                 if(this.beforeFetchData({fetchOptions,force,context:this,renderProgressBar}) === false) return resolve(sData);
                 if(this.canConvertFiltersToSQL()){
-                    fetchOptions.selector = convertToSQL(fetchOptions.selector);
+                    fetchOptions.selector = parseMangoQueries(fetchOptions.selector);
                 }
                 if(typeof this.props.beforeFetchData =='function' && this.props.beforeFetchData({...rest,renderProgressBar,context:this,force,fetchOptions,options:fetchOptions}) === false){
                     this.isFetchingData = false;
@@ -3463,7 +3463,7 @@ export default class CommonDatagridComponent extends AppComponent {
     }
     /*** récupère les fetchOptions du datagrid */
     getFetchOptions({fetchOptions}){
-        const fetchFilters = this.getFilters({convertToSQL : false});
+        const fetchFilters = this.getFilters({parseMangoQueries : false});
         fetchOptions = Object.clone(isObj(fetchOptions)? fetchOptions : {});
         fetchOptions.selector = defaultObj(fetchOptions.selector);
         fetchOptions.dataSources = this.currentDataSources;
@@ -3952,7 +3952,7 @@ CommonDatagridComponent.propTypes = {
     ]),
     filterable : PropTypes.bool, //si le composant peut être filtrable
     /*** si les filtres de données seront convertis au format SQL avant d'effectuer la requête distante */
-    convertFiltersToSQL : PropTypes.bool,
+    parseMangoQueries : PropTypes.bool,
     isLoading : PropTypes.bool,///si les données sont en train d'être chargées
     session : PropTypes.bool, /// si les données de sessions seront persistées
     exportTableProps : PropTypes.oneOfType([

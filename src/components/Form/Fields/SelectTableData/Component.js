@@ -7,7 +7,7 @@ import {defaultStr,extendObj,isFunction,defaultVal,isObjOrArray,defaultObj} from
 import PropTypes from "prop-types";
 import actions from "$cactions";
 import {navigateToTableData} from "$enavigation/utils";
-import {getFetchOptions,prepareFilters,convertToSQL as convFiltersToSQL} from "$cutils/filters";
+import {getFetchOptions,prepareFilters,parseMangoQueries as filtersParseMangoQueries} from "$cutils/filters";
 import fetch from "$capi"
 import React from "$react";
 import useApp from "$econtext/hooks";
@@ -19,7 +19,7 @@ import DateLib from "$lib/date";
  *  foreignKeyTable : la tableData dans laquelle effectuer les donées de la requêtes
  *  foreignKeyLabel : Le libélé dans la table étrangère
  */
-const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabelRenderers,isStructData,getForeignKeyTable:cGetForeignKeyTable,prepareFilters:cPrepareFilters,bindUpsert2RemoveEvents,onAdd,showAdd:customShowAdd,canShowAdd,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,convertFiltersToSQL,mutateFetchedItems,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchOptions,...props},ref)=>{
+const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabelRenderers,isStructData,getForeignKeyTable:cGetForeignKeyTable,prepareFilters:cPrepareFilters,bindUpsert2RemoveEvents,onAdd,showAdd:customShowAdd,canShowAdd,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,parseMangoQueries,mutateFetchedItems,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchOptions,...props},ref)=>{
     props.data = defaultObj(props.data);
     const type = defaultStr(props.type)?.toLowerCase();
     isStructData = isStructData || type?.replaceAll("-","").replaceAll("_","").trim().contains("structdata");
@@ -37,7 +37,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabel
         }
     }
     const getForeignKeyTable = typeof cGetForeignKeyTable =='function'? cGetForeignKeyTable : isStructData ? getStructData: appGetForeignKeyTable;
-    convertFiltersToSQL = defaultBool(convertFiltersToSQL,datagrid?.convertFiltersToSQL);
+    parseMangoQueries = defaultBool(parseMangoQueries,datagrid?.parseMangoQueries);
     const foreignKeyTableStr = defaultStr(foreignKeyTable,props.tableName,props.table);
     if(typeof getForeignKeyTable !=='function'){
         console.error("la fonction getTableData non définie des les paramètres d'initialisation de l'application!!! Rassurez vous d'avoir définier cette fonction!!, options : foreignKeyTable:",foreignKeyTable,"foreignKeyColumn:",foreignKeyColumn,props)
@@ -147,8 +147,8 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabel
             if(!isMounted()) return;
             if(typeof beforeFetchItems ==='function' && beforeFetchItems({fetchOptions}) === false) return;
             let opts = Object.clone(fetchOptions);
-            if(convertFiltersToSQL){
-                opts.selector = convFiltersToSQL(opts.selector);
+            if(parseMangoQueries){
+                opts.selector = filtersParseMangoQueries(opts.selector);
                 opts = getFetchOptions(opts);
                 delete opts.selector;
             } else {
@@ -357,7 +357,7 @@ TableDataSelectField.propTypes = {
     itemValue : PropTypes.func,
     renderItem : PropTypes.func,
     renderText : PropTypes.func,
-    convertFiltersToSQL : PropTypes.oneOfType([
+    parseMangoQueries : PropTypes.oneOfType([
         PropTypes.func,
         PropTypes.bool,
     ]),// si l'on doit convertir les selecteurs de filtres au format SQl

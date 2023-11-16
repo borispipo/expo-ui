@@ -52,7 +52,7 @@ Object.map(Utils,(v,i)=>{
     }, la liste des tables de données
     structsData : {object}, la liste des données de structures
     handleHelpScreen : {boolean}, //si l'écran d'aide sera pris en compte, l'écran d'aide ainsi que les écrans des termes d'utilisations et autres
-    convertFiltersToSQL : {boolean}, si les filtres de datagrid ou filtres seront convertis au format SQL
+    parseMangoQueries : {boolean}, si les filtres de datagrid ou filtres seront convertis au format SQL
     components : {
         MainProvider : {ReactComponent}, //le composant qui permet de wrapper le contenu de l'application expo. Nb, ce composant ne peut utiliser ni les routes, nis les DialogProvider,
         logo : ReactNode | ReactComponent | object {
@@ -88,7 +88,7 @@ Object.map(Utils,(v,i)=>{
     swrConfig : {object},//les paramètres de configuration de l'objet swr utilisée dans le composant SWRDatagrid
     realm : {}, //les options de configurations de la base de données realmdb
 */
-const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,auth:cAuth,components:cComponents,convertFiltersToSQL,getStructData,tablesData,structsData,...props})=>{
+const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,auth:cAuth,components:cComponents,parseMangoQueries,getStructData,tablesData,structsData,...props})=>{
     require('$session');///initializing session
     const {extendAppTheme} = appConfig;
     const { theme : pTheme } = useMaterial3Theme();
@@ -165,8 +165,8 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
         }
       }
     },swrConfig);
-    if(convertFiltersToSQL !== undefined){
-      appConfig.set("convertFiltersToSQL",convertFiltersToSQL);
+    if(parseMangoQueries !== undefined){
+      appConfig.set("parseMangoQueries",parseMangoQueries);
     }
     const colorScheme = useColorScheme();
     const isColorShemeDark = colorScheme ==="dark";
@@ -300,7 +300,7 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
         ...props,
         handleHelpScreen,
         navigation,
-        convertFiltersToSQL,
+        parseMangoQueries,
         auth,
         components : {
             ...components,

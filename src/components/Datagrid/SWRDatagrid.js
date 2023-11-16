@@ -175,7 +175,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             opts = defaultObj(opts);
             opts.fetchOptions = isObj(opts.fetchOptions)? Object.clone(opts.fetchOptions) : {};
             extendObj(true,opts.fetchOptions,fetchOptionsRef.current);
-            if(props.convertFiltersToSQL === false){
+            if(props.parseMangoQueries === false){
                 opts.fetchOptions.selector = extendObj(true,{},opts.fetchOptions.selector,fetchOptionsRef.current?.selector);
             }
             opts.fetchOptions.sort = sortRef.current;

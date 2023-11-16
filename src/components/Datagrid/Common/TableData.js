@@ -4,8 +4,8 @@ import PropTypes from "prop-types";
 import actions from "$actions";
 /**** 
  *      la fonction fetchOptionsMutator permet éventuellemnt de faire une mutations sur les options fetchOptions avant qu'elle ne soit appliquée pour la recherche. elle
- *      est appelée avant que la fonction convertToSQL ne soit appelée, bien évidemement si la props convertToSQL est active pour le datagrid
- *      la fonction beforeFetchData est appelée immédiatement avant l'execution de la requête fetch et après que la fonction converttoSQL soit appelée
+ *      est appelée avant que la fonction parseMangoQueriesToSQL ne soit appelée, bien évidemement si la props parseMangoQueriesToSQL est active pour le datagrid
+ *      la fonction beforeFetchData est appelée immédiatement avant l'execution de la requête fetch et après que la fonction parseMangoQueriestoSQL soit appelée
  */
 export default class CommonTableDatagrid extends CommonDatagrid{
     constructor(props){

@@ -295,6 +295,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     return (
         <Datagrid 
             testID = {testID}
+            accordionProps = {table?.accordionProps}
             {...defaultObj(table?.datagrid)} 
             {...rest}
             fetchOptions = {customFetchOptions}

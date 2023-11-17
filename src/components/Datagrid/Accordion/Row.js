@@ -7,7 +7,6 @@ import PropTypes from "prop-types";
 import React from "$react";
 import theme from "$theme"
 import {styles as rStyles,getRowStyle} from "../utils";
-import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { useIsRowSelected,useDatagrid} from "../hooks";
 
 const DatagridAccordionRow = React.forwardRef((props,ref)=>{
@@ -109,12 +108,6 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
         }
     } 
     right = typeof right === 'function'? right ({color:theme.colors.primaryOnSurface,selectable:true,style:[rStyles.lineHeight,styles.right]}) : right;
-    const swipeableRef = React.useRef(null);
-    React.useEffect(()=>{
-        return ()=>{
-            React.setRef(swipeableRef,null);
-        }
-    },[])
     return  <Pressable
                 disabled = {selectable===false?true : false}
                 {...rowProps}
@@ -142,59 +135,21 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
                     React.setRef(innerRef,el);
                 }}
         >
-        <Swipeable
-            ref = {swipeableRef}
-            testID={testID+'_ContentContainerSwipeable'}
-            friction={2}
-            containerStyle = {{overflow:'hidden'}}
-            leftThreshold={80}
-            enableTrackpadTwoFingerGesture
-            renderLeftActions={selectable === false? undefined : (_progress,dragX) => {
-                const trans = dragX.interpolate({
-                  inputRange: [0, 80],
-                  outputRange: [0, 1],
-                  extrapolate: 'clamp',
-                });
-                return (
-                    <View testID={testID+"_SwipeableLeftSide"} style={{justifyContent:'center',flex:1}}>
-                        <Animated.Text
-                            style={[
-                            styles.actionText,
-                            {
-                                transform: [{ translateX: trans }],
-                                alignItems : 'center',
-                                color : theme.colors.primary,
-                            },
-                            ]}>
-                            {(selected?'Désélectionnez la ligne ':'Sélectionnez la ligne ')}
-                        </Animated.Text>
-                    </View>
-                );
-            }}
-            onSwipeableWillOpen = {(direction)=>{
-                if(selectable === false) return;
-                if(swipeableRef.current && swipeableRef.current.close){
-                    swipeableRef.current.close();
-                }
-                handleRowToggle();
-            }}
-        >
-            <View 
+        <View 
                 style={[styles.renderedContent,viewWrapperStyle,!hasAvatar && styles.contentContainerNotAvatar]} 
-                testID={testID+'_ContentContainer'}
-            >
-                {hasAvatar?<View testID={testID+"_AvatarContentContainer"} style={[styles.avatarContent]}>
-                    {avatarContent}
-                </View> : avatarContent}
-                <View testID={testID+"_Content"} style={[styles.content,styles.wrap]}>
-                    {title}
-                    {description}
-                </View>
-                {right && React.isValidElement(right,true) ? <Label testID={testID+"_Right"} primary selectable {...rightProps} style={[styles.right,styles.label,rStyles.lineHeight,rightProps.style]}>
-                    {right}
-                </Label> : null}
+            testID={testID+'_ContentContainer'}
+        >
+            {hasAvatar?<View testID={testID+"_AvatarContentContainer"} style={[styles.avatarContent]}>
+                {avatarContent}
+            </View> : avatarContent}
+            <View testID={testID+"_Content"} style={[styles.content,styles.wrap]}>
+                {title}
+                {description}
             </View>
-        </Swipeable>
+            {right && React.isValidElement(right,true) ? <Label testID={testID+"_Right"} primary selectable {...rightProps} style={[styles.right,styles.label,rStyles.lineHeight,rightProps.style]}>
+                {right}
+            </Label> : null}
+        </View>
     </Pressable>
 })
 

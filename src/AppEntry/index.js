@@ -37,7 +37,6 @@ import StatusBar from "$ecomponents/StatusBar";
 import {Provider as PaperProvider,Portal } from 'react-native-paper';
 import FontIcon from "$ecomponents/Icon/Font";
 import useContext from "$econtext/hooks";
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet } from "react-native";
 import Logo from "$ecomponents/Logo";
 import AppEntryRootView from "./RootView";
@@ -273,36 +272,34 @@ function App({init:initApp,initialRouteName:appInitialRouteName,children}) {
   </NavigationContainer>  : null;
   const content = isLoaded ? typeof children == 'function'? children({children:child,appConfig,config:appConfig}) : child : null;
   return <SafeAreaProvider>
-            <GestureHandlerRootView testID={"RN_MainAppGestureHanleRootView"}  style={styles.gesture}>
-                <AppEntryRootView MainProvider={MainProvider}>
-                    <PaperProvider 
-                      theme={theme}
-                      settings={{
-                        icon: (props) => {
-                          return <FontIcon {...props}/>
-                        },
-                      }}
-                    >
-                      <Portal.Host testID="RN_NativePaperPortalHost">
-                        <ErrorBoundaryProvider/>  
-                        <PreloaderProvider/>   
-                        <DialogProvider responsive testID={"RN_MainAppDialogProvider"}/>
-                        <AlertProvider SimpleSelect={SimpleSelect}/>
-                        <FormDataDialogProvider/>  
-                        <BottomSheetProvider/>
-                        <DropdownAlert ref={notificationRef}/>
-                        <ErrorBoundary>
-                          <StatusBar/>
-                          <SplashScreen isLoaded={isLoaded}>
-                            <PreferencesContext.Provider value={preferences}>
-                              {React.isValidElement(content) && content || child}
-                            </PreferencesContext.Provider>  
-                          </SplashScreen>
-                        </ErrorBoundary>
-                      </Portal.Host>
-                  </PaperProvider>
-                </AppEntryRootView>
-            </GestureHandlerRootView>
+            <AppEntryRootView MainProvider={MainProvider}>
+                <PaperProvider 
+                  theme={theme}
+                  settings={{
+                    icon: (props) => {
+                      return <FontIcon {...props}/>
+                    },
+                  }}
+                >
+                  <Portal.Host testID="RN_NativePaperPortalHost">
+                    <ErrorBoundaryProvider/>  
+                    <PreloaderProvider/>   
+                    <DialogProvider responsive testID={"RN_MainAppDialogProvider"}/>
+                    <AlertProvider SimpleSelect={SimpleSelect}/>
+                    <FormDataDialogProvider/>  
+                    <BottomSheetProvider/>
+                    <DropdownAlert ref={notificationRef}/>
+                    <ErrorBoundary>
+                      <StatusBar/>
+                      <SplashScreen isLoaded={isLoaded}>
+                        <PreferencesContext.Provider value={preferences}>
+                          {React.isValidElement(content) && content || child}
+                        </PreferencesContext.Provider>  
+                      </SplashScreen>
+                    </ErrorBoundary>
+                  </Portal.Host>
+              </PaperProvider>
+            </AppEntryRootView>
    </SafeAreaProvider>
 }
 

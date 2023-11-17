@@ -523,7 +523,7 @@ const DatagridFactory = (Factory)=>{
                         {datagridHeader}
                         {this.renderProgressBar()}
                         {!canRenderChart && showFooters ? (
-                            <View  testID={testID+"Accordion_FooterContainer"} pointerEvents={pointerEvents} style={[theme.styles.justifyContentCenter]}>
+                            <View  testID={testID+"_FooterContainer"} pointerEvents={pointerEvents} style={[theme.styles.justifyContentCenter,theme.styles.pv1]}>
                                 <View  testID={testID+"_FooterContentContainer"} style={[styles.footersContainer]}>
                                     <ScrollView testID={testID+"_FooterScrollView"} horizontal  contentContainerStyle={[styles.contentContainerStyle]}>
                                         <View testID={testID+"_FooterContent"} style={[styles.table,theme.styles.p1]}>

@@ -274,6 +274,7 @@ const styles = StyleSheet.create({
         flexWrap : 'nowrap',
         justifyContent : 'center',
         width : '100%',
+        minHeight : 60,
     },
     avatarContent : {
         marginRight : 10,

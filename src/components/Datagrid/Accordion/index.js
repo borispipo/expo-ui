@@ -408,7 +408,7 @@ const DatagridFactory = (Factory)=>{
             const hasFootersFields = this.hasFootersFields();
             const datagridHeader = <View testID={testID+"_HeaderContainer"} pointerEvents={pointerEvents} style={[styles.datagridHeader]}>
                 <ScrollView testID={testID+"_HeaderScrollView"} horizontal  contentContainerStyle={StyleSheet.flatten([styles.contentContainerStyle,styles.minW100])}>
-                    <View testID={testID+"_HeaderContentContainer"} style={[styles.table,styles.pullRight]}>
+                    <View testID={testID+"_HeaderContentContainer"} style={[styles.table,theme.styles.ph1,styles.pullRight]}>
                         {/*this.renderDataSourceSelector()*/}
                         <View testID={testID+"_HeaderQueryLimit"} style={[styles.paginationItem]}>
                             {this.renderQueryLimit(this.getStateDataSize().formatNumber())}
@@ -523,7 +523,7 @@ const DatagridFactory = (Factory)=>{
                         {datagridHeader}
                         {this.renderProgressBar()}
                         {!canRenderChart && showFooters ? (
-                            <View  testID={testID+"_FooterContainer"} pointerEvents={pointerEvents} style={[theme.styles.justifyContentCenter,theme.styles.pv1]}>
+                            <View  testID={testID+"Accordion_FooterContainer"} pointerEvents={pointerEvents} style={[theme.styles.justifyContentCenter]}>
                                 <View  testID={testID+"_FooterContentContainer"} style={[styles.footersContainer]}>
                                     <ScrollView testID={testID+"_FooterScrollView"} horizontal  contentContainerStyle={[styles.contentContainerStyle]}>
                                         <View testID={testID+"_FooterContent"} style={[styles.table,theme.styles.p1]}>

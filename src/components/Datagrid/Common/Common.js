@@ -2430,6 +2430,7 @@ export default class CommonDatagridComponent extends AppComponent {
         />
    }
    canShowFooters(){
+      if(!this.hasFootersFields()) return false;
       return this.state.showFooters || this.hasSectionListData() && this.state.displayOnlySectionListHeaders;
    }
    canShowFilters(){

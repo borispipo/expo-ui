@@ -98,7 +98,7 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
     const auth = {
       ...Object.assign({},cAuth),
       loginPropsMutator : (props)=>{
-        return extendProps(cAuth.loginPropsMutator,props);
+        return extendProps(cAuth?.loginPropsMutator,props);
       },
     }
     extendObj(signInRef.current,auth);

@@ -676,6 +676,22 @@ export default class TableDataScreenComponent extends FormDataScreen{
         return true;
     }
     onSaveTableData(){}
+    /*** permet de recherger le contenu du form avec la données passée en paramètre
+        @param {object} currentData, la nouvelle donnée en cours de modification
+        @param {function} callback, la fonction de rappel à appeler une fois que la données a été mise à jour
+        @return {this} le contexte
+    */
+    reloadData(currentData,callback){
+        currentData = isObj(currentData)? currentData : {};
+        if(this.state.hasManyData && Array.isArray(this.state.datas)){
+            const sData = [...this.state.datas];
+            sData[this.state.currentIndex] = currentData;
+            return this.setState({data:currentData,datas:sData},callback);
+        } else {
+            return this.setState({data:currentData},callback);
+        }
+        return this;
+    }
     doSave ({goBack,data,action}){
         const cb = ()=>{
             if(action === 'new'){
@@ -758,13 +774,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
                         notify('Données modifiée avec succès!!','success');
                     }
                     if(hasUpserted){
-                        if(this.state.hasManyData && Array.isArray(this.state.datas)){
-                            const sData = [...this.state.datas];
-                            sData[this.state.currentIndex] = savedData;
-                            return this.setState({data:upserted,datas:sData},closePreloader);
-                        } else {
-                            return this.setState({data:savedData},closePreloader);
-                        }
+                        this.reloadData(savedData,closePreloader);
                     }
                     closePreloader();
                 }).catch((e)=>{

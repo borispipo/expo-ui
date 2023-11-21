@@ -85,7 +85,17 @@ export default function LoginComponent(props){
                 document.title = loginTitle
             },1000)
         }
-    },[withPortal])
+    },[withPortal]);
+    const getButtonAction = (buttonRef)=>{
+        return {
+            ref : buttonRef,
+            isDisabled : x=> typeof buttonRef?.current?.isDisabled ==="function" && buttonRef.current?.isDisabled(),
+            enable : x=>typeof buttonRef?.current?.enable =="function" && buttonRef.current.enable(),
+            disable : x=> typeof buttonRef?.current?.disable =="function" && buttonRef?.current.disable(),
+        }
+    }
+    const nextButton = getButtonAction(nextButtonRef),
+    prevButton = getButtonAction(previousButtonRef);
     const {header,
         headerTopContent:HeaderTopContent,
         containerProps : customContainerProps,
@@ -95,6 +105,9 @@ export default function LoginComponent(props){
         ...state,
         setState,
         state,
+        nextButton,
+        prevButton,
+        previousButton:prevButton,
         showError : notifyUser,
         notifyUser,
         notify,

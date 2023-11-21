@@ -3,6 +3,8 @@ import screens from "$screens";
 import drawerItems from "$navigation/drawerItems";
 import Logo from "$components/Logo";
 import drawerSections from "$navigation/drawerSections";
+import TableDataListScreen from "$screens/TableDataListScreen";
+import TableDataScreen from "$screens/TableData/TableDataScreen";
 
 export default function AppMainEntry(){
     return <ExpoUIProvider    
@@ -32,6 +34,8 @@ export default function AppMainEntry(){
             profilePropsMutator : ({fields,...props})=>({fields,...props}),//la fonction permettant de muter les champs liés à l'écran de mise à jour d'un profil utilisateur
         }}
         components = {{
+            TableDataListScreen,
+            TableDataScreen,
             datagrid : {
                 ///les props par défaut à passer au composant SWRDatagrid
             },

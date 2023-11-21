@@ -16,7 +16,6 @@ import appConfig from "$capp/config";
 import Preloader from "$preloader";
 import {defaultNumber} from "$cutils";
 import Tooltip from "$ecomponents/Tooltip";
-import {isMultiUsersAllowed} from "$cauth/utils/session";
 const UserProfileAvatarComponent = React.forwardRef(({drawerRef,chevronIconProps:customChevronIconProps,size,withLabel,...props},ref)=>{
     let u = defaultObj(Auth.getLoggedUser());
     const deviceNameRef = React.useRef(null);
@@ -77,7 +76,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,chevronIconProps
                     });
                 }
             },
-            isMultiUsersAllowed() && {
+            Auth.canSignOut() && {
                 label : i18n.lang("logout",'Déconnexion'),
                 icon : "logout",
                 onPress : (a)=>{

@@ -34,7 +34,6 @@ const MenuItemComponent = React.forwardRef(({
   secondary,
   iconProps,
   isBottomSheetItem,
-  accessibilityLabel,
   right,
   labelProps,
   contentContainerProps,
@@ -79,14 +78,12 @@ const MenuItemComponent = React.forwardRef(({
       {...defaultObj(rest)}
       tooltip = {defaultVal(rest.tooltip,title,label,text)}
       Component = {TouchableRipple}
-      style={[styles.container, style,maxWidthStyle,disabledStyle]}
+      style={[styles.container,{pointerEvents}, style,maxWidthStyle,disabledStyle]}
       onPress={onPress}
       disabled={disabled}
       testID={testID}
-      accessibilityLabel={accessibilityLabel}
       role="menuitem"
       accessibilityState={{ disabled }}
-      pointerEvents = {pointerEvents}
     >
       <View style={[styles.row]} ref={ref} testID={testID+"_ContentContainer"}>
         {icon ? (
@@ -111,7 +108,7 @@ const MenuItemComponent = React.forwardRef(({
         >
           <Label
             testID={testID+"_Label"}
-            selectable={false}
+            userSelect={false}
             numberOfLines={1}
             splitText
             {...labelProps}
@@ -218,7 +215,7 @@ MenuItemComponent.propTypes = {
     /**
      * Accessibility label for the Touchable. This is read by the screen reader when the user taps the component.
      */
-    accessibilityLabel : PropTypes.string,
+    "aria-label" : PropTypes.string,
   };
 
 

@@ -7,7 +7,7 @@ import {defaultObj} from "$cutils";
 
 const FilterBetweenComponent = React.forwardRef(({inputProps,contentContainerProps,...props},ref)=>{
     contentContainerProps = defaultObj(contentContainerProps);
-    contentContainerProps.pointerEvents = "auto";
+    contentContainerProps.style = [{pointerEvents: "auto"},contentContainerProps.style];
     return <TextField
         ref = {ref}
         {...props}

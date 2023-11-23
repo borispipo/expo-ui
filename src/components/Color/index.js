@@ -72,7 +72,7 @@ const ColorPickerComponent = React.forwardRef ((props,ref)=>{
                 //role="button"
                 disabled = {!isEditable}
                 pointerEvents = {pointerEvents}
-                accessibilityLabel={defaultStr(label,text)}
+                aria-label={defaultStr(label,text)}
                 style = {[styles.container,containerProp]}
                 onPress={openPicker}
                 rippleColor={rippleColor}

@@ -31,7 +31,6 @@ const ButtonComponent = React.forwardRef((prs,ref) => {
     isCancelButton,
     error,
     upperCase = true,
-    accessibilityLabel,
     onPress,
     iconPosition,
     iconBefore,
@@ -239,7 +238,6 @@ const ButtonComponent = React.forwardRef((prs,ref) => {
                     onLongPress={onLongPress}
                     onPressIn={handlePressIn}
                     onPressOut={handlePressOut}
-                    accessibilityLabel={accessibilityLabel}
                     // @ts-expect-error We keep old a11y props for backwards compat with old RN versions
                     accessibilityTraits={disabled ? ['button', 'disabled'] : 'button'}
                     accessibilityComponentType="button"
@@ -289,7 +287,7 @@ const ButtonComponent = React.forwardRef((prs,ref) => {
                         />
                       ) : null}
                       <Label
-                        selectable={false}
+                        userSelect={false}
                         numberOfLines={1}
                         testID = {testID+"_Label"}
                         {...labelProps}
@@ -420,10 +418,6 @@ ButtonComponent.propTypes = {
      * Make the label text upperCased. Note that this won't work if you pass React elements as children.
      */
     upperCase:PropTypes.bool,
-    /**
-     * Accessibility label for the button. This is read by the screen reader when the user taps the button.
-     */
-    accessibilityLabel:PropTypes.string,
     /**
      * Function to execute on press.
      */

@@ -10,7 +10,7 @@ const defaultSelectable = canTextBeSelectable();
 
 export const EllipsizeMode = {'head':'head','middle':'middle', 'tail':'tail' , 'clip':'clip'}
 
-const LabelComponent = React.forwardRef(({ children,selectable,role,color,upperCase,fontSize,testID,wrap,id,wrapText,error,underlined,splitText,secondary,primary,bold,textBold,disabled,text,style,...rest},ref)=> {
+const LabelComponent = React.forwardRef(({ children,userSelect,role,color,upperCase,fontSize,testID,wrap,id,wrapText,error,underlined,splitText,secondary,primary,bold,textBold,disabled,text,style,...rest},ref)=> {
     children = defaultVal(children,text);
     let isText = false;
     if(!React.isValidElement(children) && Array.isArray(children) && children.length){
@@ -58,8 +58,8 @@ const LabelComponent = React.forwardRef(({ children,selectable,role,color,upperC
     if(disabled){
         r1.pointerEvents = "none";
     }
-    selectable = selectable === false || defaultSelectable === false ? false : true;
-    r2.userSelect = !selectable?"none":"all";
+    userSelect = userSelect === false || defaultSelectable === false ? false : true;
+    r2.userSelect = !userSelect?"none":"all";
     if(isNonNullString(children) || isText || typeof children ==='number'){
         if(!isText){
             children +="";
@@ -70,7 +70,7 @@ const LabelComponent = React.forwardRef(({ children,selectable,role,color,upperC
         if(fontSize){
             r1.fontSize = fontSize;
         }
-        if(selectable){
+        if(userSelect){
             r2.userSelect = "text";
         }
         return (<Text  allowFontScaling = {true} ref = {ref} 
@@ -117,7 +117,7 @@ LabelComponentExported.propTypes = {
     error : PropTypes.bool,///si le label est liée à une text field sur laquelle il  y a erreur
     secondary : PropTypes.bool,
     color : PropTypes.string,
-    selectable : PropTypes.bool, //si le texte est sélectionnable
+    userSelect : PropTypes.bool, //si le texte est sélectionnable
     underlined : PropTypes.bool,//si le style underlined sera appliqué au label
     splitText : PropTypes.bool,///si le texte lorsqu'il est long sera splité,
     /*useSelect : PropTypes.oneOfType([

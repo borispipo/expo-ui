@@ -37,14 +37,14 @@ const ExpandableItem = ({left,right,title,description,
   testID = defaultStr(testID,"RN_ExpandableItemComponent")
   const renderDescription = (descriptionColor,description) => {
     return typeof description === 'function' ? (description({
-        selectable: false,
+        userSelect: false,
         ellipsizeMode: descriptionEllipsizeMode,
         color: descriptionColor,
         fontSize: styles.description.fontSize,
       })
     ) : (
       <Label
-        selectable={false}
+        userSelect={false}
         numberOfLines={descriptionNumberOfLines}
         ellipsizeMode={descriptionEllipsizeMode}
         testID = {testID+"_Description"}
@@ -66,14 +66,14 @@ const ExpandableItem = ({left,right,title,description,
 
     return typeof title === 'function' ? (
       title({
-        selectable: false,
+        userSelect: false,
         ellipsizeMode: titleEllipsizeMode,
         color: titleColor,
         fontSize: styles.title.fontSize,
       })
     ) : (
       <Label
-        selectable={false}
+        userSelect={false}
         ellipsizeMode={titleEllipsizeMode}
         numberOfLines={titleNumberOfLines}
         testID = {testID+'_Title'}

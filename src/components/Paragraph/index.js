@@ -15,7 +15,7 @@ function ParagraphComponent({splitText,...props}){
         restProps.ellipsizeMode = defaultStr(props.ellipsizeMode,'tail');
     }
     return <Paragraph
-        selectable = {defaultSelectable}
+        userSelect = {defaultSelectable}
         {...props}
         {...restProps}
     />

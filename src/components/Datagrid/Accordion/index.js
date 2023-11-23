@@ -364,12 +364,11 @@ const DatagridFactory = (Factory)=>{
             const labelStyle = Object.assign({},StyleSheet.flatten(titleProps.style));
             const titleColor = Colors.isValid(labelStyle.color)? labelStyle.color : Colors.isValid(titleProps.color)? titleProps.color : Colors.setAlpha(theme.colors.text,0.87);
             this.accordionTitleProps = {
-                selectable: true,
                 ellipsizeMode: EllipsizeMode.tail,
                 numberOfLines : 1,
                 ...titleProps,
                 color: titleColor,
-                style : [styles.title,rStyles.lineHeight,titleProps.style]
+                style : [styles.title,{userSelect:"all"},rStyles.lineHeight,titleProps.style]
             }
             filter = defaultFunc(filter,x=>true);
             const showFooters = this.canShowFooters();

@@ -46,7 +46,7 @@ const AvatarTextComponent = (props) => {
   const onPress = typeof customOnPress =='function' ? customOnPress : undefined;
   const C = onPress? Pressable : View;
   return (
-    <C testID={testID+"_Container"} pointerEvents={onPress?"auto":'none'} {...containerProps} style={[styles.container,style,containerProps.style,textContainerStyle,{borderRadius:size/2}]}>
+    <C testID={testID+"_Container"} {...containerProps} style={[{pointerEvents:onPress?"auto":'none'},styles.container,style,containerProps.style,textContainerStyle,{borderRadius:size/2}]}>
       { <Text
         testID={testID}
         style={[{

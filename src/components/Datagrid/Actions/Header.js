@@ -12,7 +12,7 @@ const selectedTitle ='#f50057';
 
 export const getSelectedBackgroundColor = x=> theme.isDark()?theme.colors.surface : selectedBackgroundColor;
 
-export default function DatagridActionsHeaderComponent({title,selected,testID,children,style,pointerEvents,...props}) {
+export default function DatagridActionsHeaderComponent({title,leftActions,selected,testID,children,style,pointerEvents,...props}) {
   title = React.isValidElement(title,true)? title : "";
   const bStyle = selected && theme.isDark()? {
     borderBottomColor : theme.colors.divider,
@@ -26,6 +26,7 @@ export default function DatagridActionsHeaderComponent({title,selected,testID,ch
       {title ? <Label testID={testID+"Label"} style={[styles.title,selected?[styles.selectedTitle,{color:!theme.isDark()?selectedTitle:theme.colors.primaryOnSurface}]:undefined]}>
         {title}
       </Label> : null}
+      {React.isValidElement(leftActions) ? leftActions : null}
       {React.isValidElement(children) && <View testID={testID+"_Content"} style={[styles.children,styles.row]}>
         {children}
       </View>}
@@ -38,6 +39,7 @@ const styles = StyleSheet.create({
     flexDirection : 'row',
     justifyContent:'space-between',
     alignItems : 'center',
+    flexWrap : "wrap",
   },
   container : {
      paddingVertical : 0,

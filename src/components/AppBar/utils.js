@@ -33,7 +33,7 @@ const renderAction = ({action,isAlert,actionProps,opts,isAppBarAction,isAppBarAc
     let {Component,isFormAction,...rest} = action;
     actionProps = defaultObj(actionProps);
     rest = Object.assign({},rest);
-    rest.accessibilityLabel = defaultStr(rest.accessibilityLabel,rest.title,rest.text,rest.label,rest.children);
+    rest["aria-label"] = defaultStr(rest["aria-label"],rest.title,rest.text,rest.label,rest.children);
     const {color} = getThemeColors();
     
     rest.style = {...defaultObj(StyleSheet.flatten(actionProps.style)),elevation:0,...defaultObj(StyleSheet.flatten(rest.style))};

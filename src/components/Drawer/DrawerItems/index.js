@@ -122,8 +122,8 @@ DrawerItemsComponent.propTypes = {
 
 const getDefaultProps = function(item){
   if(!isObj(item)) return null;
-  item.label = defaultVal(item.label,item.text,item.accessibilityLabel);
-  item.accessibilityLabel = defaultVal(item.accessibilityLabel,item.tooltip,item.label);
+  item.label = defaultVal(item.label,item.text,item["aria-label"]);
+  item["aria-label"] = defaultVal(item["aria-label"],item.tooltip,item.label);
   item.title = defaultVal(item.title,item.label);
   return item;
 }

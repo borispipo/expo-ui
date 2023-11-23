@@ -464,7 +464,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
             {...iconProps}
             disabled = {!isEditable}
             forceTextInputFocus={false}
-            accessibilityLabel ={!secureTextEntry?"Cliquez pour masquer le contenu":"Cliquez pour afficher le contenu"} 
+            aria-label ={!secureTextEntry?"Cliquez pour masquer le contenu":"Cliquez pour afficher le contenu"} 
             icon={secureTextEntry?'eye-off':'eye'}
             onPress={()=>{
                 setSecureTextEntry(!secureTextEntry);

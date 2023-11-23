@@ -14,7 +14,7 @@ import PropTypes from "prop-types";
  * update by @borisFouomene. for usage, @see : https://callstack.github.io/react-native-paper/drawer-item.html
  */
 const DrawerItem = ({icon,iconProps,borderRadius,color,minimized,contentContainerProps,labelProps,contentProps,label,text,
-    active,style,onPress,accessibilityLabel,isExpandable,right,divider, dividerProps,
+    active,style,onPress,isExpandable,right,divider, dividerProps,
     testID,
     left,
     title,
@@ -46,11 +46,10 @@ const DrawerItem = ({icon,iconProps,borderRadius,color,minimized,contentContaine
   left = React.isValidElement(left)? left : null;
   
   borderRadius = typeof borderRadius =='number'? borderRadius : 18;
-  accessibilityLabel = defaultStr(accessibilityLabel);
   const labelContent = React.useStableMemo(()=>{
     const lProps = {
       testID:testID+"_DrawerItemLabel",
-      selectable:false,
+      userSelect:false,
       numberOfLines:1,
       ...labelProps,
       style : [{
@@ -85,7 +84,6 @@ const DrawerItem = ({icon,iconProps,borderRadius,color,minimized,contentContaine
         accessibilityTraits={active ? ['button', 'selected'] : 'button'}
         //accessibilityComponentType="button"
         accessibilityState={{ selected: active }}
-        accessibilityLabel={accessibilityLabel}
       >
         <View  {...contentContainerProps} style={[styles.contentContainer,contentContainerProps.style]} testID={testID+"_DrawerItemContentContainer"}>
           <View {...contentProps} style={[styles.content,contentProps.style]} testID={testID+"_DrawerItemContent"}>
@@ -94,7 +92,7 @@ const DrawerItem = ({icon,iconProps,borderRadius,color,minimized,contentContaine
               <Icon testID={testID+"_DrawerItemIcon"} icon={icon} {...iconProps} 
               style={[iconProps.style,styles.icon,!minimized?{
                  alignItems : 'flex-start'
-              }:{alignItems:isExpandable?'flex-end':'center'}]} tooltip={minimized?defaultStr(title,label,accessibilityLabel):""} 
+              }:{alignItems:isExpandable?'flex-end':'center'}]} tooltip={minimized?defaultStr(title,label):""} 
               position={minimized?'top':"right"} 
               size={minimized ?MINIMIZED_ICON_SIZE : ICON_SIZE} onPress={minimized?onPress:undefined} color={contentColor} />
             ) : null}

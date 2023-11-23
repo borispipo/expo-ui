@@ -13,8 +13,9 @@ import { useWindowDimensions } from "react-native";
 import {useDatagrid,useGetSelectedRowsCount} from "../hooks";
 export default function DatagridActions ({actions,title,actionProps,...props}){
   const {context} = useDatagrid();
-  const forceRender = React.useForceRender();
+  const actionsProps = defaultObj(context?.props?.actionsProps);
   const selectedRowsCount = useGetSelectedRowsCount();
+  const leftActions = context?.props?.leftActions;
   useWindowDimensions();
   const selected = selectedRowsCount>0;
   actions = selected ? context?.renderSelectedRowsActions.call(context,{}) : actions;
@@ -56,8 +57,11 @@ export default function DatagridActions ({actions,title,actionProps,...props}){
       }
   });
   return <Header
+        {...actionsProps}
         {...props}
+        style = {[actionsProps.style,props.style]}
         title = {contextualTitle}
+        leftActions = {leftActions}
         selected = {selected}
       >
         {children ||  <Label style={{padding:15}}>ACTIONS</Label>}

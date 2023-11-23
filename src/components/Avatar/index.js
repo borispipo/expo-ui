@@ -40,7 +40,7 @@ const AvatarComponent = React.forwardRef((props,ref)=>{
         handleOnPress = true;
     } else if(label){
         cProps.label = label;
-        cProps.pointerEvents = "none";
+        cProps.style = [cProps.style,{pointerEvents:"none"}];
         cProps.labelStyle = StyleSheet.flatten(cProps.labelStyle) || {};
         Component = Text;
     }

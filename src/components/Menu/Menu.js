@@ -473,7 +473,7 @@ class _Menu extends AppComponent {
           <Portal>
             {rendered ? <TouchableWithoutFeedback
               testID={testID+"_Menu_TouchableWithoutFeedBack"}
-              accessibilityLabel={overlayAccessibilityLabel}
+              aria-label={overlayAccessibilityLabel}
               //role="button"
               onPress={onDismiss}
               style = {[hiddenStyle]}
@@ -487,8 +487,7 @@ class _Menu extends AppComponent {
               }}
               collapsable={false}
               accessibilityViewIsModal={visible}
-              style={[styles.wrapper, positionStyle, style,hiddenStyle]}
-              pointerEvents={visible ? 'box-none' : 'none'}
+              style={[styles.wrapper, positionStyle, style,hiddenStyle,{pointerEvents:visible ? 'box-none' : 'none'}]}
               onAccessibilityEscape={onDismiss}
             >
               {rendered?<Animated.View style={{ transform: positionTransforms }} testID={testID+"_Animated"}>

@@ -21,7 +21,6 @@ const ChipComponent = React.forwardRef(({
   avatar,
   selected = false,
   disabled = false,
-  accessibilityLabel,
   closeIconAccessibilityLabel = 'Close',
   onPress,
   onLongPress,
@@ -127,7 +126,6 @@ const ChipComponent = React.forwardRef(({
         onPressOut={handlePressOut}
         underlayColor={underlayColor}
         disabled={disabled}
-        accessibilityLabel={accessibilityLabel}
         // @ts-expect-error We keep old a11y props for backwards compat with old RN versions
         accessibilityTraits={accessibilityTraits}
         accessibilityComponentType="button"
@@ -172,11 +170,11 @@ const ChipComponent = React.forwardRef(({
             </View>
           ) : null}
           <Text
-            selectable={false}
             numberOfLines={1}
             testID={testID+"_Text"}
             {...labelProps}
             style={StyleSheet.flatten([
+              {userSelect:"none"},
               styles.text,
               {
                 ...theme.fonts.regular,
@@ -201,7 +199,7 @@ const ChipComponent = React.forwardRef(({
             accessibilityTraits="button"
             accessibilityComponentType="button"
             //role="button"
-            accessibilityLabel={closeIconAccessibilityLabel}
+            aria-label={closeIconAccessibilityLabel}
             testID={testID+"_CloseButtonRipple"}
           >
             <View testID={testID+"_ContentContainer"} style={[styles.icon, styles.closeIcon]}>
@@ -313,10 +311,6 @@ ChipComponent.propTypes = {
      * Whether the chip is disabled. A disabled chip is greyed out and `onPress` is not called on touch.
      */
     disabled: PropTypes.bool,
-    /**
-     * Accessibility label for the chip. This is read by the screen reader when the user taps the chip.
-     */
-    accessibilityLabel: PropTypes.string,
     /**
      * Accessibility label for the close icon. This is read by the screen reader when the user taps the close icon.
      */

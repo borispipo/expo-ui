@@ -27,12 +27,12 @@ const ErrorMessage = React.forwardRef(function(props,ref){
     const pointerEvents = 'auto';
     const {width,height} = useWindowDimensions();
     return <Portal>
-          <View ref={ref} testID={`${testID}_ErrorMessageContainer`} pointerEvents={pointerEvents} style={[styles.container,isWeb()?{position:'fixed'}:null,{backgroundColor:theme.colors.surface,width,height}]}>
-            <View style={styles.content} testID={`${testID}_ErrorMessageContentContainer`} pointerEvents={pointerEvents}>
+          <View ref={ref} testID={`${testID}_ErrorMessageContainer`} style={[{pointerEvents},styles.container,isWeb()?{position:'fixed'}:null,{backgroundColor:theme.colors.surface,width,height}]}>
+            <View style={[styles.content,{pointerEvents}]} testID={`${testID}_ErrorMessageContentContainer`}>
               <Label style={styles.title}>Oops!</Label>
               <Label style={styles.subtitle}>{'Une erreur est survenue'}</Label>
               <Label style={styles.error}>{error.toString()}</Label>
-              <Button mode="contained" pointerEvents={pointerEvents} iconProps={{marginVertical:0,paddingVertical:0}} icon='home-variant' style={{backgroundColor:theme.colors.primary,marginHorizontal:10}} labelStyle={{color:theme.colors.primaryLabel}} onPress={goToHome}>
+              <Button mode="contained" iconProps={{marginVertical:0,pointerEvents,paddingVertical:0}} icon='home-variant' style={{backgroundColor:theme.colors.primary,marginHorizontal:10}} labelStyle={{color:theme.colors.primaryLabel}} onPress={goToHome}>
                   Retour à l'accueil
               </Button>
               <Expandable title="Plus de détail sur l'erreur">

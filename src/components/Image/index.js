@@ -257,7 +257,7 @@ export default function ImageComponent(props){
                 {...menuProps}
                 disabled = {isDisabled}
                 anchor = {(props)=>{
-                    return <View accessibilityLabel = {_label} testID={testID+"_Container"} {...containerProps} style={[label?styles.align:null,containerProps.style,{pointerEvents:disabled|| readOnly? "none":"auto"},label?styles.container:null]}>
+                    return <View aria-label={_label} testID={testID+"_Container"} {...containerProps} style={[label?styles.align:null,containerProps.style,{pointerEvents:disabled|| readOnly? "none":"auto"},label?styles.container:null]}>
                         {<Label testID={testID+"_Label"} {...labelProps} disabled={disabled} style={[styles.label,labelProps.style]}>{label}</Label>}
                         {<Avatar
                             resizeMethod = {"auto"}

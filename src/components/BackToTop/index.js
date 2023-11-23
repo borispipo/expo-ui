@@ -58,7 +58,7 @@ const BackToTopComponent = React.forwardRef((props,ref)=>{
     },[])
     return !visible ? null :  <Fab
         {...rest}
-        accessibilityLabel = {defaultStr(rest.accessibilityLabel,'Retour en haut')}
+        aria-label = {defaultStr(rest["aria-label"],'Retour en haut')}
         onPress = {(e)=>{
             React.stopEventPropagation(e);
             if(onPress){

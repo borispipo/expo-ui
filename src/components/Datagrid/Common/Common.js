@@ -1,4 +1,4 @@
-import theme from "$theme";
+import theme,{ StyleProps} from '$theme';
 import APP from "$capp";
 import {isMobileOrTabletMedia} from "$cplatform/dimensions";
 import PropTypes from "prop-types";
@@ -4096,6 +4096,12 @@ CommonDatagridComponent.propTypes = {
     baseId : PropTypes.string,
     mobile: PropTypes.bool,
     tablet: PropTypes.bool,
+    /*** les props des actions du datagrid */
+    actionsProps : PropTypes.shape({
+        ///style : les styles
+        style : StyleProps,
+        testID : PropTypes.string,///le test id
+    }),
     ///pour l'affichage où non des filtres
     toggleFilters : PropTypes.bool,
     desktop: PropTypes.bool,

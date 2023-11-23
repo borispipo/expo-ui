@@ -25,7 +25,6 @@ const ExpandableComponent = React.forwardRef(({
   onPress,
   onLongPress,
   expanded: expandedProp,
-  accessibilityLabel,
   expandedIcon,
   expandIconProps,
   unexpandedIcon,
@@ -115,7 +114,6 @@ const ExpandableComponent = React.forwardRef(({
             onPress={handlePressAction}
             onLongPress={onLongPress}
             accessibilityState={{ expanded: isExpanded }}
-            accessibilityLabel={accessibilityLabel}
             testID={testID+"_Container"}
           >
             <View testID={testID+'_ContentContainer'} {...contentContainerProps} style={[styles.row,theme.styles.cursorPointer,contentContainerProps.style]} pointerEvents1="none">
@@ -127,7 +125,7 @@ const ExpandableComponent = React.forwardRef(({
                 : null}
               <View testID={testID+'_Center'} {...centerProps} style={[styles.item, styles.content,styles.center,centerProps.style]}>
                 {isNonNullString(title)? <Label
-                  selectable={false}
+                  userSelect={false}
                   numberOfLines={titleNumberOfLines}
                   {...titleProps}
                 >
@@ -136,7 +134,7 @@ const ExpandableComponent = React.forwardRef(({
                 {isNonNullString(description) ? (
                   <Label
                     testID={testID+'_Description'}
-                    selectable={false}
+                    userSelect={false}
                     numberOfLines={descriptionNumberOfLines}
                     {...descriptionProps}
                     style={[

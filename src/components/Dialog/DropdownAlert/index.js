@@ -111,7 +111,6 @@ export default class DropdownAlert extends Component {
     renderTitle: PropTypes.func,
     renderMessage: PropTypes.func,
     testID: PropTypes.string,
-    accessibilityLabel: PropTypes.string,
     accessible: PropTypes.bool,
     titleTextProps: PropTypes.object,
     messageTextProps: PropTypes.object,
@@ -199,7 +198,6 @@ export default class DropdownAlert extends Component {
     renderTitle: undefined,
     renderMessage: undefined,
     testID: undefined,
-    accessibilityLabel: undefined,
     accessible: false,
     titleTextProps: undefined,
     messageTextProps: undefined,
@@ -607,7 +605,6 @@ export default class DropdownAlert extends Component {
       zIndex,
       wrapperStyle,
       tapToCloseEnabled,
-      accessibilityLabel,
       testID:customTestId,
       accessible,
       contentContainerStyle,
@@ -669,7 +666,6 @@ export default class DropdownAlert extends Component {
               disabled={!tapToCloseEnabled}
               onLayout={(event) => this._onLayoutEvent(event)}
               testID={testID}
-              accessibilityLabel={accessibilityLabel}
               accessible={accessible}>
             <View style={style} testID={testID+"_ContentContainer"}>
                   <View testID={testID+"_ContentWrapper"} style={[contentContainerStyle]}

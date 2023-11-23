@@ -285,7 +285,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
         {...anchorContainerProps}
         onPress={show}
         disabled = {!isEditable}
-        accessibilityLabel={defaultStr(label,text)}
+        aria-label={defaultStr(label,text)}
         rippleColor={undefined}
         onLayout={onLayout}
         style = {[{pointerEvents},anchorContainerProps.style]}

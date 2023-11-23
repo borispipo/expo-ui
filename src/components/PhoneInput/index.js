@@ -157,7 +157,7 @@ export default function PhoneInputComponent(props){
                     helperText = {helperText}
                     contentContainerProps = {contentContainerProps}
                     label = {label}
-                    accessibilityLabel = {defaultStr(label,text)}
+                    aria-label = {defaultStr(label,text)}
                     formatValue = {false}
                     disabled = {props.disabled}
                     pointerEvents = {pointerEvents}

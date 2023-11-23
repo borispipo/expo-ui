@@ -115,7 +115,7 @@ const SwitchComponent = React.forwardRef((props,ref)=>{
    return <Tooltip 
                 {...p} 
                 tooltip={tooltip} 
-                accessibilityLabel={label}
+                aria-label={label}
                 role="switch"
                 disabled = {!isEditable}
                 pointerEvents = {pointerEvents}

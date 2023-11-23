@@ -21,7 +21,6 @@ const FABGroup = ({
   icon,
   open,
   onPress,
-  accessibilityLabel,
   label,
   style,
   screenName,
@@ -170,7 +169,6 @@ const FABGroup = ({
           label = {label}
           icon={icon}
           color={colorProp}
-          accessibilityLabel={accessibilityLabel}
           // @ts-expect-error We keep old a11y props for backwards compat with old RN versions
           accessibilityTraits="button"
           accessibilityComponentType="button"
@@ -202,7 +200,6 @@ FABGroup.propTypes = {
    * An action item should contain the following properties:
    * - `icon`: icon to display (required)
    * - `label`: optional label text
-   * - `accessibilityLabel`: accessibility label for the action, uses label by default if specified
    * - `color`: custom icon color of the action item
    * - `labelTextColor`: custom label text color of the action item
    * - `style`: pass additional styles for the fab item, for example, `backgroundColor`
@@ -215,7 +212,6 @@ FABGroup.propTypes = {
     label: PropTypes.string,
     color: PropTypes.string,
     labelTextColor: PropTypes.string,
-    accessibilityLabel: PropTypes.string,
     style: StylePropTypes,
     labelStyle: StylePropTypes,
     small: PropTypes.bool,
@@ -230,7 +226,7 @@ FABGroup.propTypes = {
   /**
    * Accessibility label for the FAB. This is read by the screen reader when the user taps the FAB.
    */
-  accessibilityLabel: PropTypes.string,
+  "aria-label" : PropTypes.string,
   /**
    * Custom color for the `FAB`.
    */
@@ -272,7 +268,7 @@ FABGroup.propTypes = {
 }
 
 
-const _FabItem = function({children,label,disabled:customDisabled,pointerEvents,open,close,testID:customTestID,labelStyle,accessibilityLabel,icon,backgroundColor,scale,opacity,color,style,small,onPress}){
+const _FabItem = function({children,label,disabled:customDisabled,pointerEvents,open,close,testID:customTestID,labelStyle,icon,backgroundColor,scale,opacity,color,style,small,onPress,...rest}){
   const disabled = typeof customDisabled =='boolean'? customDisabled : false;
   const testID = defaultStr(customTestID,"RN_FabItemComponent")
   style = StyleSheet.flatten(style) || {};
@@ -303,9 +299,9 @@ const _FabItem = function({children,label,disabled:customDisabled,pointerEvents,
                    ] 
                  }
                  onPress={_onPress}
-                 accessibilityLabel={
-                   accessibilityLabel !== 'undefined'
-                     ? accessibilityLabel
+                 aria-label ={
+                   rest["aria-label"] !== 'undefined'
+                     ? rest["aria-label"]
                      : label
                  }
                  accessibilityTraits="button"
@@ -337,9 +333,9 @@ const _FabItem = function({children,label,disabled:customDisabled,pointerEvents,
                ] 
              }
              onPress={_onPress}
-             accessibilityLabel={
-               typeof accessibilityLabel !== 'undefined'
-                 ? accessibilityLabel
+             aria-label={
+               typeof rest["aria-label"] !== 'undefined'
+                 ? rest["aria-label"]
                  : label
              }
              // @ts-expect-error We keep old a11y props for backwards compat with old RN versions

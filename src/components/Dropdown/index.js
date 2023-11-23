@@ -677,7 +677,6 @@ class DropdownComponent extends AppComponent {
             helperText,
             error,
             onChange,
-            accessibilityLabel,
             onMount,
             filter,
             onUnmount,
@@ -890,7 +889,7 @@ class DropdownComponent extends AppComponent {
                 disabled = {disabled}
                 onLayout={bindResizeEvents === false ? undefined : this.onLayout.bind(this)}
                 style = {{pointerEvents}}
-                accessibilityLabel={defaultStr(accessibilityLabel,label,text)}
+                aria-label={defaultStr(dropdownProps["aria-label"],label,text)}
                 testID = {testID}
             >
                 <View {...dropdownProps} {...contentContainerProps} style={[contentContainerProps.style,{pointerEvents},flattenStyle]}
@@ -1282,7 +1281,7 @@ DropdownComponent.propTypes = {
     placeholder : PropTypes.string,
     inputProps : PropTypes.object,
     selectedColor:PropTypes.string,
-    accessibilityLabel : PropTypes.string,
+    "aria-label" : PropTypes.string,
     compare : PropTypes.func,
     temProps : PropTypes.object,
     itemLabel : PropTypes.string,//le nom du champ à utiliser pour le rendu du libelé la méthode appelée pour retourne le libelé de l'item

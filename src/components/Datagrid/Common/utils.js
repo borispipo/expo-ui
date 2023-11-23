@@ -175,7 +175,7 @@ export const renderRowCell = (arg)=>{
         return React.getTextContent(_render);
     }
     if((typeof _render ==='string' || typeof _render =='number')){
-        _render = <Label selectable>{_render}</Label>
+        _render = <Label userSelect>{_render}</Label>
     }
     _render = React.isValidElement(_render)|| Array.isArray(_render)?_render:null;
     return {render:_render,style,extra,key};

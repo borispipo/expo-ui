@@ -10,6 +10,9 @@ export const locale = "fr";
 
 export const toDateObj = (value,format,force)=>{
     if(!value) return undefined;
+    if(Array.isArray(value)){
+      value = value[0] || value[1];
+    }
     if(DateLib.isDateObj(value)) return value;
     try {
         const d = new Date(value);

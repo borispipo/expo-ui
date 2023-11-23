@@ -128,5 +128,6 @@ DateTimePickerComponent.propTypes = {
     defaultValue : PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.object,
+        PropTypes.array,
     ])
 }

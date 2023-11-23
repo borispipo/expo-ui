@@ -602,9 +602,15 @@ class DropdownComponent extends AppComponent {
     }
     UNSAFE_componentWillReceiveProps(nextProps){
         const {items,defaultValue,selected} = nextProps;
-        if(!React.areEquals(items,this.props.items)){
+        const isFunc = typeof nextProps.items == "function";
+        if(isFunc || !React.areEquals(items,this.props.items)){
             const nState = this.prepareItems({items,defaultValue,selected});
-            return this.updateSelected(nState,true);
+            return this.updateSelected(nState,!isFunc);
+            const val = this.prepareSelected({defaultValue});
+            if(!this.compare(val,this.state.selected)){
+                return this.selectValue(defaultValue,true);
+            }
+            return;
         }
         let value = this.prepareSelected({defaultValue});
         let areEquals = !this.canHandleMultiple ? this.compare(value,this.state.selected) : false;
@@ -1289,7 +1295,11 @@ DropdownComponent.propTypes = {
     renderItem : PropTypes.oneOfType([PropTypes.func]),
     /*** la fonction permettant d'afficher le texte du dropdown */
     renderText : PropTypes.func,
-    items :  PropTypes.oneOfType([PropTypes.object,PropTypes.array,PropTypes.func]),
+    items :  PropTypes.oneOfType([
+        PropTypes.object,
+        PropTypes.array,
+        PropTypes.func, //la fonction doit retourner, soit un tableau, soit un objet des données. elle ne doit en aucun cas retourner une promesse
+    ]),
      /**** l'info bulle a associer à l'iconne addIcon */
      addIcon : PropTypes.oneOfType([PropTypes.string,PropTypes.bool]), //l'icon plus
      addIconTooltip : PropTypes.string,

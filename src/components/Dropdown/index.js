@@ -1,3 +1,7 @@
+/*****
+    si la props items est une fonction, alors elle ne doit en aucun cas retourner une promesse, 
+    mais surtout un tableau un un objet
+*/
 import PropTypes from "prop-types";
 import View from "$ecomponents/View";
 import {Dimensions,Pressable,StyleSheet,Animated,} from "react-native";

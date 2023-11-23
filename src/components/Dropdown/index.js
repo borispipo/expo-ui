@@ -798,7 +798,8 @@ class DropdownComponent extends AppComponent {
         }
         let menuActions = [];
         Object.map(dropdownActions,(action,index)=>{
-            if(!isObj(action) || (!action.text)) return;
+            if(!isObj(action) || (!action.text && !!action.label)) return;
+            action.text = defaultVal(action.text,action.label);
             menuActions.push(action);
         });
         if(this.isSortable()){

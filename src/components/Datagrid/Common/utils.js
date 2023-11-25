@@ -49,7 +49,7 @@ export const renderRowCell = (arg)=>{
                 const sqlFormat =_type === 'time'? undefined : _type ==="datetime" ? DateLib.SQLDateTimeFormat : DateLib.SQLDateFormat;
                 let _dd =DateLib.parse(rowData[columnField],sqlFormat);
                 if(DateLib.isDateObj(_dd)){
-                    const eFormat = defaultStr(columnDef.format,(_type === 'time'?DateLib.defaultTimeFormat:DateLib.masks.defaultDate));
+                    const eFormat = defaultStr(columnDef.format,(_type === 'time'?DateLib.defaultTimeFormat:_type=="datetime"? DateLib.defaultDateTimeFormat:DateLib.masks.defaultDate));
                     _render = DateLib.format(_dd,eFormat);
                 }
             }

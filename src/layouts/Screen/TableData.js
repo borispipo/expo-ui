@@ -681,7 +681,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
         @param {function} callback, la fonction de rappel à appeler une fois que la données a été mise à jour
         @return {this} le contexte
     */
-    reloadData(currentData,callback){
+    reloadCurrentData(currentData,callback){
         currentData = isObj(currentData)? currentData : {};
         if(this.state.hasManyData && Array.isArray(this.state.datas)){
             const sData = [...this.state.datas];
@@ -690,7 +690,6 @@ export default class TableDataScreenComponent extends FormDataScreen{
         } else {
             return this.setState({data:currentData},callback);
         }
-        return this;
     }
     doSave ({goBack,data,action}){
         const cb = ()=>{
@@ -774,7 +773,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
                         notify('Données modifiée avec succès!!','success');
                     }
                     if(hasUpserted){
-                        this.reloadData(savedData,closePreloader);
+                        this.reloadCurrentData(savedData,closePreloader);
                     }
                     closePreloader();
                 }).catch((e)=>{

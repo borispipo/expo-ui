@@ -683,12 +683,12 @@ export default class TableDataScreenComponent extends FormDataScreen{
     */
     reloadCurrentData(currentData,callback){
         currentData = isObj(currentData)? currentData : {};
-        if(this.state.hasManyData && Array.isArray(this.state.datas)){
+        if(this.hasManyData() && Array.isArray(this.state.datas)){
             const sData = [...this.state.datas];
             sData[this.state.currentIndex] = currentData;
             return this.setState({data:currentData,datas:sData},callback);
         } else {
-            return this.setState({data:currentData},callback);
+            return this.setState({data:currentData,datas:[],hasManyData:false},callback);
         }
     }
     doSave ({goBack,data,action}){

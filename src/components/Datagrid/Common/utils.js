@@ -97,7 +97,7 @@ export const renderRowCell = (arg)=>{
                             }
                             hasC = true;
                             renderedItems++;
-                            const suffix = renderedItems === maxItemsToRender && idSplit.length > maxItemsToRender ? <Label>...</Label> : null;
+                            const suffix = renderedItems === maxItemsToRender && idSplit.length > maxItemsToRender ? <Label>...et {" "+idSplit.length.formatNumber()+" de plus"}</Label> : null;
                             return suffix ? <>
                                 <TableLink 
                                     key = {index}

@@ -21,7 +21,7 @@ export const toggleVisibility = (scrollEvent)=>{
 
 const BackToTopComponent = React.forwardRef((props,ref)=>{
     const isMounted = React.useIsMounted();
-    const {onPress,accessibilityLabel,onBackToTop,onVisibilityChange,position,icon,...rProps} = props;
+    const {onPress,onBackToTop,onVisibilityChange,position,icon,...rProps} = props;
     const rest = defaultObj(rProps);
     const [visible,setVisible] = React.useState(false);
     const open = ()=>{

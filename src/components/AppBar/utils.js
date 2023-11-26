@@ -55,7 +55,7 @@ const renderAction = ({action,isAlert,actionProps,opts,isAppBarAction,isAppBarAc
         if(opts.isFullScreenDialog ===false){
             rest.mode = rest.mode !== undefined ? rest.mode : actionProps.mode !==undefined ? actionProps.mode : 'contained';
         }
-        rest.children = defaultVal(rest.children,rest.label,rest.text,rest.accessibilityLabel);
+        rest.children = defaultVal(rest.children,rest.label,rest.text,rest["aria-label"]);
     }
     if(isFormAction){
         actionProps.componentProps = defaultObj(actionProps.componentProps)

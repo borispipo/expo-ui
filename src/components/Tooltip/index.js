@@ -16,7 +16,7 @@ const TooltipComponent = React.forwardRef((props,ref)=>{
     tooltipProps = defaultObj(tooltipProps);
     Component = React.isComponent(tooltipProps.Component) ? tooltipProps.Component : React.isComponent(Component) ? Component : Label;
     delete tooltipProps.position;
-    const content = defaultVal(rest.content,rest.tooltip,rest.title,rest.label,rest.accessibilityLabel);
+    const content = defaultVal(rest.content,rest.tooltip,rest.title,rest.label,rest["aria-label"]);
     if(typeof children !=='function'){
         rest.children = children;
     }

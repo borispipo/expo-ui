@@ -193,10 +193,14 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             if(showProgressRef.current ===false){
                 opts.showError = false;
             }
+            const end = (a)=> {
+                isInitializedRef.current = true;
+                return a;
+            };
             if(typeof fetcher =='function'){
-                return fetcher(url,opts);
+                return Promise.resolve(fetcher(url,opts)).then(end);
             }
-            return apiFetch(url,opts);
+            return apiFetch(url,opts).then(end);
         },
         swrOptions : getSWROptions(swrConfig.refreshTimeout)
     });
@@ -290,7 +294,9 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         });
     });
     React.useEffect(()=>{
-        showProgressRef.current = false;
+        if(isInitializedRef.current){
+            showProgressRef.current = false;
+        }
     },[showProgressRef.current]);
     return (
         <Datagrid 
@@ -401,7 +407,6 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             beforeFetchData = {(args)=>{
                 let {fetchOptions:opts,force,renderProgressBar} = args;
                 opts = getFetchOptions({showError:showProgressRef.current,...opts});
-                isInitializedRef.current = true;
                 fetchOptionsRef.current = opts.fetchOptions;
                 opts.fetchOptions.withTotal = true;
                 sortRef.current = opts.fetchOptions.sort;

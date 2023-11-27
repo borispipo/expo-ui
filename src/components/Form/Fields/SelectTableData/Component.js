@@ -114,19 +114,19 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabel
     }
     const hasRefreshedRef = React.useRef(false);
     React.useEffect(()=>{
-        context.refresh();
-        if(bindUpsert2RemoveEvents !== false){
-            const onUpsertData = ()=>{return isMounted()?context.refresh():undefined};
-            APP.on(actions.upsert(foreignKeyTable),onUpsertData);
-            APP.on(actions.onRemove(foreignKeyTable),onUpsertData);
-            return ()=>{
-                APP.off(actions.upsert(foreignKeyTable),onUpsertData);
-                APP.off(actions.onRemove(foreignKeyTable),onUpsertData);
-            };
+        if(bindUpsert2RemoveEvents === false || !(foreignKeyTableStr)){
+            return ()=>{}
         }
+        const onUpsertData = ()=>{return isMounted()?context.refresh():undefined};
+        APP.on(actions.upsert(foreignKeyTableStr),onUpsertData);
+        APP.on(actions.onRemove(foreignKeyTableStr),onUpsertData);
         return ()=>{
-            
-        }
+            APP.off(actions.upsert(foreignKeyTableStr),onUpsertData);
+            APP.off(actions.onRemove(foreignKeyTableStr),onUpsertData);
+        };
+    },[foreignKeyTableStr,bindUpsert2RemoveEvents])
+    React.useEffect(()=>{
+        context.refresh();
     },[]);
     
     let dat = isNonNullString(foreignKeyColumnValue)? {

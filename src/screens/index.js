@@ -7,7 +7,7 @@ export * from "./mainScreens";
 
 export * from "./utils";
 
-export const handleScreen = ({Screen,Factory,ModalFactory,result,filter,index})=>{
+export const handleScreen = ({Screen,Factory,ModalFactory,result,index})=>{
     result = defaultObj(result);
     result.screens = defaultObj(result.screens);
     result.groups = defaultObj(result.groups);
@@ -17,7 +17,7 @@ export const handleScreen = ({Screen,Factory,ModalFactory,result,filter,index})=
     let screenOptions = undefined;
     if(Array.isArray(Screen)){
         Screen.map((S,i)=>{
-            return handleScreen({Screen:S,Factory,ModalFactory,result,groups,filter,index:i});
+            return handleScreen({Screen:S,Factory,ModalFactory,result,groups,index:i});
         })
     } else if(typeof Screen ==='object' && React.isComponent(Screen.Component) && isNonNullString(Screen.screenName)){
         screenName = Screen.screenName;
@@ -37,11 +37,7 @@ export const handleScreen = ({Screen,Factory,ModalFactory,result,filter,index})=
         if(isNonNullString(screenName)){
             let name = screenName;
             const sanitizedName = sanitizeName(screenName);
-            let extra = filter({Screen,name,sanitizedName}),
-            authRequired = typeof Screen.authRequired =="boolean"? Screen.authRequired : true;
-            if(extra ===false){
-                return null;
-            }
+            let authRequired = typeof Screen.authRequired =="boolean"? Screen.authRequired : true;
             ///le groupe d'écran par défaut
             let groupName = Screen.Start ||Screen.start ? GROUP_NAMES.START : authRequired === false ? GROUP_NAMES.PUBLIC : GROUP_NAMES.PRIVATE;
             if(!GROUP_NAMES[groupName]){
@@ -83,7 +79,6 @@ export const handleScreen = ({Screen,Factory,ModalFactory,result,filter,index})=
                 }
                 options.elevation = typeof options.elevation =='number'? options.elevation : typeof Screen.elevation =='number'? Screen.elevation : undefined;
                 options.back = args.navigation.canGoBack();
-                options.extra = defaultObj(extra);
                 options.isModal = options.Modal = Screen.isModalScreen;
                 return options;
             }} component = {ScreenWrapper}/>);
@@ -106,17 +101,15 @@ export const handleScreen = ({Screen,Factory,ModalFactory,result,filter,index})=
             
         groups : {} : la liste des différents groupes d'écrans rendus par la méthode
  */
-export default function initScreens ({Factory,ModalFactory,screens,result,filter}){
+export default function initScreens ({Factory,ModalFactory,screens,result}){
     if(!isArray(screens) || !screens.length){
         screens = [];
     }
     result = defaultObj(result);
     result.screens = defaultObj(result.screens);
     result.groups = defaultObj(result.groups);
-    ///lorsque les écrans sont passés enparamètres, par défaut, le wrapper withTheme n'est pas utilisé
-    filter = typeof filter =="function" ? filter : x=> true;
     defaultArray(screens).map((Screen,index)=>{
-        handleScreen({Screen,result,Factory,ModalFactory,filter,index})
+        handleScreen({Screen,result,Factory,ModalFactory,index})
     });
     return result;
 }

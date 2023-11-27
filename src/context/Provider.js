@@ -72,7 +72,7 @@ Object.map(Utils,(v,i)=>{
     
     navigation : {
       screens : {Array}, les écrans de navigation,
-      screenOptions : {object}, les options du composant Stack.Navigator, voir https://reactnavigation.org/docs/native-stack-navigator/
+      screenOptions : {object|function}, les options du composant Stack.Navigator, voir https://reactnavigation.org/docs/native-stack-navigator/
       drawerItems : {object|array|function}, la fonction permettant d'obtenir les items du drawer principal de l'application, Chaque item du drawer doit avoir la chaine drawerSection, chaine de caractère determinant le code de la section dans lequel l'afficher
       drawerSections : {object : {
           [key{string}]:{string}} |
@@ -165,7 +165,7 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
           APP.off(APP.EVENTS.GO_ONLINE,callback);
         }
       }
-    },swrConfig);
+    },swrConfig,{refreshTimeout:swrRefreshTimeout});
     if(parseMangoQueries !== undefined){
       appConfig.set("parseMangoQueries",parseMangoQueries);
     }

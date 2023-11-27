@@ -6,7 +6,8 @@ import DrawerNavigator from "./Drawer";
 import useContext from "$econtext/hooks";
 import { MainNavigationProvider } from "./hooks";
 import {isWeb,isAndroid} from "$cplatform";
-import Stack from "./Stack";
+import Stack,{CardStyleInterpolators} from "./Stack";
+import {extendObj,defaultObj} from "$cutils";
 import theme from "$theme";;
 
 export * from "./hooks";
@@ -18,11 +19,9 @@ export * from "./utils";
 */
 export default function NavigationComponent (props){
     let {state,hasGetStarted,isLoading,onGetStart,initialRouteName,...rest} = props;
-    if(isLoading) return null;
+    const cardStyleInterpolator = isAndroid() ? CardStyleInterpolators.forFadeFromBottomAndroid : CardStyleInterpolators.forHorizontalIOS;
     const {navigation:{screens,screenOptions}} = useContext();
-    const allScreens = initScreens({Factory:Stack,screens,ModalFactory:Stack,filter:({name})=>{
-        return true;
-    }});
+    const allScreens = initScreens({Factory:Stack,screens,ModalFactory:Stack});
     initialRouteName = sanitizeName(initialRouteName);
     const drawerScreens = handleContent({screens:allScreens,onGetStart,hasGetStarted,initialRouteName,state,Factory:Stack});
     const stackScreens = handleContent({screens:allScreens.modals,onGetStart,hasGetStarted,initialRouteName,state,Factory:Stack});
@@ -30,13 +29,19 @@ export default function NavigationComponent (props){
        console.error("apps will stuck on splash screen because any valid screen has been found on screens ",allScreens);
     }
     setInitialRouteName(initialRouteName);
-    const opts = {
-        headerShown : false,
-        header : ()=> null,
-        headerStyle: { backgroundColor: theme.colors.primary},
-        presentation : isAndroid() || isWeb()? "modal":"default",
-        animationEnabled : !isWeb(),
-        ...Object.assign({},screenOptions)
+    const getScreenOptions = (options,opt2)=>{
+        const sOptions = defaultObj(typeof screenOptions =='function'? screenOptions(options) : screenOptions);
+        const {navigation} = options;
+        return extendObj(true,{},{
+            headerShown : false,
+            header : ()=> null,
+            headerStyle: { backgroundColor: theme.colors.primary},
+            presentation : isAndroid() || isWeb()? "modal":"default",
+            animationEnabled : !isWeb(),
+            detachPreviousScreen: !navigation.isFocused(),
+            cardStyleInterpolator,
+            ...defaultObj(opt2),
+        },sOptions);
     }
     const cardStyle = { backgroundColor: 'transparent' };
     if(isWeb()){
@@ -46,18 +51,19 @@ export default function NavigationComponent (props){
         <DrawerNavigator {...props}>
             {<Stack.Navigator 
                 initialRouteName={initialRouteName} 
-                screenOptions={opts}
+                screenOptions={getScreenOptions}
             >
-                    {<Stack.Group screenOptions={{...opts}}>
+                    {<Stack.Group>
                         {drawerScreens}
                     </Stack.Group>}
                     <Stack.Group
                         key = {"MODAL-DRAWERS-SCREENS"}
-                        screenOptions={{
-                            ...opts,
-                            presentation :"transparentModal",
-                            cardStyle,
-                            animationEnabled : true,
+                        screenOptions={function(options){
+                            return getScreenOptions(options,{
+                                presentation :"transparentModal",
+                                cardStyle,
+                                animationEnabled : true,
+                            })
                         }}
                     >
                         {stackScreens}

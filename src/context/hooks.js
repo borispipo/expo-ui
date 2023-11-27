@@ -1,11 +1,10 @@
-
-
 import Dimensions from "$cplatform/dimensions";
 import useStableMemo  from "$react/useStableMemo";
 import { useWindowDimensions } from "$cdimensions";
-import {isObj,isNonNullString} from "$cutils";
+import {isObj,isNonNullString,extendObj} from "$cutils";
 import { StyleSheet } from "react-native";
 import { createContext,useContext as useReactContext } from "react";
+import _useSWR from "$swr";
 
 export const ExpoUIContext = createContext(null);
 
@@ -16,6 +15,30 @@ export default useExpoUI;
 export const useContext = useExpoUI;
 
 export const useApp = useContext;
+
+export const useSWR =  (path,options)=>{
+    const {swrConfig} = useExpoUI();
+    const host = `${defaultStr(process.env.API_HOST).trim().rtrim("/")}/${path}`;
+    const isLocalHost = host.includes("127.0.0.1") || host.includes("localhost");
+    return _useSWR(path,{
+        checkOnline : !isLocalHost,
+        ...Object.assign({},options),
+        swrOptions : {
+            provider: () => new Map(),
+            ...swrConfig,
+            isOnline() {
+                if(isLocalHost) return true;
+                return swrConfig.isOnline();
+            },
+            initReconnect(cb) {
+                 if(isLocalHost) return cb();
+                 return swrConfig.initReconnect(cb);
+            },
+            ...extendObj({},options,options?.swrOptions)
+        }
+    })
+}
+
 
 /**** retourne un composant définit dans la props
     components de la fonction registerApp appelée pour l'initialisation de l'application

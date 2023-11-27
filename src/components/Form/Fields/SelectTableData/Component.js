@@ -117,7 +117,9 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabel
         if(bindUpsert2RemoveEvents === false || !(foreignKeyTableStr)){
             return ()=>{}
         }
-        const onUpsertData = ()=>{return isMounted()?context.refresh():undefined};
+        const onUpsertData = ()=>{
+            return isMounted()?context.refresh():undefined
+        };
         APP.on(actions.upsert(foreignKeyTableStr),onUpsertData);
         APP.on(actions.onRemove(foreignKeyTableStr),onUpsertData);
         return ()=>{

@@ -191,6 +191,9 @@ export default class Filter extends AppComponent {
     }
     return value;
   }
+  isFilterSelect(){
+    return defaultStr(this.type,this.props.type).toLowerCase().includes("select");
+  }
   fireValueChanged (forceRun){
       if(this.willRunManually() && !forceRun) return;
       let {defaultValue:value,action,ignoreCase,operator} = this.state;

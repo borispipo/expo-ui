@@ -19,7 +19,7 @@ import DateLib from "$lib/date";
  *  foreignKeyTable : la tableData dans laquelle effectuer les donées de la requêtes
  *  foreignKeyLabel : Le libélé dans la table étrangère
  */
-const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabelRenderers,isStructData,getForeignKeyTable:cGetForeignKeyTable,prepareFilters:cPrepareFilters,bindUpsert2RemoveEvents,onAdd,showAdd:customShowAdd,canShowAdd,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,parseMangoQueries,mutateFetchedItems,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchOptions,...props},ref)=>{
+const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabelRenderers,onChange,isStructData,getForeignKeyTable:cGetForeignKeyTable,prepareFilters:cPrepareFilters,bindUpsert2RemoveEvents,onAdd,showAdd:customShowAdd,canShowAdd,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,parseMangoQueries,mutateFetchedItems,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchOptions,...props},ref)=>{
     props.data = defaultObj(props.data);
     const type = defaultStr(props.type)?.toLowerCase();
     isStructData = isStructData || type?.replaceAll("-","").replaceAll("_","").trim().contains("structdata");
@@ -90,6 +90,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabel
         delete fetchOptions.fields;
     }
     const foreignKeyColumnValue = props.defaultValue;
+    const defaultValueRef = React.useRef(props.multiple ? Object.toArray(foreignKeyColumnValue) : foreignKeyColumnValue);
     let isDisabled = defaultBool(props.disabled,props.readOnly,false);
     if(!isDisabled && props.readOnly === true){
         isDisabled = true;
@@ -111,6 +112,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabel
             fetchOptions.selector.$and.push({[foreignKeyColumn] : foreignKeyColumnValue})
         }
     }
+    const hasRefreshedRef = React.useRef(false);
     React.useEffect(()=>{
         context.refresh();
         if(bindUpsert2RemoveEvents !== false){
@@ -190,6 +192,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabel
                     if(onFetchItems){
                         onFetchItems({data:items,items,context,props});
                     }
+                    hasRefreshedRef.current = true;
                 }).catch((e)=>{
                     console.log(e," fetching list of data select table data ",foreignKeyColumn,foreignKeyTable)
                 }).finally((e)=>{
@@ -281,6 +284,14 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabel
         showAdd = {showAdd}
         isLoading = {isLoading}
         dialogProps = {dialogProps}
+        onChange = {(...args)=>{
+            if(isFilter){
+                if(!hasRefreshedRef.current) return;
+                if(JSON.stringify(defaultValueRef.current) === JSON.stringify(args[0]?.value)) return;
+                defaultValueRef.current = args[0]?.value;
+            }
+            if(onChange) return onChange(...args);
+        }}
         ref = {ref}
         defaultValue = {foreignKeyColumnValue}
         dropdownActions = {dropdownActions}

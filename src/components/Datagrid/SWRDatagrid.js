@@ -166,6 +166,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     const canHandleLimit = handleQueryLimit !== false && canHandlePagination ? true : false;
     const limitRef = React.useRef(!canHandleLimit ?0 : defaultNumber(getSessionData("limit"),500));
     const isInitializedRef = React.useRef(false);
+    const hasFetchedRef = React.useRef(false);
     testID = defaultStr(testID,"RNSWRDatagridComponent");
     const {error, isValidating,isLoading,data:result,refresh} = useSWR(fetchPath,{
         fetcher : (url,opts)=>{
@@ -194,7 +195,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                 opts.showError = false;
             }
             const end = (a)=> {
-                isInitializedRef.current = true;
+                hasFetchedRef.current = true;
                 return a;
             };
             if(typeof fetcher =='function'){
@@ -294,7 +295,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         });
     });
     React.useEffect(()=>{
-        if(isInitializedRef.current){
+        if(hasFetchedRef.current){
             showProgressRef.current = false;
         }
     },[showProgressRef.current]);
@@ -410,6 +411,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                 fetchOptionsRef.current = opts.fetchOptions;
                 opts.fetchOptions.withTotal = true;
                 sortRef.current = opts.fetchOptions.sort;
+                isInitializedRef.current = true;
                 if(force){
                     pageRef.current = firstPage;
                 }

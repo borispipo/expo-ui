@@ -361,15 +361,20 @@ export default class TableDataScreenComponent extends FormDataScreen{
             archivedPermsFilter : this.archivedPermsFilter.bind(this),
             onPressCopyToClipboard : this.copyToClipboard.bind(this)
         }
-        if(isUpdated){
-            fields.approved = this.isApprovable()? {
-                text : 'Approuvé',
-                type : 'switch',
-                defaultValue : 0,
-                checkedTooltip: 'Oui',
-                disabled : Auth.isTableDataAllowed({table:tableName,action:'updateapproved'})? false:true,
-                uncheckedTooltip : 'Non'
-            } : null;
+        if(Object.size(fields,true)){
+            if(isUpdated){
+                fields.approved = this.isApprovable()? {
+                    text : 'Approuvé',
+                    type : 'switch',
+                    defaultValue : 0,
+                    checkedTooltip: 'Oui',
+                    disabled : Auth.isTableDataAllowed({table:tableName,action:'updateapproved'})? false:true,
+                    uncheckedTooltip : 'Non',
+                    ...Object.assign({},fields.approved)
+                } : null;
+            }
+        } else {
+            formProps.style = [theme.styles.noPadding,formProps.style]
         }
         rActionsArg.contentProps = Object.assign({},customContentProps);
         rActionsArg.containerProps = Object.assign({},customContainerProps);

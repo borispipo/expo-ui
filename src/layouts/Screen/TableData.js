@@ -330,11 +330,11 @@ export default class TableDataScreenComponent extends FormDataScreen{
             ...formProps,
             context,
             cloneAction : cCloneAction,
-            save2newAction : this.canCreateNew() && save2newAction !== false ? true : false,
+            save2newAction : this.canCreateNew() && save2newAction !== false ? typeof save2cloneAction =="boolean"? save2cloneAction : saveAction !== false : false,
             save2cloneAction : cCloneAction && save2cloneAction !== false ? true : false,
             isMobile : isMobOrTab,
             saveAction,
-            save2closeAction,
+            save2closeAction : typeof save2cloneAction ==="boolean"? save2cloneAction : saveAction !== false,
             tableName,
             sessionName,
             table,
@@ -396,9 +396,12 @@ export default class TableDataScreenComponent extends FormDataScreen{
     handleCustomRender(){
         return true;
     }
+    canRenderActions(){
+       return (this.props.renderActions !== false); 
+    }
     componentWillRender({...rActionsArg}){
         rActionsArg.context = this;
-        const rActions = renderActions.call(this,rActionsArg);
+        const rActions = this.canRenderActions()? renderActions.call(this,rActionsArg) : {};
         const renderedActs = this.renderActions(rActionsArg);
         if(!rActionsArg.archived){
             const customActionKeyPrefix = this.getRenderedActionPrefix();

@@ -9,16 +9,16 @@ import Tooltip from "$ecomponents/Tooltip";
 import setQueryLimit from "./setQueryLimit";
 import {showConfirm} from "$ecomponents/Dialog";
 import Label from "$ecomponents/Label";
-import Icon,{COPY_ICON,CHECKED_ICON,UNCHECKED_ICON} from "$ecomponents/Icon";
+import Icon,{COPY_ICON} from "$ecomponents/Icon";
 import filterUtils from "$cfilters";
 import {sortBy,isDecimal,defaultVal,sanitizeSheetName,extendObj,isObjOrArray,isObj,isDataURL,defaultNumber,defaultStr,isFunction,defaultBool,defaultArray,defaultObj,isNonNullString,defaultDecimal} from "$cutils";
 import {Datagrid as DatagridContentLoader} from "$ecomponents/ContentLoader";
 import React from "$react";
 import DateLib from "$lib/date";
-import Filter,{canHandleFilter,prepareFilters,compareValues} from "$ecomponents/Filter";
+import Filter,{canHandleFilter,prepareFilters} from "$ecomponents/Filter";
 import {CHECKED_ICON_NAME} from "$ecomponents/Checkbox";
 import { COLUMN_WIDTH,DATE_COLUMN_WIDTH,DATE_TIME_COLUMN_WIDTH } from "../utils";
-import { StyleSheet,Dimensions,useWindowDimensions} from "react-native";
+import { StyleSheet,Dimensions} from "react-native";
 import Preloader from "$ecomponents/Preloader";
 import Checkbox from "../Checkbox";
 import { TouchableRipple } from "react-native-paper";
@@ -182,7 +182,6 @@ export default class CommonDatagridComponent extends AppComponent {
         } = props;
         if(this.bindResizeEvents()){
             extendObj(this._events,{
-                RESIZE_PAGE : this.onResizePage.bind(this),
                 SET_DATAGRID_QUERY_LIMIT : this.onSetQueryLimit.bind(this),
             });
         }
@@ -1182,7 +1181,6 @@ export default class CommonDatagridComponent extends AppComponent {
             this.setIsLoading(true,()=>{
                 const fixedTable = !this.state.fixedTable;
                 this.setState({fixedTable},()=>{
-                    this.updateLayout();
                     this.setSessionData("fixedTable",fixedTable);
                 })
             })
@@ -3504,21 +3502,6 @@ export default class CommonDatagridComponent extends AppComponent {
     forceRefresh(){
         this.refresh(true);
     }
-    /***retourne la hauteur maximale du composant FlashList */
-    getMaxListHeight(){
-        const {height:winheight} = Dimensions.get("window");
-        const layout = defaultObj(this.layoutRef.current);
-        let maxHeight = winheight-100;
-        if(layout && typeof layout.windowHeight =='number' && layout.windowHeight){
-            const diff = winheight - Math.max(defaultNumber(layout.y,layout.top),100);
-            if(diff<=350){
-                maxHeight = Math.max(Math.min(winheight,350),200);
-            } else {
-                maxHeight = diff;
-            }
-        }
-        return maxHeight;
-    }
     /***
         @param {boolean|object}
         @param {function|object}
@@ -3543,17 +3526,12 @@ export default class CommonDatagridComponent extends AppComponent {
             }).then(resolve).catch(reject);
         })
     }
-    onResizePage(){
-        this.updateLayout();
-    }
     componentDidMount(){
         super.componentDidMount();
-        APP.on(APP.EVENTS.RESIZE_PAGE,this._events.RESIZE_PAGE);
         APP.on(APP.EVENTS.SET_DATAGRID_QUERY_LIMIT,this._events.SET_DATAGRID_QUERY_LIMIT);
     }
     componentWillUnmount(){
         super.componentWillUnmount();
-        APP.off(APP.EVENTS.RESIZE_PAGE,this._events.RESIZE_PAGE);
         APP.off(APP.EVENTS.SET_DATAGRID_QUERY_LIMIT,this._events.SET_DATAGRID_QUERY_LIMIT);
         this.clearEvents();
     }
@@ -3660,19 +3638,6 @@ export default class CommonDatagridComponent extends AppComponent {
     getDefaultPaginationRowsPerPageItems (){
         return [5,10,15,20,25,30,40,50,60,80,100];
     }
-    measureLayout(cb,force,layoutRef){
-        cb = typeof cb === 'function'? cb : x=>x;
-        layoutRef = layoutRef || this.layoutRef.current;
-        return new Promise((resolve)=>{
-            if(layoutRef && layoutRef.measureInWindow){
-                layoutRef.measureInWindow((x, y, width, height) => {
-                    const r = this.getLayoutState({ x, y, width, height },force);
-                    cb(r);
-                    resolve(r);
-                });
-            }
-        })
-    }
     getLayoutState(layout,force){
         layout = defaultObj(layout);
         const {width,height} = Dimensions.get("window");
@@ -3694,18 +3659,6 @@ export default class CommonDatagridComponent extends AppComponent {
             return "none";
         }
         return "auto";
-    }
-    updateLayout(p){
-        this.measureLayout(state=>{
-            if(isObj(state)){
-                this.layoutRef.current = state;
-                /*
-                if(!this.state.isReady){
-                    state.isReady = true;
-                }
-                this.setState(state);*/
-            }
-        },isObj(p) && typeof p.force ==='boolean'?p.force : !this.state.isReady)
     }
     isTableData(){
         return false;

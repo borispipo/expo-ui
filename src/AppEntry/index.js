@@ -15,9 +15,8 @@ import { showConfirm } from "$ecomponents/Dialog";
 import {close as closePreloader, isVisible as isPreloaderVisible} from "$epreloader";
 import SplashScreen from "$ecomponents/SplashScreen";
 import {decycle} from "$cutils/json";
-import init from "$capp/init";
 import { setIsInitialized} from "$capp/utils";
-import {isObj,isNonNullString,isPromise,defaultObj,defaultStr} from "$cutils";
+import {isObj,defaultObj,defaultStr} from "$cutils";
 import {loadFonts} from "$ecomponents/Icon/Font";
 import appConfig from "$capp/config";
 import Preloader from "$preloader";
@@ -119,11 +118,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,children}) {
                 }
                 const exit = ()=>{
                   if(typeof beforeExit =='function'){
-                     const r2 = beforeExit()
-                     if(!isPromise(r2)){
-                        throw {message:'La fonction before exit du contexte doit retourner une promesse',returnedResult:r2}
-                     }
-                     return r2.then(foreceExit).catch(reject);
+                     Promise.resolve(beforeExit()).then(foreceExit).catch(reject);
                   }
                   foreceExit();
                 }
@@ -183,10 +178,10 @@ function App({init:initApp,initialRouteName:appInitialRouteName,children}) {
         APP.setOnlineState(state);
     });
     NetInfo.fetch().catch((e)=>{
-      console.log(e," is net info heinn")
+      console.log(e," is net info")
     });
     loadResources().finally(()=>{
-      (typeof initApp =='function'?initApp : init)({appConfig,contex:{setState}}).then((args)=>{
+      Promise.resolve((typeof initApp =='function'?initApp : x=>true)({appConfig,contex:{setState}})).then((args)=>{
         if(Auth.isLoggedIn()){
            Auth.loginUser(false);
         }

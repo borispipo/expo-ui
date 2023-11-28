@@ -15,7 +15,6 @@ import Footer from "../Footer/Footer";
 import theme from "$theme";
 import Table,{styles as tableStyles} from "$ecomponents/Table";
 import DatagridProvider from "../hooks/Provider";
-import Filters from "../Filters";
 
 
 const DatagridFactory = (Factory)=>{
@@ -290,7 +289,7 @@ const DatagridFactory = (Factory)=>{
             </View> : null;
             return <DatagridProvider context={this}>
                      <View style={[styles.container,{flex:1}]} testID={testID+"_TableContainer"} pointerEvents={pointerEvents}>
-                        <View ref={(el)=>{this.layoutRef.current = el;}} testID={testID+"_LayoutContainer"}>
+                        <View testID={testID+"_LayoutContainer"}>
                             {this.canRenderActions() ? <DatagridActions 
                                 pointerEvents = {pointerEvents}
                                 title = {this.renderDataSourceSelector()}

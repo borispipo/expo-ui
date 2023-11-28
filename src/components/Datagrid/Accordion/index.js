@@ -45,7 +45,6 @@ const DatagridFactory = (Factory)=>{
                 },
             });
             this.state.refreshing = false;
-            this.updateLayout = this.updateLayout.bind(this);
         }
         componentDidUpdate(){
             super.componentDidUpdate();
@@ -510,9 +509,7 @@ const DatagridFactory = (Factory)=>{
         </View>  
         return <DatagridProvider context={this}>
                 <View testID={testID+"_Container"} pointerEvents={pointerEvents} style={[styles.container,this.props.style]} collapsable={false}>
-                     <View testID={testID+"_AccordionHeader"} style={[styles.accordionHeader]} ref={(el)=>{
-                        this.layoutRef.current = el;
-                     }} onLayout={this.updateLayout.bind(this)}>
+                     <View testID={testID+"_AccordionHeader"} style={[styles.accordionHeader]}>
                         {this.canRenderActions() ? <DatagridActions 
                             testID={testID+"_Actions"}
                             pointerEvents = {pointerEvents}

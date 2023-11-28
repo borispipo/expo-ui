@@ -54,7 +54,7 @@ const TableLinKComponent = React.forwardRef((props,ref)=>{
                     }
                 });
             }
-            return Promise.reject({msg:'type de données retournée par la fonction fetchForeignKeyData invalide'});
+            return Promise.reject({msg:'type de données retournée par la fonction fetchForeignKeyData invalide',fetchForeignData,foreignKeyTable,foreignKeyColumn,id,data});
         }
         openPreloader("traitement de la requête...");
         if(isPromise(r)){

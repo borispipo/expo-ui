@@ -62,7 +62,7 @@ export default function NavigationComponent (props){
                             return getScreenOptions(options,{
                                 presentation :"transparentModal",
                                 cardStyle,
-                                animationEnabled : true,
+                                animationEnabled : false,
                             })
                         }}
                     >

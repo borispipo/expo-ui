@@ -246,6 +246,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
             clone,
             isArchivable,clonable,isPrintable,print,data:customData,getRowKey,
             save2newAction,
+            newAction,
             save2cloneAction,
             saveAction,
             save2closeAction,
@@ -324,13 +325,15 @@ export default class TableDataScreenComponent extends FormDataScreen{
             isUpdated,
             fields,
         });
-        const cCloneAction = this.isClonable() && this.canCreateNew() && clonable !== false && cloneAction !== false && true || false;
+        const canNew = this.canCreateNew() && newAction !== false;
+        const cCloneAction = this.isClonable() && canNew && clonable !== false && cloneAction !== false && true || false;
         const rActionsArg = this.currentRenderingProps = {
             ...rest,
             ...formProps,
             context,
+            newAction,
             cloneAction : cCloneAction,
-            save2newAction : this.canCreateNew() && save2newAction !== false ? typeof save2cloneAction =="boolean"? save2cloneAction : saveAction !== false : false,
+            save2newAction : canNew ? typeof save2newAction =="boolean"? save2newAction : saveAction !== false : false,
             save2cloneAction : cCloneAction && save2cloneAction !== false ? true : false,
             isMobile : isMobOrTab,
             saveAction,
@@ -651,11 +654,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
         return this.doSave(args);
     }
     canCreateNew(){
-        const editingProps = this.getCurrentRenderingProps();
-        if("newAction" in editingProps){
-            return !!editingProps.newAction;
-        }
-        return this.props.newAction !== false ? true : false;
+        return this.props.newAction !== false;
     }
     isMobileOrTabletMedia(){
         const r = this.getRenderTabsType();

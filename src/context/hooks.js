@@ -16,6 +16,11 @@ export const useContext = useExpoUI;
 
 export const useApp = useContext;
 
+export const ScreenContext = createContext(null);
+
+export const useScreen = x=>useReactContext(ScreenContext);
+export const hasScreenContext = x=>!!useScreen();
+
 export const useSWR =  (path,options)=>{
     const {swrConfig} = useExpoUI();
     const host = `${defaultStr(process.env.API_HOST).trim().rtrim("/")}/${path}`;

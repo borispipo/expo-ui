@@ -9,6 +9,7 @@ import Group from "./GroupComponent";
 import {Portal} from "react-native-paper";
 import {isAllowedFromStr} from "$cauth/perms";
 import { useIsScreenFocused } from '$enavigation/hooks';
+import { useScreen } from '$econtext/hooks';
 
 export const isValid = (context)=>{
     if(!isObj(context) || !isNonNullString(context.fabId) || typeof context.show !=="function" || context.hide !="function") return false;
@@ -65,9 +66,13 @@ const FabGroupComponent = React.forwardRef((props,innerRef)=>{
     const fabIdRef = React.useRef(defaultStr(fabId,uniqid("fab-id-ref")));
     fabId = fabIdRef.current;
     const isMountedRef = React.useRef(false);
+    const screenContext = useScreen();
     let isFocused = useIsScreenFocused(screenName);
     if(!isNonNullString(screenName)){
         isFocused = true;
+    }
+    if(screenContext && screenContext?.isFocused() === false){
+        isFocused = false;
     }
     const [state, setState] = React.useState({ 
         open: typeof customOpen =='boolean'? customOpen : false,

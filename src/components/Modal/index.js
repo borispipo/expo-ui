@@ -10,7 +10,7 @@ import theme,{StyleProp} from "$theme";
 import Animation from "$ecomponents/Animation";
 import { Surface } from "react-native-paper";
 import { Platform } from "react-native";
-import Portal from "$ecomponents/Portal";
+import { Portal } from "react-native-paper";
 import {defaultStr} from "$cutils";
 import {
   getStatusBarHeight,

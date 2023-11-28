@@ -12,8 +12,6 @@ import theme,{StyleProp} from "$theme";
 import StatusBar from "$ecomponents/StatusBar";
 import ScrollView from "$ecomponents/ScrollView";
 import KeyboardAvoidingView from "$ecomponents/KeyboardAvoidingView";
-import Animated from 'react-native-reanimated';
-import {sharedElementTransition} from "./transition";
 
 const getDefaultTitle = (nTitle,returnStr)=>{
   let titleStr = React.getTextContent(nTitle);

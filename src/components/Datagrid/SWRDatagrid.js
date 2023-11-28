@@ -26,8 +26,7 @@ import PropTypes from "prop-types";
 import {Menu} from "$ecomponents/BottomSheet";
 import session from "$session";
 import { SWR_REFRESH_TIMEOUT } from "$econtext/utils";
-import useContext from "$econtext/hooks";
-import notify from "$cnotify";
+import useContext,{useScreen} from "$econtext/hooks";
 
 export const getSessionKey = ()=>{
     return Auth.getSessionKey("swrDatagrid");
@@ -105,6 +104,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         ...rest
     } = props;
     const {swrConfig} = useContext();
+    const screenContext = useScreen();
     rest = defaultObj(rest);
     rest.exportTableProps = defaultObj(rest.exportTableProps)
     const firstPage = 1;
@@ -305,6 +305,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             accordionProps = {table?.accordionProps}
             {...defaultObj(table?.datagrid)} 
             {...rest}
+            renderProgressBar = {screenContext && screenContext?.isFocused() === false?false : rest.renderProgressBar || table?.datagrid?.renderProgressBar}
             fetchOptions = {customFetchOptions}
             title = {customTitle || title || undefined}
             sort = {sort}

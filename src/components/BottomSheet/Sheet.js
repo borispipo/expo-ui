@@ -14,7 +14,7 @@ import KeyboardAvoidingView from "$ecomponents/KeyboardAvoidingView";
 import {Elevations} from "$ecomponents/Surface";
 import {defaultStr} from "$cutils";
 import View from "$ecomponents/View";
-import Portal from "$ecomponents/Portal";
+import {Portal} from "react-native-paper";
 import { ScrollView } from "react-native";
 import BackHandler from "$ecomponents/BackHandler";
 import Reanimated, { useSharedValue,withTiming,useAnimatedStyle} from 'react-native-reanimated';

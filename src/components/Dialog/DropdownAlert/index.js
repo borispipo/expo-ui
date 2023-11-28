@@ -1,10 +1,8 @@
 import React, {Component} from '$react';
 import {isObj,defaultStr} from "$cutils";
 import View from "$ecomponents/View";
-import Portal from "$ecomponents/Portal";
+import { Portal } from 'react-native-paper';
 import theme,{Colors} from "$theme";
-import stableHash from "stable-hash";
-import Dimensions,{isMobileMedia,isTabletMedia,isDesktopMedia} from "$dimensions";
 import {
   StyleSheet,
   Pressable,

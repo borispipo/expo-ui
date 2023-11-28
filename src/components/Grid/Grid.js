@@ -13,7 +13,7 @@ const GridComponent = React.forwardRef(({onPress,responsive,activeOpacity,onLong
     const flex = customFlex !== undefined ? customFlex :   (flattenedStyle && (col && flattenedStyle.width || !col && flattenedStyle.height)) ? undefined : undefined;
     const C = onPress || onLongPress || onPressIn || onPressOut ? Pressable : View;
     return <C {...props} activeOpacity={activeOpacity} onLongPress={onLongPress} onPressIn={onPressIn} onPressOut={onPressOut}
-        testID={testID+"_Container"} onPress={onPress}
+        testID={testID} onPress={onPress}
         style={[styles.container,{flexGrow},col && {flexDirection:'column'},responsive!== false && !col && grid.row(false),style,flex !== undefined && {flex}]} ref={ref}
     />
 });

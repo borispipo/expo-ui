@@ -5,9 +5,16 @@ import {navigate,sanitizeName} from "$cnavigation";
 import {isNonNullString,defaultStr,defaultObj,isObj} from "$cutils";
 import appConfig from "$capp/config";
 
-export const tableDataRouteName = 'TableData';
+export const tableDataRouteName = 'table-data';
 
-export const structDataRouteName = 'StructData';
+export const structDataRouteName = 'struct-data';
+
+export const tableDataLinkRouteName = "table-data-link";
+
+export const tableDataLinkScreenName = tableDataLinkRouteName;
+
+export const structDataLinkRouteName = "struct-data-link";
+export const structDataLinkScreeName = structDataLinkRouteName;
 
 const canCheckNavPerms = ()=> appConfig.get("checkNavigationPermsOnTableOrStructData")
 
@@ -49,6 +56,11 @@ export const navigateToTableData = (tableName,params)=>{
 export const navigateToStructData = (tableName,params)=>{
     return navigateToTableOrStructData(tableName,params,"structdata");
 }
+/**** permet de naviguer ver un lien */
+export const navigateToTableDataLink = (tableName,options)=>{
+    const opts = isNonNullString(tableName)? {tableName,table:tableName} : {};
+    return navigate(tableDataLinkRouteName,extendObj({},opts,options));
+}
 
 export const buildScreenRoute = function(tableName,parent){
     if(isObj(tableName)){
@@ -75,11 +87,11 @@ export const getTableDataScreenName = getTableDataRouteName;
 
 /*** permet d'obtenir le lien vers l'écran table data permettant de lister les données de la table data */
 export const getTableDataListRouteName = function(tableName){
-    return buildScreenRoute(tableName,tableDataRouteName+"/LIST/");
+    return buildScreenRoute(tableName,tableDataRouteName+"/list");
 }
 
 export const getStructDataListRouteName = function(tableName){
-    return buildScreenRoute(tableName,structDataRouteName+"/LIST/");
+    return buildScreenRoute(tableName,structDataRouteName+"/list");
 }
 
 export const getTableDataListScreenName = getTableDataListRouteName;

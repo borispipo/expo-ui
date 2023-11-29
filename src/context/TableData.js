@@ -6,6 +6,14 @@ import React from "$react";
 import useExpo from "./hooks";
 import {defaultStr,defaultBool,isObj,isNonNullString} from "$cutils";
 import {getTableDataListRouteName,getTableDataRouteName,tableDataRouteName} from "$enavigation/utils";
+import {Form as FormLoader} from "$ecomponents/ContentLoader";
+import { tableDataLinkRouteName } from "../navigation/utils";
+import { useEffect,useState } from "react";
+import { usePrepareProps } from "../components/TableLink";
+import View from "$ecomponents/View";
+import Label from "$ecomponents/Label";
+import theme from "$theme";
+import notify from "$notify";
 
 export function TableDataListScreen({tableName,table,screenName,...props}){
     const {getTable} = useExpo();
@@ -81,6 +89,13 @@ export function prepareScreens ({tables,screens:screensProps,TableDataScreen,Tab
             foundTables[listScreenName] = TableDataListScreen;
         }
     });
+    if(!foundTables[tableDataLinkRouteName]){
+        screens.push({
+            Component : TableDataLinkScreen,
+            screenName : tableDataLinkRouteName,
+            Modal,
+        })
+    }
     return screens;
 }
 
@@ -103,6 +118,36 @@ export const TableDataScreenItem = (props)=>{
     }
     return <Item testID={"RN_TableDataScreenItem_"+(defaultStr(tableName)).toUpperCase()}{...props} tableObj={tableObj} data={data} tableName={tableName} {...params}/>
 }
-TableDataScreenItem.Modal = true;
 
 TableDataScreenItem.displayName = "TableDataScreenItem";
+
+export function TableDataLinkScreen(p){
+    const {navigate,fetchData,isAllowed,...props} = usePrepareProps(p);
+    const [content,setContent] = useState(null);
+    const [data,setData] = useState(null);
+    const isLoading = !isObj(data);
+    useEffect(()=>{
+        if(!isAllowed()){
+            setContent(<NotAllowed />)
+            return ()=>{};
+        }
+        fetchData().then(setData).catch(notify.error);
+        return ()=>{}
+    },[])
+    return <TableDataScreenItem
+        children = {content||<FormLoader/>}
+        isLoading = {isLoading}
+        data = {isLoading ? {}:data}
+        tableName = {defaultStr(props.foreignKeyTable,props.tableName,props.table)}
+        {...props}
+    />
+}
+
+TableDataLinkScreen.screenName = tableDataLinkRouteName;
+TableDataLinkScreen.Modal = true;
+
+function NotAllowed(){
+    return <View style={[theme.styles.flex1,theme.styles.h100,theme.styles.w100,theme.styles.justifyContentCenter,theme.styles.alignItemsCenter]}>
+        <Label error textBold fontSize={18}>Vous n'êtes pas autorisé à accéder à la resource demandée!!!Veuillez contacter votre administrateur.</Label>
+    </View>
+}

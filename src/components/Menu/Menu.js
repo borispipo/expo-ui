@@ -487,7 +487,7 @@ class _Menu extends AppComponent {
               }}
               collapsable={false}
               accessibilityViewIsModal={visible}
-              style={[styles.wrapper, positionStyle, style,hiddenStyle,{pointerEvents:visible ? 'box-none' : 'none'}]}
+              style={[styles.wrapper, positionStyle, style,hiddenStyle]}
               onAccessibilityEscape={onDismiss}
             >
               {rendered?<Animated.View style={{ transform: positionTransforms }} testID={testID+"_Animated"}>

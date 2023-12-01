@@ -175,6 +175,7 @@ AppBarComponent.propTypes = {
   Notifications : PropTypes.oneOfType([
     PropTypes.element,
     PropTypes.node,
+    PropTypes.elementType,
   ]),
   subtitle : PropTypes.oneOfType([
     PropTypes.string,

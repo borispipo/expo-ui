@@ -3,8 +3,9 @@ import screens from "$screens";
 import drawerItems from "$navigation/drawerItems";
 import Logo from "$components/Logo";
 import drawerSections from "$navigation/drawerSections";
-import TableDataListScreen from "$screens/TableDataListScreen";
+import TableDataListScreen from "$screens/TableData/TableDataListScreen";
 import TableDataScreen from "$screens/TableData/TableDataScreen";
+import Notifications from "$components/Notifications";
 
 export default function AppMainEntry(){
     return <ExpoUIProvider    
@@ -34,8 +35,15 @@ export default function AppMainEntry(){
             profilePropsMutator : ({fields,...props})=>({fields,...props}),//la fonction permettant de muter les champs liés à l'écran de mise à jour d'un profil utilisateur
         }}
         components = {{
+            /*** utilisé pour le renu du contenu des écran de type liste sur les tables de données */
             TableDataListScreen,
+            /**** ce composant est utile pour le rendu du contenu des écrans de type formulaire d'enregistrement des tables de données*/
             TableDataScreen,
+            /***
+                le composant à utliser pour le rendu des notifications de l'application. 
+                pour qu'une notification soit affichée à un écran, il suffit de défiir la propriété withNotifications de l'écran à true. Ceci à l'image de l'écran Home
+            */
+            Notifications, 
             datagrid : {
                 ///les props par défaut à passer au composant SWRDatagrid
             },
@@ -53,6 +61,7 @@ export default function AppMainEntry(){
                image{ReactComponent} :,text {ReactComponent}
             },*/
             logo : Logo,//logo component's properties
+            /**** les form fields personnalisés doivent être définis ici */
             customFormFields : {},//custom form fields
             /*** la fonction permettant de muter les props du composant TableLink, permetant de lier les tables entre elles */
             tableLinkPropsMutator : (props)=>{ 

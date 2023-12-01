@@ -12,6 +12,7 @@ import theme,{StyleProp} from "$theme";
 import StatusBar from "$ecomponents/StatusBar";
 import ScrollView from "$ecomponents/ScrollView";
 import KeyboardAvoidingView from "$ecomponents/KeyboardAvoidingView";
+import {ScreenContext,useScreen} from "$econtext/hooks";
 
 const getDefaultTitle = (nTitle,returnStr)=>{
   let titleStr = React.getTextContent(nTitle);
@@ -38,6 +39,7 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
     appBarProps,
     elevation,
     withFab,
+    withNotifications,
     appBar,
     authRequired,
     withDrawer,
@@ -97,37 +99,41 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
   const Wrapper = React.useMemo(()=>modal ? PortalCP : React.Fragment,[modal]);
   const WrapperProps = modal? {screenName} : {};
   const portalId = uniqid("screeen-container-"+screenName);
+  const screenValues = useScreen();
   return <Wrapper {...WrapperProps} key={screenName}>
-    <View  testID={testID+"_ScreenContentContainer"} id={portalId} {...containerProps} style={[styles.container,{backgroundColor},modal && styles.modal,containerProps.style]} >
-      <KeyboardAvoidingView testID={testID} {...keyboardAvoidingViewProps} style={[styles.keyboardAvoidingView,keyboardAvoidingViewProps.style]}>
-          {withStatusBar !== false ? <StatusBar/> : null}
-          {appBar === false ? null : React.isValidElement(appBar)? state.AppBar :  <AppBar 
-              testID={testID+'_AppBar'} 
-              {...appBarProps} 
-              backAction = {defaultVal(appBarProps.backAction,backAction)} 
-              elevation={defaultNumber(appBarProps.elevation,elevation)} 
-              withDrawer={withDrawer} options={options} 
-              ref={appBarRef} title={title} 
-              subtitle={subtitle}
-          />}
-          {withScrollView !== false ? (
-            <ScrollView
-              testID = {testID+'_ScreenContentScrollView'}
-              {...rest}
-              contentContainerStyle={[contentContainerStyle,styles.container]}
-              style={[style]}
-            >
-              {children}
-              {fab}
-            </ScrollView>
-          ) : (
-            <View  testID={testID+'_ScreenContent'} {...rest} style={[styles.container,contentContainerStyle, style]}>
-              {children}
-              {fab}
-            </View>
-          )}
-        </KeyboardAvoidingView>
-    </View>
+    <ScreenContext.Provider value={screenValues}>
+      <View  testID={testID+"_ScreenContentContainer"} id={portalId} {...containerProps} style={[styles.container,{backgroundColor},modal && styles.modal,containerProps.style]} >
+        <KeyboardAvoidingView testID={testID} {...keyboardAvoidingViewProps} style={[styles.keyboardAvoidingView,keyboardAvoidingViewProps.style]}>
+            {withStatusBar !== false ? <StatusBar/> : null}
+            {appBar === false ? null : React.isValidElement(appBar)? state.AppBar :  <AppBar 
+                testID={testID+'_AppBar'} 
+                {...appBarProps} 
+                backAction = {defaultVal(appBarProps.backAction,backAction)} 
+                elevation={defaultNumber(appBarProps.elevation,elevation)} 
+                withDrawer={withDrawer} options={options} 
+                ref={appBarRef} title={title} 
+                subtitle={subtitle}
+                withNotifications = {withNotifications}
+            />}
+            {withScrollView !== false ? (
+              <ScrollView
+                testID = {testID+'_ScreenContentScrollView'}
+                {...rest}
+                contentContainerStyle={[contentContainerStyle,styles.container]}
+                style={[style]}
+              >
+                {children}
+                {fab}
+              </ScrollView>
+            ) : (
+              <View  testID={testID+'_ScreenContent'} {...rest} style={[styles.container,contentContainerStyle, style]}>
+                {children}
+                {fab}
+              </View>
+            )}
+          </KeyboardAvoidingView>
+      </View>
+    </ScreenContext.Provider>
   </Wrapper>
 }
 

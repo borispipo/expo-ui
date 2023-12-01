@@ -8,3 +8,4 @@ export default function TableDataListScreen (props){
 }
 
 TableDataListScreen.withFab = false;//if you want to display main FAB layout on this screen toggle this value to true
+TableDataListScreen.withNotifications = true; //pour afficher les notifications dans les écrans de type liste

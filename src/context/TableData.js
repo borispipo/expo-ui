@@ -63,6 +63,7 @@ export function prepareScreens ({tables,screens:screensProps,TableDataScreen,Tab
     TableDataScreenComponentRef.List = React.isComponent(TableDataScreenList)? TableDataScreenList : TableDataScreenComponentRef.List;
     const Modal = defaultBool(TableDataScreenComponentRef.current?.Modal,TableDataScreenComponentRef.current?.modal,true)
     const ModalList = defaultBool(TableDataScreenComponentRef.List?.Modal,TableDataScreenComponentRef.List?.modal)
+    const withNotifications = typeof TableDataScreenComponentRef.List?.withNotifications =="boolean"? TableDataScreenComponentRef.List?.withNotifications: undefined;
     const withFab = typeof TableDataScreenComponentRef.List?.withFab =="boolean"? TableDataScreenComponentRef.List?.withFab: undefined;
     loopForScreen(screensProps,screens,foundTables);
     Object.map(tables,(table,i)=>{
@@ -85,6 +86,7 @@ export function prepareScreens ({tables,screens:screensProps,TableDataScreen,Tab
                 screenName : listScreenName,
                 Modal : ModalList,
                 withFab,
+                withNotifications,
             });
             foundTables[listScreenName] = TableDataListScreen;
         }

@@ -25,9 +25,13 @@ export const handleScreen = ({Screen,Factory,ModalFactory,result,index})=>{
         screenOptions = Screen.options;
         const Modal = typeof Screen.Modal =='boolean'? Screen.Modal : typeof Screen.modal =='boolean'? Screen.modal : undefined;
         const withFab = typeof Screen.withFab =='boolean'? Screen.withFab : undefined;
+        const withNotifications = typeof Screen.withNotifications =='boolean'? Screen.withNotifications : undefined;
         Screen = Screen.Component;
         if(typeof withFab =='boolean'){
             Screen.withFab = withFab;
+        }
+        if(typeof withNotifications =='boolean'){
+            Screen.withNotifications = withNotifications;
         }
         if(Modal !== undefined){
             Screen.Modal = Modal;

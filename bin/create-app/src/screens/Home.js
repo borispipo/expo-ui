@@ -9,9 +9,10 @@ export default function HomeScreen(props){
     </Screen>
 }
 
-HomeScreen.screenName = "Home";
-HomeScreen.Modal = false;
-HomeScreen.authRequired = false;
+HomeScreen.screenName = "Home"; //le nom de l'écran, utile pour la navigation
+HomeScreen.Modal = false; //l'écran n'est pas modale, c'est à dire qu'il s'affiche à côté du drawer
+HomeScreen.authRequired = false; //l'utilisateur doit être connecté pour accéder à l'application
+HomeScreen.withNotifications = true; //pour le rendu des notificatios
 
 const styles = StyleSheet.create({
     container : {

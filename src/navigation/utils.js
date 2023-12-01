@@ -10,6 +10,9 @@ export const tableDataRouteName = 'table-data';
 export const structDataRouteName = 'struct-data';
 
 export const tableDataLinkRouteName = "table-data-link";
+export const structDataListRouteName = "struct-data-list";
+
+export const tableDataListRouteName = "table-data-list";
 
 export const tableDataLinkScreenName = tableDataLinkRouteName;
 
@@ -87,11 +90,11 @@ export const getTableDataScreenName = getTableDataRouteName;
 
 /*** permet d'obtenir le lien vers l'écran table data permettant de lister les données de la table data */
 export const getTableDataListRouteName = function(tableName){
-    return buildScreenRoute(tableName,tableDataRouteName+"/list");
+    return buildScreenRoute(tableName,tableDataListRouteName);
 }
 
 export const getStructDataListRouteName = function(tableName){
-    return buildScreenRoute(tableName,structDataRouteName+"/list");
+    return buildScreenRoute(tableName,structDataListRouteName);
 }
 
 export const getTableDataListScreenName = getTableDataListRouteName;

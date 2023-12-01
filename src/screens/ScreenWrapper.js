@@ -65,6 +65,7 @@ export default function ScreenWrapperNavComponent(_props){
     setScreenOptions(options);
     const allowDrawer = typeof options.allowDrawer ==='boolean'? options.allowDrawer : typeof options.withDrawer =='boolean'? options.withDrawer : typeof Screen.allowDrawer =='boolean'? Screen.allowDrawer : typeof Screen.withDrawer =='boolean' ? Screen.withDrawer : Screen.isModalScreen == true ? false : true;
     const withFab = typeof options.withFab ==='boolean' ? options.withFab : typeof Screen.withFab =='boolean'? Screen.withFab : false;
+    const withNotifications = typeof options.withNotifications =='boolean'? options.withNotifications : typeof Screen.withNotifications =='boolean'? Screen.withNotifications : false;
     const titleText = defaultVal(props.title,options.title,rest.title);
     const authRequiredS = authRequired === false || Screen.authRequired ===false ? false : authRequired || allowDrawer;
     const backActionS = options.backAction === false || Screen.backAction ===false ? false : isModal;
@@ -73,6 +74,7 @@ export default function ScreenWrapperNavComponent(_props){
         children={<Screen 
             withFab = {withFab}
             groupName = {groupName}
+            withNotifications = {withNotifications}
             {...rest}
             key = {sanitizedName}
             authRequired={authRequiredS} 

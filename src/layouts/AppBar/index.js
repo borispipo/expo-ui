@@ -5,16 +5,19 @@ import {MENU_ICON} from "$ecomponents/Icon";
 import {defaultObj} from "$cutils";
 import {useDrawer} from "$ecomponents/Drawer";
 import Icon from "$ecomponents/Icon";
+import {useGetComponent} from "$econtext/hooks";
 
 export * from "./utils";
 
-const AppBarLayout = React.forwardRef(({backActionProps,withDrawer,backAction,backActionRef,options,...props},ref)=>{
+const AppBarLayout = React.forwardRef(({backActionProps,withDrawer,withNotifications,backAction,backActionRef,options,...props},ref)=>{
     const innerRef = React.useRef(null);
     const {drawerRef} = useDrawer();
     options = defaultObj(options);
     const mergedRef = React.useMergeRefs(innerRef,ref);
+    const Notifications = useGetComponent('Notifications');
     return <AppBar
         backAction = {getBackActionComponent({backAction,backActionProps,withDrawer})}
+        Notifications = {withNotifications? Notifications:null}
         {...props}
         onBackActionPress = {(args)=>{
             const {canGoBack,goBack} = args;

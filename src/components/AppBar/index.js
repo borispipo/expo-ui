@@ -35,6 +35,7 @@ const AppBarComponent = React.forwardRef((props,ref)=> {
       drawerRef,beforeGoBack,title,subtitle,titleProps,backAction,backActionProps,
       subtitleProps,testID,
       right,
+      Notifications,
       onBackActionPress : customOnBackActionPress,actions,backActionRef,route,
       ...appBarProps} = props;
     testID = defaultStr(testID)+"_RN_AppBarComponent";
@@ -111,8 +112,8 @@ const AppBarComponent = React.forwardRef((props,ref)=> {
     elevation = typeof elevation === 'number'? elevation : undefined;
     const elevStyle = elevation && Elevations[elevation];
     titleProps = defaultObj(titleProps);
-    React.setRef(ref,context);
-;
+    React.setRef(ref,context);;
+    const notif = React.isComponent(Notifications)? <Notifications/> : React.isValidElement(Notifications)? Notifications : null;
     return (
       <Appbar.Header elevation={elevation} {...appBarProps}  testID={testID} style={[styles.header,{backgroundColor},elevStyle,appBarProps.style]} onLayout={onPageResize}>
         {backAction}
@@ -131,6 +132,7 @@ const AppBarComponent = React.forwardRef((props,ref)=> {
           }
        })}
         {React.isValidElement(rightContent) && rightContent || React.isValidElement(right) && right || null}
+        {notif}
       </Appbar.Header>
     );
 });
@@ -169,6 +171,11 @@ AppBarComponent.GO_BACK_EVENT = GO_BACK_EVENT;
 AppBarComponent.propTypes = {
   ...defaultObj(Appbar.propTypes),
   title : PropTypes.string,
+  /**** le composant pour le rendu des notifications de l'appBar*/
+  Notifications : PropTypes.oneOfType([
+    PropTypes.element,
+    PropTypes.node,
+  ]),
   subtitle : PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.bool,

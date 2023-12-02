@@ -6,6 +6,8 @@ import {defaultObj} from "$cutils";
 import {useDrawer} from "$ecomponents/Drawer";
 import Icon from "$ecomponents/Icon";
 import {useGetComponent} from "$econtext/hooks";
+import {navigate as cNavigate,sanitizeName} from "$cnavigation";
+import { StackActions } from '@react-navigation/native';
 
 export * from "./utils";
 
@@ -20,10 +22,23 @@ const AppBarLayout = React.forwardRef(({backActionProps,withDrawer,withNotificat
         Notifications = {withNotifications? Notifications:null}
         {...props}
         onBackActionPress = {(args)=>{
-            const {canGoBack,goBack} = args;
+            const {canGoBack,navigation,goBack} = args;
             if(typeof props.onPress ==='function' && props.onPress(args) === false) return false;
-            if((backAction === true || backActionProps?.back === true) && canGoBack()){
-                goBack();
+            if((backAction === true || backActionProps?.back === true)){
+                if(canGoBack()){
+                    goBack();
+                    return false;
+                }
+                const home = sanitizeName("Home");
+                console.log(navigation," is navigation heeee ",args);
+                if(typeof navigation?.dispatch =='function'){
+                    try {
+                        navigation.dispatch(StackActions.popToTop());
+                    } catch(e){
+                        console.log(e," has générated errordd for navigation");
+                        //cNavigate(home);
+                    }
+                }
                 return false;
             }
             if(!drawerRef || !drawerRef?.current) return false;

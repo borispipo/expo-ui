@@ -42,7 +42,7 @@ export const usePrepareProps = (props)=>{
     if(!id || !foreignKeyTable){
         readOnly = true;
     }
-    const fetchArgs = {type,columnType:type,isStructData,fetch,foreignKeyTable,foreignKeyColumn,data,id,value:id};
+    const fetchArgs = {type,columnType:type,isStructData,fetch,foreignKeyTable,foreignKeyColumn,data,id};
     const checkIfAllowed = ()=>{
         if((isNonNullString(perm))){
             if(!Auth.isAllowedFromString(perm))return false;
@@ -62,7 +62,7 @@ export const usePrepareProps = (props)=>{
         return Promise.reject({msg:`type de données retournée par la fonction fetchForeignKeyData invalide, paramètres : table:${foreignKeyTable}, value:${id}`,fetchForeignData,foreignKeyTable,foreignKeyColumn,id,data});
     }
     const fetchData = (opts)=>{
-        return Promise.resolve(typeof fetchForeignData === 'function'? fetchForeignData({...fetchArgs,...defaultObj(opts)}) : undefined).then(navigate)
+        return Promise.resolve(typeof fetchForeignData === 'function'? fetchForeignData({...fetchArgs,...defaultObj(opts)}) : undefined);
     }
     const onPressLink = (event)=>{
         React.stopEventPropagation(event);
@@ -71,7 +71,7 @@ export const usePrepareProps = (props)=>{
         const r = typeof onPress =='function'? onPress(args) : undefined;
         if(r === false) return;
         openPreloader("traitement de la requête...");
-        Promise.resolve(r).then((opts)=>fetchData({...args,...defaultObj(opts)})).finally(closePreloader);
+        Promise.resolve(r).then((opts)=>fetchData({...args,...defaultObj(opts)})).then(navigate).finally(closePreloader);
     }
     rest.style = [rest.style,_styles.cursorPointer];
     return {...rest,id,disabled,fetchData,navigate,isAllowed:checkIfAllowed,readOnly,testID,onPressLink}

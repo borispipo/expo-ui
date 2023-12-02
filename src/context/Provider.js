@@ -272,16 +272,17 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
     
     const isKeyboardShownRef = React.useRef(false);
     const {screens} = navigation;
+    navigation.containerProps = defaultObj(navigation.containerProps);
     navigation.screens = React.useMemo(()=>{
        const r = prepareScreens({
         tables:tablesData,
         screens,
+        navigationContainerProps : navigation.containerProps,
         TableDataScreen:components.TableDataScreen || components.TableDataScreenItem,
         TableDataScreenList:components.TableDataScreenList||components.TableDataListScreen,
       });
       return [...r,...getMainScreens(handleHelpScreen)];
     },[]);
-    navigation.containerProps = defaultObj(navigation.containerProps);
     const {linking} = navigation;
     React.useEffect(()=>{
       const onScreenFocus = ({sanitizedName})=>{

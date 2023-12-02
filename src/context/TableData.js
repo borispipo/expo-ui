@@ -79,7 +79,7 @@ export function prepareScreens ({tables,screens:screensProps,navigationContainer
     }
     const {getStateFromPath:cGetStateFromPath} = containerProps.linking;
     containerProps.linking.getStateFromPath = (path,config)=>{
-        const state = getStateFromPath(path,config);
+        const state = defaultObj(getStateFromPath(path,config));
         if(typeof cGetStateFromPath =="function"){
             extendObj(true,true,state,cGetStateFromPath(path,config));
         }

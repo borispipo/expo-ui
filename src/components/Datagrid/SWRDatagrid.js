@@ -207,7 +207,8 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     });
     const dataRef = React.useRef(null);
     const totalRef = React.useRef(0);
-    const loading = (customIsLoading === true || isLoading || (isValidating && showProgressRef.current));
+    const prevIsLoading = React.usePrevious(isLoading);
+    const loading = (customIsLoading === true || isLoading || (prevIsLoading && isValidating && showProgressRef.current));
     const {data,total} = React.useMemo(()=>{
         if((loading && customIsLoading !== false) || !isObjOrArray(result)){
             return {data:dataRef.current,total:totalRef.current};

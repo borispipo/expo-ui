@@ -118,18 +118,25 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
     const swrRefreshTimeout = defaultNumber(swrConfig?.refreshTimeout,SWR_REFRESH_TIMEOUT)
     swrConfig = extendObj({
       provider: () => new Map(),
+      refreshWhenOffline : canFetchOffline,
       isOnline() {
         /* Customize the network state detector */
         if(canFetchOffline) return true;
         return APP.isOnline();
       },
+      onError: (error, key) => {
+        if (error.status !== 403 && error.status !== 404) {
+          console.log(error," on data fetching for key ",key);
+        }
+      },
       isVisible() {
         const screen = activeScreenRef.current;
         if(!screen) return false;
         if(!screensRef.current[screen]){
-           screensRef.current[screen] = new Date();
+           //screensRef.current[screen] = new Date();
            return false;
         }
+        return true;
         const date = screensRef.current[screen];
         const diff = new Date().getTime() - date.getTime();
         const ret = diff >= swrRefreshTimeout ? true : false;

@@ -93,6 +93,7 @@ module.exports = (opts)=>{
     r.$electron = r.$electron || r.$eelectron;
     r.$projectRoot = r.$eprojectRoot = projectRoot;
     r.$econtext = path.resolve(expo,"context");
+    r.$epdf = path.resolve(expo,"pdf");
     if(!r.$context){
         r.$context = r.$econtext;
     }

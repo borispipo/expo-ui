@@ -43,8 +43,9 @@ import {parseMangoQueries} from "$ecomponents/Filter";
 import events from "../events";
 import {MORE_ICON} from "$ecomponents/Icon"
 import ActivityIndicator from "$ecomponents/ActivityIndicator";
-import {createPDF,createTableHeader,fields as pdfFields,pageHeaderMargin,sprintf as pdfSprintf} from "$cpdf";
+import {createTableHeader,fields as pdfFields,pageHeaderMargin,sprintf as pdfSprintf} from "$cpdf";
 import {isWeb,isMobileNative} from "$cplatform";
+import { createPDF,getFields as getPdfFields } from '../../../pdf';
 
 export const TIMEOUT = 100;
 
@@ -842,12 +843,12 @@ export default class CommonDatagridComponent extends AppComponent {
         }
         if(isFunction(print)){
             if(isFunction(printable)){
-                printable = printable({context:this,props:this.props});
+                printable = printable({context:this,tableName:defaultStr(this.props.tableName,this.props.table),props:this.props});
             }
             if(printable !== false){
                 r.push({
-                    icon : defaultVal(this.props.printIcon,'printer'),
-                    text : defaultVal(this.props.printButtonText,this.props.printText,'Imprimer'),
+                    icon : defaultVal(this.props.printButtonIcon,'printer'),
+                    text : defaultVal(this.props.printButtonText,this.props.printButtonLabel,'Imprimer'),
                     onPress : ()=>{
                         print({title:defaultStr(this.props.title),...defaultObj(printOptions),...sArgs});
                     },
@@ -1765,20 +1766,8 @@ export default class CommonDatagridComponent extends AppComponent {
         const isOnlytotal = this.state.displayOnlySectionListHeaders;
         const displayOnlyHeader = this.canDisplayOnlySectionListHeaders() && isOnlytotal;
         const sData = defaultObj(this.getSessionData(skey));
-        const sFields = pdf ? extendObj({},pdfFields) : {};
         const pdfConfig = this.getPdfConfig();
-        delete sFields.code;
-        delete sFields.label;
-        if(!isDataURL(pdfConfig.logo)){
-            delete sFields.displayLogo;
-            delete sFields.logoWidth;
-        }
-        const rPdfFields = pdf ? {
-            pdfDocumentTitle : {
-                text : "Titre du document",
-                multiple : true,
-            },
-        } : {};
+        const sFields = pdf ? getPdfFields (pdfConfig) : {};
         return new Promise((resolve,reject)=>{
             return DialogProvider.open({
                 title : `Paramètre d'export ${excel?"excel":"pdf"}`,
@@ -1801,7 +1790,6 @@ export default class CommonDatagridComponent extends AppComponent {
                         defaultValue : 0,
                         type : "switch",
                     }  : null,
-                    ...rPdfFields,
                     ...sFields,
                 },
                 actions : [{text:'Exporter',icon : "check"}],
@@ -1856,11 +1844,7 @@ export default class CommonDatagridComponent extends AppComponent {
         if(pdfDocumentTitle){
             content.unshift(pdfDocumentTitle);
         }
-        config.showPreloader = typeof config.showPreloader ==="function"? config.showPreloader : Preloader.open;
-        config.hidePreloader = typeof config.hidePreloader =="function"? config.hidePreloader : Preloader.close;
-        const pdf = createPDF({
-            content,
-        },config);
+        const pdf = createPDF({content},config);
         if(isWeb()){
             return pdf.open();
         }
@@ -4024,6 +4008,9 @@ CommonDatagridComponent.propTypes = {
     getRowKey : PropTypes.func,
     ///la fonction utilisée pour l'impression du datagrid
     print : PropTypes.func,
+    printButtonIcon : PropTypes.oneOfType([PropTypes.string,PropTypes.element]),
+    printButtonLabel : PropTypes.oneOfType([PropTypes.string,PropTypes.element]),
+    printButtonText : PropTypes.oneOfType([PropTypes.string,PropTypes.element]),
     printOptions: PropTypes.object,
     /*** si le datagrid est imprimable */
     printable : PropTypes.oneOfType([

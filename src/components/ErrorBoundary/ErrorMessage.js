@@ -4,48 +4,46 @@ import {StyleSheet,ScrollView,View,useWindowDimensions} from "react-native";
 import {Paragraph,Button,List } from "react-native-paper";
 import {Portal} from "react-native-paper";
 import theme from "$theme";
-import {navigationRef,sanitizeName} from "$cnavigation";
+import {navigationRef,navigate,sanitizeName} from "$cnavigation";
 import Expandable from "$ecomponents/Expandable";
 import Label from "$ecomponents/Label";
+import Screen from "$eScreen/ScreenWithoutAuthContainer";
 
 const homeRoute = sanitizeName("Home");
-import {isWeb} from "$cplatform";
 
 const ErrorMessage = React.forwardRef(function(props,ref){
   const { error,resetError,onGoBack, info } = props
   const testID = defaultStr(props.testID,"RN_ErrorBoundaryMessage");
     const goToHome = ()=> {
-      if(navigationRef){
-        navigationRef.navigate(homeRoute);
-        if(typeof onGoBack =='function'){
-          onGoBack();
-        }
-        return;
+      if(navigationRef && navigationRef?.navigate){
+        return navigationRef.navigate(homeRoute);
       }
+      return navigate(homeRoute)
     }
     if(!error || !info || !error.toString) return null;
     const pointerEvents = 'auto';
-    const {width,height} = useWindowDimensions();
     return <Portal>
-          <View ref={ref} testID={`${testID}_ErrorMessageContainer`} style={[{pointerEvents},styles.container,isWeb()?{position:'fixed'}:null,{backgroundColor:theme.colors.surface,width,height}]}>
-            <View style={[styles.content,{pointerEvents}]} testID={`${testID}_ErrorMessageContentContainer`}>
-              <Label style={styles.title}>Oops!</Label>
-              <Label style={styles.subtitle}>{'Une erreur est survenue'}</Label>
-              <Label style={styles.error}>{error.toString()}</Label>
-              <Button mode="contained" iconProps={{marginVertical:0,pointerEvents,paddingVertical:0}} icon='home-variant' style={{backgroundColor:theme.colors.primary,marginHorizontal:10}} labelStyle={{color:theme.colors.primaryLabel}} onPress={goToHome}>
-                  Retour à l'accueil
-              </Button>
-              <Expandable title="Plus de détail sur l'erreur">
-                  <View style={{maxHeight:height}}>
-                    <ScrollView style={{flex:1}} contentContainerStyle={{flex:1,flexGrow:1,paddingBottom:30,maxHeight:Math.max(height-200,200)}} testID='RN_ErrorBoundary_ScrollView'>
-                      <Paragraph testID='RN_ErrorBoundary_StackDetails' style={[styles.componentStack,{color:theme.colors.text}]}>
-                        {info.componentStack}
-                      </Paragraph>
-                    </ScrollView>
-                </View>
-              </Expandable>
-            </View>
-        </View>
+          <Screen {...props} modal={false}>
+            <View ref={ref} testID={`${testID}_ErrorMessageContainer`} style={[{pointerEvents},styles.container]}>
+              <View style={[styles.content,{pointerEvents}]} testID={`${testID}_ErrorMessageContentContainer`}>
+                <Label style={styles.title}>Oops!</Label>
+                <Label style={styles.subtitle}>{'Une erreur est survenue'}</Label>
+                <Label style={styles.error}>{error.toString()}</Label>
+                <Button mode="contained" iconProps={{marginVertical:0,pointerEvents,paddingVertical:0}} icon='home-variant' style={{backgroundColor:theme.colors.primary,marginHorizontal:10}} labelStyle={{color:theme.colors.primaryLabel}} onPress={goToHome}>
+                    Retour à l'accueil
+                </Button>
+                <Expandable title="Plus de détail sur l'erreur">
+                    <View>
+                      <ScrollView style={{flex:1}} contentContainerStyle={{flex:1,flexGrow:1,paddingBottom:30}} testID='RN_ErrorBoundary_ScrollView'>
+                        <Paragraph testID='RN_ErrorBoundary_StackDetails' style={[styles.componentStack,{color:theme.colors.text}]}>
+                          {info.componentStack}
+                        </Paragraph>
+                      </ScrollView>
+                  </View>
+                </Expandable>
+              </View>
+          </View>
+          </Screen>
     </Portal>
 });
 

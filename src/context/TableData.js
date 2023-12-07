@@ -29,7 +29,9 @@ export function TableDataListScreen({tableName,table,screenName,...props}){
     tableName = defaultStr(tableName,table).toUpperCase();
     let tableObj = getTable(tableName);
     if(!tableObj){
-        throw `object table invalide, pour le rendu de la liste des éléments liés à la table ${tableName}.`;
+        return <ScreenError tableName={tableName} {...props}>
+            {`Objet table invalide, pour le rendu de la liste des éléments liés à la table ${tableName}.`}
+        </ScreenError>
     }
     const title = defaultStr(tableObj?.text,tableObj?.label);
     return <List testID={"RN_TableDataScreenList_"+tableName.toUpperCase()} table={table} screenName={screenName} tableObj={tableObj} {...props} key={tableName}  tableName={tableName} title={title}/>;
@@ -209,13 +211,14 @@ function NotAllowed(){
     </View>
 }
 
-export function ScreenError({tableName,...props}){
+export function ScreenError({tableName,children,...props}){
     console.log("table data link with tableName ",tableName," has error for props ",props);
     return <Screen {...props}>
         <View style={[theme.styles.w100,theme.styles.p2,theme.styles.h100,theme.styles.justifyContentCenter,theme.styles.textAlignCenter]}>
             <Label textBold error fontSize={18}>
-                {`Objet table invalide, impossible de rendre le contenu de la tableDataScreen liée à la table [${tableName?.toString()}]`}
+                {React.isValidElement(children,true) && children || `Objet table invalide, impossible de rendre le contenu de la tableDataScreen liée à la table [${tableName?.toString()}]`}
             </Label>
+            <Label textBold fontSize={15}>Impossible d'afficher la requête demandée!!</Label>
         </View>
     </Screen>
 }

@@ -404,12 +404,12 @@ export default class TableDataScreenComponent extends FormDataScreen{
     handleCustomRender(){
         return true;
     }
-    canRenderActions(){
-       return (this.props.renderActions !== false); 
+    canRenderActions(props){
+       return (this.props.renderActions !== false && this.currentRenderingProps?.renderActions !== false && props?.renderActions !== false); 
     }
     componentWillRender({...rActionsArg}){
         rActionsArg.context = this;
-        const rActions = this.canRenderActions()? renderActions.call(this,rActionsArg) : {};
+        const rActions = this.canRenderActions(rActionsArg)? renderActions.call(this,rActionsArg) : {};
         const renderedActs = this.renderActions(rActionsArg);
         if(!rActionsArg.archived){
             const customActionKeyPrefix = this.getRenderedActionPrefix();

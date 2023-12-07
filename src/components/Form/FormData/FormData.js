@@ -37,6 +37,9 @@ export default class FormDataComponent extends AppComponent{
     getFormField (fieldName){
         return getFormField(formName,fieldName);
     }
+    getFields(){
+        return this.getForm()?.getFields() || {};
+    }
     getField(fieldName){
         return getFormField(this.getFormName(),fieldName)
     }

@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
     },
     renderedContent : {
         alignItems : 'center',
-        justifyContent : 'center',
+        justifyContent : 'flex-start',
         paddingVertical : 2,
         paddingHorizontal : 0,
         paddingRight : 10,
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
     },
     right : {
         marginHorizontal : 0,
-        paddingLeft:5,
+        paddingLeft:0,
         paddingRight : 0,
         paddingVertical : 5,
         fontSize:13,

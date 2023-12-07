@@ -8,6 +8,7 @@ import React from "$react";
 import theme from "$theme"
 import {styles as rStyles,getRowStyle} from "../utils";
 import { useIsRowSelected,useDatagrid} from "../hooks";
+import {HStack} from "$ecomponents/Stack";
 
 const DatagridAccordionRow = React.forwardRef((props,ref)=>{
     const {
@@ -135,7 +136,7 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
                     React.setRef(innerRef,el);
                 }}
         >
-        <View 
+        <HStack 
                 style={[styles.renderedContent,viewWrapperStyle,!hasAvatar && styles.contentContainerNotAvatar]} 
             testID={testID+'_ContentContainer'}
         >
@@ -149,7 +150,7 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
             {right && React.isValidElement(right,true) ? <Label testID={testID+"_Right"} primary  {...rightProps} style={[{userSelect:selectable?"all":"none"},styles.right,styles.label,rStyles.lineHeight,rightProps.style]}>
                 {right}
             </Label> : null}
-        </View>
+        </HStack>
     </Pressable>
 })
 
@@ -198,7 +199,6 @@ const styles = StyleSheet.create({
         width : "98%"
     },
     renderedContent : {
-        flexDirection : 'row',
         alignItems : 'center',
         justifyContent : 'center',
         paddingVertical : 2,

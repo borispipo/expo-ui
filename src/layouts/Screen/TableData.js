@@ -337,7 +337,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
             save2cloneAction : cCloneAction && save2cloneAction !== false ? true : false,
             isMobile : isMobOrTab,
             saveAction,
-            save2closeAction : typeof save2cloneAction ==="boolean"? save2cloneAction : saveAction !== false,
+            save2closeAction : typeof save2closeAction ==="boolean"? save2closeAction : saveAction !== false,
             tableName,
             sessionName,
             table,

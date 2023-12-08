@@ -5,6 +5,7 @@ import pdfMake from "$cpdf/pdfmake";
 import notify from "$cnotify";
 import DialogProvider from "$ecomponents/Form/FormData/DialogProvider";
 import {isNonNullString,defaultObj,defaultStr} from "$cutils";
+import session from "$session";
 
 const {createPdf} = pdfMake;
 pdfMake.createPdf = (docDefinition,...rest)=>{
@@ -61,9 +62,16 @@ export const getFields = (config)=>{
     @paramm {multiple}, 
     @param {object} formDataProps, les prpops à passer au DialogProvider
 */
-export const getPrintSettings = ({multiple,formDataProps,...rest})=>{
+export const getPrintSettings = ({multiple,sessionName,formDataProps,...rest})=>{
     formDataProps = Object.assign({},formDataProps);
-    const config = defaultObj(formDataProps.data);
+    const hasSession = isNonNullString(sessionName);
+    if(hasSession){
+        sessionName = sessionName.trim();
+    } else {
+        sessionName = "";
+    }
+    const sessionData = hasSession ? defaultObj(session.get(sessionName)) : {};
+    const config = {...sessionData,...defaultObj(formDataProps.data)};
     const fields = extendObj(true,{},formDataProps.fields,{
         duplicateDocOnPage : {
             text :'Dupliquer le(s) document(s)',
@@ -105,6 +113,14 @@ export const getPrintSettings = ({multiple,formDataProps,...rest})=>{
             data : config,
             fields,
             onSuccess : (opts)=>{
+                const {data} = opts;
+                if(hasSession){
+                    const sessionD = {};
+                    for(let i in fields){
+                        sessionD[i] = data[i];
+                    }
+                    session.set(sessionName,sessionD);
+                }
                 DialogProvider.close();
                 resolve({...opts,fields});
             },

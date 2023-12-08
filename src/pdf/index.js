@@ -3,6 +3,8 @@ import Preloader from "$preloader";
 import {extendObj} from "$cutils";
 import pdfMake from "$cpdf/pdfmake";
 import notify from "$cnotify";
+import DialogProvider from "$ecomponents/Form/FormData/DialogProvider";
+import {isNonNullString,defaultObj,defaultStr} from "$cutils";
 
 const {createPdf} = pdfMake;
 pdfMake.createPdf = (docDefinition,...rest)=>{
@@ -30,8 +32,8 @@ const prepareOptions = options =>{
     return options;
 }
 
-export const createPDF = (docDefinition,options,...rest)=>{
-    return cCreatePdf(docDefinition,prepareOptions(options),pdfMake,...rest);
+export const createPDF = (docDefinition,...rest)=>{
+    return cCreatePdf(prepareOptions(docDefinition),pdfMake,...rest);
 }
 
 export const print = (data,options,...rest)=>{
@@ -53,4 +55,60 @@ export const getFields = (config)=>{
         delete sFields.logoWidth;
     }
     return sFields;
+}
+
+/**** get settings data
+    @paramm {multiple}, 
+    @param {object} formDataProps, les prpops à passer au DialogProvider
+*/
+export const getPrintSettings = ({multiple,formDataProps,...rest})=>{
+    formDataProps = Object.assign({},formDataProps);
+    const config = defaultObj(formDataProps.data);
+    const fields = extendObj(true,{},formDataProps.fields,{
+        duplicateDocOnPage : {
+            text :'Dupliquer le(s) document(s)',
+            type : 'switch',
+            defaultValue :  0,
+            onValidate : ({value,context}) =>{
+                if(context){
+                    const pageBreakBeforeEachDoc = context.getField("pageBreakBeforeEachDoc");
+                    if(pageBreakBeforeEachDoc){
+                        if(value || multiple){
+                            pageBreakBeforeEachDoc.enable();
+                        } else {
+                            pageBreakBeforeEachDoc.disable();
+                        }
+                    }
+                }
+            }
+        },
+        pageBreakBeforeEachDoc : {
+            text :'Saut de page par document',
+            type : 'switch',
+            defaultValue :  1,
+            checkedTooltip : 'Insérer un saut de page avant chaque nouveau document',
+            uncheckedTooltip : 'Ne pas insérer un saut de page avant chaque nouveau document',
+            getValidValue : ({context,data}) => {
+                if(!context || !context?.isDisabled) return;
+                const v = context?.isDisabled()?0 : context.getValue();
+                if(isObj(data)){
+                    data.pageBreakBeforeEachDoc = v;
+                }
+                return v;
+            }
+        }
+    },getFields(formDataProps.data))
+    return new Promise((resolve,reject)=>{
+        return DialogProvider.open({
+            title : "Options d'impression",
+            ...formDataProps,
+            data : config,
+            fields,
+            onSuccess : (opts)=>{
+                DialogProvider.close();
+                resolve({...opts,fields});
+            },
+            onCancel : reject,
+        })
+    });
 }

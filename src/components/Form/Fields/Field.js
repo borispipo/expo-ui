@@ -69,7 +69,7 @@ export default class Field extends AppComponent {
             },
             isEditableBySymbol : {
                 value : ()=>{
-                    return !!this[this.isEditableSymbol];
+                    return typeof this[this.isEditableSymbol] ==='boolean'? this[this.isEditableSymbol] : true;
                 }
             },
             isEnabledBySymbol : {
@@ -96,6 +96,7 @@ export default class Field extends AppComponent {
             },
             isDisabled : {
                 value : ()=>{
+                    console.log("checking disable ",this.name,!!this.state.isReadOnlyOrDisabled,!this.isEditableBySymbol())
                     return !!this.state.isReadOnlyOrDisabled || !this.isEditableBySymbol();
                 }, override : false,writable : false
             }
@@ -921,7 +922,7 @@ export default class Field extends AppComponent {
             rest.readOnly = readOnly;
             if(disabled || readOnly){
                 this[this.isEditableSymbol] = false;
-            }
+            } else delete this[this.isEditableSymbol];
         }
         if(this.state.isFieldVisible){
             if(isFunction(visible)){

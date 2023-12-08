@@ -96,7 +96,6 @@ export default class Field extends AppComponent {
             },
             isDisabled : {
                 value : ()=>{
-                    console.log("checking disable ",this.name,!!this.state.isReadOnlyOrDisabled,!this.isEditableBySymbol())
                     return !!this.state.isReadOnlyOrDisabled || !this.isEditableBySymbol();
                 }, override : false,writable : false
             }

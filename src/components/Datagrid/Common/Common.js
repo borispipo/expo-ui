@@ -1790,6 +1790,10 @@ export default class CommonDatagridComponent extends AppComponent {
                         defaultValue : 0,
                         type : "switch",
                     }  : null,
+                    pdfDocumentTitle : {
+                        text : "Titre du document",
+                        multiple : true,
+                    },
                     ...sFields,
                 },
                 actions : [{text:'Exporter',icon : "check"}],
@@ -1844,7 +1848,7 @@ export default class CommonDatagridComponent extends AppComponent {
         if(pdfDocumentTitle){
             content.unshift(pdfDocumentTitle);
         }
-        const pdf = createPDF({content},config);
+        const pdf = createPDF({...config,content});
         if(isWeb()){
             return pdf.open();
         }

@@ -9,6 +9,7 @@ import session from "$session";
 
 const {createPdf} = pdfMake;
 pdfMake.createPdf = (docDefinition,...rest)=>{
+    console.log("creating pdf ",docDefinition);
     try {
         //@see : https://pdfmake.github.io/docs/0.1/getting-started/client-side/methods/
         const pdf = createPdf(docDefinition,...rest);
@@ -43,14 +44,7 @@ export const print = (data,options,...rest)=>{
 
 export const getFields = (config)=>{
     config = Object.assign({},config);
-    const sFields = extendObj({},{
-        pdfDocumentTitle : {
-            text : "Titre du document",
-            multiple : true,
-        }
-    },pdfFields);
-    delete sFields.code;
-    delete sFields.label;
+    const sFields = Object.clone(pdfFields);
     if(!isDataURL(config.logo)){
         delete sFields.displayLogo;
         delete sFields.logoWidth;
@@ -80,11 +74,19 @@ export const getPrintSettings = ({multiple,sessionName,formDataProps,...rest})=>
             onValidate : ({value,context}) =>{
                 if(context){
                     const pageBreakBeforeEachDoc = context.getField("pageBreakBeforeEachDoc");
+                    const pageMarginAfterEachDoc = context.getField("pageMarginAfterEachDoc");
                     if(pageBreakBeforeEachDoc){
                         if(value || multiple){
                             pageBreakBeforeEachDoc.enable();
                         } else {
                             pageBreakBeforeEachDoc.disable();
+                        }
+                    }
+                    if(pageMarginAfterEachDoc){
+                        if(value || multiple){
+                            pageMarginAfterEachDoc.enable();
+                        } else {
+                            pageMarginAfterEachDoc.disable();
                         }
                     }
                 }
@@ -104,7 +106,23 @@ export const getPrintSettings = ({multiple,sessionName,formDataProps,...rest})=>
                 }
                 return v;
             }
-        }
+        },
+        pageMarginAfterEachDoc : {
+            text : "Marge après chaque document",
+            tooltip : 'Spécifiez le nombre de ligne à ajouter comme marge après chaque document',
+            defaultValue : 2,
+            type : "number",
+            getValidValue : ({context,data}) => {
+                if(!context || !context?.isDisabled) {
+                    return 0;
+                }
+                const v = context?.isDisabled()?0 : context.getValue();
+                if(isObj(data)){
+                    data.pageMarginAfterEachDoc = v;
+                }
+                return v;
+            }
+        },
     },getFields(formDataProps.data))
     return new Promise((resolve,reject)=>{
         return DialogProvider.open({
@@ -122,7 +140,7 @@ export const getPrintSettings = ({multiple,sessionName,formDataProps,...rest})=>
                     session.set(sessionName,sessionD);
                 }
                 DialogProvider.close();
-                resolve({...opts,fields});
+                resolve({...opts,data,fields});
             },
             onCancel : reject,
         })

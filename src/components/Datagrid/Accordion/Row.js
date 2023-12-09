@@ -247,6 +247,9 @@ const styles = StyleSheet.create({
     contentContainerNotAvatar : {
         paddingLeft : 2,
     },
+    content : {
+        maxWidth : "70%",
+    },
 });
 
 DatagridAccordionRow.displayName = 'DatagridAccordionRow';

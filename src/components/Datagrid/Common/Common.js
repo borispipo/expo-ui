@@ -826,7 +826,7 @@ export default class CommonDatagridComponent extends AppComponent {
      *   ou pas.
      */
     renderSelectedRowsActions(sActions){
-        let {printOptions,makePhoneCallProps,printable,print,archive,canMakePhoneCall,archivable} = this.props;
+        let {makePhoneCallProps,canMakePhoneCall,archivable} = this.props;
         const size = this.getSelectedRowsCount();
         let r = [];
         let endActs = [];
@@ -840,20 +840,6 @@ export default class CommonDatagridComponent extends AppComponent {
         sArgs.selectedRows = this.getSelectedRows();
         if(isFunction(selectedR)) {
             selectedR = selectedR.call(this,sArgs)
-        }
-        if(isFunction(print)){
-            if(isFunction(printable)){
-                printable = printable({context:this,tableName:defaultStr(this.props.tableName,this.props.table),props:this.props});
-            }
-            if(printable !== false){
-                r.push({
-                    icon : defaultVal(this.props.printButtonIcon,'printer'),
-                    text : defaultVal(this.props.printButtonText,this.props.printButtonLabel,'Imprimer'),
-                    onPress : ()=>{
-                        print({title:defaultStr(this.props.title),...defaultObj(printOptions),...sArgs});
-                    },
-                })
-            }
         }
         Object.map(sActions,(o,i)=>{
             if(isObj(o)){
@@ -4010,12 +3996,6 @@ CommonDatagridComponent.propTypes = {
     ]),
     /*** fonction permettant de retourner l'unique clé des éléments du tableau */
     getRowKey : PropTypes.func,
-    ///la fonction utilisée pour l'impression du datagrid
-    print : PropTypes.func,
-    printButtonIcon : PropTypes.oneOfType([PropTypes.string,PropTypes.element]),
-    printButtonLabel : PropTypes.oneOfType([PropTypes.string,PropTypes.element]),
-    printButtonText : PropTypes.oneOfType([PropTypes.string,PropTypes.element]),
-    printOptions: PropTypes.object,
     /*** si le datagrid est imprimable */
     printable : PropTypes.oneOfType([
         PropTypes.func,

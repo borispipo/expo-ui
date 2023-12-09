@@ -103,7 +103,7 @@ export default class FormDataActionComponent extends FormData {
     }
     getAppBarActionsProps(props){
         props = defaultObj(props,this.props);
-        let {actions,save2NewAction,save2printAction,save2closeAction,saveAction,newAction} = props;
+        let {actions,save2NewAction,save2printAction,isPrintingForm,save2closeAction,saveAction,newAction} = props;
         const sArg = {context:this};
         save2NewAction = typeof save2NewAction =='function' ? save2NewAction (sArg) : save2NewAction;
         save2closeAction = typeof save2closeAction ==='function'? save2closeAction(sArg) : save2closeAction;
@@ -113,7 +113,7 @@ export default class FormDataActionComponent extends FormData {
         const appBarProps = this.getAppBarProps();
         const data = this.getDataProp();
         const isEditing = this.isDocEditing(data);
-        let textSave = isEditing ? "Modifier": 'Enregistrer';
+        let textSave = isPrintingForm ? "Imprimer" : isEditing ? "Modifier": 'Enregistrer';
         const newElementLabel = defaultStr(props.newElementLabel,this.props.newElementLabel,"Nouvel Element");
         if(isEditing){
             const t = this.getPrimaryKeysFieldsValueText(data);
@@ -142,7 +142,7 @@ export default class FormDataActionComponent extends FormData {
                 save : saveAction !== false ? {
                     isAction : true,
                     text : textSave,
-                    icon : 'check',
+                    icon : isPrintingForm ? 'printer':'check',
                     title : textSave,
                     onPress : (a)=>{
                         context.clickedAction = 'save';

@@ -128,6 +128,7 @@ export const getPrintSettings = ({multiple,sessionName,formDataProps,...rest})=>
         return DialogProvider.open({
             title : "Options d'impression",
             ...formDataProps,
+            isPrintingForm : true,
             data : config,
             fields,
             onSuccess : (opts)=>{

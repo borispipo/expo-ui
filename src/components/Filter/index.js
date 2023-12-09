@@ -18,6 +18,7 @@ import { ActivityIndicator } from "react-native-paper";
 import DialogProvider from "$ecomponents/Form/FormData/DialogProvider";
 import FilterBetweenComponent from "./BetweenComponent";
 
+export const dateTypes = ["date","time","datetime","date2time"]
 
 const manualRunKey = "manual-run";
 
@@ -137,7 +138,9 @@ export default class Filter extends AppComponent {
       type = defaultStr(type,this.type,this.props.type).toLowerCase();
       if(type.contains('select')){
           return "$in";
-      } if(type !== 'date2time' && type !=="date" && type !== 'time' && type !== 'number' && type !== 'decimal'){
+      } 
+      if(dateTypes.includes(type)) return "$eq";
+      if(type !== 'number' && type !== 'decimal'){
           return '$regexcontains';
       }
       return '$eq';
@@ -161,16 +164,16 @@ export default class Filter extends AppComponent {
         action = '$eq';
     } else if(type.contains('select')){
         actions = _inActions;
-    } else if(type == 'date' || type =='datetime') {
+    } else if(dateTypes.includes(type)) {
       actions = {...periodActions, ...actions}  
       delete actions.$between;
-    } else if(type !== 'date2time' && type !== 'time' && type !== 'number' && type !== 'decimal'){
+    } else if(type !== 'number' && type !== 'decimal'){
         actions = {...betweenActions,...regexActions};
         isTextFilter = true;
     }
     if(!action){
         action = this.getDefaultAction(type);
-    } 
+    }
     let defaultValue = defaultVal(this.props.defaultValue);
     operator = defaultVal(operator,"$and");
     if(actions == _inActions || type.contains("select")){

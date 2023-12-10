@@ -3275,7 +3275,7 @@ export default class CommonDatagridComponent extends AppComponent {
                     cb = undefined;
                 }
                 fetchOptions = this.getFetchOptions({fetchOptions,parseMangoQueries:false});
-                if(typeof this.props.fetchOptionsMutator =='function' && this.props.fetchOptionsMutator(fetchOptions) === false){
+                if(typeof this.props.fetchOptionsMutator =='function' && this.props.fetchOptionsMutator({fetchOptions,context:this}) === false){
                     this.isFetchingData = false;
                     return resolve(sData);
                 }

@@ -333,8 +333,9 @@ export default class Field extends AppComponent {
         }
         return true;
     }
-    onNoValidate({msg,value,context,validRule,validParams,event,...rest}){
+    onNoValidate({msg,message,value,context,validRule,validParams,event,...rest}){
         this.validatingValue = value;
+        msg = msg || message;
         this.trigger.call(this,"noValidate",{...defaultObj(rest),props:this.props,context:this,msg,value,event,validRule,validParams},(result)=>{
             this.setState({
                 errorText : msg,

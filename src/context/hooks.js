@@ -31,13 +31,13 @@ export const useSWR =  (path,options)=>{
         swrOptions : {
             provider: () => new Map(),
             ...swrConfig,
-            isOnline() {
+            isOnline(...rest) {
                 if(isLocalHost) return true;
-                return swrConfig.isOnline();
+                return swrConfig.isOnline(...rest);
             },
             initReconnect(cb) {
-                 if(isLocalHost) return cb();
-                 return swrConfig.initReconnect(cb);
+                if(isLocalHost) return cb();
+                return swrConfig.initReconnect(cb);
             },
             ...extendObj({},options,options?.swrOptions)
         }

@@ -137,7 +137,7 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
                 }}
         >
         <HStack 
-                style={[styles.renderedContent,viewWrapperStyle,!hasAvatar && styles.contentContainerNotAvatar]} 
+                style={[styles.renderedContent,!hasAvatar && styles.renderedContentHasNotAvatar,viewWrapperStyle,!hasAvatar && styles.contentContainerNotAvatar]} 
             testID={testID+'_ContentContainer'}
         >
             {hasAvatar?<View testID={testID+"_AvatarContentContainer"} style={[styles.avatarContent]}>
@@ -206,6 +206,9 @@ const styles = StyleSheet.create({
         paddingRight : 10,
         width : "100%",
     },
+    renderedContentHasNotAvatar : {
+        justifyContent : "space-between",
+    },
     right : {
         marginHorizontal : 0,
         paddingLeft:0,
@@ -248,7 +251,7 @@ const styles = StyleSheet.create({
         paddingLeft : 2,
     },
     content : {
-        maxWidth : "70%",
+        maxWidth : "80%",
     },
 });
 

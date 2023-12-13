@@ -350,7 +350,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
             saveButton : isUpdated?'Modifier':'Enregistrer',
             currentData:data,
             hasManyData : this.hasManyData(),
-            onPressToPrint : this.print.bind(this),
+            onPressToPrint : this.doSave.bind(this),//this.print.bind(this),
             datas,
             currentDataIndex:currentIndex,
             onPressToPrevious:this.goToPreviousData.bind(this),
@@ -702,6 +702,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
         }
     }
     doSave ({goBack,data,action}){
+        action = defaultStr(action,this.clickedEl);
         const cb = ()=>{
             if(action === 'new'){
                 this.reset();
@@ -720,7 +721,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
                 return false;
             }
             if(action === 'clone'){
-                this.clone({...data});
+                this.clone(Object.clone(data));
                 return false;
             }
             const isUpdated = this.isDocEditing(data);

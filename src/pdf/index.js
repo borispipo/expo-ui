@@ -9,7 +9,6 @@ import session from "$session";
 
 const {createPdf} = pdfMake;
 pdfMake.createPdf = (docDefinition,...rest)=>{
-    console.log("creating pdf ",docDefinition);
     try {
         //@see : https://pdfmake.github.io/docs/0.1/getting-started/client-side/methods/
         const pdf = createPdf(docDefinition,...rest);

@@ -5,6 +5,7 @@ import {Colors} from "$theme";
 import { COPY_ICON,PRINT_ICON} from "$ecomponents/Icon";
 import {getTableDataRouteName} from "$enavigation/utils";
 
+const isFunction = x => typeof x =='function';
 //@seee : https://github.com/typeorm/typeorm/blob/master/src/entity-schema/EntitySchemaColumnOptions.ts
 ///'_rev','_id','code',
 export const generatedColumnsProperties = ["createDate","updateDate","createdBy","updateBy",'updatedDate','updatedHour','createdHour','createdDate']
@@ -275,12 +276,16 @@ export  function renderActions({context,isUpdate,newElementLabel,readablePerms:c
 
 export const createCallback  = ({context,action,callback,force}) =>{
     if(force === true && isFunction(callback)) return callback;
-    return (a1,a2,a3,a4) =>{
+    return (a,...args) =>{
         context = context || {};
         if(action && typeof action == "string"){
             context.clickedEl = action;
         }
-        if(isFunction(callback)) callback.call(context,a1,a2,a3,a4);
+        if(isObj(a)){
+            a.action = defaultStr(a.action,action);
+            a.clickedEl = a.clickedEl || a.action;
+        }
+        if(isFunction(callback)) callback.call(context,a,...args);
         return true;
     }
 }

@@ -67,7 +67,9 @@ export default function UserProfileScreen({fields,...p}){
     const onSaveProfile = ({data,goBack,...rest})=>{
         data.theme = themeRef.current;
         Preloader.open("Modification en cours...");
-        Auth.upsertUser({...user,...data},true).then(()=>{
+        const opts = {...user,...data};
+        return Auth.upsertUser(opts,true).then((response)=>{
+            if(typeof props.onSave ==='function' && props.onSave({...opts,response,goBack,navigate}) === false) return;
             if(typeof goBack =='function' && !hasChangeRef.current){
                 return goBack(true);
             }

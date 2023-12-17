@@ -190,7 +190,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,children}) {
         });  
       }).catch((e)=>{
           console.error(e," loading resources for app initialization");
-          setState({...state,isInitialized:true,hasCallInitApp,isLoading : false,hasGetStarted:false});
+          setState({...state,isInitialized:true,hasCallInitApp:true,isLoading : false,hasGetStarted:false});
       })
     });
 
@@ -267,7 +267,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,children}) {
   </NavigationContainer>  : null;
   const content = isLoaded ? typeof children == 'function'? children({children:child,appConfig,config:appConfig}) : child : null;
   return <SafeAreaProvider>
-            <AppEntryRootView MainProvider={MainProvider}>
+            <AppEntryRootView MainProvider={MainProvider} isInitialized={state.hasCallInitApp} isLoading={isLoading} hasGetStarted={hasGetStarted} isLoaded={isLoaded}>
                 <PaperProvider 
                   theme={theme}
                   settings={{

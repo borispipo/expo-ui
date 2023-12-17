@@ -32,10 +32,8 @@ const useGetItems = (options)=>{
             }
         }
         APP.on(APP.EVENTS.REFRESH_MAIN_DRAWER,refreshItems);
-        //APP.on(APP.EVENTS.UPDATE_THEME,refreshItems);
         return ()=>{
             APP.off(APP.EVENTS.REFRESH_MAIN_DRAWER,refreshItems);
-            //APP.off(APP.EVENTS.UPDATE_THEME,refreshItems);
         }
     },[])
     return useMemo(()=>{

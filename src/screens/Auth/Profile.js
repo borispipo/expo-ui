@@ -8,6 +8,8 @@ import {SignIn2SignOut} from "$cauth";
 import React from "$react";
 import avatarProps from "$eauth/avatarProps";
 import useContext from "$econtext/hooks";
+import PropTypes from "prop-types";
+import APP from "$capp/instance";
 
 import {screenName} from "./utils";
 
@@ -67,10 +69,16 @@ export default function UserProfileScreen({fields,...p}){
     const onSaveProfile = ({data,goBack,...rest})=>{
         data.theme = themeRef.current;
         Preloader.open("Modification en cours...");
-        const opts = {...user,...data};
-        return Auth.upsertUser(opts,true).then((response)=>{
-            if(typeof props.onSave ==='function' && props.onSave({...opts,response,goBack,navigate}) === false) return;
-            if(typeof goBack =='function' && !hasChangeRef.current){
+        const toSave = {...user,...data};
+        return Auth.upsertUser(toSave,true).then((response)=>{
+            setTimeout(()=>{
+                if(hasChangeRef.current){
+                    APP.trigger(APP.EVENTS.UPDATE_THEME,user.theme);
+                }
+                APP.trigger(APP.EVENTS.AUTH_UPDATE_PROFILE,toSave);
+            },100);
+            if(typeof props.onSave ==='function' && props.onSave({...rest,data:toSave,response,goBack,navigate}) === false) return;
+            if(props.navigateToHomeOnSave !== true && typeof goBack =='function' && !hasChangeRef.current){
                 return goBack(true);
             }
             navigate('Home');
@@ -99,3 +107,8 @@ UserProfileScreen.screenName = screenName;
 UserProfileScreen.Modal = true;
 
 UserProfileScreen.authRequired = true;
+
+UserProfileScreen.propTypes = {
+    navigateToHomeOnSave : PropTypes.bool,//pour forcer la navigation à l'écran d'acceuil une fois qu'on est enregistrée les préférences, peut importe si le profil utilisateur a été mis à jour
+    
+}

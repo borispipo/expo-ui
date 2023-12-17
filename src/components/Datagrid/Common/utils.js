@@ -70,10 +70,12 @@ export const renderRowCell = (arg)=>{
         ///le lien vers le table data se fait via la colonne ayant la propriété foreignKeyTable de type chaine de caractère non nulle
         else if(!renderText && (isNonNullString(columnDef.foreignKeyTable) || columnDef.primaryKey === true || arrayValueExists(['id','piece'],_type))){
             const id = rowData[columnField]?.toString();
-            if(isNonNullString(id)){
+            if(isNonNullString(id) || typeof id ==='number'){
+                const foreignKeyTable = defaultStr(columnDef.foreignKeyTable,columnDef.table,columnDef.tableName);
+                const foreignKeyColumn = defaultStr(columnDef.foreignKeyColumn,columnDef.field);
                 const rProps = {
-                    foreignKeyTable : defaultStr(columnDef.foreignKeyTable,columnDef.table,columnDef.tableName),
-                    foreignKeyColumn : defaultStr(columnDef.foreignKeyColumn,columnDef.field),
+                    foreignKeyTable,
+                    foreignKeyColumn,
                     ...columnDef,
                     multiple : undefined,
                     readOnly : undefined,

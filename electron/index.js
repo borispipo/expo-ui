@@ -9,7 +9,8 @@ if(!fs.existsSync(path.resolve(ePath,"paths.json"))){
 const paths = require("./paths.json");
 const projectRoot = paths.projectRoot || '';
 const electronProjectRoot = projectRoot && fs.existsSync(path.resolve(projectRoot,"electron")) && path.resolve(projectRoot,"electron") || null;
-const mainProcessIndex = electronProjectRoot && fs.existsSync(path.resolve(electronProjectRoot,"main","index.js")) && path.resolve(electronProjectRoot,"main","index.js");
+const mainProcessPath = path.resolve('processes',"main","index.js");
+const mainProcessIndex = electronProjectRoot && fs.existsSync(path.resolve(electronProjectRoot,mainProcessPath)) && path.resolve(electronProjectRoot,mainProcessPath);
 const mainProcessRequired = mainProcessIndex && require(`${mainProcessIndex}`);
 //pour étendre les fonctionnalités au niveau du main proceess, bien vouloir écrire dans le fichier projectRoot/electron/main/index.js
 const mainProcess = mainProcessRequired && typeof mainProcessRequired =='object'? mainProcessRequired : {};

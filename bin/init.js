@@ -37,8 +37,8 @@ module.exports = ({projectRoot,electronProjectRoot})=>{
         if(!fs.existsSync(electronProjectRootPackage)){
             throw `unable to create ${electronProjectRootPackage} file`;
         }
-        const mainFolder = path.resolve(electronProjectRoot,"main");
-        const rendererFolder = path.resolve(electronProjectRoot,"renderer");
+        const mainFolder = path.resolve(electronProjectRoot,'processes',"main");
+        const rendererFolder = path.resolve(electronProjectRoot,'processes',"renderer");
         if(!createDir(mainFolder)){
             throw `unable to create main process folder at ${mainFolder}`
         }

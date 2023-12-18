@@ -7,4 +7,15 @@
  * }
 */
 
-module.exports = {}
+module.exports = {
+    /***** 
+        @must return Instance of Browser window
+    */
+    splashScreen : function(){
+        return null;
+    },
+    /*** this function is called when app is ready */
+    whenReady : function(){
+    
+    }
+}

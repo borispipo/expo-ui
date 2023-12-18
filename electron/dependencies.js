@@ -4,6 +4,7 @@ module.exports = {
 		"node-machine-id": "latest",
         "fs-extra" : "latest",
 		"node-sqlite" : "latest",
+		"commander" : "latest"
 	},
 	"dev" : {
 		"electron": "latest",

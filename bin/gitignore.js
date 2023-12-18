@@ -8,6 +8,7 @@ electron/node_modules/
 /node_modules/
 
 electron/dist
+electron/bin/
 
 dist/
 

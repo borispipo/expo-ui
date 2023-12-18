@@ -10,7 +10,7 @@
 const { program } = require('commander');
 const path= require("path");
 const fs = require("fs");
-const  {createDir,electronDir,copy,exec,throwError,paths:getPaths} = require("./utils");
+const  {createDir,electronDir,copy,exec,throwError,paths:getPaths,writeFile} = require("./utils");
 
 
 const dir = path.resolve(__dirname);

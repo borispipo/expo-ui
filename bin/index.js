@@ -143,12 +143,11 @@ program.command('electron')
             writeFile(packagePath,JSON.stringify({...packageObj,homepage:"./"},null,"\t"));
           } catch{}
           cmd = "npx expo export:web";
-          return exec({cmd,projectRoot}).then((e)=>{
+          return exec({cmd,projectRoot}).then(next).catch(reject).finally(()=>{
             try {
               writeFile(packagePath,JSON.stringify({...packageObj,homepage},null,"\t"));
             } catch{}
-             next(e);
-          }).catch(reject);
+          });
         }
         next();
     });

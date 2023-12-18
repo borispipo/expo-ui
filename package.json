@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "7.3.6",
+  "version": "7.4.0",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "main",
   "scripts": {
@@ -42,6 +42,7 @@
     "expo-fix": "npx expo install --fix",
     "update-apexchart": "node ./bin/update-appex-chart.js",
     "update-pdfmake": "node ./bin/update-pdfmake.js",
+    "test-bin" : "node ./bin/index.js",
     "update-appexchart": "npm run update-apexchart",
     "delete-node-modules": "rimraf ./**/node_modules",
     "dev": "npx expo start --no-dev --minify -c",
@@ -82,6 +83,7 @@
     "@react-navigation/stack": "^6.3.20",
     "@shopify/flash-list": "1.4.3",
     "apexcharts": "^3.45.0",
+    "commander": "^11.1.0",
     "expo": "^49.0.21",
     "expo-camera": "~13.4.4",
     "expo-clipboard": "~4.3.1",

@@ -1,15 +1,15 @@
 const {exec,thowError,copy,writeFile,createDirSync,getDependencyVersion} = require("./utils");
 const fs = require("fs"), path = require("path");
 const getAppDir = x=>path.resolve(__dirname,"create-app");
-module.exports = function(parsedArgs,{projectRoot:root}){
-    const argvName = process.argv[3];
+module.exports = function(appName,{projectRoot:root}){
     const packageObj = require("../package.json");
     root = root && fs.existsSync(root) && root || process.cwd();
     let mainPackage = fs.existsSync(path.resolve(root,"package.json")) && require(`${path.resolve(root,"package.json")}`) || null;
-    const name = argvName && argvName.trim() || mainPackage?.name && typeof mainPackage?.name=="string" && mainPackage.name.trim() || "";
+    const name = appName && appName.trim() || mainPackage?.name && typeof mainPackage?.name=="string" && mainPackage.name.trim() || "";
     if(!name){
         return thowError(name," nom de l'application invalide, veuillez spécifier un nom d'application valide",argvName,process.argv);
     }
+    root = root && fs.existsSync(path.resolve(root))? path.resolve(root) : process.cwd();
     const devDependencies = packageObj.devDependencies;
     const inSameFolder = typeof mainPackage?.name =="string" && mainPackage?.name.trim().toLowerCase() === name?.toLowerCase().trim();
     const projectRoot = path.join(`${root}/${!inSameFolder && name || ""}`);

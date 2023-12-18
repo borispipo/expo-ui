@@ -7,7 +7,6 @@ module.exports = (electronProjectRoot)=>{
         return null;
     }
     const indexPath = path.resolve(electronProjectRoot,"index.js");
-    const electronDir = path.resolve(__dirname,"..","electron");
-    writeFile(indexPath,`module.exports = require("${path.resolve(electronDir,'index.js').split(path.sep).join("/")}");`);
+    writeFile(indexPath,`module.exports = require("${packageJSON.name}/electron/index.js")`);
     return indexPath;
 }

@@ -53,16 +53,22 @@ program.command('electron')
   .option('-a, --arch [architecture]', 'l\'architecture de la plateforme')
   .option('-p, --platform [platform]', 'la plateforme à utiliser pour la compilation')
   .action((script, options) => {
+    const electronProjectRoot = path.resolve(projectRoot,"electron");
     const opts = Object.assign({},typeof options.opts =='function'? options.opts() : options);
     let {out,arch,url,compile,platform} = opts;
     //let {projectRoot} = opts;
     if(projectRoot == dir){
         throwError(`Invalid project root ${projectRoot}; project root must be different to ${dir}`);
     }
-    const pathsJSON = path.resolve(getPaths(projectRoot));
+    let pathsJSON = path.resolve(getPaths(projectRoot));
+    const electronPathsJSON = path.resolve(electronProjectRoot,"paths.json");
     if(!fs.existsSync(pathsJSON)){
-      throwError("Le fichier des chemins d'accès à l'application est innexistant, rassurez vous de tester l'application en environnement web, via la cmde <npx expo start>, avant l'exécution du script electron.");
-    }
+      if(fs.existsSync(electronPathsJSON)){
+        pathsJSON = electronPathsJSON
+      } else {
+        throwError("Le fichier des chemins d'accès à l'application est innexistant, rassurez vous de tester l'application en environnement web, via la cmde <npx expo start>, avant l'exécution du script electron.");
+      }
+    } 
     const paths = require(`${pathsJSON}`);
     if(typeof paths !=='object' || !paths || !paths.projectRoot){
         throwError("Fichiers des chemins d'application invalide!!! merci d'exécuter l'application en environnement web|android|ios puis réessayez");
@@ -72,7 +78,6 @@ program.command('electron')
        throwError(`main app project root ${paths.projectRoot} must be equals to ${projectRoot} in which you want to generate electron app`);
     }
     
-    const electronProjectRoot = path.resolve(projectRoot,"electron");
     const isElectionInitialized = require("../electron/is-initialized")(electronProjectRoot);
     process.env.isElectron = true;
     process.env.isElectronScript = true;

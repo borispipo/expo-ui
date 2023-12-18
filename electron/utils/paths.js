@@ -3,7 +3,7 @@
     contenant la liste des fichiers de l'application
 */
 const fs = require("fs");
-const path = requrie("path");
+const path = require("path");
 
 module.exports =  (projectRoot)=>{
     projectRoot = projectRoot && fs.existsSync(projectRoot) && projectRoot || process.cwd();

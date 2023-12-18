@@ -108,6 +108,11 @@ program.command('electron')
     const indexFile = path.resolve(buildOutDir,"index.html");
     const webBuildDir = path.resolve(projectRoot,"web-build");
     const packagePath = path.resolve(projectRoot,"package.json");
+    if(!fs.existsSync(packagePath)){
+        throwError("package.json file does not exist in "+projectRoot+". please make jure that your have running package script in expo root application");
+    }
+    const packageObj = require(`${packagePath}`);
+    const homepage = packageObj.homepage;
     let cmd = undefined;
     const start = x=>{
        return new Promise((resolve,reject)=>{
@@ -132,10 +137,20 @@ program.command('electron')
             reject("dossier web-build exporté par electron innexistant!!");
           }
         }
-        if(!url && (compile || !fs.existsSync(path.resolve(webBuildDir,"index.html")))){
+        if(!url && (compile || script ==="build" || !fs.existsSync(path.resolve(webBuildDir,"index.html")))){
           console.log("exporting expo web app ...");
+          try {
+            writeFile(packagePath,JSON.stringify({...packageObj,homepage:"./"},null,"\t"));
+          } catch{
+          
+          }
           cmd = "npx expo export:web";
-          return exec({cmd,projectRoot}).then(next).catch(reject);
+          return exec({cmd,projectRoot}).then((e)=>{
+            try {
+              writeFile(packagePath,JSON.stringify({...packageObj,homepage},null,"\t"));
+            } catch{}
+             next(e);
+          }).catch(reject);
         }
         next();
     });
@@ -150,10 +165,6 @@ program.command('electron')
           case "build":
             break;
           default :
-            if(!fs.existsSync(packagePath)){
-                throwError("package.json file does not exist in "+projectRoot+". please make jure that your have running package script in expo root application");
-            }
-            const packageObj = require(`${packagePath}`);
             const electronPackage = require(`${path.resolve(electronProjectRoot,'package.json')}`);
             electronPackage.name = packageObj.name;
             electronPackage.version = packageObj.version;

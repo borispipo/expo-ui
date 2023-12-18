@@ -141,9 +141,7 @@ program.command('electron')
           console.log("exporting expo web app ...");
           try {
             writeFile(packagePath,JSON.stringify({...packageObj,homepage:"./"},null,"\t"));
-          } catch{
-          
-          }
+          } catch{}
           cmd = "npx expo export:web";
           return exec({cmd,projectRoot}).then((e)=>{
             try {

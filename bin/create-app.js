@@ -155,37 +155,4 @@ const createAPPJSONFile = (projectRoot,{name,version})=>{
     return fs.existsSync(appJSONPath);
 }
 
-const gitignore = `
-node_modules/
-
-# Expo
-.expo/
-dist/
-web-build/
-
-# Native
-*.orig.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
-
-# Metro
-.metro-health-check*
-
-# debug
-npm-debug.*
-yarn-debug.*
-yarn-error.*
-
-# macOS
-.DS_Store
-*.pem
-
-# local env files
-.env*.local
-
-# typescript
-*.tsbuildinfo
-`
+const gitignore = require("./gitignore");

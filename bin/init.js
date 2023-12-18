@@ -70,6 +70,15 @@ module.exports = ({projectRoot,electronProjectRoot,paths,pathsJSON})=>{
                 copy(pathsJSON,destPathJSON);
             } catch(e){}
         }
+        const gP = path.resolve(electronProjectRoot,".gitignore") ;
+        if(!fs.existsSync(gP)){
+          try {
+            writeFile(gP,require("./gitignore"));
+          } catch{};
+        }
+        try {
+        
+        } catch(e){}
         console.log("installing package dependencies ...");
         return exec({
             cmd : "npm install",// --prefix "+electronProjectRoot,

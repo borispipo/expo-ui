@@ -6,12 +6,8 @@ const path = require("path");
 const fs = require("fs");
 const isObj = x=>x && typeof x =='object' && !Array.isArray(x);
 const isNonNullString = x=>x && typeof x =='string';
-const ePath = path.resolve(__dirname);
-const packagePath = path.resolve(ePath,"package.json");
-if(!fs.existsSync(packagePath)){
-    throw {message : "Chemin du fichier "+packagePath+ " introuvable"};
-}
-const _app = require(`${packagePath}`);
+const packageJSONStr = ipcRenderer.sendSync("electron-get-package-json");
+const _app = packageJSONStr ? JSON.parse(packageJSONStr) : {};
 if(!_app || typeof _app !=='object' || typeof _app.name !=='string'){
     throw {message : "Contenu du fichier "+packagePath+" invalide!! Veuillez spécifier un nom valide d'application, propriété <<name>> dudit fichier"}
 }

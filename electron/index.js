@@ -314,8 +314,8 @@ app.whenReady().then(() => {
 })
 
 ipcMain.on("electron-restart-app",x =>{app.relaunch();})
-let tray = null;
-let isJSON = function (json_string){
+  let tray = null;
+  let isJSON = function (json_string){
   if(!json_string || typeof json_string != 'string') return false;
   var text = json_string;
   return !(/[^,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]/.test(text.replace(/"(\\.|[^"\\])*"/g, '')));
@@ -355,6 +355,14 @@ ipcMain.on("electron-get-path",(event,pathName)=>{
   const p = app.getPath(pathName);
   event.returnValue = p;
   return p;
+});
+
+ipcMain.on("electron-get-package-json",(event)=>{
+  const packageJSON = path.resolve(projectRoot,"package.json");
+  if(fs.existsSync(packageJSON)){
+      return JSON.stringify(require(packageJSON));
+  }
+  return JSON.stringify({});
 });
 
 ipcMain.on("electron-get-media-access-status",(event,mediaType)=>{

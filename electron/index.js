@@ -13,9 +13,9 @@ program
 
 const programOptions = program.opts();
 const {url:pUrl,paths:pathsJSON,root:mainProjectRoot} = programOptions
-
+const cPaths = path.resolve("./paths.json");
 const pathsJ = pathsJSON && fs.existsSync(pathsJSON) && pathsJSON.endsWith("paths.json")? pathsJSON  : null;
-let paths = pathsJ ? require(`${pathsJ}`) : fs.existsSync(path.resolve("./paths.json")) ? require("./paths.json") : null;
+let paths = pathsJ ? require(`${pathsJ}`) : fs.existsSync(cPaths) ? require(cPaths) : null;
 const projectRoot = mainProjectRoot && fs.existsSync(mainProjectRoot) ? mainProjectRoot : paths.projectRoot || '';
 const electronProjectRoot = projectRoot && fs.existsSync(path.resolve(projectRoot,"electron")) && path.resolve(projectRoot,"electron") || null;
 const ePathsJSON = path.resolve(electronProjectRoot,"paths.json");

@@ -18,16 +18,17 @@ const projectRoot = path.resolve(process.cwd());
 const packageObj = require("../package.json");
 const version = packageObj.version;
 const description = packageObj.description;
+const packageName = packageObj.name;
 
 
 program
-  .name('@fto-consult/expo-ui')
-  .description('Utilitaire cli lié au framework expo-ui')
+  .name(packageName)
+  .description(`Utilitaire cli lié au framework ${packageName}`)
   .version(version);
   
   
 program.command('create-app')
-  .description('crèe et initialise une application expo-ui')
+  .description(`crèe et initialise une application ${packageName}`)
   .argument('<appName>', 'le nom de l\'application à initialiser')
   .option('-r, --project-root [dir]', 'le project root de l\'application')
   .action((appName, options) => {
@@ -41,7 +42,7 @@ program.command('generate-getTable')
   });
   
 program.command('electron')
-  .description('utilitaire cli pour la plateforme electron')
+  .description('utilitaire cli pour la plateforme electron. NB : Le package electron doit être installé globalement via l\'instruction npm i -g electron')
   .argument('<cmd>', 'la commande à exécuter (start,init,build)')
   //.option('-r, --project-root [dir]', 'le project root de l\'application')
   .option('-c, --config [dir]', 'le chemin (relatif au project root) du fichier de configuration de l\'application electron')

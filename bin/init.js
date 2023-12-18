@@ -1,6 +1,5 @@
 const path= require("path");
 const fs = require("fs");
-const dir = path.resolve(__dirname);
 const exec = require("../electron/utils/exec");
 const createDir = require("../electron/utils/createDir");
 const writeFile = require("../electron/utils/writeFile");
@@ -8,8 +7,10 @@ const copy = require("../electron/utils/copy");
 const electronDir = path.resolve(__dirname,"..","electron");
 const createIndexFile = require("../electron/create-index-file");
 const appSuffix = " Desktop";
+const mainPackage = require("../package.json");
+const mainPackageName = mainPackage.name;
 
-module.exports = ({projectRoot,electronProjectRoot,paths,})=>{
+module.exports = ({projectRoot,electronProjectRoot})=>{
     return new Promise((resolve,reject)=>{
         //make shure electron project root exists
         if(!createDir(electronProjectRoot)){
@@ -21,11 +22,11 @@ module.exports = ({projectRoot,electronProjectRoot,paths,})=>{
         projectRootPackage.dependencies = dependencies.main;
         projectRootPackage.devDependencies = dependencies.dev;
         projectRootPackage.scripts = {
-            "compile" : "npx expo-ui electron compile",
-            "start" : "npx expo-ui electron start",
-            "compile2start" : "npx expo-ui electron start compile",
-            "package" : "npx expo-ui electron package",
-            "compile2package" : "npx expo-ui electron package compile"
+            "compile" : `npx ${mainPackageName} electron compile`,
+            "start" : `npx ${mainPackageName} electron start`,
+            "compile2start" : `npx ${mainPackageName} electron start compile`,
+            "package" : `npx ${mainPackageName} electron package`,
+            "compile2package" : `npx ${mainPackageName} electron package compile`
         }
         projectRootPackage.name = projectRootPackage.name.trim().toUpperCase();
         projectRootPackage.realAppName = typeof projectRootPackage.realAppName =="string" && projectRootPackage.realAppName || projectRootPackage.name;
@@ -62,10 +63,6 @@ module.exports = ({projectRoot,electronProjectRoot,paths,})=>{
             projectRoot : electronProjectRoot,
         }).then((a)=>{
             return resolve(a);
-            console.log("initializing with electron-forge ....");
-            return exec({
-                cmd : `npx electron-forge import`,
-            }).then(resolve);
         }).catch(reject);
     })
 }

@@ -276,10 +276,11 @@ ipcMain.on("electron-toggle-dev-tools",function(event,value) {
 
 
 app.whenReady().then(() => {
+  const readOpts = {toggleDevTools,window:win,win};
   if(typeof mainProcess.whenReady =='function'){
-     mainProcess.whenReady();
+     mainProcess.whenReady(readOpts);
   } else if(typeof mainProcess.appOnReady =='function'){
-     mainProcess.appOnReady();
+     mainProcess.appOnReady(readOpts);
   }
   globalShortcut.register('CommandOrControl+F12', () => {
     toggleDevTools();

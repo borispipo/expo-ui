@@ -10,12 +10,17 @@
 module.exports = {
     /***** 
         @must return Instance of Browser window
+        width: 500, height: 400, transparent: true, frame: false, 
+        alwaysOnTop: true
     */
-    splashScreen : function(){
+    splashScreen : function({width, height, transparent, frame, alwaysOnTop}){
         return null;
     },
-    /*** this function is called when app is ready */
-    whenReady : function(){
+    /*** this function is called when app is ready 
+        toggleDevTools : {function},la fonction permettant de toggle les outils de developements
+        window : {BrowserWindow}, le browser window principal de l'application
+    */
+    whenReady : function({toggleDevTools,window,win}){
     
     }
 }

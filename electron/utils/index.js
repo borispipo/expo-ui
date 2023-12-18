@@ -5,7 +5,7 @@ module.exports = {
     copy : require("./copy"),
     electronDir : path.resolve(__dirname, ".."),
     exec : require("./exec"),
-    thowError : (...args)=>{
+    throwError : (...args)=>{
         console.error(...args);
         process.exit(-1);
     },

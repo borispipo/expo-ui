@@ -7,11 +7,13 @@ const fs = require("fs");
 const isObj = x=>x && typeof x =='object' && !Array.isArray(x);
 const isNonNullString = x=>x && typeof x =='string';
 const packageJSONStr = ipcRenderer.sendSync("electron-get-package-json");
+const projectRoot = ipcRenderer.sendSync("electron-get-electron-project-root");
+const pathsJS = projectRoot && fs.existsSync(projectRoot) && path.resolve(projectRoot,"paths.json") || null;
 const _app = packageJSONStr ? JSON.parse(packageJSONStr) : {};
 if(!_app || typeof _app !=='object' || typeof _app.name !=='string'){
     throw {message : "Contenu du fichier "+packagePath+" invalide!! Veuillez spécifier un nom valide d'application, propriété <<name>> dudit fichier"}
 }
-const paths = require("./paths.json");
+const paths = pathsJS ? require(`${pathsJS}`) : {};
 const APP_NAME = _app.name.trim().toUpperCase();
 let backupPathField = "_e_backupDataPath";
 let cBackupPathField = "company"+backupPathField;

@@ -357,6 +357,13 @@ ipcMain.on("electron-get-path",(event,pathName)=>{
   return p;
 });
 
+ipcMain.on("electron-get-project-root",(event)=>{
+  return projectRoot;
+});
+ipcMain.on("electron-get-electron-project-root",(event)=>{
+  return electronProjectRoot;
+});
+
 ipcMain.on("electron-get-package-json",(event)=>{
   const packageJSON = path.resolve(projectRoot,"package.json");
   if(fs.existsSync(packageJSON)){

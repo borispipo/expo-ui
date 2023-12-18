@@ -568,7 +568,7 @@ const TextFieldComponent = React.forwardRef((componentProps,inputRef)=>{
                 </View>
                 {<View testID={testID+"_AffixContainer"} style={styles.affixContainer}>
                     {multiline && !error && !helperText ? affixContent:null}
-                    <HelperText style={[isDesktop && styles.helperTextAbsolute]} testID={testID+"_HelperText"} error={error} disabled={!isEditable}>{helperText}</HelperText>
+                    <HelperText style={[false && isDesktop && styles.helperTextAbsolute]} testID={testID+"_HelperText"} error={error} disabled={!isEditable}>{helperText}</HelperText>
                 </View>}
             </>
         </View>

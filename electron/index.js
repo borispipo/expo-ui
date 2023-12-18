@@ -2,13 +2,34 @@ const {app, BrowserWindow,Tray,Menu,MenuItem,globalShortcut,systemPreferences,po
 const session = require("./utils/session");
 const path = require("path");
 const fs = require("fs");
-const ePath = path.resolve(__dirname);
-if(!fs.existsSync(path.resolve(ePath,"paths.json"))){
-  throw {message : 'Chemin de noms, fichier paths.json introuvable!! Exécutez l\'application en enviornnement web|mobile|android|ios puis re-essayez'}
-}
-const paths = require("./paths.json");
-const projectRoot = paths.projectRoot || '';
+const { program } = require('commander');
+const getPaths = require("../electron/utils/paths");
+
+program
+  .option('-u, --url <url>', 'the loading url')
+  .option('-r, --root <projectRoot>', 'the project root path')
+  .option('-p, --paths <paths>', 'le chemin vers le fichiers paths.json')
+  .parse();
+
+const programOptions = program.opts();
+const {url:pUrl,paths:pathsJSON,root:mainProjectRoot} = programOptions
+
+const pathsJ = pathsJSON && fs.existsSync(pathsJSON) && pathsJSON.endsWiths("paths.json")? pathsJSON  : null;
+let paths = pathsJ ? require(`${pathsJ}`) : fs.existsSync(path.resolve("./paths.json")) ? require("./paths.json") : null;
+const projectRoot = mainProjectRoot && fs.existsSync(mainProjectRoot) ? mainProjectRoot : paths.projectRoot || '';
 const electronProjectRoot = projectRoot && fs.existsSync(path.resolve(projectRoot,"electron")) && path.resolve(projectRoot,"electron") || null;
+const ePathsJSON = path.resolve(electronProjectRoot,"paths.json");
+const eePaths = path.resolve(getPaths(projectRoot));
+if(!paths){
+  if(fs.existsSync(ePathsJSON)){
+    paths = require(ePathsJSON);
+  } else if(fs.existsSync(eePaths)){
+    path = require(eePaths);
+  } else {
+    throw {message : 'Chemin de noms, fichier paths.json introuvable!! Exécutez l\'application en enviornnement web|mobile|android|ios puis re-essayez'}
+  }
+}
+
 const mainProcessPath = path.resolve('processes',"main","index.js");
 const mainProcessIndex = electronProjectRoot && fs.existsSync(path.resolve(electronProjectRoot,mainProcessPath)) && path.resolve(electronProjectRoot,mainProcessPath);
 const mainProcessRequired = mainProcessIndex && require(`${mainProcessIndex}`);
@@ -92,7 +113,7 @@ function createBrowserWindow (options){
       _win.setMenuBarVisibility(false)
       _win.setAutoHideMenuBar(true)
   }
-  let url = options.loadURL && typeof options.loadURL ==='string'? options.loadURL : undefined;
+  const url = options.loadURL && typeof options.loadURL ==='string'? options.loadURL : pUrl || undefined;
   if(url){
     _win.loadURL(url);
   }

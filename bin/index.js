@@ -111,7 +111,7 @@ program.command('electron')
     let cmd = undefined;
     const start = x=>{
        return new Promise((resolve,reject)=>{
-        cmd = `electron "${electronProjectRoot}"${url? ` url="${url}"`:''}`;
+        cmd = `electron "${electronProjectRoot}"${url? ` --url ${url}`:''} --path ${pathsJSON} --root ${projectRoot}`;
           exec({
             cmd, 
             projectRoot : electronProjectRoot,

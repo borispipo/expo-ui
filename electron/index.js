@@ -15,9 +15,9 @@ const programOptions = program.opts();
 const {url:pUrl,paths:pathsJSON,root:mainProjectRoot} = programOptions
 const cPaths = path.resolve("./paths.json");
 const pathsJ = pathsJSON && fs.existsSync(pathsJSON) && pathsJSON.endsWith("paths.json")? pathsJSON  : null;
-let paths = pathsJ ? require(`${pathsJ}`) : fs.existsSync(cPaths) ? require(cPaths) : null;
-const projectRoot = mainProjectRoot && fs.existsSync(mainProjectRoot) ? mainProjectRoot : paths.projectRoot || '';
-const electronProjectRoot = projectRoot && fs.existsSync(path.resolve(projectRoot,"electron")) && path.resolve(projectRoot,"electron") || null;
+let paths = pathsJ ? require(`${pathsJ}`) : fs.existsSync(cPaths) ? require(cPaths) : '';
+let projectRoot = mainProjectRoot && fs.existsSync(mainProjectRoot) ? mainProjectRoot : paths.projectRoot || process.cwd();
+let electronProjectRoot = projectRoot && fs.existsSync(path.resolve(projectRoot,"electron")) && path.resolve(projectRoot,"electron") || '';
 const ePathsJSON = path.resolve(electronProjectRoot,"paths.json");
 const eePaths = path.resolve(getPaths(projectRoot));
 if(!paths){
@@ -362,14 +362,6 @@ ipcMain.on("electron-get-project-root",(event)=>{
 });
 ipcMain.on("electron-get-electron-project-root",(event)=>{
   return electronProjectRoot;
-});
-
-ipcMain.on("electron-get-package-json",(event)=>{
-  const packageJSON = path.resolve(projectRoot,"package.json");
-  if(fs.existsSync(packageJSON)){
-      return JSON.stringify(require(packageJSON));
-  }
-  return JSON.stringify({});
 });
 
 ipcMain.on("electron-get-media-access-status",(event,mediaType)=>{

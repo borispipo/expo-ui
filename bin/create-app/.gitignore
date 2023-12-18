@@ -3,6 +3,12 @@
 # dependencies
 node_modules/
 
+electron/node_modules/
+
+/node_modules/
+
+electron/dist
+
 # Expo
 .expo/
 dist/

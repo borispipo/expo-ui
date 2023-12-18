@@ -7,7 +7,7 @@ const copy = require("../electron/utils/copy");
 const paths = require("../electron/utils/paths");
 const electronDir = path.resolve(__dirname,"..","electron");
 const createIndexFile = require("../electron/create-index-file");
-const appSuffix = " Desktop";
+const appSuffix = "-Desktop";
 const mainPackage = require("../package.json");
 const mainPackageName = mainPackage.name;
 
@@ -20,6 +20,7 @@ module.exports = ({projectRoot,electronProjectRoot,paths,pathsJSON})=>{
         const projectRootPackage = require(`${path.resolve(projectRoot,'package.json')}`);
         const dependencies = require("../electron/dependencies");
         const electronProjectRootPackage = path.resolve(electronProjectRoot,"package.json");
+        projectRootPackage.main = "index.js";
         projectRootPackage.dependencies = dependencies.main;
         projectRootPackage.devDependencies = dependencies.dev;
         projectRootPackage.scripts = {

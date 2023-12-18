@@ -5,8 +5,7 @@
 const fs = require("fs");
 const path = requrie("path");
 
-
-export default function (projectRoot){
+module.exports =  (projectRoot)=>{
     projectRoot = projectRoot && fs.existsSync(projectRoot) && projectRoot || process.cwd();
     const mainPackage = require("../../package.json");
     return path.resolve(projectRoot,"node_modules",mainPackage.name,"paths.json");

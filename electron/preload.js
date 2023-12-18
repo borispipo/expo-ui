@@ -16,7 +16,6 @@ if(!_app || typeof _app !=='object' || typeof _app.name !=='string'){
     throw {message : "Contenu du fichier "+packagePath+" invalide!! Veuillez spécifier un nom valide d'application, propriété <<name>> dudit fichier"}
 }
 const paths = require("./paths.json");
-const projectRoot = paths.projectRoot || '';
 const APP_NAME = _app.name.trim().toUpperCase();
 let backupPathField = "_e_backupDataPath";
 let cBackupPathField = "company"+backupPathField;
@@ -28,6 +27,7 @@ const getPath = function(pathName){
 const APP_PATH = path.join(getPath("appData"),APP_NAME).toLowerCase();
 let databasePath = path.join(APP_PATH,"databases");
 let ROOT_APP_FOLDER = undefined;
+let appBackupPathRef = undefined;
 const separator = (path.sep)
 if(typeof separator != 'string' || !separator){
     separator = (()=>{
@@ -71,8 +71,8 @@ const setDatabasePath =  (newPath)=>{
 };
 const setBackupPath = (newPath)=>{
     newPath = typeof newPath =='string' && newPath || typeof ROOT_APP_FOLDER =='string' && ROOT_APP_FOLDER || path.join(getPath("documents"),APP_NAME);
-    ELECTRON.APP_BACKUP_PATH = newPath;
-    config.set(cBackupPathField,ELECTRON.APP_BACKUP_PATH)
+    appBackupPathRef = newPath;
+    config.set(cBackupPathField,appBackupPathRef)
 };
 const APPRef = {
     current : null,
@@ -105,14 +105,14 @@ const ELECTRON = {
         return (p)=>{
             const eePath = config.get(cBackupPathField);
             const defPath  = ROOT_APP_FOLDER || path.join(getPath("documents"),APP_NAME);
-            ELECTRON.APP_BACKUP_PATH = typeof eePath =='string' && eePath || typeof defPath =='string' && defPath || '';
-            if(!fs.existsSync(ELECTRON.APP_BACKUP_PATH)){
-                ELECTRON.APP_BACKUP_PATH = defPath;
+            appBackupPathRef = typeof eePath =='string' && eePath || typeof defPath =='string' && defPath || '';
+            if(!fs.existsSync(appBackupPathRef)){
+                appBackupPathRef = defPath;
             }
             if(p && typeof (p) ==='string'){
-                return path.join(ELECTRON.APP_BACKUP_PATH,p);
+                return path.join(appBackupPathRef,p);
             }
-            return ELECTRON.APP_BACKUP_PATH;
+            return appBackupPathRef;
         };
     },
     get databasePath (){

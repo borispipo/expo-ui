@@ -59,9 +59,15 @@ module.exports = ({projectRoot,electronProjectRoot,paths,pathsJSON})=>{
         /**** copying all electron utils files */
         const utilsPath = path.resolve(electronProjectRoot,"utils");
         copy(path.resolve(electronDir,"utils"),utilsPath);
-        if(pathsJSON && fs.existsSync(pathsJSON)){
+        const destPathJSON = path.resolve(electronProjectRoot,"paths.json");
+        try {
+            if(paths && typeof paths =='object' && paths.$src && fs.existsSync(paths.$src)){
+                writeFile(destPathJSON,JSON.stringify(paths, null, "\t"));
+            }
+        } catch{}
+        if(!fs.existsSync(destPathJSON) && pathsJSON && fs.existsSync(pathsJSON)){
             try {
-                copy(pathsJSON,path.resolve(electronProjectRoot,"paths.json"));
+                copy(pathsJSON,destPathJSON);
             } catch(e){}
         }
         console.log("installing package dependencies ...");

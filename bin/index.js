@@ -46,7 +46,7 @@ program.command('electron')
   .argument('<cmd>', 'la commande à exécuter (start,init,build)')
   //.option('-r, --project-root [dir]', 'le project root de l\'application')
   .option('-c, --config [dir]', 'le chemin (relatif au project root) du fichier de configuration de l\'application electron')
-  .option('-s, --splash [dir]', 'le chemin (relatif au project root) du fichier du splash screen de l\'application')
+  //.option('-s, --splash [dir]', 'le chemin (relatif au project root) du fichier du splash screen de l\'application')
   .option('-o, --out [dir]', 'le chemin (relatif au project root) du répertoire qui contiendra les fichiers build')
   .option('-u, --url [url]', 'le lien url qui sera ouvert par l\'application')
   .option('-i, --compile [url]', 'le lien url qui sera ouvert par l\'application')
@@ -59,7 +59,7 @@ program.command('electron')
     if(projectRoot == dir){
         throwError(`Invalid project root ${projectRoot}; project root must be different to ${dir}`);
     }
-    const pathsJSON = path.resolve(electronDir,getPaths(projectRoot));
+    const pathsJSON = path.resolve(getPaths(projectRoot));
     if(!fs.existsSync(pathsJSON)){
       throwError("Le fichier des chemins d'accès à l'application est innexistant, rassurez vous de tester l'application en environnement web, via la cmde <npx expo start>, avant l'exécution du script electron.");
     }

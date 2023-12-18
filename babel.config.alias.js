@@ -1,6 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const writeFile = require("./electron/utils/writeFile");
+const paths = require("./electron/utils/paths");
 module.exports = (opts)=>{
     const isLocalDev = require("./is-local-dev")();
     const dir = path.resolve(__dirname);
@@ -114,7 +115,7 @@ module.exports = (opts)=>{
         } catch{}
     }
     ///on sauvegarde les chemins des fichiers utiles, qui seront utilisées par la variable electron plus tard
-    writeFile(path.resolve(dir,"electron","paths.json"),JSON.stringify(electronPaths));
+    writeFile(paths(projectRoot),JSON.stringify(electronPaths, null, "\t"));
     r["$erealm"] = path.resolve(expo,'realm');
     if(!r.$realm){
         r.$realm = r.$erealm;

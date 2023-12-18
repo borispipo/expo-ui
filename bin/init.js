@@ -4,13 +4,14 @@ const exec = require("../electron/utils/exec");
 const createDir = require("../electron/utils/createDir");
 const writeFile = require("../electron/utils/writeFile");
 const copy = require("../electron/utils/copy");
+const paths = require("../electron/utils/paths");
 const electronDir = path.resolve(__dirname,"..","electron");
 const createIndexFile = require("../electron/create-index-file");
 const appSuffix = " Desktop";
 const mainPackage = require("../package.json");
 const mainPackageName = mainPackage.name;
 
-module.exports = ({projectRoot,electronProjectRoot})=>{
+module.exports = ({projectRoot,electronProjectRoot,paths,pathsJSON})=>{
     return new Promise((resolve,reject)=>{
         //make shure electron project root exists
         if(!createDir(electronProjectRoot)){
@@ -57,6 +58,11 @@ module.exports = ({projectRoot,electronProjectRoot})=>{
         /**** copying all electron utils files */
         const utilsPath = path.resolve(electronProjectRoot,"utils");
         copy(path.resolve(electronDir,"utils"),utilsPath);
+        if(pathsJSON && fs.existsSync(pathsJSON)){
+            try {
+                copy(pathsJSON,path.resolve(electronProjectRoot,"paths.json"));
+            } catch(e){}
+        }
         console.log("installing package dependencies ...");
         return exec({
             cmd : "npm install",// --prefix "+electronProjectRoot,

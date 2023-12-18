@@ -4,6 +4,7 @@ module.exports = {
     writeFile : require("./writeFile"),
     copy : require("./copy"),
     electronDir : path.resolve(__dirname, ".."),
+    paths : require("./paths"),
     exec : require("./exec"),
     throwError : (...args)=>{
         console.error(...args);

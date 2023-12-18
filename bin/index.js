@@ -10,7 +10,7 @@
 const { program } = require('commander');
 const path= require("path");
 const fs = require("fs");
-const  {createDir,electronDir,copy,exec,throwError} = require("./utils");
+const  {createDir,electronDir,copy,exec,throwError,paths:getPaths} = require("./utils");
 
 
 const dir = path.resolve(__dirname);
@@ -59,7 +59,7 @@ program.command('electron')
     if(projectRoot == dir){
         throwError(`Invalid project root ${projectRoot}; project root must be different to ${dir}`);
     }
-    const pathsJSON = path.resolve(electronDir,"paths.json");
+    const pathsJSON = path.resolve(electronDir,getPaths(projectRoot));
     if(!fs.existsSync(pathsJSON)){
       throwError("Le fichier des chemins d'accès à l'application est innexistant, rassurez vous de tester l'application en environnement web, via la cmde <npx expo start>, avant l'exécution du script electron.");
     }
@@ -85,6 +85,7 @@ program.command('electron')
            electronDir,
            electronProjectRoot,
            paths,
+           pathsJSON
         });
     }
     require("../electron/create-index-file")(electronProjectRoot);

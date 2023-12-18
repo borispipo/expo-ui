@@ -1,5 +1,6 @@
 const getIcon = require("../electron/utils/getIcon");
 const path = require("path");
+const path = require("../electron/utils/paths");
 const defaultFunc = (cb,cb2) => typeof cb =='function' ? cb : typeof cb2 ==='function'? cb2 : x=> x;
 const paths = require("../electron/paths.json");
 const images = paths.$images, assets = paths.$assets, logo = paths.logo;

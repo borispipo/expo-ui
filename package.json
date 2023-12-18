@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "7.4.28",
+  "version": "7.4.29",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "main": "main",
   "scripts": {

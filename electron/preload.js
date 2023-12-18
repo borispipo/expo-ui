@@ -6,10 +6,10 @@ const path = require("path");
 const fs = require("fs");
 const isObj = x=>x && typeof x =='object' && !Array.isArray(x);
 const isNonNullString = x=>x && typeof x =='string';
-const packageJSONStr = ipcRenderer.sendSync("electron-get-package-json");
-const projectRoot = ipcRenderer.sendSync("electron-get-electron-project-root");
-const pathsJS = projectRoot && fs.existsSync(projectRoot) && path.resolve(projectRoot,"paths.json") || null;
-const _app = packageJSONStr ? JSON.parse(packageJSONStr) : {};
+const projectRoot = ipcRenderer.sendSync("electron-get-project-root");
+const electronProjectRoot = ipcRenderer.sendSync("electron-get-electron-project-root");
+const pathsJS = electronProjectRoot && fs.existsSync(electronProjectRoot) && path.resolve(electronProjectRoot,"paths.json") || null;
+const _app = projectRoot && fs.existsSync(path.resolve(projectRoot,"package.json")) ? require(path.resolve(projectRoot,"package.json")) : {};
 if(!_app || typeof _app !=='object' || typeof _app.name !=='string'){
     throw {message : "Contenu du fichier "+packagePath+" invalide!! Veuillez spécifier un nom valide d'application, propriété <<name>> dudit fichier"}
 }

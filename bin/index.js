@@ -103,6 +103,7 @@ program.command('electron')
     const indexFile = path.resolve(buildOutDir,"index.html");
     const webBuildDir = path.resolve(projectRoot,"web-build");
     const packagePath = path.resolve(projectRoot,"package.json");
+    let cmd = undefined;
     const start = x=>{
        return new Promise((resolve,reject)=>{
         cmd = `electron "${electronProjectRoot}"${url? ` url="${url}"`:''}`;

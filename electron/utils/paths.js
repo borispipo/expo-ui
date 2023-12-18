@@ -8,5 +8,5 @@ const path = require("path");
 module.exports =  (projectRoot)=>{
     projectRoot = projectRoot && fs.existsSync(projectRoot) && projectRoot || process.cwd();
     const mainPackage = require("../../package.json");
-    return path.resolve(projectRoot,"node_modules","@fto-consult",`${mainPackage.name.toLowerCase().replace(/\s/g, '')}.paths.json`);
+    return path.resolve(projectRoot,"node_modules",`${mainPackage.name.toLowerCase().replace(/\s/g, '')}.paths.alias.json`);
 }

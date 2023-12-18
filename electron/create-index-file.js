@@ -1,6 +1,7 @@
 const fs = require("fs");
 const writeFile = require("../electron/utils/writeFile");
 const path = require("path");
+const packageJSON = require("../package.json");
 
 module.exports = (electronProjectRoot)=>{
     if(!electronProjectRoot || typeof electronProjectRoot !='string' || !fs.existsSync(electronProjectRoot)){

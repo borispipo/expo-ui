@@ -13,7 +13,7 @@ module.exports = function(message,...params){
     const opts = message && typeof message =='object' && !Array.isArray(message) ? message : {};
     message = opts.message;
     if(!message || typeof message !='string') return null;
-    opts.params = Array.isArray(opts.params) && opts.params || Array.isArray(params) &&  params || [];
+    opts.params = Array.isArray(opts.params) && opts.params || params;
     opts.message = "ELECTRON_MESSAGE/"+message.trim();
     return window.postMessage(opts);
 }

@@ -20,6 +20,7 @@ const projectRoot = mainProjectRoot && fs.existsSync(mainProjectRoot) ? mainProj
 const electronProjectRoot = projectRoot && fs.existsSync(path.resolve(projectRoot,"electron")) && path.resolve(projectRoot,"electron") || '';
 const ePathsJSON = path.resolve(electronProjectRoot,"paths.json");
 const packageJSONPath = path.resolve(projectRoot,"package.json");
+const isValidUrl = require("./utils/isValidUrl");
 const packageJSON = fs.existsSync(packageJSONPath) ? require(`${packageJSONPath}`) : {};
 const eePaths = path.resolve(getPaths(projectRoot));
 if(!paths){
@@ -115,7 +116,7 @@ function createBrowserWindow (options){
       _win.setMenuBarVisibility(false)
       _win.setAutoHideMenuBar(true)
   }
-  const url = options.loadURL && typeof options.loadURL ==='string'? options.loadURL : pUrl || undefined;
+  const url = isValidUrl(options.loadURL) ? options.loadURL : isValidUrl(pUrl) ? pUrl : undefined;
   if(url){
     _win.loadURL(url);
   }
@@ -129,7 +130,6 @@ function createBrowserWindow (options){
   });
   return _win;
 }
-const args = require("./utils/parseArgs")();
 function createWindow () {
   // Créer le browser window
   win = createBrowserWindow({
@@ -191,8 +191,8 @@ function createWindow () {
         win.webContents.send('before-app-exit');
       }
   });
-  if(args.url){
-    win.loadURL(args.url);
+  if(isValidUrl(pUrl)){
+    win.loadURL(pUrl);
   } else {
     win.loadFile(path.resolve(path.join(electronProjectRoot,"dist",'index.html')))
   }
@@ -437,9 +437,8 @@ ipcMain.on('close-main-render-process', _ => {
 function debounce(func, wait, immediate) {
   var timeout;
 
-  return function executedFunction() {
+  return function executedFunction(...args) {
     var context = this;
-    var args = arguments;
 	    
     var later = function() {
       timeout = null;

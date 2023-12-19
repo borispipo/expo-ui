@@ -10,6 +10,7 @@ module.exports = {
         console.error(...args);
         process.exit(-1);
     },
+    isValidUrl : require("./isValidUrl"),
     createDirSync : require("./createDirSync"),
     ...require("./dependencies"),
     isObj : x=> typeof x =="object" && x && !Array.isArray(x),

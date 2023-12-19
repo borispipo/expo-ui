@@ -9,9 +9,10 @@
 
 module.exports = {
     /***** 
-        @must return Instance of Browser window
-        width: 500, height: 400, transparent: true, frame: false, 
-        alwaysOnTop: true
+        must return an Instance of Browser window
+        width: 500, height: 400, transparent: true, frame: false, alwaysOnTop: true
+        @param {width{number|500},{height{number|400}},transparent{boolean|true}, frame{boolean|false}, alwaysOnTop{boolean|true}}
+        @return {InstanceOf(BrowserWindow)}
     */
     splashScreen : function({width, height, transparent, frame, alwaysOnTop}){
         return null;

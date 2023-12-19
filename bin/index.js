@@ -10,7 +10,7 @@
 const { program } = require('commander');
 const path= require("path");
 const fs = require("fs");
-const  {createDir,electronDir,copy,exec,throwError,paths:getPaths,writeFile} = require("./utils");
+const  {createDir,electronDir,copy,exec,throwError,paths:getPaths,writeFile,isValidUrl} = require("./utils");
 
 
 const dir = path.resolve(__dirname);
@@ -50,13 +50,13 @@ program.command('electron')
   //.option('-s, --splash [dir]', 'le chemin (relatif au project root) du fichier du splash screen de l\'application')
   .option('-o, --out [dir]', 'le chemin (relatif au project root) du répertoire qui contiendra les fichiers build')
   .option('-u, --url [url]', 'le lien url qui sera ouvert par l\'application')
-  .option('-i, --compile [url]', 'le lien url qui sera ouvert par l\'application')
+  .option('-b, --build [boolean]', 'si ce flag est spécfifié alors l\'application sera compilée')
   .option('-a, --arch [architecture]', 'l\'architecture de la plateforme')
   .option('-p, --platform [platform]', 'la plateforme à utiliser pour la compilation')
   .action((script, options) => {
     const electronProjectRoot = path.resolve(projectRoot,"electron");
     const opts = Object.assign({},typeof options.opts =='function'? options.opts() : options);
-    let {out,arch,url,compile,platform} = opts;
+    let {out,arch,url,build,platform} = opts;
     //let {projectRoot} = opts;
     if(projectRoot == dir){
         throwError(`Invalid project root ${projectRoot}; project root must be different to ${dir}`);
@@ -122,7 +122,7 @@ program.command('electron')
     let cmd = undefined;
     const start = x=>{
        return new Promise((resolve,reject)=>{
-        cmd = `electron "${electronProjectRoot}"${url? ` --url ${url}`:''} --paths ${pathsJSON} --root ${projectRoot}`;
+        cmd = `electron "${electronProjectRoot}" --paths ${pathsJSON} --root ${projectRoot} ${isValidUrl(url)? ` --url ${url}`:''}`;
           exec({
             cmd, 
             projectRoot : electronProjectRoot,
@@ -143,7 +143,7 @@ program.command('electron')
             reject("dossier web-build exporté par electron innexistant!!");
           }
         }
-        if(!url && (compile || script ==="build" || !fs.existsSync(path.resolve(webBuildDir,"index.html")))){
+        if(!url && (build || script ==="build" || !fs.existsSync(path.resolve(webBuildDir,"index.html")))){
           console.log("exporting expo web app ...");
           try {
             writeFile(packagePath,JSON.stringify({...packageObj,homepage:"./"},null,"\t"));

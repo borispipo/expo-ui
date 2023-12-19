@@ -6,9 +6,9 @@ const { program } = require('commander');
 const getPaths = require("../electron/utils/paths");
 
 program
-  .option('-u, --url <url>', 'the loading url')
-  .option('-r, --root <projectRoot>', 'the project root path')
-  .option('-p, --paths <paths>', 'le chemin vers le fichiers paths.json')
+  .option('-u, --url <url>', 'L\'adresse url à ouvrir au lancement de l\'application')
+  .option('-r, --root <projectRoot>', 'le chemin du project root de l\'application')
+  .option('-p, --paths <paths>', 'le chemin vers le fichiers paths.json contenant la liste des alias de l\'application, exportés au moment de la compilation')
   .parse();
 
 const programOptions = program.opts();
@@ -68,13 +68,14 @@ const setOSTheme = (theme) => {
     theme = "light";
   }
   nativeTheme.themeSource = theme;
-  session.set("electron-os-theme",theme);
+  session.set("os-theme",theme);
   return nativeTheme.shouldUseDarkColors
 }
-setOSTheme(session.get("electron-os-theme"));
-let isObj = x => x && typeof x =='object';
+setOSTheme(session.get("os-theme"));
+const isObj = x => x && typeof x =='object';
+
 function createBrowserWindow (options){
-  options = options && typeof options =='object'? options : {};
+  options = Object.assign({},options);
   let menu = options.menu;
   options.webPreferences = isObj(options.webPreferences)? options.webPreferences : {}
   options.webPreferences = {
@@ -109,7 +110,7 @@ function createBrowserWindow (options){
   if(typeof mainProcess.beforeCreateWindow =='function'){
      mainProcess.beforeCreateWindow(options);
   }
-  let _win = new BrowserWindow(options);
+  const _win = new BrowserWindow(options);
   if(!menu){
       _win.setMenu(null);
       _win.removeMenu();
@@ -119,7 +120,9 @@ function createBrowserWindow (options){
   const url = isValidUrl(options.loadURL) ? options.loadURL : isValidUrl(pUrl) ? pUrl : undefined;
   if(url){
     _win.loadURL(url);
-  }
+  } else if(options.file && fs.existsSync(options.file)){
+    _win.loadFile(options.file);
+  } 
   if(showOnLoad){
     _win.once('ready-to-show', () => {
         _win.show();
@@ -293,7 +296,7 @@ const toggleDevTools = (value)=>{
   }
   return false;
 }
-ipcMain.on("electron-toggle-dev-tools",function(event,value) {
+ipcMain.on("toggle-dev-tools",function(event,value) {
   return toggleDevTools(value);
 });
 
@@ -315,7 +318,7 @@ app.whenReady().then(() => {
   });
 })
 
-ipcMain.on("electron-restart-app",x =>{app.relaunch();})
+ipcMain.on("restart-app",x =>{app.relaunch();})
   let tray = null;
   let isJSON = function (json_string){
   if(!json_string || typeof json_string != 'string') return false;
@@ -363,7 +366,7 @@ ipcMain.on("get-project-root",(event)=>{
   event.returnValue  = projectRoot;
   return projectRoot;
 });
-ipcMain.on("get-electron-project-root",(event)=>{
+ipcMain.on("get-project-root",(event)=>{
   event.returnValue = electronProjectRoot;
   return event.returnValue ;
 });
@@ -389,14 +392,14 @@ ipcMain.on("get-media-access-status",(event,mediaType)=>{
   return p;
 });
 
-ipcMain.on("electron-ask-for-media-access",(event,mediaType)=>{
+ipcMain.on("ask-for-media-access",(event,mediaType)=>{
   systemPreferences.askForMediaAccess(mediaType);
 });
 
 ipcMain.on("get-app-icon",(event)=>{
   event.returnValue = win != win && win.getIcon && win.getIcon();
 });
-ipcMain.on("electron-set-app-icon",(event,iconPath)=>{
+ipcMain.on("set-app-icon",(event,iconPath)=>{
    if(iconPath && win != null){
       win.setIcon(iconPath);
       event.returnValue = iconPath;
@@ -489,34 +492,32 @@ if(powerMonitor){
       })
   })
 }
-ipcMain.on("electron-set-main-window-title",(event,title)=>{
+ipcMain.on("set-main-window-title",(event,title)=>{
   if(win !== null){
       win.setTitle(title);
   }
 })
 
 
-ipcMain.handle("electron-create-browser-windows",function(event,options){
-  if(!isObj(options)){
-     options = {};
-  }
+ipcMain.handle("create-browser-windows",function(event,options){
+  options = Object.assign({},options);
   createBrowserWindow(options);
 })
 
-ipcMain.handle("electron-show-open-dialog",function(event,options){
+ipcMain.handle("show-open-dialog",function(event,options){
   if(!isObj(options)){
      options = {};
   }
   return dialog.showOpenDialog(win,options)
 })
 
-ipcMain.handle("electron-show-save-dialog",function(event,options){
+ipcMain.handle("show-save-dialog",function(event,options){
   if(!isObj(options)){
      options = {};
   }
   return dialog.showSaveDialog(win,options)
 })
-ipcMain.on("electron-is-dev-tools-open",function(event,value) {
+ipcMain.on("is-dev-tools-open",function(event,value) {
   if(win !==null && win.webContents){
     return win.webContents.isDevToolsOpened();
   }
@@ -524,7 +525,7 @@ ipcMain.on("electron-is-dev-tools-open",function(event,value) {
 })
 
 
-ipcMain.on("electron-window-set-progressbar",(event,interval)=>{
+ipcMain.on("window-set-progressbar",(event,interval)=>{
    if(typeof interval !="number" || interval <0) interval = 0;
    interval = Math.floor(interval);
    if(win){
@@ -533,6 +534,6 @@ ipcMain.on("electron-window-set-progressbar",(event,interval)=>{
 })
 
 /**** customisation des thèmes de l'application */
-ipcMain.handle('electron-set-system-theme:toggle', (event,theme) => {
+ipcMain.handle('set-system-theme:toggle', (event,theme) => {
   return setOSTheme(theme);
 });

@@ -10,6 +10,10 @@ module.exports = {
         console.error(...args);
         process.exit(-1);
     },
+    replaceAll : require("./replaceAll"),
+    isBase64 : require("./isBase64"),
+    isDataURL : require("./isDataURL"),
+    dataURLToBase64 : require("./isDataURL").toBase64,
     isValidUrl : require("./isValidUrl"),
     createDirSync : require("./createDirSync"),
     ...require("./dependencies"),

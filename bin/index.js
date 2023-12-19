@@ -79,6 +79,7 @@ program.command('electron')
         writeFile(path.resolve(localElectronPackageElectron,"paths.json"),JSON.stringify(paths,null,"\t"));
       } catch{}
     }
+    
     /**** le project root d'où a été lancé le script electron doit être le même que celui de l'application principale */
     if(projectRoot !== paths.projectRoot){
        throwError(`main app project root ${paths.projectRoot} must be equals to ${projectRoot} in which you want to generate electron app`);

@@ -32,7 +32,7 @@ module.exports = (ELECTRON,paths)=>{
     }
     const ext = {
         toggleDevTools : (value)=>{
-            ipcRenderer.send("electron-toggle-dev-tools",defaultBool(value,true));
+            ipcRenderer.send("toggle-dev-tools",defaultBool(value,true));
         },
         gc : x =>{
             if(typeof global.gc =='function') return global.gc();
@@ -49,27 +49,6 @@ module.exports = (ELECTRON,paths)=>{
             totalRAMInGB : totalRAM / (1024 * 1024 * 1024),
             getFreeRAM : (unit)=> getMem(unit,"freemem"),
             getTotalRAM : (unit)=> getMem(unit,'totalmem')
-        },
-        setTitle : (title) =>{
-            if(title && typeof title =="string"){
-               ipcRenderer.send("electron-set-main-window-title",title);
-            }
-        },
-        createWindow : (options)=>{
-            options = defaultObj(options);
-            options.showOnLoad = defaultBool(options.showOnLoad,true);
-            return ipcRenderer.invoke("electron-create-browser-windows",options);
-        },
-        createPDFWindow :(options)=>{
-            options = defaultObj(options);
-            options.modal = true;
-            return ELECTRON.createWindow(options);
-        },
-        createProgressBar : (options)=>{
-            if(!options || typeof options != 'object' || Array.isArray(options)){
-                options = {};
-            }
-            return //new ProgressBar(options,app);
         },
         getAutoUpdaterEvents : ()=> [
             //'checking-for-update',

@@ -6,14 +6,14 @@ import notify from "$cnotify";
 import DialogProvider from "$ecomponents/Form/FormData/DialogProvider";
 import {isNonNullString,defaultObj,defaultStr} from "$cutils";
 import session from "$session";
+import printPdfMake from "./print";
 
 const {createPdf} = pdfMake;
 pdfMake.createPdf = (docDefinition,...rest)=>{
     try {
         //@see : https://pdfmake.github.io/docs/0.1/getting-started/client-side/methods/
         const pdf = createPdf(docDefinition,...rest);
-        pdf.print();
-        //pdf.open({}, window)
+        printPdfMake(pdf,{...Object.assign({},docDefinition),...Object.assign({},rest[0])});
         return pdf;
     } catch(e){
         console.log(e," generating pdf make create eerrror");

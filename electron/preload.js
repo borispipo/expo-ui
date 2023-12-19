@@ -4,10 +4,14 @@ const { contextBridge, ipcRenderer, shell } = require('electron')
 const appInstance = require("./app/instance");
 const path = require("path");
 const fs = require("fs");
+const isDataURL = require("./utils/isDataURL");
+const isBase64 = require("./utils/isBase64");
 const isNonNullString = x=>x && typeof x =='string';
+const replaceAll = require("./utils/replaceAll");
 const pathsStr = ipcRenderer.sendSync("get-paths.json");
 const paths = typeof pathsStr ==='string' && pathsStr ? JSON.parse(pathsStr) : {};
 const appName = ipcRenderer.sendSync("get-app-name");
+const sanitize = require("sanitize-filename");
 if(!appName || typeof appName !=='string'){
     throw {message : "Nom de l'application invalide!! Veuillez spécifier un nom valide d'application"}
 }
@@ -24,6 +28,12 @@ const APP_PATH = path.join(getPath("appData"),APP_NAME).toLowerCase();
 let databasePath = path.join(APP_PATH,"databases");
 let ROOT_APP_FOLDER = undefined;
 let appBackupPathRef = undefined;
+const defaultStr = (...args)=>{
+    for(let i in args){
+        if(args[i] && typeof args[i] ==='string') return args[i];
+    }
+    return "";
+}
 const separator = (path.sep)
 if(typeof separator != 'string' || !separator){
     separator = (()=>{
@@ -87,6 +97,52 @@ const removeListener =  (channel, callback) => {
         ipcRenderer.removeAllListeners(channel)
     }    
 };
+
+const createWindow = (options)=>{
+    options = Object.assign({},options);
+    options.showOnLoad = typeof options.showOnLoad =='boolean'? options.showOnLoad : true;
+    return ipcRenderer.invoke("create-browser-windows",options);
+};
+
+const createPDFFile = (options)=>{
+    return new Promise((resolve,reject)=>{
+        const dir = getPath("temp");
+        options = Object.assign({},options);
+        let {content,filename,fileName,charset,success,fileExtension,extension,type} = options;
+        filename = defaultStr(filename,fileName)
+        if(isDataURL(content)){
+            content = isDataURL.toBase64(content);
+        }
+        if(isBase64(content)){
+            content = Buffer.from(content,'base64');
+        } else {
+           content = null;
+        }
+        if(!content){
+          console.warn('type de contenu invalide!! impression création fichier electron');
+          return null;
+        }
+        filename = defaultStr(filename,uniqid("print-salite-file-name"))
+        fileExtension = defaultStr(fileExtension,extension,'pdf');
+        charset = defaultStr(charset,'utf-8')
+        filename = sanitize(filename);
+        if(!fileName.endsWith(`.${fileExtension}`)){
+            fileName += "."+fileExtension
+        }
+        return fs.writeFile(_path.join(dir,filename), content,{charset},(err)=>{
+            if(!err) {
+                const fileUrl = 'file://'+(dir+'/'+filename).replaceAll("\\","/");
+                const p = _path.join(dir,filename);
+                const filePathUrl = 'file://'+p;
+                resolve({content,fileName:filename,filename,path:p,filePathUrl,filePathUri:filePathUrl,fileUrl,filePath:p,fileUri:fileUrl})
+            } else {
+                reject(err);
+            }
+        })    
+    })
+}
+
+
 const ELECTRON = {
     get getPouchdb(){
         return ({PouchDB,sqlPouch})=> {
@@ -135,18 +191,18 @@ const ELECTRON = {
     get showOpenDialog(){
        return (options)=>{
         options = typeof options =='object' && options && !Array.isArray(options)? options : {};
-        return ipcRenderer.invoke("electron-show-open-dialog",options);
+        return ipcRenderer.invoke("show-open-dialog",options);
        }
     },
     get showSaveDialog(){
         return (options)=>{
             options = typeof options =='object' && options && !Array.isArray(options)? options : {};
-            return ipcRenderer.invoke("electron-show-save-dialog",options);
+            return ipcRenderer.invoke("show-save-dialog",options);
         };
     },
     get restartApp(){
         return ()=>{
-            ipcRenderer.sendSync("electron-restart-app")
+            ipcRenderer.sendSync("restart-app")
         };
     },
     get is() {
@@ -190,7 +246,7 @@ const ELECTRON = {
     },
     get updateSystemTheme(){
         return  (theme)=>{
-            return ipcRenderer.invoke("electron-set-system-theme:toggle",theme);
+            return ipcRenderer.invoke("set-system-theme:toggle",theme);
         };
     },
     get SESSION (){
@@ -290,9 +346,51 @@ const ELECTRON = {
     },
     get toggleDevTools(){
         return async (toggle)=>{
-            return await ipcRenderer.send("electron-toggle-dev-tools",toggle);
+            return await ipcRenderer.send("toggle-dev-tools",toggle);
         }
-    } 
+    },
+    get createWindow (){
+        return createWindow;
+    },
+    get createPDFWindow(){
+        return (options)=>{
+            options = Object.assign({},options);
+            options.modal = true;
+            return createWindow(options);
+        }
+    },
+    get createPDFFile(){
+        return createPDFFile;
+    },
+    get createPdfFile(){
+        return createPDFFile;
+    },
+    createProgressBar : (options)=>{
+        if(!options || typeof options != 'object' || Array.isArray(options)){
+            options = {};
+        }
+        return //new ProgressBar(options,app);
+    },
+    get setTitle(){
+        return (title) =>{
+            if(title && typeof title =="string"){
+                ipcRenderer.send("set-main-window-title",title);
+            }
+        };
+    },
+    get printPDF (){
+        return (options)=>{
+            const urlPath = path.resolve("./pdf-viewer","viewer.html");
+            return createWindow({file:urlPath,modal:true,showOnLoad:true});
+            return createPDFFile(options).then(({path,filePathUrl})=>{
+                if(fs.existsSync(path)){            
+                    opts.loadURL = `file://${urlPath}?file=${decodeURIComponent(filePathUrl)}&locale=fr`;
+                    opts.showOnLoad = true;
+                    return this.createPDFWindow(opts)
+                }
+            })
+        }
+    }
 };
 
 require("./pload")(ELECTRON,paths || {});

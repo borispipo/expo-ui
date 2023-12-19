@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "7.4.34",
+  "version": "7.4.37",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "scripts": {
     "clear-npx-cache": "npx clear-npx-cache",
@@ -99,9 +99,11 @@
     "fs-extra": "^11.2.0",
     "google-libphonenumber": "^3.2.33",
     "htmlparser2-without-node-native": "^3.9.2",
+    "i": "^0.3.7",
     "is-plain-obj": "^4.1.0",
     "js-base64": "^3.7.5",
     "node-machine-id": "^1.1.12",
+    "npm": "^10.2.5",
     "pdfmake": "^0.2.8",
     "process": "^0.11.10",
     "prop-types": "^15.8.1",
@@ -123,8 +125,10 @@
     "react-native-web": "^0.19.9",
     "react-native-webview": "13.2.2",
     "react-virtuoso": "^4.6.2",
+    "sanitize-filename": "^1.6.3",
     "sharp-cli": "^2.1.0",
     "tippy.js": "^6.3.7",
+    "uninstall": "^0.0.0",
     "websql": "^2.0.3",
     "xlsx": "^0.18.5"
   },

@@ -33,10 +33,10 @@ const DrawerNavigator = React.forwardRef(({content,children:customChildren,state
             },100)
         };
         APP.on(APP.EVENTS.AUTH_LOGOUT_USER,onLogoutUser);
-        //APP.on(APP.EVENTS.UPDATE_THEME,refreshItems);
+        APP.on(APP.EVENTS.UPDATE_THEME,refreshItems);
         return ()=>{
             APP.off(APP.EVENTS.AUTH_LOGOUT_USER,onLogoutUser);
-            //APP.off(APP.EVENTS.UPDATE_THEME,refreshItems);
+            APP.off(APP.EVENTS.UPDATE_THEME,refreshItems);
         }
     },[]);
     const headerCB = ({isMinimized})=>{

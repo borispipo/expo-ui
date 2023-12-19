@@ -16,9 +16,11 @@ const {url:pUrl,paths:pathsJSON,root:mainProjectRoot} = programOptions
 const cPaths = path.resolve("./paths.json");
 const pathsJ = pathsJSON && fs.existsSync(pathsJSON) && pathsJSON.endsWith("paths.json")? pathsJSON  : null;
 let paths = pathsJ ? require(`${pathsJ}`) : fs.existsSync(cPaths) ? require(cPaths) : '';
-let projectRoot = mainProjectRoot && fs.existsSync(mainProjectRoot) ? mainProjectRoot : paths.projectRoot || process.cwd();
-let electronProjectRoot = projectRoot && fs.existsSync(path.resolve(projectRoot,"electron")) && path.resolve(projectRoot,"electron") || '';
+const projectRoot = mainProjectRoot && fs.existsSync(mainProjectRoot) ? mainProjectRoot : paths.projectRoot || process.cwd();
+const electronProjectRoot = projectRoot && fs.existsSync(path.resolve(projectRoot,"electron")) && path.resolve(projectRoot,"electron") || '';
 const ePathsJSON = path.resolve(electronProjectRoot,"paths.json");
+const packageJSONPath = path.resolve(projectRoot,"package.json");
+const packageJSON = fs.existsSync(packageJSONPath) ? require(`${packageJSONPath}`) : {};
 const eePaths = path.resolve(getPaths(projectRoot));
 if(!paths){
   if(fs.existsSync(ePathsJSON)){
@@ -351,20 +353,37 @@ ipcMain.on("update-system-tray",(event,opts)=>{
   } else contextMenu = null;
   tray.setContextMenu(contextMenu) 
 })
-ipcMain.on("electron-get-path",(event,pathName)=>{
+ipcMain.on("get-path",(event,pathName)=>{
   const p = app.getPath(pathName);
   event.returnValue = p;
   return p;
 });
 
-ipcMain.on("electron-get-project-root",(event)=>{
+ipcMain.on("get-project-root",(event)=>{
+  event.returnValue  = projectRoot;
   return projectRoot;
 });
-ipcMain.on("electron-get-electron-project-root",(event)=>{
-  return electronProjectRoot;
+ipcMain.on("get-electron-project-root",(event)=>{
+  event.returnValue = electronProjectRoot;
+  return event.returnValue ;
 });
 
-ipcMain.on("electron-get-media-access-status",(event,mediaType)=>{
+ipcMain.on("get-package.json",(event)=>{
+  event.returnValue = JSON.stringify(packageJSON);
+  return event.returnValue ;
+});
+
+ipcMain.on("get-paths.json",(event)=>{
+  event.returnValue = JSON.stringify(paths);
+  return event.returnValue ;
+});
+
+ipcMain.on("get-app-name",(event)=>{
+  event.returnValue = packageJSON.name;
+  return event.returnValue ;
+});
+
+ipcMain.on("get-media-access-status",(event,mediaType)=>{
   let p = systemPreferences.getMediaAccessStatus(mediaType);
   event.returnValue = p;
   return p;
@@ -374,7 +393,7 @@ ipcMain.on("electron-ask-for-media-access",(event,mediaType)=>{
   systemPreferences.askForMediaAccess(mediaType);
 });
 
-ipcMain.on("electron-get-app-icon",(event)=>{
+ipcMain.on("get-app-icon",(event)=>{
   event.returnValue = win != win && win.getIcon && win.getIcon();
 });
 ipcMain.on("electron-set-app-icon",(event,iconPath)=>{

@@ -4,23 +4,21 @@ const { contextBridge, ipcRenderer, shell } = require('electron')
 const appInstance = require("./app/instance");
 const path = require("path");
 const fs = require("fs");
-const isObj = x=>x && typeof x =='object' && !Array.isArray(x);
 const isNonNullString = x=>x && typeof x =='string';
-const projectRoot = ipcRenderer.sendSync("electron-get-project-root");
-const electronProjectRoot = ipcRenderer.sendSync("electron-get-electron-project-root");
-const pathsJS = electronProjectRoot && fs.existsSync(electronProjectRoot) && path.resolve(electronProjectRoot,"paths.json") || null;
-const _app = projectRoot && fs.existsSync(path.resolve(projectRoot,"package.json")) ? require(path.resolve(projectRoot,"package.json")) : {};
-if(!_app || typeof _app !=='object' || typeof _app.name !=='string'){
-    throw {message : "Contenu du fichier "+packagePath+" invalide!! Veuillez spécifier un nom valide d'application, propriété <<name>> dudit fichier"}
+const pathsStr = ipcRenderer.sendSync("get-paths.json");
+const paths = typeof pathsStr ==='string' && pathsStr ? JSON.parse(pathsStr) : {};
+const appName = ipcRenderer.sendSync("get-app-name");
+if(!appName || typeof appName !=='string'){
+    throw {message : "Nom de l'application invalide!! Veuillez spécifier un nom valide d'application"}
 }
-const paths = pathsJS ? require(`${pathsJS}`) : {};
-const APP_NAME = _app.name.trim().toUpperCase();
+const APP_NAME = appName.toUpperCase();
 let backupPathField = "_e_backupDataPath";
 let cBackupPathField = "company"+backupPathField;
 let dbPathField = "_electron_DBPathField";
+
 const getPath = function(pathName){
     if(typeof pathName !=='string' || !pathName) return;
-    return ipcRenderer.sendSync("electron-get-path",pathName);
+    return ipcRenderer.sendSync("get-path",pathName);
 }
 const APP_PATH = path.join(getPath("appData"),APP_NAME).toLowerCase();
 let databasePath = path.join(APP_PATH,"databases");

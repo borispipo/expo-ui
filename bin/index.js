@@ -19,7 +19,8 @@ const packageObj = require("../package.json");
 const version = packageObj.version;
 const description = packageObj.description;
 const packageName = packageObj.name;
-
+const localElectronPackage = path.resolve(projectRoot,"node_modules",packageName)
+const localElectronPackageElectron = path.resolve(localElectronPackage,"electron");
 
 program
   .name(packageName)
@@ -70,8 +71,13 @@ program.command('electron')
       }
     } 
     const paths = require(`${pathsJSON}`);
-    if(typeof paths !=='object' || !paths || !paths.projectRoot){
+    if(typeof paths !=='object' || !paths || !paths.projectRoot || !fs.existsSync(paths.projectRoot)){
         throwError("Fichiers des chemins d'application invalide!!! merci d'exécuter l'application en environnement web|android|ios puis réessayez");
+    }
+    if(fs.existsSync(localElectronPackageElectron)){
+      try {
+        writeFile(path.resolve(localElectronPackageElectron,"paths.json"),JSON.stringify(paths,null,"\t"));
+      } catch{}
     }
     /**** le project root d'où a été lancé le script electron doit être le même que celui de l'application principale */
     if(projectRoot !== paths.projectRoot){

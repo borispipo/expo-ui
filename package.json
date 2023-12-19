@@ -1,8 +1,7 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "7.4.30",
+  "version": "7.4.32",
   "description": "Bibliothèque de composants UI Expo,react-native",
-  "main": "main",
   "scripts": {
     "clear-npx-cache": "npx clear-npx-cache",
     "publish1": "npm publish --access=public",
@@ -102,6 +101,7 @@
     "htmlparser2-without-node-native": "^3.9.2",
     "is-plain-obj": "^4.1.0",
     "js-base64": "^3.7.5",
+    "node-machine-id": "^1.1.12",
     "pdfmake": "^0.2.8",
     "process": "^0.11.10",
     "prop-types": "^15.8.1",

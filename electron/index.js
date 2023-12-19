@@ -74,28 +74,29 @@ const setOSTheme = (theme) => {
 setOSTheme(session.get("os-theme"));
 const isObj = x => x && typeof x =='object';
 
+
 function createBrowserWindow (options){
   options = Object.assign({},options);
   let menu = options.menu;
-  options.webPreferences = isObj(options.webPreferences)? options.webPreferences : {}
+  options.webPreferences = isObj(options.webPreferences)? options.webPreferences : {};
   options.webPreferences = {
     sandbox: false,
-    ...options.webPreferences,
-    contextIsolation: true,
-    devTools: typeof options.webPreferences.devTools === 'boolean'? options.webPreferences.devTools : false,
     webSecurity : true,
+    plugin:false,
     autoHideMenuBar: true,
+    contextIsolation: true,
+    contentSecurityPolicy: `
+      default-src 'none';
+      script-src 'self';
+      img-src 'self' data:;
+      style-src 'self';
+      font-src 'self';
+    `,
+    ...options.webPreferences,
+    devTools: typeof options.webPreferences.devTools === 'boolean'? options.webPreferences.devTools : false,
     allowRunningInsecureContent: false,
     nodeIntegration: false,
     preload: options.preload ? options.preload : null,
-    plugin:false,
-    contentSecurityPolicy: `
-        default-src 'none';
-        script-src 'self';
-        img-src 'self' data:;
-        style-src 'self';
-        font-src 'self';
-      `
   }
   if(options.modal && !options.parent && win){
     options.parent = win;
@@ -110,14 +111,14 @@ function createBrowserWindow (options){
   if(typeof mainProcess.beforeCreateWindow =='function'){
      mainProcess.beforeCreateWindow(options);
   }
-  const _win = new BrowserWindow(options);
+  let _win = new BrowserWindow(options);
   if(!menu){
       _win.setMenu(null);
       _win.removeMenu();
       _win.setMenuBarVisibility(false)
       _win.setAutoHideMenuBar(true)
   }
-  const url = isValidUrl(options.loadURL) ? options.loadURL : isValidUrl(pUrl) ? pUrl : undefined;
+  const url = isValidUrl(options.loadURL) || typeof options.loadURL ==='string' && options.loadURL.trim().startsWith("file://") ? options.loadURL : undefined;
   if(url){
     _win.loadURL(url);
   } else if(options.file && fs.existsSync(options.file)){
@@ -126,6 +127,7 @@ function createBrowserWindow (options){
   if(showOnLoad){
     _win.once('ready-to-show', () => {
         _win.show();
+        _win.webContents.send("window-ready-to-show",JSON.stringify(options.readyToShowOptions));
     });
   }
   _win.on('closed', function() {
@@ -138,6 +140,7 @@ function createWindow () {
   win = createBrowserWindow({
     showOnLoad : false,
     loadURL : undefined,
+    registerDevToolsCommand : false,
     preload : path.resolve(__dirname,'preload.js'),
     webPreferences : {
       devTools : true,
@@ -264,6 +267,7 @@ function createWindow () {
   if(mainProcess && typeof mainProcess =='object' && typeof mainProcess.onCreateWindow =='function'){
      mainProcess.onCreateWindow(win);
   }
+  return win;
 }
 
 const quit = ()=>{
@@ -282,17 +286,18 @@ app.on('window-all-closed', () => {
   }
 })
 
-const toggleDevTools = (value)=>{
-  if(win !==null && win.webContents){
-    const isOpen= win.webContents.isDevToolsOpened();
+const toggleDevTools = (value,window)=>{
+  window = window instanceof BrowserWindow ? window : win;
+  if(window !==null && window.webContents){
+    const isOpen= window.webContents.isDevToolsOpened();
     value = value === undefined ? !isOpen : value;
     if(value && !isOpen){
-        win.webContents.openDevTools();
-        return win.webContents.isDevToolsOpened();
+        window.webContents.openDevTools();
+        return window.webContents.isDevToolsOpened();
     } else {
-        if(isOpen) win.webContents.closeDevTools();
+        if(isOpen) window.webContents.closeDevTools();
     }
-    return win.webContents.isDevToolsOpened();
+    return window.webContents.isDevToolsOpened();
   }
   return false;
 }
@@ -500,6 +505,12 @@ ipcMain.on("set-main-window-title",(event,title)=>{
 
 
 ipcMain.handle("create-browser-windows",function(event,options){
+  if(typeof options =='string'){
+    try {
+      const t = JSON.parse(options);
+      options = t;
+    } catch{}
+  }
   options = Object.assign({},options);
   createBrowserWindow(options);
 })

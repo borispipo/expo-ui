@@ -12,6 +12,7 @@ const pathsStr = ipcRenderer.sendSync("get-paths.json");
 const paths = typeof pathsStr ==='string' && pathsStr ? JSON.parse(pathsStr) : {};
 const appName = ipcRenderer.sendSync("get-app-name");
 const sanitize = require("sanitize-filename");
+const uniqid = require("./utils/uniqid");
 if(!appName || typeof appName !=='string'){
     throw {message : "Nom de l'application invalide!! Veuillez spécifier un nom valide d'application"}
 }
@@ -101,15 +102,15 @@ const removeListener =  (channel, callback) => {
 const createWindow = (options)=>{
     options = Object.assign({},options);
     options.showOnLoad = typeof options.showOnLoad =='boolean'? options.showOnLoad : true;
-    return ipcRenderer.invoke("create-browser-windows",options);
+    return ipcRenderer.invoke("create-browser-windows",JSON.stringify(options));
 };
 
 const createPDFFile = (options)=>{
     return new Promise((resolve,reject)=>{
         const dir = getPath("temp");
         options = Object.assign({},options);
-        let {content,filename,fileName,charset,success,fileExtension,extension,type} = options;
-        filename = defaultStr(filename,fileName)
+        let {content,filename,fileName,charset,fileExtension,extension} = options;
+        fileName = defaultStr(filename,fileName)
         if(isDataURL(content)){
             content = isDataURL.toBase64(content);
         }
@@ -122,19 +123,19 @@ const createPDFFile = (options)=>{
           console.warn('type de contenu invalide!! impression création fichier electron');
           return null;
         }
-        filename = defaultStr(filename,uniqid("print-salite-file-name"))
-        fileExtension = defaultStr(fileExtension,extension,'pdf');
+        fileName = defaultStr(fileName,uniqid("generated-printed-pdf-file-name"))
+        fileExtension = defaultStr(fileExtension,extension,'pdf').split(".")[0];
         charset = defaultStr(charset,'utf-8')
-        filename = sanitize(filename);
+        fileName = sanitize(fileName);
         if(!fileName.endsWith(`.${fileExtension}`)){
             fileName += "."+fileExtension
         }
-        return fs.writeFile(_path.join(dir,filename), content,{charset},(err)=>{
+        return fs.writeFile(path.join(dir,fileName), content,{charset},(err)=>{
             if(!err) {
-                const fileUrl = 'file://'+(dir+'/'+filename).replaceAll("\\","/");
-                const p = _path.join(dir,filename);
+                const p = path.join(dir,fileName);
+                const fileUrl = 'file://'+p.replaceAll("\\","/");
                 const filePathUrl = 'file://'+p;
-                resolve({content,fileName:filename,filename,path:p,filePathUrl,filePathUri:filePathUrl,fileUrl,filePath:p,fileUri:fileUrl})
+                resolve({content,fileName,filename:fileName,path:p,filePathUrl,filePathUri:filePathUrl,fileUrl,filePath:p,fileUri:fileUrl})
             } else {
                 reject(err);
             }
@@ -380,12 +381,18 @@ const ELECTRON = {
     },
     get printPDF (){
         return (options)=>{
-            const urlPath = path.resolve("./pdf-viewer","viewer.html");
-            return createWindow({file:urlPath,modal:true,showOnLoad:true});
-            return createPDFFile(options).then(({path,filePathUrl})=>{
-                if(fs.existsSync(path)){            
-                    opts.loadURL = `file://${urlPath}?file=${decodeURIComponent(filePathUrl)}&locale=fr`;
-                    opts.showOnLoad = true;
+            options = Object.assign({},options);
+            return createPDFFile(options).then(({path:mainPath,filePathUrl,fileName})=>{
+                if(fs.existsSync(mainPath)){            
+                    const opts = {
+                        file : mainPath,
+                        fileName,
+                        pdfFilePath : mainPath,
+                        showOnLoad : true,
+                        webPreferences: {
+                            plugins: true
+                        }
+                    };
                     return this.createPDFWindow(opts)
                 }
             })

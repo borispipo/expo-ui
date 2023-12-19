@@ -1,4 +1,12 @@
-export default function print(pdfMakeInstance,...rest){
-    console.log("printint electron pdf make ",rest);
-    return pdfMakeInstance.print(...rest);
+import {isElectron} from "$cplatform";
+export default function print(pdfMakeInstance,options){
+    if(isElectron() && window?.ELECTRON && typeof window?.ELECTRON?.printPDF =='function'){
+        return pdfMakeInstance.getBase64((content)=>{
+            ELECTRON.printPDF({
+                ...Object.assign({},options),
+                content,
+            })
+        })
+    }
+    return pdfMakeInstance.print();
 }

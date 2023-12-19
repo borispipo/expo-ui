@@ -6,10 +6,12 @@ module.exports = {
     electronDir : path.resolve(__dirname, ".."),
     paths : require("./paths"),
     exec : require("./exec"),
+    uniqid : require("./uniqid"),
     throwError : (...args)=>{
         console.error(...args);
         process.exit(-1);
     },
+    json : require("./json"),
     replaceAll : require("./replaceAll"),
     isBase64 : require("./isBase64"),
     isDataURL : require("./isDataURL"),

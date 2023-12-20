@@ -16,7 +16,7 @@ const iconName = process.platform =="win32" ? "icon.ico" : process.platform =='d
 
 program
   .option('-u, --url <url>', 'L\'adresse url à ouvrir au lancement de l\'application')
-  .option('-r, --root <projectRoot>', 'le chemin du project root de l\'application')
+  //.option('-r, --root <projectRoot>', 'le chemin du project root de l\'application')
   .option('-l, --icon [iconPath]', 'le chemin vers le dossier des icones de l\'application : (Dans ce dossier, doit contenir une image icon.ico pour window, icon.incs pour mac et icon.png pour linux)')
   .parse();
 
@@ -27,14 +27,11 @@ if(iconPath && fs.existsSync(path.resolve(iconPath,iconName))){
     iconPath = path.resolve(iconPath,iconName);
 }
 
-const isAsar = (typeof require.main =="string" && require.main ||"").indexOf('app.asar') !== -1;
 const distPath = path.join("dist",'index.html');
-
 const processCWD = process.cwd();
-const electronProjectRoot = mainProjectRoot && typeof mainProjectRoot =='string' && fs.existsSync(path.resolve(mainProjectRoot)) && fs.existsSync(path.resolve(mainProjectRoot,distPath)) && path.resolve(mainProjectRoot)  || null;
-const projectRoot =  electronProjectRoot || fs.existsSync(path.resolve(processCWD,"electron")) && fs.existsSync(path.resolve(processCWD,"electron",distPath)) && path.resolve(processCWD,"electron") 
-|| fs.existsSync(path.resolve(processCWD,distPath)) && path.resolve(processCWD) || processCWD;
-const packageJSONPath = fs.existsSync(processCWD,"package.json")? path.resolve(processCWD,"package.json") : path.resolve(projectRoot,"package.json");
+const appPath = app.getAppPath();
+const isAsar = appPath.indexOf('app.asar') !== -1;
+const packageJSONPath = fs.existsSync(processCWD,"package.json")? path.resolve(processCWD,"package.json") : fs.existsSync(path.resolve(appPath,"package.app.json")) ? path.resolve(appPath,"package.app.json") : path.resolve(appPath,"package.json") ;
 const packageJSON = fs.existsSync(packageJSONPath) ? Object.assign({},require(`${packageJSONPath}`)) : {};
 const appName = typeof packageJSON.realAppName =='string' && packageJSON.realAppName || typeof packageJSON.name =="string" && packageJSON.name || "";  
 
@@ -43,16 +40,17 @@ let mainWindow = undefined;
 
 Menu.setApplicationMenu(null);
 
-const indexFilePath = path.resolve(path.join(projectRoot,distPath));
+const indexFilePath = path.resolve(path.join(appPath,distPath));
 const mainProcessPath = path.resolve('processes',"main","index.js");
-const mainProcessIndex = projectRoot && fs.existsSync(path.resolve(projectRoot,mainProcessPath)) && path.resolve(projectRoot,mainProcessPath);
+const mainProcessIndex = fs.existsSync(path.resolve(appPath,mainProcessPath)) && path.resolve(appPath,mainProcessPath);
 const mainProcessRequired = mainProcessIndex && require(`${mainProcessIndex}`);
-//pour étendre les fonctionnalités au niveau du main proceess, bien vouloir écrire dans le fichier projectRoot/electron/main/index.js
+//pour étendre les fonctionnalités au niveau du main proceess, bien vouloir écrire dans le fichier ../electron/main/index.js
 const mainProcess = mainProcessRequired && typeof mainProcessRequired =='object'? mainProcessRequired : {};
+const execPath = app.getPath ('exe') || process.execPath;
 
 // Gardez une reference globale de l'objet window, si vous ne le faites pas, la fenetre sera
 if(!isValidUrl(pUrl) && !fs.existsSync(indexFilePath)){
-  throw {message:`Unable to start the application: index file located at [${indexFilePath}] does not exists : projectRoot = [${projectRoot}], isAsar:[${require.main}]`}
+  throw {message:`Unable to start the application: index file located at [${indexFilePath}] does not exists : appPath = [${appPath}], exec path is ${execPath}`}
 }
 
 const quit = ()=>{
@@ -349,12 +347,17 @@ function createWindow () {
     event.returnValue = p;
     return p;
   });
+  ipcMain.on("get-app-path",(event,pathName)=>{
+    event.returnValue = appPath;
+    return appPath;
+  });
   ipcMain.on("get-project-root",(event)=>{
-    event.returnValue  = projectRoot;
+    event.returnValue  = appPath;
     return event.returnValue;
   });
-  ipcMain.on("get-electron-project-root",(event)=>{
-    event.returnValue = projectRoot;
+  
+  ipcMain.on("get-process-cwd",(event)=>{
+    event.returnValue = processCWD;
     return event.returnValue ;
   });
   

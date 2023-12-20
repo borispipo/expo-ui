@@ -10,7 +10,7 @@ const appSuffix = "-desk";
 const mainPackage = require("../package.json");
 const mainPackageName = mainPackage.name;
 
-module.exports = ({projectRoot,electronProjectRoot})=>{
+module.exports = ({projectRoot,electronProjectRoot,icon})=>{
     return new Promise((resolve,reject)=>{
         //make shure electron project root exists
         if(!createDir(electronProjectRoot)){
@@ -19,7 +19,7 @@ module.exports = ({projectRoot,electronProjectRoot})=>{
         const mPackageJSON = Object.assign({},require(`${path.resolve(projectRoot,'package.json')}`));
         const electronPackagePath = path.resolve(electronProjectRoot,"package.json");
         const electronPackageJSON = Object.assign({},fs.existsSync(electronPackagePath)? require(electronPackagePath) : {});
-        const projectRootPackage = {...mPackageJSON,...electronPackageJSON};
+        const projectRootPackage = {icon,...mPackageJSON,...electronPackageJSON};
         const dependencies = require("../electron/dependencies");
         const electronProjectRootPackage = path.resolve(electronProjectRoot,"package.json");
         projectRootPackage.main = `index.js`;

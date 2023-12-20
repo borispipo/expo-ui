@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "7.5.40",
+  "version": "7.5.44",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "scripts": {
     "clear-npx-cache": "npx clear-npx-cache",
@@ -44,6 +44,7 @@
     "test-bin": "node ./bin/index.js",
     "update-appexchart": "npm run update-apexchart",
     "delete-node-modules": "rimraf ./**/node_modules",
+    "extract-asar" : "npx @electron/asar extract app.asar <destfolder>",
     "dev": "npx expo start --no-dev --minify -c",
     "modifier-url-remote-git": "git remote set-url origin 'https://borispipo@github.com/borispipo/smart-eneo.git'",
     "update": "npm i pdfmake@latest expo @emotion/native@latest react-native-big-list@latest apexcharts@latest file-saver@latest fs-extra@latest google-libphonenumber@latest @pchmn/expo-material3-theme@latest @emotion/native@latest @fto-consult/common@latest @react-navigation/stack react-native-blob-util  react-native-iphone-x-helper@latest react-native-mime-types@latest react-native-paper@latest react-native-paper-dates@latest @react-navigation/native@latest @react-navigation/native-stack@latest react-virtuoso@latest tippy.js@latest websql@latest xlsx@latest react-native-web@latest react-dom@latest && npx expo install --fix && npm run update-apexchart && npm run update-pdfmake && npm run find-licenses"

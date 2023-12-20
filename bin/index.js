@@ -60,7 +60,6 @@ program.command('electron')
     const electronProjectRoot = path.resolve(projectRoot,"electron");
     const opts = Object.assign({},typeof options.opts =='function'? options.opts() : options);
     let {out,arch,url,build,platform,import:packageImport,icon} = opts;
-    //let {projectRoot} = opts;
     if(projectRoot == dir){
         throwError(`Invalid project root ${projectRoot}; project root must be different to ${dir}`);
     }
@@ -80,6 +79,14 @@ program.command('electron')
     let cmd = undefined;
     icon = icon && typeof icon =="string" && fs.existsSync(path.resolve(icon)) && icon || undefined;
     require("../electron/create-index-file")({electronProjectRoot,appName:packageObj.name,icon});
+    if(fs.existsSync(electronProjectRoot)){
+      const mainPackagePath = path.resolve(electronProjectRoot,"package.app.json");
+      try {
+        const mainPackageAppJSON = fs.existsSync(mainPackagePath)? require(mainPackagePath) : {};
+        writeFile(mainPackagePath,JSON.stringify({...packageObj,...mainPackageAppJSON,icon:icon||mainPackageAppJSON.icon||undefined},null,"\t"));
+      } catch{}
+    }
+    
     if(!isElectionInitialized || script =='init'){
         if(script !=='init'){
             console.log("initializing electron application before ....");
@@ -88,6 +95,7 @@ program.command('electron')
            projectRoot,
            electronDir,
            electronProjectRoot,
+           icon,
         });
     }
     const outDir = out && path.dirname(out) && path.resolve(path.dirname(out),"electron") || path.resolve(electronProjectRoot,"bin")
@@ -96,7 +104,7 @@ program.command('electron')
     }
     const start = x=>{
        return new Promise((resolve,reject)=>{
-        cmd = `electron "${electronProjectRoot}" --root ${electronProjectRoot} ${icon ? `--icon ${path.resolve(icon)}`:""} ${isValidUrl(url)? ` --url ${url}`:''}`;
+        cmd = `electron "${electronProjectRoot}"  ${icon ? `--icon ${path.resolve(icon)}`:""} ${isValidUrl(url)? ` --url ${url}`:''}`; //--root ${electronProjectRoot}
           exec({
             cmd, 
             projectRoot : electronProjectRoot,

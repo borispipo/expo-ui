@@ -419,6 +419,9 @@ const ELECTRON = {
             return ipcRenderer.invoke('set-system-theme:light-mode');
         }
     },
+    get appPath(){
+        return ipcRenderer.sendSync("get-app-path");
+    }
 };
 
 require("./pload")(ELECTRON,{projectRoot});

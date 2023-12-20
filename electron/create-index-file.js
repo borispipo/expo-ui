@@ -9,12 +9,7 @@ module.exports = ({electronProjectRoot,force,logo,appName})=>{
     }
     const indexPath = path.resolve(electronProjectRoot,"index.js");
     if(!fs.existsSync(indexPath) || force === true){
-        writeFile(indexPath,`
-require("${packageJSON.name}/electron")({
-    projectRoot : __dirname,
-    appName : "${appName}",
-    logo : ${logo ? `"${logo}"` : undefined},
-});`);
+        writeFile(indexPath,`require("${packageJSON.name}/electron");`);
 }
     return indexPath;
 }

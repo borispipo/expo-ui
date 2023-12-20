@@ -13,9 +13,9 @@ const electronProjectRoot = ipcRenderer.sendSync("get-electron-project-root");
 const sanitize = require("sanitize-filename");
 const uniqid = require("./utils/uniqid");
 if(!appName || typeof appName !=='string'){
-    throw {message : "Nom de l'application invalide!! Veuillez spécifier un nom valide d'application"}
+    console.error("Nom de l'application invalide!! Veuillez spécifier un nom valide d'application ",electronProjectRoot," is electron project root")
 }
-const APP_NAME = appName.toUpperCase();
+const APP_NAME = appName?.toUpperCase() || "";
 let backupPathField = "_e_backupDataPath";
 let cBackupPathField = "company"+backupPathField;
 let dbPathField = "_electron_DBPathField";

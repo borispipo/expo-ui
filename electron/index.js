@@ -30,6 +30,10 @@ const mainProcess = mainProcessRequired && typeof mainProcessRequired =='object'
 let win = undefined;
 Menu.setApplicationMenu(null);
 
+if(!isValidUrl(pUrl) && !fs.existsSync(indexFilePath)){
+  throw `Unable to start the application: index file located at [${indexFilePath}] does not exists : projectRoot : [${projectRoot}], electronProjectRoot = [${electronProjectRoot}], isAsar:[${require.main}]`
+}
+
 const clipboadContextMenu = (_, props) => {
   if (props.isEditable || props.selectionText) {
     const menu = new Menu();
@@ -188,9 +192,7 @@ function createWindow () {
   if(isValidUrl(pUrl)){
     win.loadURL(pUrl);
   } else {
-    if(!fs.existsSync(indexFilePath)){
-        throw `Unable to start the application: index file located at [${indexFilePath}] does not exists : projectRoot : [${projectRoot}], electronProjectRoot = [${electronProjectRoot}]`
-    } else win.loadFile(indexFilePath)
+    win.loadFile(indexFilePath)
   }
 
   win.on('unresponsive', async () => {

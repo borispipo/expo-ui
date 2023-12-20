@@ -44,19 +44,21 @@ program.command('generate-getTable')
   
 program.command('electron')
   .description('utilitaire cli pour la plateforme electron. NB : Le package electron doit être installé globalement via l\'instruction npm i -g electron')
-  .argument('<cmd>', 'la commande à exécuter (start,init,build)')
+  .argument('<cmd>', 'la commande à exécuter (start,init,build,package). Start permet de démarrer le script electron, init permet d\'initialiser l\'application, build permet de compiler le code expo (exporter), package permet d\'effectuer le packaging de l\'application pour la distribution')
   //.option('-r, --project-root [dir]', 'le project root de l\'application')
-  .option('-c, --config [dir]', 'le chemin (relatif au project root) du fichier de configuration de l\'application electron')
+  //.option('-c, --config [dir]', 'le chemin (relatif au project root) du fichier de configuration de l\'application electron')
   //.option('-s, --splash [dir]', 'le chemin (relatif au project root) du fichier du splash screen de l\'application')
-  .option('-o, --out [dir]', 'le chemin (relatif au project root) du répertoire qui contiendra les fichiers build')
-  .option('-u, --url [url]', 'le lien url qui sera ouvert par l\'application')
-  .option('-b, --build [boolean]', 'si ce flag est spécfifié alors l\'application sera compilée')
-  .option('-a, --arch [architecture]', 'l\'architecture de la plateforme')
-  .option('-p, --platform [platform]', 'la plateforme à utiliser pour la compilation')
+  .option('-o, --out [dir]', 'le chemin du répertoire qui contiendra les fichiers build, des fichiers du exporté par le framework expo; commande : build|start')
+  .option('-u, --url [url]', 'le lien url qui sera ouvert par l\'application; commande start')
+  .option('-b, --build [boolean]', 'si ce flag est spécfifié alors l\'application sera compilée; combinée avec la commande start pour indiquer que l\'application sera à nouveau exportée ou pas.')
+  .option('-a, --arch [architecture]', 'l\'architecture de la plateforme; Commande package')
+  .option('-p, --platform [platform]', 'la plateforme à utiliser pour la compilation; commande package')
+  .option('-i, --import [boolean]', 'la commande d\'initialisation du package electron forge, utile pour le packaging de l\'application. Elle permet d\'exécuter le cli electron package, pour l\'import d\'un projet existant. Commande package. exemple : expo-ui electron package --import')
+  
   .action((script, options) => {
     const electronProjectRoot = path.resolve(projectRoot,"electron");
     const opts = Object.assign({},typeof options.opts =='function'? options.opts() : options);
-    let {out,arch,url,build,platform} = opts;
+    let {out,arch,url,build,platform,import:packageImport} = opts;
     //let {projectRoot} = opts;
     if(projectRoot == dir){
         throwError(`Invalid project root ${projectRoot}; project root must be different to ${dir}`);
@@ -168,21 +170,33 @@ program.command('electron')
             break;
           case "build":
             break;
-          default :
-            const electronPackage = require(`${path.resolve(electronProjectRoot,'package.json')}`);
-            electronPackage.name = packageObj.name;
-            electronPackage.version = packageObj.version;
-            //copying package json in build folder
-            writeFile(path.resolve(electronProjectRoot,"package.json"),JSON.stringify(electronPackage,null,"\t"));
-            platform = platform || process.platform;
-            console.log("packaing app from ",electronProjectRoot);
-            return require("./package")({
-                src : electronProjectRoot,
-                dist : path.resolve(outDir,platform),
-                platform,
-                arch : arch || undefined,
-                projectRoot : electronProjectRoot,
-           });
+          case "package" :
+            if(packageImport || opts.import){ //on importe le projet existant electron forge, @see : https://www.electronforge.io/import-existing-project
+              console.log("importing electron forge existing project....");
+              cmd = "npm install --save-dev @electron-forge/cli";
+              return exec({cmd,projectRoot:electronProjectRoot}).finally(()=>{
+                cmd = `npm exec --package=@electron-forge/cli -c "electron-forge import"`;
+                return exec({cmd,projectRoot:electronProjectRoot}).then(()=>{
+                  console.log("package electron forge importé avec succèss");
+                });
+              });
+                
+            } else {
+              const electronPackage = require(`${path.resolve(electronProjectRoot,'package.json')}`);
+              electronPackage.name = packageObj.name;
+              electronPackage.version = packageObj.version;
+              //copying package json in build folder
+              writeFile(path.resolve(electronProjectRoot,"package.json"),JSON.stringify(electronPackage,null,"\t"));
+              platform = platform || process.platform;
+              console.log("packaing app from ",electronProjectRoot);
+              return require("./package")({
+                  src : electronProjectRoot,
+                  dist : path.resolve(outDir,platform),
+                  platform,
+                  arch : arch || undefined,
+                  projectRoot : electronProjectRoot,
+             });
+            }
            break;
       }
     }).catch((e)=>{

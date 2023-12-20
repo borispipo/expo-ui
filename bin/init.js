@@ -6,7 +6,7 @@ const writeFile = require("../electron/utils/writeFile");
 const copy = require("../electron/utils/copy");
 const electronDir = path.resolve(__dirname,"..","electron");
 const createIndexFile = require("../electron/create-index-file");
-const appSuffix = "-Desktop";
+const appSuffix = "-desk";
 const mainPackage = require("../package.json");
 const mainPackageName = mainPackage.name;
 
@@ -17,19 +17,21 @@ module.exports = ({projectRoot,electronProjectRoot,paths,pathsJSON})=>{
             throw "Unable to create electron project root directory at "+electronProjectRoot;
         }
         const projectRootPackage = require(`${path.resolve(projectRoot,'package.json')}`);
+        const electronPackagePath = path.resolve(electronProjectRoot,"package.json");
+        const electronPackageJSON = Object.assign({},fs.existsSync(electronPackagePath)? require(electronPackagePath) : {});
         const dependencies = require("../electron/dependencies");
         const electronProjectRootPackage = path.resolve(electronProjectRoot,"package.json");
         projectRootPackage.main = `node_modules/${mainPackageName}/electron/index.js`;
-        projectRootPackage.dependencies = dependencies.main;
-        projectRootPackage.devDependencies = dependencies.dev;
+        projectRootPackage.dependencies = {...dependencies.main,...Object.assign(electronPackageJSON.dependencies)};
+        projectRootPackage.devDependencies = {...dependencies.dev,...Object.assign({},electronPackageJSON.devDependencies)};
         projectRootPackage.scripts = {
-            "compile" : `npx ${mainPackageName} electron compile`,
+            "build" : `npx ${mainPackageName} electron build`,
             "start" : `npx ${mainPackageName} electron start`,
-            "compile2start" : `npx ${mainPackageName} electron start compile`,
-            "package" : `npx ${mainPackageName} electron package`,
-            "compile2package" : `npx ${mainPackageName} electron package compile`
+            "run-dev" : `npx ${mainPackageName} electron start`,
+            "compile2start" : `npx ${mainPackageName} electron start --build`,
+            ...electronPackageJSON,
         }
-        projectRootPackage.name = projectRootPackage.name.trim().toUpperCase();
+        projectRootPackage.name = projectRootPackage.name;
         projectRootPackage.realAppName = typeof projectRootPackage.realAppName =="string" && projectRootPackage.realAppName || projectRootPackage.name;
         if(!projectRootPackage.name.endsWith(appSuffix)){
             projectRootPackage.name +=appSuffix;

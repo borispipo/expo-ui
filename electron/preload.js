@@ -389,6 +389,7 @@ const ELECTRON = {
                         fileName,
                         pdfFilePath : mainPath,
                         showOnLoad : true,
+                        isPDFWindow : true,//spécifie s'il s'agit de la fenêtre pdf
                         webPreferences: {
                             plugins: true
                         }
@@ -397,7 +398,28 @@ const ELECTRON = {
                 }
             })
         }
-    }
+    },
+    get toggleDarkMode(){
+        return ()=>{
+            return ipcRenderer.invoke('dark-mode:toggle');
+        }
+    },
+    get setThemeToSystem (){
+        return ()=>{
+            return ipcRenderer.invoke('dark-mode:system');
+        }
+    },
+    /***** fait passer le theme au mode dark */
+    get setThemeToDark(){
+        return ()=>{
+            return ipcRenderer.invoke('set-system-theme:dark-mode');
+        }
+    },
+    get setThemeToLight(){
+        return ()=>{
+            return ipcRenderer.invoke('set-system-theme:light-mode');
+        }
+    },
 };
 
 require("./pload")(ELECTRON,paths || {});

@@ -61,21 +61,12 @@ const clipboadContextMenu = (_, props) => {
 const log = (message)=>{
   return win != null && win && win.webContents.send("console.log",message);
 }
-const setOSTheme = (theme) => {
-  theme = theme && typeof theme == "string"? theme : "light";
-  theme = theme.toLowerCase().trim();
-  if(theme !== 'system' && theme !=='dark'){
-    theme = "light";
-  }
-  nativeTheme.themeSource = theme;
-  session.set("os-theme",theme);
-  return nativeTheme.shouldUseDarkColors
-}
-setOSTheme(session.get("os-theme"));
+
 const isObj = x => x && typeof x =='object';
 
 
 function createBrowserWindow (options){
+  const {isMainWindow} = options;
   options = Object.assign({},options);
   let menu = options.menu;
   options.webPreferences = isObj(options.webPreferences)? options.webPreferences : {};
@@ -131,6 +122,9 @@ function createBrowserWindow (options){
     });
   }
   _win.on('closed', function() {
+      if(isMainWindow && typeof mainProcess.onMainWindowClosed == "function"){
+        mainProcess.onMainWindowClosed(_win);
+      }
       _win = null;
   });
   return _win;
@@ -140,6 +134,7 @@ function createWindow () {
   win = createBrowserWindow({
     showOnLoad : false,
     loadURL : undefined,
+    isMainWindow : true,
     registerDevToolsCommand : false,
     preload : path.resolve(__dirname,'preload.js'),
     webPreferences : {
@@ -177,9 +172,11 @@ function createWindow () {
       win.webContents.send("main-window-blur");
     }
   });
-
-
+  
   win.once("ready-to-show",function(){
+      if(typeof mainProcess.onMainWindowReadyToShow ==='function'){
+          mainProcess.onMainWindowReadyToShow(win);
+      }
       win.minimize()
       try {
         if(splash && splash instanceof BrowserWindow){
@@ -193,6 +190,9 @@ function createWindow () {
  
   win.on('close', (e) => {
       if (win) {
+        if(typeof mainProcess.onMainWindowClose == "function"){
+          mainProcess.onMainWindowClose(win);
+        }
         e.preventDefault();
         win.webContents.send('before-app-exit');
       }
@@ -264,8 +264,8 @@ function createWindow () {
   win.on('resize',onWinResizeEv);
   win.off('move',onWinResizeEv);
   win.on('move',onWinResizeEv);
-  if(mainProcess && typeof mainProcess =='object' && typeof mainProcess.onCreateWindow =='function'){
-     mainProcess.onCreateWindow(win);
+  if(typeof mainProcess.onCreateMainWindow =='function'){
+     mainProcess.onCreateMainWindow(win);
   }
   return win;
 }
@@ -307,11 +307,9 @@ ipcMain.on("toggle-dev-tools",function(event,value) {
 
 
 app.whenReady().then(() => {
-  const readOpts = {toggleDevTools,window:win,win};
-  if(typeof mainProcess.whenReady =='function'){
-     mainProcess.whenReady(readOpts);
-  } else if(typeof mainProcess.appOnReady =='function'){
-     mainProcess.appOnReady(readOpts);
+  const readOpts = {toggleDevTools,browserWindow:win,mainWindow:win};
+  if(typeof mainProcess.whenAppReady =='function'){
+     mainProcess.whenAppReady(readOpts);
   }
   globalShortcut.register('CommandOrControl+F12', () => {
     toggleDevTools();
@@ -387,7 +385,7 @@ ipcMain.on("get-paths.json",(event)=>{
 });
 
 ipcMain.on("get-app-name",(event)=>{
-  event.returnValue = packageJSON.name;
+  event.returnValue = packageJSON.realAppName || packageJSON.name;
   return event.returnValue ;
 });
 
@@ -533,7 +531,7 @@ ipcMain.on("is-dev-tools-open",function(event,value) {
     return win.webContents.isDevToolsOpened();
   }
   return false;
-})
+});
 
 
 ipcMain.on("window-set-progressbar",(event,interval)=>{
@@ -544,7 +542,41 @@ ipcMain.on("window-set-progressbar",(event,interval)=>{
    }
 })
 
+const setOSTheme = (theme) => {
+  theme = theme && typeof theme == "string"? theme : "light";
+  theme = theme.toLowerCase().trim();
+  if(theme !== 'system' && theme !=='dark'){
+    theme = "light";
+  }
+  nativeTheme.themeSource = theme;
+  session.set("os-theme",theme);
+  return nativeTheme.shouldUseDarkColors
+}
+
 /**** customisation des thèmes de l'application */
 ipcMain.handle('set-system-theme:toggle', (event,theme) => {
   return setOSTheme(theme);
+});
+
+ipcMain.handle('set-system-theme:dark-mode', (event) => {
+    nativeTheme.themeSource = 'dark';
+    return nativeTheme.shouldUseDarkColors;
+});
+ipcMain.handle('set-system-theme:light-mode', (event) => {
+  nativeTheme.themeSource = 'light';
+  return nativeTheme.shouldUseDarkColors;
+});
+
+
+ipcMain.handle('dark-mode:toggle', () => {
+  if (nativeTheme.shouldUseDarkColors) {
+    nativeTheme.themeSource = 'light'
+  } else {
+    nativeTheme.themeSource = 'dark'
+  }
+  return nativeTheme.shouldUseDarkColors
+})
+
+ipcMain.handle('dark-mode:system', () => {
+  nativeTheme.themeSource = 'system'
 });

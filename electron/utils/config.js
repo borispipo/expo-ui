@@ -22,7 +22,6 @@ class ElectronStore extends Conf {
 		delete options.name;
 		super(options);
 	}
-
 	openInEditor() {
 		electron.shell.openItem(this.path);
 	}

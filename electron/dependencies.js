@@ -4,10 +4,10 @@ module.exports = {
 		"node-machine-id": "latest",
         "fs-extra" : "latest",
 		"node-sqlite" : "latest",
-		"commander" : "latest"
+		"commander" : "latest",
+		"@fto-consult/expo-ui" : "latest",
 	},
 	"dev" : {
-		"electron": "latest",
-		"electron-packager": "latest",
+		"electron": "latest"
 	}
 }

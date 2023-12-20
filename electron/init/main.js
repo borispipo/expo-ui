@@ -8,6 +8,25 @@
 */
 
 module.exports = {
+    /**** cette fonction est appelée à chaque fois que l'on désire créer une instance du BrowserWindow
+        @param {object} BrowserWindowOptions
+        Lors de la création de la fenêtre principal, BrowserWindowOptions continent la propriété isMainWindow à true
+        la prop isMainWindow {boolean} spécifie s'il s'agit de la fenêtre principale
+        la prop isPDFWindow {boolean}, spécifie s'il s'agit de la fenêtre destinée à l'affichage d'un fichier pdf
+    */
+    beforeCreateWindow : function({isMainWindow,isPDFWindow,...BrowserWindowOptions}){},
+    /*** exécutée lorsque  l'évènement ready-to-show de la fenêtre principale BrowserWindow est appelée
+        @param {Instance of BrowserWindow} mainBrowserWindow
+    */
+    onMainWindowReadyToShow : function(mainBrowserWindow){},
+    /**** exécutée lorsque l'évènement close de la fenêtre principale est appelée
+         @param {Instance of BrowserWindow} mainBrowserWindow
+    */
+    onMainWindowClose : function(mainBrowserWindow){},
+    /**** exécutée lorsque  l'évènement closed de la fenêtre principale est appélée
+        @param {InstanceOf BrowserWindow} mainBrowserWindow
+    */
+    onMainWindowClosed : function(mainBrowserWindow){},
     /***** 
         must return an Instance of Browser window
         width: 500, height: 400, transparent: true, frame: false, alwaysOnTop: true
@@ -19,9 +38,13 @@ module.exports = {
     },
     /*** this function is called when app is ready 
         toggleDevTools : {function},la fonction permettant de toggle les outils de developements
-        window : {BrowserWindow}, le browser window principal de l'application
+        browserWindow|mainWindow : {BrowserWindow}, le browser window principal de l'application
     */
-    whenReady : function({toggleDevTools,window,win}){
+    whenAppReady : function({toggleDevTools,browserWindow,mainWindow}){},
+    /*** exécutée une fois que la fonction createWindow est appelée pour créer le main Browser window de l'application
+        @param {InstanceOf BrowserWindow} mainBrowserWindow
+    */
+    onCreateMainWindow : function(mainBrowserWindow){
     
     }
 }

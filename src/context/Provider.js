@@ -21,7 +21,7 @@ import {canFetchOffline} from "$capi/utils";
 import { SWR_REFRESH_TIMEOUT } from "./utils";
 import * as Utils from "$cutils";
 import {setDeviceIdRef} from "$capp";
-import {isMobileNative} from "$cplatform";
+import {isMobileNative,isElectron} from "$cplatform";
 import notify from "$cnotify";
 import {showPrompt} from "$ecomponents/Dialog/confirm";
 import {SWRConfig} from "$swr";
@@ -186,6 +186,11 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
         const isDark = theme.dark || theme.isDark || isDynamicThemeSupported && isColorShemeDark ;
         const elevation = defaultObj(theme.elevation,isDark ? pTheme.dark?.elevation : pTheme.light?.elevation)
         const newTheme = isDark ? { ...MD3DarkTheme, colors: pTheme.dark } : { ...MD3LightTheme, colors: pTheme.light };
+        if(isElectron() && typeof window.ELECTRON =='object' && typeof ELECTRON.setThemeToDark =="function" && typeof ELECTRON.setThemeToLight =="function"){
+           if(isDark){
+              ELECTRON.setThemeToDark();
+           } else ELECTRON.setThemeToLight();
+        }
         for(let i in newTheme){
           if(i !== 'colors' && !(i in theme)){
             theme[i] = newTheme[i];

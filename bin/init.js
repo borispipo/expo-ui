@@ -31,6 +31,7 @@ module.exports = ({projectRoot,electronProjectRoot,paths,pathsJSON})=>{
             "start" : `npx ${mainPackageName} electron start`,
             "run-dev" : `npx ${mainPackageName} electron start`,
             "compile2start" : `npx ${mainPackageName} electron start --build`,
+            ...Object.assign({},electronPackageJSON.scripts)
         }
         projectRootPackage.name = projectRootPackage.name;
         projectRootPackage.realAppName = typeof projectRootPackage.realAppName =="string" && projectRootPackage.realAppName || projectRootPackage.name;

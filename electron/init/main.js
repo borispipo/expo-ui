@@ -13,8 +13,12 @@ module.exports = {
         Lors de la création de la fenêtre principal, BrowserWindowOptions continent la propriété isMainWindow à true
         la prop isMainWindow {boolean} spécifie s'il s'agit de la fenêtre principale
         la prop isPDFWindow {boolean}, spécifie s'il s'agit de la fenêtre destinée à l'affichage d'un fichier pdf
+        l'objet retourné est utilisé pour étendre les options à utiliser pour la création du BrowserWidow
+        @return {object};
     */
-    beforeCreateWindow : function({isMainWindow,isPDFWindow,...BrowserWindowOptions}){},
+    beforeCreateWindow : function({isMainWindow,isPDFWindow,...BrowserWindowOptions}){
+        return {};
+    },
     /*** exécutée lorsque  l'évènement ready-to-show de la fenêtre principale BrowserWindow est appelée
         @param {Instance of BrowserWindow} mainBrowserWindow
     */

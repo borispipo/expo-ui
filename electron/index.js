@@ -12,12 +12,14 @@ program
 
 const programOptions = program.opts();
 const {url:pUrl,root:mainProjectRoot} = programOptions
+
+const isAsar = (typeof require.main =="string" && require.main ||"").indexOf('app.asar') !== -1;
 const projectRoot = mainProjectRoot && fs.existsSync(mainProjectRoot) ? mainProjectRoot : process.cwd();
-const electronProjectRoot = projectRoot && fs.existsSync(path.resolve(projectRoot,"electron")) && path.resolve(projectRoot,"electron") || '';
+const electronProjectRoot = projectRoot && fs.existsSync(path.resolve(projectRoot,"electron")) && path.resolve(projectRoot,"electron") || projectRoot;
 const packageJSONPath = path.resolve(projectRoot,"package.json");
 const isValidUrl = require("./utils/isValidUrl");
 const packageJSON = fs.existsSync(packageJSONPath) ? require(`${packageJSONPath}`) : {};
-
+const indexFilePath = path.resolve(path.join(electronProjectRoot,"dist",'index.html'));
 const mainProcessPath = path.resolve('processes',"main","index.js");
 const mainProcessIndex = electronProjectRoot && fs.existsSync(path.resolve(electronProjectRoot,mainProcessPath)) && path.resolve(electronProjectRoot,mainProcessPath);
 const mainProcessRequired = mainProcessIndex && require(`${mainProcessIndex}`);
@@ -85,7 +87,8 @@ function createBrowserWindow (options){
      options.show = false;
   }
   if(typeof mainProcess.beforeCreateWindow =='function'){
-     mainProcess.beforeCreateWindow(options);
+     const opts = Object.assign({},mainProcess.beforeCreateWindow(options));
+     options = {...options,...opts};
   }
   let _win = new BrowserWindow(options);
   if(!menu){
@@ -185,7 +188,9 @@ function createWindow () {
   if(isValidUrl(pUrl)){
     win.loadURL(pUrl);
   } else {
-    win.loadFile(path.resolve(path.join(electronProjectRoot,"dist",'index.html')))
+    if(!fs.existsSync(indexFilePath)){
+        throw {message : `Unable to start the application: index file located at [${indexFilePath}] does not exists : projectRoot : [${projectRoot}], electronProjectRoot = [${electronProjectRoot}]`}
+    } else win.loadFile(indexFilePath)
   }
 
   win.on('unresponsive', async () => {

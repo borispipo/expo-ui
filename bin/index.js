@@ -50,7 +50,7 @@ program.command('electron')
   //.option('-s, --splash [dir]', 'le chemin (relatif au project root) du fichier du splash screen de l\'application')
   .option('-o, --out [dir]', 'le chemin du répertoire qui contiendra les fichiers build, des fichiers du exporté par le framework expo; commande : build|start')
   .option('-u, --url [url]', 'le lien url qui sera ouvert par l\'application; commande start')
-  .option('-b, --build [boolean]', 'si ce flag est spécfifié alors l\'application sera compilée; combinée avec la commande start pour indiquer que l\'application sera à nouveau exportée ou pas.')
+  .option('-b, --build [boolean]', 'si ce flag est spécfifié alors l\'application sera compilée; combinée avec la commande start|package pour indiquer que l\'application sera à nouveau exportée ou pas.')
   .option('-a, --arch [architecture]', 'l\'architecture de la plateforme; Commande package')
   .option('-p, --platform [platform]', 'la plateforme à utiliser pour la compilation; commande package')
   .option('-i, --import [boolean]', 'la commande d\'initialisation du package electron forge, utile pour le packaging de l\'application. Elle permet d\'exécuter le cli electron package, pour l\'import d\'un projet existant. Commande package. exemple : expo-ui electron package --import')
@@ -183,9 +183,18 @@ program.command('electron')
                 
             } else {
               cmd = `npx electron-forge package ${platform? `--platform="${platform}"`:""} ${arch?`--arch="${arch}"`:""}`;
-              return exec({cmd,projectRoot:electronProjectRoot}).then(()=>{
-                console.log("application package avec succèss");
-              });
+              const electronPackagePath = path.resolve(electronProjectRoot,'package.json');
+              const electronPackageJSON = require(electronPackagePath);
+              try {
+                writeFile(electronPackagePath,JSON.stringify({...electronPackageJSON,name:packageObj.name||electronPackageJSON.realName||electronPackageJSON.name},null,"\t"));
+              } catch{}
+                return exec({cmd,projectRoot:electronProjectRoot}).then(()=>{
+                  console.log("application package avec succèss");
+                }).finally(()=>{
+                    try {
+                      writeFile(electronPackagePath,JSON.stringify(electronPackageJSON,null,"\t"));
+                    } catch{}
+                });
             }
            break;
       }

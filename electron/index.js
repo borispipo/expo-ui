@@ -189,7 +189,7 @@ function createWindow () {
     win.loadURL(pUrl);
   } else {
     if(!fs.existsSync(indexFilePath)){
-        throw {message : `Unable to start the application: index file located at [${indexFilePath}] does not exists : projectRoot : [${projectRoot}], electronProjectRoot = [${electronProjectRoot}]`}
+        throw `Unable to start the application: index file located at [${indexFilePath}] does not exists : projectRoot : [${projectRoot}], electronProjectRoot = [${electronProjectRoot}]`
     } else win.loadFile(indexFilePath)
   }
 

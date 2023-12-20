@@ -16,20 +16,21 @@ module.exports = ({projectRoot,electronProjectRoot,paths,pathsJSON})=>{
         if(!createDir(electronProjectRoot)){
             throw "Unable to create electron project root directory at "+electronProjectRoot;
         }
-        const projectRootPackage = require(`${path.resolve(projectRoot,'package.json')}`);
+        const mPackageJSON = Object.assign({},require(`${path.resolve(projectRoot,'package.json')}`));
         const electronPackagePath = path.resolve(electronProjectRoot,"package.json");
         const electronPackageJSON = Object.assign({},fs.existsSync(electronPackagePath)? require(electronPackagePath) : {});
+        const projectRootPackage = {...mPackageJSON,...electronPackageJSON};
         const dependencies = require("../electron/dependencies");
         const electronProjectRootPackage = path.resolve(electronProjectRoot,"package.json");
         projectRootPackage.main = `node_modules/${mainPackageName}/electron/index.js`;
         projectRootPackage.dependencies = {...dependencies.main,...Object.assign(electronPackageJSON.dependencies)};
+        projectRootPackage.dependencies[mainPackage.name] = mainPackage.version;
         projectRootPackage.devDependencies = {...dependencies.dev,...Object.assign({},electronPackageJSON.devDependencies)};
         projectRootPackage.scripts = {
             "build" : `npx ${mainPackageName} electron build`,
             "start" : `npx ${mainPackageName} electron start`,
             "run-dev" : `npx ${mainPackageName} electron start`,
             "compile2start" : `npx ${mainPackageName} electron start --build`,
-            ...electronPackageJSON,
         }
         projectRootPackage.name = projectRootPackage.name;
         projectRootPackage.realAppName = typeof projectRootPackage.realAppName =="string" && projectRootPackage.realAppName || projectRootPackage.name;

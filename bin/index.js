@@ -83,7 +83,7 @@ program.command('electron')
       const mainPackagePath = path.resolve(electronProjectRoot,"package.app.json");
       try {
         const mainPackageAppJSON = fs.existsSync(mainPackagePath)? require(mainPackagePath) : {};
-        writeFile(mainPackagePath,JSON.stringify({...packageObj,...mainPackageAppJSON,icon:icon||mainPackageAppJSON.icon||undefined},null,"\t"));
+        writeFile(mainPackagePath,JSON.stringify({...packageObj,...mainPackageAppJSON,name:packageObj.name,icon:icon||mainPackageAppJSON.icon||undefined},null,"\t"));
       } catch{}
     }
     

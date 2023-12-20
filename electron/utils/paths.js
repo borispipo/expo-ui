@@ -7,6 +7,5 @@ const path = require("path");
 
 module.exports =  (projectRoot)=>{
     projectRoot = projectRoot && fs.existsSync(projectRoot) && projectRoot || process.cwd();
-    const mainPackage = require("../../package.json");
     return path.resolve(projectRoot,"node_modules",`expo-ui.paths.alias.json`);
 }

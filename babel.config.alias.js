@@ -109,16 +109,15 @@ module.exports = (opts)=>{
             electronPaths.logo = logoPath;
         }
     }
-    const jsonPath = path.resolve(projectRoot,'package.json');
-    if(fs.existsSync(jsonPath)){
-        try {
-            require("./electron/utils/copy")(jsonPath,path.resolve(dir,"electron","expo-ui.json"))
-        } catch{}
-    }
+    const expoUIElectronPath = path.resolve(projectRoot,"electron")
+    const pathsSringified = JSON.stringify(electronPaths, null, "\t");
     ///on sauvegarde les chemins des fichiers utiles, qui seront utilisées par la variable electron plus tard
     try {
-        writeFile(paths(projectRoot),JSON.stringify(electronPaths, null, "\t"));
+        writeFile(paths(projectRoot),pathsSringified);
     } catch{}
+    if(fs.existsSync(expoUIElectronPath)){
+        writeFile(path.resolve(expoUIElectronPath,"paths.json"),pathsSringified);
+    }
     r["$erealm"] = path.resolve(expo,'realm');
     if(!r.$realm){
         r.$realm = r.$erealm;

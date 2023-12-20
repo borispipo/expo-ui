@@ -12,15 +12,20 @@ const isObj = x => x && typeof x =='object';
 
 let appIsReady = false;
 
+const iconName = process.platform =="win32" ? "icon.ico" : process.platform =='darwin' ? "icon.incs" : "icon.png";
+
 program
   .option('-u, --url <url>', 'L\'adresse url à ouvrir au lancement de l\'application')
   .option('-r, --root <projectRoot>', 'le chemin du project root de l\'application')
-  .option('-l, --icon [iconPath]', 'le chemin vers le icon de l\'application : (.ico pour window, .incs pour mac et .png pour linux)')
+  .option('-l, --icon [iconPath]', 'le chemin vers le dossier des icones de l\'application : (Dans ce dossier, doit contenir une image icon.ico pour window, icon.incs pour mac et icon.png pour linux)')
   .parse();
 
 const programOptions = program.opts();
 const {url:pUrl,root:mainProjectRoot,icon} = programOptions;
-const iconPath = icon && typeof icon =="string" && fs.existsSync(path.resolve(icon)) && path.resolve(icon) || undefined; 
+let iconPath = icon && typeof icon =="string" && fs.existsSync(path.resolve(icon)) && path.resolve(icon) || undefined; 
+if(iconPath && fs.existsSync(path.resolve(iconPath,iconName))){
+    iconPath = path.resolve(iconPath,iconName);
+}
 
 const isAsar = (typeof require.main =="string" && require.main ||"").indexOf('app.asar') !== -1;
 const distPath = path.join("dist",'index.html');

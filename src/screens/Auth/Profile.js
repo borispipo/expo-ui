@@ -72,9 +72,7 @@ export default function UserProfileScreen({fields,...p}){
         const toSave = {...user,...data};
         return Auth.upsertUser(toSave,true).then((response)=>{
             setTimeout(()=>{
-                if(hasChangeRef.current){
-                    APP.trigger(APP.EVENTS.UPDATE_THEME,user.theme);
-                }
+                APP.trigger(APP.EVENTS.UPDATE_THEME,user.theme);
                 APP.trigger(APP.EVENTS.AUTH_UPDATE_PROFILE,toSave);
             },100);
             if(typeof props.onSave ==='function' && props.onSave({...rest,data:toSave,response,goBack,navigate}) === false) return;

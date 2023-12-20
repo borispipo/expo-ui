@@ -53,7 +53,7 @@ program.command('electron')
   .option('-b, --build [boolean]', 'si ce flag est spécfifié alors l\'application sera compilée; combinée avec la commande start|package pour indiquer que l\'application sera à nouveau exportée ou pas.')
   .option('-a, --arch [architecture]', 'l\'architecture de la plateforme; Commande package')
   .option('-p, --platform [platform]', 'la plateforme à utiliser pour la compilation; commande package')
-  .option('-l, --icon [iconPath]', 'le chemin vers l\'icon de l\'application : (.ico pour window, .incs pour mac et .png pour linux)')
+  .option('-l, --icon [iconPath]', 'le chemin vers le dossier des icones de l\'application : (Dans ce dossier, doit contenir une image icon.ico pour window, icon.incs pour mac et icon.png pour linux)')
   .option('-i, --import [boolean]', 'la commande d\'initialisation du package electron forge, utile pour le packaging de l\'application. Elle permet d\'exécuter le cli electron package, pour l\'import d\'un projet existant. Commande package. exemple : expo-ui electron package --import')
   
   .action((script, options) => {

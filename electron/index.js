@@ -33,7 +33,7 @@ const distPath = path.join("dist",'index.html');
 const processCWD = process.cwd();
 const electronProjectRoot = mainProjectRoot && typeof mainProjectRoot =='string' && fs.existsSync(path.resolve(mainProjectRoot)) && fs.existsSync(path.resolve(mainProjectRoot,distPath)) && path.resolve(mainProjectRoot)  || null;
 const projectRoot =  electronProjectRoot || fs.existsSync(path.resolve(processCWD,"electron")) && fs.existsSync(path.resolve(processCWD,"electron",distPath)) && path.resolve(processCWD,"electron") 
-|| fs.existsSync(path.resolve(processCWD,distPath)) && path.resolve(processCWD) || undefined;
+|| fs.existsSync(path.resolve(processCWD,distPath)) && path.resolve(processCWD) || processCWD;
 const packageJSONPath = fs.existsSync(processCWD,"package.json")? path.resolve(processCWD,"package.json") : path.resolve(projectRoot,"package.json");
 const packageJSON = fs.existsSync(packageJSONPath) ? Object.assign({},require(`${packageJSONPath}`)) : {};
 const appName = typeof packageJSON.realAppName =='string' && packageJSON.realAppName || typeof packageJSON.name =="string" && packageJSON.name || "";  
@@ -50,6 +50,10 @@ const mainProcessRequired = mainProcessIndex && require(`${mainProcessIndex}`);
 //pour étendre les fonctionnalités au niveau du main proceess, bien vouloir écrire dans le fichier projectRoot/electron/main/index.js
 const mainProcess = mainProcessRequired && typeof mainProcessRequired =='object'? mainProcessRequired : {};
 
+// Gardez une reference globale de l'objet window, si vous ne le faites pas, la fenetre sera
+if(!isValidUrl(pUrl) && !fs.existsSync(indexFilePath)){
+  throw {message:`Unable to start the application: index file located at [${indexFilePath}] does not exists : projectRoot = [${projectRoot}], isAsar:[${require.main}]`}
+}
 
 const quit = ()=>{
     try {
@@ -57,11 +61,6 @@ const quit = ()=>{
     } catch(e){
       console.log(e," triing kit app")
     }
-}
-
-// Gardez une reference globale de l'objet window, si vous ne le faites pas, la fenetre sera
-if(!isValidUrl(pUrl) && !fs.existsSync(indexFilePath)){
-    throw {message:`Unable to start the application: index file located at [${indexFilePath}] does not exists : projectRoot = [${projectRoot}], isAsar:[${require.main}]`}
 }
 
 //app.disableHardwareAcceleration();

@@ -96,7 +96,7 @@ program.command('electron')
     }
     const start = x=>{
        return new Promise((resolve,reject)=>{
-        cmd = `electron "${electronProjectRoot}" --root ${electronProjectRoot} ${isValidUrl(url)? ` --url ${url}`:''} ${icon ? `--icon ${path.resolve(icon)}`:""}`;
+        cmd = `electron "${electronProjectRoot}" --root ${electronProjectRoot} ${icon ? `--icon ${path.resolve(icon)}`:""} ${isValidUrl(url)? ` --url ${url}`:''}`;
           exec({
             cmd, 
             projectRoot : electronProjectRoot,

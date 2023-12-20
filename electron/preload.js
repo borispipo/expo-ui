@@ -7,10 +7,9 @@ const fs = require("fs");
 const isDataURL = require("./utils/isDataURL");
 const isBase64 = require("./utils/isBase64");
 const isNonNullString = x=>x && typeof x =='string';
-const replaceAll = require("./utils/replaceAll");
-const pathsStr = ipcRenderer.sendSync("get-paths.json");
-const paths = typeof pathsStr ==='string' && pathsStr ? JSON.parse(pathsStr) : {};
+require("./utils/replaceAll");
 const appName = ipcRenderer.sendSync("get-app-name");
+const electronProjectRoot = ipcRenderer.sendSync("get-electron-project-root");
 const sanitize = require("sanitize-filename");
 const uniqid = require("./utils/uniqid");
 if(!appName || typeof appName !=='string'){
@@ -422,7 +421,7 @@ const ELECTRON = {
     },
 };
 
-require("./pload")(ELECTRON,paths || {});
+require("./pload")(ELECTRON,{electronProjectRoot});
 ELECTRON.getBackupPath();
 //require("./app/index")(ELECTRON)
 //require('v8-compile-cache');

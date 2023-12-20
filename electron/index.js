@@ -3,7 +3,6 @@ const session = require("./utils/session");
 const path = require("path");
 const fs = require("fs");
 const { program } = require('commander');
-const getPaths = require("../electron/utils/paths");
 
 program
   .option('-u, --url <url>', 'L\'adresse url à ouvrir au lancement de l\'application')
@@ -12,26 +11,12 @@ program
   .parse();
 
 const programOptions = program.opts();
-const {url:pUrl,paths:pathsJSON,root:mainProjectRoot} = programOptions
-const cPaths = path.resolve("./paths.json");
-const pathsJ = pathsJSON && fs.existsSync(pathsJSON) && pathsJSON.endsWith("paths.json")? pathsJSON  : null;
-let paths = pathsJ ? require(`${pathsJ}`) : fs.existsSync(cPaths) ? require(cPaths) : '';
-const projectRoot = mainProjectRoot && fs.existsSync(mainProjectRoot) ? mainProjectRoot : paths.projectRoot || process.cwd();
+const {url:pUrl,root:mainProjectRoot} = programOptions
+const projectRoot = mainProjectRoot && fs.existsSync(mainProjectRoot) ? mainProjectRoot : process.cwd();
 const electronProjectRoot = projectRoot && fs.existsSync(path.resolve(projectRoot,"electron")) && path.resolve(projectRoot,"electron") || '';
-const ePathsJSON = path.resolve(electronProjectRoot,"paths.json");
 const packageJSONPath = path.resolve(projectRoot,"package.json");
 const isValidUrl = require("./utils/isValidUrl");
 const packageJSON = fs.existsSync(packageJSONPath) ? require(`${packageJSONPath}`) : {};
-const eePaths = path.resolve(getPaths(projectRoot));
-if(!paths){
-  if(fs.existsSync(ePathsJSON)){
-    paths = require(ePathsJSON);
-  } else if(fs.existsSync(eePaths)){
-    path = require(eePaths);
-  } else {
-    throw {message : 'Chemin de noms, fichier paths.json introuvable!! Exécutez l\'application en enviornnement web|mobile|android|ios puis re-essayez'}
-  }
-}
 
 const mainProcessPath = path.resolve('processes',"main","index.js");
 const mainProcessIndex = electronProjectRoot && fs.existsSync(path.resolve(electronProjectRoot,mainProcessPath)) && path.resolve(electronProjectRoot,mainProcessPath);
@@ -369,18 +354,13 @@ ipcMain.on("get-project-root",(event)=>{
   event.returnValue  = projectRoot;
   return projectRoot;
 });
-ipcMain.on("get-project-root",(event)=>{
+ipcMain.on("get-electron-project-root",(event)=>{
   event.returnValue = electronProjectRoot;
   return event.returnValue ;
 });
 
 ipcMain.on("get-package.json",(event)=>{
   event.returnValue = JSON.stringify(packageJSON);
-  return event.returnValue ;
-});
-
-ipcMain.on("get-paths.json",(event)=>{
-  event.returnValue = JSON.stringify(paths);
   return event.returnValue ;
 });
 

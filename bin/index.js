@@ -182,20 +182,10 @@ program.command('electron')
               });
                 
             } else {
-              const electronPackage = require(`${path.resolve(electronProjectRoot,'package.json')}`);
-              electronPackage.name = packageObj.name;
-              electronPackage.version = packageObj.version;
-              //copying package json in build folder
-              writeFile(path.resolve(electronProjectRoot,"package.json"),JSON.stringify(electronPackage,null,"\t"));
-              platform = platform || process.platform;
-              console.log("packaing app from ",electronProjectRoot);
-              return require("./package")({
-                  src : electronProjectRoot,
-                  dist : path.resolve(outDir,platform),
-                  platform,
-                  arch : arch || undefined,
-                  projectRoot : electronProjectRoot,
-             });
+              cmd = `npx electron-forge package ${platform? `--platform="${platform}"`:""} ${arch?`--arch="${arch}"`:""}`;
+              return exec({cmd,projectRoot:electronProjectRoot}).then(()=>{
+                console.log("application package avec succèss");
+              });
             }
            break;
       }

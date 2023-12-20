@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "7.5.11",
+  "version": "7.5.12",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "scripts": {
     "clear-npx-cache": "npx clear-npx-cache",

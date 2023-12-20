@@ -3,11 +3,18 @@ const writeFile = require("../electron/utils/writeFile");
 const path = require("path");
 const packageJSON = require("../package.json");
 
-module.exports = (electronProjectRoot)=>{
+module.exports = ({electronProjectRoot,force,logo,appName})=>{
     if(!electronProjectRoot || typeof electronProjectRoot !='string' || !fs.existsSync(electronProjectRoot)){
         return null;
     }
     const indexPath = path.resolve(electronProjectRoot,"index.js");
-    writeFile(indexPath,`module.exports = require("${packageJSON.name}/electron/index.js")`);
+    if(!fs.existsSync(indexPath) || force === true){
+        writeFile(indexPath,`
+require("${packageJSON.name}/electron")({
+    projectRoot : __dirname,
+    appName : "${appName}",
+    logo : ${logo ? `"${logo}"` : undefined},
+});`);
+}
     return indexPath;
 }

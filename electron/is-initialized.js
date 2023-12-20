@@ -6,8 +6,6 @@ module.exports = (projectRoot)=>{
     return fs.existsSync(path.resolve(projectRoot,"node_modules")) && fs.existsSync(path.resolve(projectRoot,"index.js")) 
         && fs.existsSync(path.resolve(projectRoot,"package.json")) 
         && fs.existsSync(path.resolve(projectRoot,'processes',"main","index.js")) 
-        && fs.existsSync(path.resolve(projectRoot,'processes',"renderer","index.js"))
-        && fs.existsSync(path.resolve(projectRoot,"paths.json"))
-        
+        && fs.existsSync(path.resolve(projectRoot,'processes',"renderer","index.js"))     
     && true || false;
 }

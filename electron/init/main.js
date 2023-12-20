@@ -8,6 +8,7 @@
 */
 
 module.exports = {
+    enableSingleInstance: true, // si l'application n'autorise qu'une seule instance active. ça sous entend qu'à l'instant t, une seule instance de l'application ne peut être exécutée sur le profil de l'utilisateur lambda
     /**** cette fonction est appelée à chaque fois que l'on désire créer une instance du BrowserWindow
         @param {object} BrowserWindowOptions
         Lors de la création de la fenêtre principal, BrowserWindowOptions continent la propriété isMainWindow à true

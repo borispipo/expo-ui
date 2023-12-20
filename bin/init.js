@@ -10,7 +10,7 @@ const appSuffix = "-desk";
 const mainPackage = require("../package.json");
 const mainPackageName = mainPackage.name;
 
-module.exports = ({projectRoot,electronProjectRoot,paths,pathsJSON})=>{
+module.exports = ({projectRoot,electronProjectRoot})=>{
     return new Promise((resolve,reject)=>{
         //make shure electron project root exists
         if(!createDir(electronProjectRoot)){
@@ -22,7 +22,7 @@ module.exports = ({projectRoot,electronProjectRoot,paths,pathsJSON})=>{
         const projectRootPackage = {...mPackageJSON,...electronPackageJSON};
         const dependencies = require("../electron/dependencies");
         const electronProjectRootPackage = path.resolve(electronProjectRoot,"package.json");
-        projectRootPackage.main = `node_modules/${mainPackageName}/electron/index.js`;
+        projectRootPackage.main = `index.js`;
         projectRootPackage.dependencies = {...dependencies.main,...Object.assign(electronPackageJSON.dependencies)};
         projectRootPackage.dependencies[mainPackage.name] = mainPackage.version;
         projectRootPackage.devDependencies = {...dependencies.dev,...Object.assign({},electronPackageJSON.devDependencies)};
@@ -62,17 +62,6 @@ module.exports = ({projectRoot,electronProjectRoot,paths,pathsJSON})=>{
         /**** copying all electron utils files */
         const utilsPath = path.resolve(electronProjectRoot,"utils");
         copy(path.resolve(electronDir,"utils"),utilsPath);
-        const destPathJSON = path.resolve(electronProjectRoot,"paths.json");
-        try {
-            if(paths && typeof paths =='object' && paths.$src && fs.existsSync(paths.$src)){
-                writeFile(destPathJSON,JSON.stringify(paths, null, "\t"));
-            }
-        } catch{}
-        if(!fs.existsSync(destPathJSON) && pathsJSON && fs.existsSync(pathsJSON)){
-            try {
-                copy(pathsJSON,destPathJSON);
-            } catch(e){}
-        }
         const gP = path.resolve(electronProjectRoot,".gitignore") ;
         if(!fs.existsSync(gP)){
           try {

@@ -9,11 +9,11 @@ const isBase64 = require("./utils/isBase64");
 const isNonNullString = x=>x && typeof x =='string';
 require("./utils/replaceAll");
 const appName = ipcRenderer.sendSync("get-app-name");
-const electronProjectRoot = ipcRenderer.sendSync("get-electron-project-root");
+const projectRoot = ipcRenderer.sendSync("get-project-root");
 const sanitize = require("sanitize-filename");
 const uniqid = require("./utils/uniqid");
 if(!appName || typeof appName !=='string'){
-    console.error("Nom de l'application invalide!! Veuillez spécifier un nom valide d'application ",electronProjectRoot," is electron project root")
+    console.error("Nom de l'application invalide!! Veuillez spécifier un nom valide d'application ",projectRoot," is electron project root")
 }
 const APP_NAME = appName?.toUpperCase() || "";
 let backupPathField = "_e_backupDataPath";
@@ -421,7 +421,7 @@ const ELECTRON = {
     },
 };
 
-require("./pload")(ELECTRON,{electronProjectRoot});
+require("./pload")(ELECTRON,{projectRoot});
 ELECTRON.getBackupPath();
 //require("./app/index")(ELECTRON)
 //require('v8-compile-cache');

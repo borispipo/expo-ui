@@ -1,7 +1,5 @@
 const path = require("path");
 const fs = require("fs");
-const writeFile = require("./electron/utils/writeFile");
-const paths = require("./electron/utils/paths");
 module.exports = (opts)=>{
     const isLocalDev = require("./is-local-dev")();
     const dir = path.resolve(__dirname);
@@ -108,15 +106,6 @@ module.exports = (opts)=>{
             fs.copyFileSync(logoPath,ePath,fs.constants.COPYFILE_FICLONE);
             electronPaths.logo = logoPath;
         }
-    }
-    const expoUIElectronPath = path.resolve(projectRoot,"electron")
-    const pathsSringified = JSON.stringify(electronPaths, null, "\t");
-    ///on sauvegarde les chemins des fichiers utiles, qui seront utilisées par la variable electron plus tard
-    try {
-        writeFile(paths(projectRoot),pathsSringified);
-    } catch{}
-    if(fs.existsSync(expoUIElectronPath)){
-        writeFile(path.resolve(expoUIElectronPath,"paths.json"),pathsSringified);
     }
     r["$erealm"] = path.resolve(expo,'realm');
     if(!r.$realm){

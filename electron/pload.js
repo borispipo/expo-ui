@@ -1,7 +1,7 @@
 const { machineIdSync} = require('node-machine-id');
 const fs = require("fs");
 const path = require("path");
-module.exports = (ELECTRON,{projectRoot,electronProjectRoot})=>{
+module.exports = (ELECTRON,{projectRoot})=>{
     const isWin = process.platform === "win32"? true : false;
     const isLinux = process.platform === "linux"? true : false;
     const {ipcRenderer} = require("electron");
@@ -79,7 +79,7 @@ module.exports = (ELECTRON,{projectRoot,electronProjectRoot})=>{
         process.env.USERNAME || '';
     
     const mainRendererPath = path.resolve('processes',"renderer","index.js");
-    const rendererProcessIndex = electronProjectRoot && fs.existsSync(path.resolve(electronProjectRoot,mainRendererPath)) && path.resolve(electronProjectRoot,mainRendererPath);
+    const rendererProcessIndex = projectRoot && fs.existsSync(path.resolve(projectRoot,mainRendererPath)) && path.resolve(projectRoot,mainRendererPath);
     //pour étendre les fonctionnalités au niveau du renderer proceess, bien vouloir écrire dans le fichier projectRoot/electron/processes/renderer/index.js
     // dans lequel exporter une fonction prenant en paramètre l'objet electron, que l'on peut étendre et le rendre accessible depuis l'application
     const rendererProcess = rendererProcessIndex && require(`${rendererProcessIndex}`);    

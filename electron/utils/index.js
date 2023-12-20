@@ -7,6 +7,7 @@ module.exports = {
     paths : require("./paths"),
     exec : require("./exec"),
     uniqid : require("./uniqid"),
+    debounce : require("./debounce"),
     throwError : (...args)=>{
         console.error(...args);
         process.exit(-1);

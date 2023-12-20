@@ -7,7 +7,7 @@ const { program } = require('commander');
 program
   .option('-u, --url <url>', 'L\'adresse url à ouvrir au lancement de l\'application')
   .option('-r, --root <projectRoot>', 'le chemin du project root de l\'application')
-  .option('-p, --paths <paths>', 'le chemin vers le fichiers paths.json contenant la liste des alias de l\'application, exportés au moment de la compilation')
+  //.option('-p, --paths <paths>', 'le chemin vers le fichiers paths.json contenant la liste des alias de l\'application, exportés au moment de la compilation')
   .parse();
 
 const programOptions = program.opts();

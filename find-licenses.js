@@ -96,7 +96,7 @@ const findLicencesMain = (options)=>{
         for(let i in  s){
             content[s[i]] = openLibraries[s[i]]
         }
-        fs.writeFileSync(outputPath, "module.exports = "+JSON.stringify(content)+";");
+        fs.writeFileSync(outputPath, "module.exports = "+JSON.stringify(content,null,"\t")+";");
     } else {
         return ({
             error : true,

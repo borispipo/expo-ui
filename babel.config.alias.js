@@ -1,6 +1,6 @@
 const path = require("path");
 const fs = require("fs");
-const {createDir} = require("./bin/utils");
+
 module.exports = (opts)=>{
     const isLocalDev = require("./is-local-dev")();
     const dir = path.resolve(__dirname);
@@ -78,16 +78,7 @@ module.exports = (opts)=>{
     ///le chemin racine du projet expo-ui
     r["$expo-ui-root-path"] = r["$expo-ui-root"]= path.resolve(expo,"..");
     
-    const $assets = r.$assets;
     const $electron = path.resolve(dir,"electron");
-    const electronPaths = {
-        ...r,
-        sourceCode : r.$src,
-        assets : $assets,
-        images : r.$images,
-        projectRoot : projectRoot,//la racine au projet
-        electron : $electron,//le chemin racine electron
-    };
     //le chemin ver le repertoire electron
     r.$eelectron = r["$e-electron"] = $electron;
     r.$electron = r.$electron || r.$eelectron;
@@ -97,16 +88,6 @@ module.exports = (opts)=>{
     r.$epdf = path.resolve(expo,"pdf");
     if(!r.$context){
         r.$context = r.$econtext;
-    }
-    const electronAssetsPath = path.resolve(dir,"electron","assets");
-    if($assets){
-        const l1 = path.resolve($assets,"logo.png"), l2 = path.resolve($assets,"logo.png");
-        const logoPath = fs.existsSync(l1)? l1 : fs.existsSync(l2)? l2 : undefined;
-        const ePath = path.resolve(electronAssetsPath,"images","logo.png");
-        if(logoPath && createDir(ePath)){
-            fs.copyFileSync(logoPath,ePath,fs.constants.COPYFILE_FICLONE);
-            electronPaths.logo = logoPath;
-        }
     }
     r["$erealm"] = path.resolve(expo,'realm');
     if(!r.$realm){

@@ -18,6 +18,7 @@ function ParagraphComponent({splitText,...props}){
         userSelect = {defaultSelectable}
         {...props}
         {...restProps}
+        style = {[{color:theme.colors.text},props.style,restProps.sty]}
     />
 }
 

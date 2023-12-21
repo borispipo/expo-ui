@@ -1,6 +1,6 @@
 const path = require("path");
 const fs = require("fs");
-const {writeFile} = require("../electron/utils")
+const {writeFile} = require("../bin/utils")
 const $ecomponents = path.resolve("./src/components");
 const eAppex  = path.resolve($ecomponents,"Chart","appexChart");
 const cwdApexChart = path.resolve(process.cwd(),"node_modules","apexcharts","dist","apexcharts.min.js");

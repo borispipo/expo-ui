@@ -1,5 +1,6 @@
 const path = require("path");
 const fs = require("fs");
+const {createDir} = require("./bin/utils");
 module.exports = (opts)=>{
     const isLocalDev = require("./is-local-dev")();
     const dir = path.resolve(__dirname);
@@ -102,7 +103,7 @@ module.exports = (opts)=>{
         const l1 = path.resolve($assets,"logo.png"), l2 = path.resolve($assets,"logo.png");
         const logoPath = fs.existsSync(l1)? l1 : fs.existsSync(l2)? l2 : undefined;
         const ePath = path.resolve(electronAssetsPath,"images","logo.png");
-        if(logoPath && require("./electron/utils/createDir")(ePath)){
+        if(logoPath && createDir(ePath)){
             fs.copyFileSync(logoPath,ePath,fs.constants.COPYFILE_FICLONE);
             electronPaths.logo = logoPath;
         }

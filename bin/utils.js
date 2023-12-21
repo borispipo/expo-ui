@@ -1,1 +1,1 @@
-module.exports = require("../electron/utils");
+module.exports = require("@fto-consult/electron/src/utils");

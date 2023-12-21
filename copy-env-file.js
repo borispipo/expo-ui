@@ -1,10 +1,7 @@
 const fs = require("fs");
-const fsExtra = require("fs-extra");
 const path = require("path");
-const writeFile = require("./electron/utils/writeFile");
-/*** create and copy environment path to this directory
- * 
- */
+const {writeFile,copy} = require("./bin/utils");
+
 module.exports = (projectRoot,forceCreate)=>{
     const env = typeof process.env.NODE_ENV =="string" && process.env.NODE_ENV.toLowerCase().trim() || "development";
     const isDevEnv = 'development' === env;
@@ -16,7 +13,7 @@ module.exports = (projectRoot,forceCreate)=>{
     if(environmentPath && fs.existsSync(environmentPath)){
         // File ".env" will be created or overwritten by default.
         try {
-          fsExtra.copySync(environmentPath, localEnv,{overwrite:true});
+          copy(environmentPath, localEnv,{overwrite:true});
         }
         catch (e){}
     } 

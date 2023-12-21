@@ -1,6 +1,6 @@
 const path = require("path");
 const fs = require("fs");
-const {writeFile} = require("../electron/utils")
+const {writeFile} = require("../bin/utils")
 const ePdfmake  = path.resolve("./src","pdf","pdfmake");
 const pdfmakeBuildPath = path.resolve(process.cwd(),"node_modules","pdfmake","build");
 const pdfmakePath = path.resolve(pdfmakeBuildPath,"pdfmake.min.js"),

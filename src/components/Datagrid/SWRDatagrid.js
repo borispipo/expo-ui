@@ -208,7 +208,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     const dataRef = React.useRef(null);
     const totalRef = React.useRef(0);
     const prevIsLoading = React.usePrevious(isLoading);
-    const loading = (customIsLoading === true || isLoading || (prevIsLoading && isValidating && showProgressRef.current));
+    const loading = (customIsLoading === true || isLoading || (isValidating && showProgressRef.current));
     const {data,total} = React.useMemo(()=>{
         if((loading && customIsLoading !== false) || !isObjOrArray(result)){
             return {data:dataRef.current,total:totalRef.current};
@@ -235,8 +235,10 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         },500);
     },[error]);
     const doRefresh = (showProgress)=>{
-        showProgressRef.current = showProgress ? typeof showProgress ==='boolean' : false;
-        refresh();
+        showProgressRef.current = showProgress || typeof showProgress ==='boolean' ? showProgress : false;
+        const fPath = isNonNullString(fetchPath)? fetchPath : fPathRef.current;
+        const rKey = `${setQueryParams(fPath,"swrRefreshKeyId",uniqid("swr-refresh-key"))}`;
+        refresh(rKey,data);
     }
     const canPaginate = ()=>{
         if(!canHandlePagination) return false;

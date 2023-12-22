@@ -295,7 +295,6 @@ export default class CommonDatagridComponent extends AppComponent {
         this.INITIAL_STATE = {
             data,
         }
-        this.prepareFetchData();
         this._datagridId = isNonNullString(this.props.id)? this.props.id : uniqid("datagrid-id")
         this.canDoFilter = true;    
         this.filters =  {}
@@ -3243,9 +3242,6 @@ export default class CommonDatagridComponent extends AppComponent {
         this.refresh(true);
         this.previousDataSources = dataSources;
     }
-    prepareFetchData(fetchData){
-        this.INITIAL_STATE.fetchData = defaultVal(fetchData,this.props.fetchData);
-    }
     beforeFetchData(){}
         /**** retourne la liste des items, utile lorsqu'une s'agit d'une fonction 
         Lorsque data est une chaine de caractère, alors elle doit être sous la forme recommandée par la function 
@@ -3290,7 +3286,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 if(force !== true && isArray(this.INITIAL_STATE.data)) {
                     return this.resolveFetchedDataPromise({cb,data:this.INITIAL_STATE.data}).then(resolve).catch(reject)
                 }
-                let fetchData  = this.INITIAL_STATE.fetchData;
+                let fetchData  = undefined;
                 if(isFunction(this.props.fetchData)){
                     /**** l'on peut définir la props fetchData, qui est la fonction appelée pour la recherche des données */
                     fetchData = this.props.fetchData.call(this,fetchOptions);
@@ -3381,7 +3377,7 @@ export default class CommonDatagridComponent extends AppComponent {
             this._pagination.page = 1;
             this._pagination.start = 0;
         }
-        return this.fetchData({force:true});
+        return this.fetchData({force:true,renderProgressBar:true});
     }
     onSetQueryLimit(){
         if(!this.canSetQueryLimit()) return;

@@ -16,6 +16,7 @@ import notify from "$notify";
 import appConfig from "$capp/config";
 import Screen from "$eScreen";
 import { getStateFromPath } from "@react-navigation/native";
+import * as Linking from 'expo-linking';
 
 
 export function TableDataListScreen({tableName,table,screenName,...props}){
@@ -70,8 +71,10 @@ export function prepareScreens ({tables,screens:screensProps,navigationContainer
     const screens = [];
     
     ///linking inintialization for config
+    const prefix = Linking.createURL('/');
     containerProps.linking = defaultObj(containerProps.linking);
     containerProps.linking.prefixes = Array.isArray(containerProps.linking.prefixes)? containerProps.linking.prefixes : [];
+    containerProps.linking.prefixes.unshift(prefix);
     containerProps.linking.config = defaultObj(containerProps.linking.config);
     if(!containerProps.linking.prefixes.length){
         const appName = sanitizeName(appConfig.name);

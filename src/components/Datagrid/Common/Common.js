@@ -1822,7 +1822,9 @@ export default class CommonDatagridComponent extends AppComponent {
     return this.SetExportOptions({excel:false,pdf:true}).then((opts)=>{
         const {data,config:cConfig,pdfConfig} = opts;
         const config = extendObj({},pdfConfig,cConfig);
-        data[0] = createTableHeader(data[0],config);
+        data[0] = createTableHeader(data[0],{...config,filter:(a)=>{
+            return true;
+        }});
         const pT = defaultStr(config.pdfDocumentTitle).trim();
         const pdfDocumentTitle = pT ? pdfSprintf(pT,{fontSize : 20,color : "red"}) : null;
         const content = [{
@@ -1858,8 +1860,8 @@ export default class CommonDatagridComponent extends AppComponent {
         const hasFields = !!config.fields.length;
         const fields = config.fields;
         const headers = [];
+        const fValues = this.getFooterValues();
         if(displayOnlyHeader && config.aggregatedValues){
-            const fValues = this.getFooterValues();
             headers.push("Fonction d'agrégation");
             const aggregatorFunctions = this.aggregatorFunctions;
             Object.map(footers,(f,i)=>{
@@ -1874,7 +1876,8 @@ export default class CommonDatagridComponent extends AppComponent {
                 const d = [defaultStr(ag.label,ag.text,i)];
                 Object.map(fValues,(footer,field)=>{
                     if(!cols[field]) return;
-                    d.push(defaultNumber(footer[i]))
+                    const v = defaultNumber(footer[i]);
+                    d.push(pdf ? this.formatValue(v,footer.format,field):v);
                 });
                 data.push(d);
             })
@@ -1883,41 +1886,76 @@ export default class CommonDatagridComponent extends AppComponent {
             const agFunc = this.state.aggregatorFunction;
             const canExportOnlyTotal = isOnlytotal || (config.exportOnlyTotal && displayOnlyHeader);
             if(canExportOnlyTotal){
-                headers.push("");
+                headers.push(pdf?{text:""}:"");
             }
             Object.map(this.state.columns,(col,i)=>{
                 if(hasFields && !fields.includes(i)) return;
                 if(!isObj(col) || col.visible === false || this.isSelectableColumn(col,i) || i === this.getIndexColumnName()) return;
                 if(canExportOnlyTotal && !(i in footers)) return;
                 cols[i] = col;
-                headers.push(defaultStr(col.label,col.text));
+                const textVal = defaultStr(col.label,col.text);
+                if(pdf && !textVal){
+                    headers.push({text:""});
+                } else {
+                    headers.push(textVal);
+                }
                 totalColumns++;
             });
             data.push(headers);
+            if(canExportOnlyTotal && isNonNullString(agFunc)){
+                const totalFooter = [pdf?{text:"TOTAUX",fontSize:16,bold:true}:"TOTAUX"];
+                Object.map(fValues,(f,i)=>{
+                    if(!isObj(f) || hasFields && !fields.includes(i) || !(agFunc in f)) return;
+                    const vNum = defaultNumber(f[agFunc]);
+                    const text = pdf ? this.formatValue(vNum,f.format,i) : vNum;
+                    totalFooter.push(pdf?{text,bold:true,fontSize:15,alignment:"center",color:"red"}:text);
+                });
+                data.push(totalFooter);
+            }
             Object.map(this.state.data,(dat,index)=>{
                 ///si l'on a a faire à une colonne de type entete
                 const d = [];
                 if(dat.isSectionListHeader){
                     if(!config.displayTotals && !canExportOnlyTotal) return;
                     const {sectionListHeaderKey:key} = dat;
-                    const val = key === this.emptySectionListHeaderValue ? this.getEmptySectionListHeaderValue() : key;
+                    let val = key === this.emptySectionListHeaderValue ? this.getEmptySectionListHeaderValue() : key;
+                    if(pdf){
+                        val = {text : val, colSpan :totalColumns,bold:true,fontSize:15};
+                    }
                     d.push(val);
                     if(!canExportOnlyTotal){
                         for(let i = 1;i<totalColumns;i++){
                             d.push(null);
                         }
                         data.push(d);
+                        const hF = hFooters[key];
+                        if(isObj(hF) && isNonNullString(agFunc)){
+                            const totalSectionFooter = [];
+                            Object.map(cols,(col,i)=>{
+                                if(i in hF){
+                                    const ff = hF[i];
+                                    const vNum = defaultNumber(ff[agFunc]);
+                                    const text = pdf ? this.formatValue(vNum,col.format,i) : vNum;
+                                    totalSectionFooter.push(pdf?{text,bold:true,fontSize:15,alignment:"center"}:text);
+                                } else {
+                                    totalSectionFooter.push(null);
+                                }
+                            });
+                            data.push(totalSectionFooter);
+                        }
                     } else {
                         const hF = hFooters[key];
                         if(isObj(hF) && isNonNullString(agFunc)){
                             const dd = [];
                             Object.map(cols,(col,i)=>{
                                 if(i in hF){
-                                        const ff = hF[i];
-                                        dd.push(defaultNumber(ff[agFunc]));
-                                    } else {
-                                        dd.push(null);
-                                    }
+                                    const ff = hF[i];
+                                    const vNum = defaultNumber(ff[agFunc]);
+                                    const text = pdf ? this.formatValue(vNum,col.format,i) : vNum;
+                                    dd.push(pdf?{text,bold:true,fontSize:15,alignment:"center"}:text);
+                                } else {
+                                    dd.push(null);
+                                }
                             });
                             if(canExportOnlyTotal){
                                 dd.unshift(val);
@@ -1927,6 +1965,9 @@ export default class CommonDatagridComponent extends AppComponent {
                                 data.push(dd);
                             }
                         } else {
+                            if(canExportOnlyTotal){
+                                d.push(null);
+                            }
                             data.push(d);
                         }
                     }
@@ -1938,7 +1979,7 @@ export default class CommonDatagridComponent extends AppComponent {
                             rowData : dat,
                             rowCounterIndex : index,
                             rowIndex : index,
-                            formatValue : false,
+                            formatValue : !pdf,
                             renderRowCell : false,
                             columnField : defaultStr(col.field,i),
                             columnDef :{

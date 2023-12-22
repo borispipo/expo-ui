@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import View from "$ecomponents/View";
 import Tooltip from "$ecomponents/Tooltip";
-import theme,{DISABLED_OPACITY,Colors,cursorNotAllowed,StylePropsTypes} from "$theme";
+import theme,{DISABLED_OPACITY,Colors,colorsAlias,cursorNotAllowed,StylePropsTypes} from "$theme";
 import Icon from "$ecomponents/Icon";
 import {TouchableRipple} from "react-native-paper";
 import ActivityIndicator from "$ecomponents/ActivityIndicator";
@@ -173,7 +173,6 @@ const ButtonComponent = React.forwardRef((prs,ref) => {
 
   const elevationRes = disabled || !hasElevation ? 0 : elevation?.__getValue();
   contentStyle = Object.assign({},StyleSheet.flatten([hasElevation ? (icon?styles.elevation2icon:(isAlert?styles.elevationAlert:styles.elevationOnly)):null,contentProps.style,contentStyle]));
-  
   if(iconPosition == 'top'){
     contentStyle.flexDirection = 'column';
   } else if(iconPosition =='bottom'){
@@ -368,7 +367,12 @@ const styles = StyleSheet.create({
 });
 
 ButtonComponent.displayName = "ButtonComponent";
-export default theme.withStyles(ButtonComponent);
+export default theme.withStyles(ButtonComponent,{
+  shouldForwardProp : (prop)=>{
+    if(prop && colorsAlias.includes(prop)) return true;
+    return undefined;
+  }
+});
 
 ButtonComponent.propTypes = {
     left : PropTypes.oneOfType([

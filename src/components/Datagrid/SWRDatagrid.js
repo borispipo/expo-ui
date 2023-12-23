@@ -192,7 +192,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                 delete opts.offset;
             }
             opts.url = opts.path = url;
-            if(showProgressRef.current ===false){
+            if(showProgressRef.current ===false || typeof forceRefreshRef.current !=='boolean'){
                 opts.showError = false;
             }
             const end = (a)=> {

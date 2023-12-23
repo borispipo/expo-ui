@@ -161,6 +161,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     const sortRef = React.useRef({});
     const innerRef = React.useRef(null);
     const showProgressRef = React.useRef(true);
+    const forceRefreshRef = React.useRef(true);
     const pageRef = React.useRef(1);
     const canHandlePagination = handlePagination !== false ? true : false;
     const canHandleLimit = handleQueryLimit !== false && canHandlePagination ? true : false;
@@ -238,7 +239,8 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         showProgressRef.current = showProgress || typeof showProgress ==='boolean' ? showProgress : false;
         const fPath = isNonNullString(fetchPath)? fetchPath : fPathRef.current;
         const rKey = `${setQueryParams(fPath,"swrRefreshKeyId",uniqid("swr-refresh-key"))}`;
-        refresh(rKey,data);
+        forceRefreshRef.current = true;
+        refresh(rKey);
     }
     const canPaginate = ()=>{
         if(!canHandlePagination) return false;
@@ -302,6 +304,8 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             showProgressRef.current = false;
         }
     },[showProgressRef.current]);
+    const isAppLoading = loading && showProgressRef.current && forceRefreshRef.current || false;
+    forceRefreshRef.current = undefined;
     return (
         <Datagrid 
             testID = {testID}
@@ -408,7 +412,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             handleQueryLimit = {false}
             handlePagination = {false}
             autoSort = {canSortRemotely()? false : true}
-            isLoading = {loading && showProgressRef.current || false}
+            isLoading = {isAppLoading}
             beforeFetchData = {(args)=>{
                 let {fetchOptions:opts,force,renderProgressBar} = args;
                 opts = getFetchOptions({showError:showProgressRef.current,...opts});

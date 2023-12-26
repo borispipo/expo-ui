@@ -10,7 +10,8 @@ import avatarProps from "$eauth/avatarProps";
 import useContext from "$econtext/hooks";
 import PropTypes from "prop-types";
 import APP from "$capp/instance";
-
+import {isElectron} from "$cplatform";
+import {isValidUrl} from "$cutils/uri";
 import {screenName} from "./utils";
 
 export default function UserProfileScreen({fields,...p}){
@@ -66,11 +67,25 @@ export default function UserProfileScreen({fields,...p}){
         if(args.value === user.avatar) return;
         hasChangeRef.current = true;
     }
+    if(isElectron() && typeof ELECTRON !=='undefined' && window?.ELECTRON && ELECTRON.session && typeof ELECTRON.session?.get =='function'){
+        fields.mainElectronAppUrl = {
+            label : "Url de l'application",
+            onValidatorValid : ({value})=>{
+                if(value && !isValidUrl(value)){
+                    return "Vous devez spécifier une adresse url valide";
+                } 
+            },
+            defaultValue : ELECTRON.appUrl,
+        };
+    }
     const onSaveProfile = ({data,goBack,...rest})=>{
         data.theme = themeRef.current;
         Preloader.open("Modification en cours...");
         const toSave = {...user,...data};
         return Auth.upsertUser(toSave,true).then((response)=>{
+            if(isValidUrl(data.mainElectronAppUrl) && isElectron()){
+                ELECTRON.appUrl = data.mainElectronAppUrl;
+            }
             setTimeout(()=>{
                 APP.trigger(APP.EVENTS.UPDATE_THEME,user.theme);
                 APP.trigger(APP.EVENTS.AUTH_UPDATE_PROFILE,toSave);

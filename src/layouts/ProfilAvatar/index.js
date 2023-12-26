@@ -35,7 +35,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,chevronIconProps
     props.src = u.avatar;
     size = defaultNumber(size,!withLabel?40:40);
     const userPseudo = Auth.getUserPseudo();
-    const pseudo = defaultStr(userPseudo,Auth.getUserEmail(),Auth.getUserCode());
+    const pseudo = defaultStr(userPseudo,Auth.getUserCode(),Auth.getUserEmail());
     const label = defaultStr(Auth.getUserFullName(),userPseudo);
     const onLongPress = ()=>{
         appConfig.setDeviceId().then((r)=>{

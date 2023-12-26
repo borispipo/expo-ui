@@ -40,11 +40,10 @@ export default function UserProfileScreen({fields,...p}){
         if(typeof changeElectronAppUrlPerm ==='string'){
             return Auth.isAllowedFromStr(changeElectronAppUrlPerm);
         } else if(typeof changeElectronAppUrlPerm =='function'){
-            return !!canChangeElectronAppUrl(props);
+            return !!changeElectronAppUrlPerm(props);
         } 
         return Auth.isMasterAdmin();
-        
-    },[changeElectronAppUrlPerm])
+    },[changeElectronAppUrlPerm]);
     const user = defaultObj(props.user,Auth.getLoggedUser());
     const testID = defaultStr(props.testID,"RN_UserProfile_FormData");
     const themeRef = React.useRef(defaultObj(user.theme));
@@ -107,7 +106,7 @@ export default function UserProfileScreen({fields,...p}){
             }
             navigate('Home');
         }).catch(e=>{
-            console.log(e," is ssssssssssssssssss");
+            console.log(e," settings profile data");
         }).finally(()=>{
             setTimeout(()=>{
                 Preloader.close();

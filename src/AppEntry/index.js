@@ -248,7 +248,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,children}) {
     initialState={initialState}
     {...containerProps}
     onStateChange={(state,...rest) =>{
-      setSession(NAVIGATION_PERSISTENCE_KEY,decycle(state),false);
+      //setSession(NAVIGATION_PERSISTENCE_KEY,decycle(state),false);
       if(typeof containerProps.onStateChange =='function'){
         containerProps.onStateChange(state,...rest);
       }

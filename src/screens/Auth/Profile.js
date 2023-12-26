@@ -13,6 +13,7 @@ import APP from "$capp/instance";
 import {isElectron} from "$cplatform";
 import {isValidUrl} from "$cutils";
 import {screenName} from "./utils";
+import notify from "$notify";
 
 export default function UserProfileScreen({fields,...p}){
     const {auth:{profilePropsMutator}} = useContext();
@@ -92,10 +93,13 @@ export default function UserProfileScreen({fields,...p}){
         data.theme = themeRef.current;
         Preloader.open("Modification en cours...");
         const toSave = {...user,...data};
-        return Auth.upsertUser(toSave,true).then((response)=>{
-            if(changeElectronUrl){
+        if(changeElectronUrl){
+            if(ELECTRON.getAppUrl() !== data.mainElectronAppUrl && isValidUrl(data.mainElectronAppUrl)){
                 ELECTRON.setAppUrl(data.mainElectronAppUrl);
+                notify.success(`L'url de l'application a été définie à la valeur : ${ELECTRON.getAppUrl()}. cette valeur sera prise en compte au rédémarrage de l'application`);
             }
+        }
+        return Auth.upsertUser(toSave,true).then((response)=>{
             setTimeout(()=>{
                 APP.trigger(APP.EVENTS.UPDATE_THEME,user.theme);
                 APP.trigger(APP.EVENTS.AUTH_UPDATE_PROFILE,toSave);

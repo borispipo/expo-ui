@@ -77,8 +77,6 @@ export default function HelpScreen(props){
                 <Link routeName={"releaseNotes"}>
                     <Label primary textBold style={theme.styles.mv05} >{appConfig.name+", Notes de mise à jour."}</Label>
                 </Link>
-            </View>
-            <View testID={testID+"_OpenLibrariesLinkContainer"} style={[theme.styles.w100,theme.styles.alignItemsCenter]}>
                 <OpenLibraries.Link testID={testID+"_OpenLibrariesLink"}/>
             </View>
         </View>

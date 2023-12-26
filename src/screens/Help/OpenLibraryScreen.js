@@ -1,6 +1,6 @@
 import View from "$ecomponents/View";
 import Screen from "$escreen";
-import {defaultStr,defaultObj,isValidUrl} from "$cutils";
+import {defaultStr,defaultObj,isValidUrl,isObj,isNonNullString} from "$cutils";
 import Label from "$ecomponents/Label";
 import theme from "$theme";
 import Link from "$ecomponents/Link";
@@ -10,8 +10,10 @@ import Table from "$ecomponents/Table";
 import React  from "$react";
 import AutoLink from "$ecomponents/AutoLink";
 import {Vertical} from "$ecomponents/AutoSizer";
+const packageJSON = require("$packageJSON");
 
 const openLibraries = require("./openLibraries");
+const euPackageName = "@fto-consult/expo-ui";
 
 const columns = {
     index : {
@@ -33,8 +35,12 @@ const columns = {
 }
 export default function OpenLibrariesScreen({testID,...props}){
     testID = defaultStr(testID,"RN_HealScreenOpenLibraries");
-    const gridStyles = [styles.grid0,styles.grid1,styles.grid2,styles.grid3];
-    const borderStyle = {borderColor:theme.colors.divider,borderWidth:1,justifyContent:'space-between'};
+    if(isObj(packageJSON?.dependencies)){
+        const devExpo = packageJSON?.dependencies[euPackageName];
+        const opo = isNonNullString(devExpo) ? {version:devExpo.trim().ltrim("^")} : Object.assign({},devExpo);
+        openLibraries[euPackageName] = Object.assign({},openLibraries[euPackageName]);
+        openLibraries[euPackageName] = {...openLibraries[euPackageName],...opo};
+    }
     const data = React.useMemo(()=>{
         const data = [];
         Object.map(openLibraries,(lib,i,_i)=>{

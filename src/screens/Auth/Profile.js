@@ -11,7 +11,7 @@ import useContext from "$econtext/hooks";
 import PropTypes from "prop-types";
 import APP from "$capp/instance";
 import {isElectron} from "$cplatform";
-import {isValidUrl} from "$cutils/uri";
+import {isValidUrl} from "$cutils";
 import {screenName} from "./utils";
 
 export default function UserProfileScreen({fields,...p}){
@@ -34,6 +34,17 @@ export default function UserProfileScreen({fields,...p}){
     })
     const p2 = {...p,fields};
     const props = typeof profilePropsMutator =='function'? extendObj({},p,profilePropsMutator(p2)) : p2;
+    const {changeElectronAppUrlPerm} = props;
+    const changeElectronUrl = React.useMemo(()=>{
+        if(!isElectron() || !window?.ELECTRON || typeof ELECTRON?.setAppUrl !=='function' || typeof ELECTRON?.getAppUrl !=='function') return false;
+        if(typeof changeElectronAppUrlPerm ==='string'){
+            return Auth.isAllowedFromStr(changeElectronAppUrlPerm);
+        } else if(typeof changeElectronAppUrlPerm =='function'){
+            return !!canChangeElectronAppUrl(props);
+        } 
+        return Auth.isMasterAdmin();
+        
+    },[changeElectronAppUrlPerm])
     const user = defaultObj(props.user,Auth.getLoggedUser());
     const testID = defaultStr(props.testID,"RN_UserProfile_FormData");
     const themeRef = React.useRef(defaultObj(user.theme));
@@ -67,7 +78,7 @@ export default function UserProfileScreen({fields,...p}){
         if(args.value === user.avatar) return;
         hasChangeRef.current = true;
     }
-    if(isElectron() && typeof ELECTRON !=='undefined' && window?.ELECTRON && ELECTRON.session && typeof ELECTRON.session?.get =='function'){
+    if(changeElectronUrl){
         fields.mainElectronAppUrl = {
             label : "Url de l'application",
             onValidatorValid : ({value})=>{
@@ -75,7 +86,7 @@ export default function UserProfileScreen({fields,...p}){
                     return "Vous devez spécifier une adresse url valide";
                 } 
             },
-            defaultValue : ELECTRON.appUrl,
+            defaultValue : ELECTRON.getAppUrl(),
         };
     }
     const onSaveProfile = ({data,goBack,...rest})=>{
@@ -83,8 +94,8 @@ export default function UserProfileScreen({fields,...p}){
         Preloader.open("Modification en cours...");
         const toSave = {...user,...data};
         return Auth.upsertUser(toSave,true).then((response)=>{
-            if(isValidUrl(data.mainElectronAppUrl) && isElectron()){
-                ELECTRON.appUrl = data.mainElectronAppUrl;
+            if(changeElectronUrl){
+                ELECTRON.setAppUrl(data.mainElectronAppUrl);
             }
             setTimeout(()=>{
                 APP.trigger(APP.EVENTS.UPDATE_THEME,user.theme);
@@ -95,6 +106,8 @@ export default function UserProfileScreen({fields,...p}){
                 return goBack(true);
             }
             navigate('Home');
+        }).catch(e=>{
+            console.log(e," is ssssssssssssssssss");
         }).finally(()=>{
             setTimeout(()=>{
                 Preloader.close();

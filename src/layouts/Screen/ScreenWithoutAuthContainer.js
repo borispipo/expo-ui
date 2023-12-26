@@ -13,6 +13,7 @@ import StatusBar from "$ecomponents/StatusBar";
 import ScrollView from "$ecomponents/ScrollView";
 import KeyboardAvoidingView from "$ecomponents/KeyboardAvoidingView";
 import {ScreenContext,useScreen} from "$econtext/hooks";
+import {isElectron} from "$cplatform";
 
 const getDefaultTitle = (nTitle,returnStr)=>{
   let titleStr = React.getTextContent(nTitle);
@@ -90,6 +91,9 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
         subtitle :subtitle,
         title : screenTitle,
       });
+      if(isElectron() && typeof window?.ELECTRON !== "undefined" && typeof ELECTRON?.setTitle =='function'){
+        ELECTRON.setTitle(screenTitle);
+      }
     }
   }, [title,subtitle]);
   const fab = withFab ? <Fab 

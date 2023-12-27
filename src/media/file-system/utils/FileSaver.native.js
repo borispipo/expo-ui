@@ -1,5 +1,5 @@
 import { Directories,FileSystem } from "./native";
-import {defaultStr,defaultBool} from "$cutils";
+import {defaultStr,defaultBool,isBase64} from "$cutils";
 import p from "../path";
 import * as Sharing from 'expo-sharing';
 

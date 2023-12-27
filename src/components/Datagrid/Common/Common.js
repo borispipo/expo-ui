@@ -45,7 +45,7 @@ import {MORE_ICON} from "$ecomponents/Icon"
 import ActivityIndicator from "$ecomponents/ActivityIndicator";
 import {createTableHeader,fields as pdfFields,pageHeaderMargin,sprintf as pdfSprintf} from "$cpdf";
 import {isWeb,isMobileNative} from "$cplatform";
-import { createPDF,getFields as getPdfFields } from '../../../pdf';
+import { createPDF,getFields as getPdfFields } from '$expo-ui/pdf';
 
 export const TIMEOUT = 100;
 
@@ -1835,16 +1835,7 @@ export default class CommonDatagridComponent extends AppComponent {
         if(pdfDocumentTitle){
             content.unshift(pdfDocumentTitle);
         }
-        const pdf = createPDF({...config,content});
-        if(isWeb()){
-            return pdf.open();
-        }
-        return;
-        FileSystem.writeExcel({...config,workbook:wb}).then(({path})=>{
-            if(isNonNullString(path)){
-                notify.success("Fichier enregistré dans le répertoire {0}".sprintf(path))
-            }
-         })
+        return createPDF({...config,content});
     }).finally(Preloader.close);
 }
    handleTableExport(args){

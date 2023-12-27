@@ -6,8 +6,7 @@ const mime = require('react-native-mime-types')
 const XLSX = require("xlsx");
 import Preloader from "$preloader";
 import * as FileSaver from "./FileSaver";
-import {isWeb,isMobileNative} from "$cplatform";
-
+import {isMobileNative,isElectron} from "$cplatform";
 
 /**** sauvegarde un fichier sur le disque 
      *  @param {object} {
@@ -28,14 +27,15 @@ import {isWeb,isMobileNative} from "$cplatform";
     if(!isNonNullString(fileName)){
         return Promise.reject({status:false,msg:'Nom de fichier invalide'});
     }
+    const isNative = isMobileNative() || isElectron();
     if(isBase64(content)){
-       if(isMobileNative()){
+       if(isNative){
          return FileSaver.save({content,contentType,isBase64:true,fileName,...rest});
        }
        content = new Blob([base64toBlob(content,contentType)], {});
     } else if(isDataURL(content)){
-        if(isMobileNative()){
-            return FileSaver.save({content:dataURLToBase64(content),contentType,isBase64:true,fileName,...rest});
+        if(isNative){
+            return FileSaver.save({content:dataURLToBase64(content),contentType,mime:contentType,isBase64:true,fileName,...rest});
         }
         const type = getTypeFromDataURL(content);
         content = dataURLToBlob(content);
@@ -61,16 +61,16 @@ export const writeExcel = ({workbook,content,contentType,fileName,...rest})=>{
     if(!isNonNullString(fileName)){
         return Promise.reject({status:false,message:'Nom de fichier invalide pour le contenu excel à créer'});
     }
-    
+    const isNative = isMobileNative() || isElectron();
     Preloader.open("génération du fichier excel "+fileName);
     if(isBase64(content)){
-        if(isMobileNative()) return FileSaver.save({content,isBase64:true,contentType,fileName,...rest}).finally(Preloader.close);
+        if(isNative) return FileSaver.save({content,isBase64:true,contentType,fileName,...rest}).finally(Preloader.close);
         content = new Blob([base64toBlob(content, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')], {});
     }
     if(isBlob(content)){
         return write({...rest,content,fileName,contentType}).finally(Preloader.close)
     }
-    if(isMobileNative()){
+    if(isNative){
         return FileSaver.save({...rest,content:XLSX.write(workbook, {type:'base64', bookType:ext}),fileName}).finally(Preloader.close).finally(Preloader.close);
     }
     return new Promise((resolve,reject)=>{

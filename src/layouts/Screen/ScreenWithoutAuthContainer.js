@@ -1,7 +1,7 @@
 import React from '$react';
 import {StyleSheet} from 'react-native';
 import PropTypes from "prop-types";
-import {defaultObj,defaultStr,defaultNumber,defaultBool,uniqid} from "$cutils";
+import {defaultObj,defaultStr,defaultNumber,isValidUrl,uniqid} from "$cutils";
 import View from "$ecomponents/View";
 import { useNavigation} from '$cnavigation';
 import Fab from "$elayouts/Fab";
@@ -75,7 +75,7 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
   
   
   React.useEffect(() => {
-    if((title||subtitle) && navigation && navigation.setOptions){
+    if(navigation && typeof navigation?.setOptions ==="function"){
       const appName = APP.getName().toUpperCase();
       subtitle = React.getTextContent(subtitle);
       let screenTitle = getDefaultTitle(title,true);
@@ -85,15 +85,18 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
       if(!screenTitle.toUpperCase().contains(appName)){
           screenTitle+=" | "+appName;
       }
+      if(isElectron() && typeof window?.ELECTRON !== "undefined" && typeof ELECTRON?.getLoadedAppUrl =='function'){
+        const loadedUrl = ELECTRON.getLoadedAppUrl();
+        if(isValidUrl(loadedUrl) && !screenTitle.includes(loadedUrl)){
+            screenTitle = `${screenTitle} [${loadedUrl}]`;
+        }
+      }
       navigation.setOptions({
         ...options,
         appBarProps:{...options.appBarProps,...appBarProps,title,subtitle},
         subtitle :subtitle,
         title : screenTitle,
       });
-      if(isElectron() && typeof window?.ELECTRON !== "undefined" && typeof ELECTRON?.setTitle =='function'){
-        ELECTRON.setTitle(screenTitle);
-      }
     }
   }, [title,subtitle]);
   const fab = withFab ? <Fab 

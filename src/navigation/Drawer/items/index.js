@@ -96,19 +96,6 @@ const useGetItems = (options)=>{
                 items[item.drawerSection.trim()].items.push(item);
             }
         });
-        const captureSide = {
-            label : <RecordingButton/>,
-            style : [theme.styles.noPadding],
-            labelProps : {style : [{flexShrink : 1},theme.styles.alignItemsFlexStart,theme.styles.w100]}
-        };
-        let hasCapture = false;
-        if(!hasCapture){
-            if(isObj(items.admin) && Array.isArray(items.admin.items)){
-                items.admin = Object.clone(items.admin);
-                items.admin.items.push(captureSide);
-                hasCapture = true;
-            }
-        }
         if(handleHelp){
             const dHelp = isObj(items.help)? Object.clone(items.help) : {};
             items.help = {
@@ -119,10 +106,6 @@ const useGetItems = (options)=>{
                 ...dHelp,
                 items : Array.isArray(dHelp.items)? dHelp.items : [],
             };
-            if(!hasCapture){
-                items.help.items.push(captureSide);
-                hasCapture = true;
-            }
             items.help.items.push({
                 icon : 'help',
                 label : 'A propos de '+APP.getName(),
@@ -151,6 +134,17 @@ const useGetItems = (options)=>{
                 delete items[section];
             }
         });
+        const captureSide = {
+            label : <RecordingButton/>,
+            style : [theme.styles.noPadding],
+            labelProps : {style : [{flexShrink : 1},theme.styles.alignItemsFlexStart,theme.styles.w100]}
+        };
+        if(isObj(items.help) && Array.isArray(items.help.items)){
+            items.help = Object.clone(items.help);
+            items.help.items.push(captureSide);
+        } else {
+            items.desktopCapturer = captureSide;
+        }
         return items;
     },[showProfilOnDrawer,handleHelp,theme.name,theme.colors.primary,theme.colors.secondary,refreshItemsRef.current,force,isSignedIn])
 }

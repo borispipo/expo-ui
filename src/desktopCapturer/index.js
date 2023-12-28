@@ -459,7 +459,7 @@ export const RecordingButton = function({onPress,testID,...props}){
     const color = theme.Colors.setAlpha(theme.colors.text,theme.ALPHA);
     const buttonContainerProps = {style:[theme.styles.w100,theme.styles.alignItemsFlexStart]}
     return <View testID={testID+"_Container"} {...buttonContainerProps}>
-        <Button  containerProps = {buttonContainerProps} {...props} style={[{color},buttonContainerProps.style,props.style]} upperCase={false} onPress = {(...args)=>{
+        <Button  forceWhiteColorOnDarkMode={false}  containerProps = {buttonContainerProps} {...props} style={[{color},buttonContainerProps.style,props.style]} upperCase={false} onPress = {(...args)=>{
             if(onPress && onPress(...args) === false) return;
             handleCapture();
         }}

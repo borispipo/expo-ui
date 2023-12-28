@@ -59,6 +59,7 @@ const ButtonComponent = React.forwardRef((prs,ref) => {
     noMargin,
     isAlert,
     borderRadius,
+    forceWhiteColorOnDarkMode,
     ...rest
   } = prs;
   isCancelButton = isCancelButton || error && true || false;
@@ -157,8 +158,8 @@ const ButtonComponent = React.forwardRef((prs,ref) => {
     backgroundColor = Colors.isValid(style.backgroundColor)?style.backgroundColor : Colors.isValid(backgroundColor)? backgroundColor : isCancelButton ? style.backgroundColor = theme.colors.error : undefined;
     borderColor = Colors.isValid(style.borderColor)? style.borderColor : isCancelButton ? theme.styles.onError : Colors.isValid(borderColor)? borderColor : undefined;
   }
-  if(theme.isDark() && !hasElevation){
-    //textColor = white;
+  if(theme.isDark() && forceWhiteColorOnDarkMode !== false && !hasElevation){
+    textColor = white;
   } 
 
   const rippleColor = Colors.setAlpha(textColor,0.32);
@@ -451,6 +452,7 @@ ButtonComponent.propTypes = {
     iconPosition : PropTypes.oneOf([
       'top','left','bottom','right'
     ]),
+    forceWhiteColorOnDarkMode: PropTypes.bool,//spécifie si la couleur white sera établie comme par défaut eu mode dark
   }
 
   export const setIsLoading = (buttonRef,loading)=>{

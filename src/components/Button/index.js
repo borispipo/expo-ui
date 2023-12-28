@@ -158,7 +158,7 @@ const ButtonComponent = React.forwardRef((prs,ref) => {
     borderColor = Colors.isValid(style.borderColor)? style.borderColor : isCancelButton ? theme.styles.onError : Colors.isValid(borderColor)? borderColor : undefined;
   }
   if(theme.isDark() && !hasElevation){
-    textColor = white;
+    //textColor = white;
   } 
 
   const rippleColor = Colors.setAlpha(textColor,0.32);

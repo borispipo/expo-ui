@@ -1,7 +1,7 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
 		"name": "@fto-consult/expo-ui",
-		"version": "7.8.10",
+		"version": "7.11.0",
 		"repository": {
 			"type": "git",
 			"url": "git+https://github.com/borispipo/expo-ui.git"
@@ -54,7 +54,7 @@ module.exports = {
 		"license": "ISC"
 	},
 	"@fto-consult/electron-gen": {
-		"version": "1.3.7",
+		"version": "2.2.0",
 		"license": "ISC"
 	},
 	"@pchmn/expo-material3-theme": {
@@ -253,6 +253,11 @@ module.exports = {
 		"version": "1.9.0",
 		"license": "MIT"
 	},
+	"react-native-indicators": {
+		"version": "0.17.0",
+		"url": "git://github.com/n4kz/react-native-indicators.git",
+		"license": "BSD-3-Clause"
+	},
 	"react-native-iphone-x-helper": {
 		"version": "1.3.1",
 		"url": "https://github.com/ptelad/react-native-iphone-x-helper#readme",
@@ -263,7 +268,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"react-native-paper": {
-		"version": "5.11.4",
+		"version": "4.12.6",
 		"url": "https://callstack.github.io/react-native-paper",
 		"license": "MIT"
 	},

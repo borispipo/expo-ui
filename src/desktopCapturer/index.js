@@ -2,19 +2,33 @@ import * as FileSaver from "$efile-system/utils/FileSaver";
 import {isElectron} from "$cplatform";
 import notify from "$cnotify";
 import Preloader from "$preloader";
-import {defaultStr,isNonNullString,defaultObj,getFileExtension,isPromise} from "$cutils";
+import {defaultStr,isNonNullString,defaultObj,isDataURL,getFileExtension,isPromise} from "$cutils";
 import {HStack} from "$ecomponents/Stack";
 import Label from "$ecomponents/Label";
 import DialogProvider from "$ecomponents/Form/FormData/DialogProvider";
 import session from "$session";
+import Image from "$ecomponents/Image";
+import View from "$ecomponents/View";
+import theme from "$theme";
+import APP from "$capp/instance";
+import useContext from "$econtext";
+import Button from "$ecomponents/Button";
+import {ProgressBar} from "react-native-paper";
+
+export const events = {
+    RECORDING_STARTED : "RECORDING_STARTED",
+    RECORDING_PAUSED : "RECORDING_PAUSED",
+    RECORDING_STOPED : "RECORDING_STOPRED",
+    RECORDING_STATUS : "RECORDING_STATUS",
+}
+import {useState,useEffect,useMemo,useRef} from "react";
 
 const startSessionKey = "desktop-capturer-session";
 const actionsSessionKey = "desktop-capturer-actions";
 
 export const canRecord = x=> isElectron()? true : typeof navigator !=="undefined" && window?.navigator && (navigator?.mediaDevices) && typeof navigator?.mediaDevices?.getDisplayMedia === 'function';
 
-export const updateSystemTray = x => isElectron() && typeof ELECTRON !=="undefined" && ELECTRON && typeof ELECTRON?.desktopCapturer?.updateSystemTray ==="function" ? ELECTRON.desktopCapturer.updateSystemTray() : undefined;
-
+export const updateSystemTray = x => false;
 
 export function getUserMedia(constraints) {
     // if Promise-based API is available, use it
@@ -123,31 +137,31 @@ function mainDesktopCapturer (){
     }
      
     function startRecording(opts) {
+        if(!canRecord()){
+            return Promise.reject({stauts:false,isRecording:false,msg:"unable to get user media, get user media is not a function"})
+        }
         if(recorder){
             recorder.stop();
         }
         recorder = undefined;
         opts = defaultObj(opts)
-        if(!canRecord()){
-            return Promise.reject({stauts:false,isRecording:false,msg:"unable to get user media, get user media is not a function"})
-        }
         if(isNonNullString(opts.mimeType)){
             const mimeTypes = getSupportedMimeTypes(x=>!x.startsWith("audio/"))
             if(mimeTypes.includes(opts.mimeType)){
                 mimeType = opts.mimeType;
             }
         }
+        const timer = typeof opts.timer =="number"? opts.timer : 0;
+        const cb = (e)=>{
+            setTimeout(()=>{
+                const status = desktopCapturer.getRecordingStatus();
+                APP.trigger(events.RECORDING_STATUS,status);
+            },timer*1000+1000);
+        }
         if(typeof electronDesktopCapturer?.startRecording ==='function'){
             try {
-                const e = electronDesktopCapturer.startRecording({...opts,mimeType,updateSystemTray,handleUserMediaError})
-                const cb = (e)=>{
-                    console.log(e," is e of recorder gettted");
-                    if(e instanceof MediaRecorder){
-                        recorder = e;
-                    }
-                    return e;
-                }
-                return Promise.resolve(e).then(cb).catch(notify.error);
+                const eRecorder = electronDesktopCapturer.startRecording({...opts,mimeType,updateSystemTray,handleUserMediaError})
+                return Promise.resolve(eRecorder).then(cb).catch(notify.error);
             } catch(e){
                 notify.error(e);
                 return Promise.reject(e);
@@ -174,6 +188,7 @@ function mainDesktopCapturer (){
             } else {
                 return getUserMediaSync({audio:false,video}).then((stream)=>{
                     handleStream(stream,opts);
+                    cb();
                     resolve({isRecording:true})
                 }).catch(handleUserMediaError);
             }
@@ -198,6 +213,10 @@ function mainDesktopCapturer (){
         return true;
     }
     function stopRecording(opts) {
+        setTimeout(()=>{
+            const status = desktopCapturer.getRecordingStatus();
+            APP.trigger(events.RECORDING_STATUS,status);
+        },1000);
         if(electronDesktopCapturer.stopRecording) return electronDesktopCapturer.stopRecording();
         if(!recorder) return false;
         let s = getRecordingStatus();
@@ -224,6 +243,8 @@ function mainDesktopCapturer (){
         getAudioConstraint,
         stopRecording, 
         getSupportedMimeTypes,
+        electron : electronDesktopCapturer,
+        isElectron : typeof electronDesktopCapturer.getRecordingStatus ==="function",
     }
 }
 
@@ -255,7 +276,7 @@ export const looopForTimer = (timer)=>{
 }
 const desktopCapturer = mainDesktopCapturer();
 
-export function handleCapture(){
+export async function handleCapture(){
     if(!canRecord()){
         const message = "Impossible de faire des enregistrements vidéo sur ce type de périférique";
         notify.error(message);
@@ -268,8 +289,39 @@ export function handleCapture(){
     const sKey = !isPaused && !isRecording  ? startSessionKey : actionsSessionKey;
     const data = Object.assign({},session.get(sKey));
     if(!isPaused && !isRecording){
+        let sources = null;
+        const {electron} = desktopCapturer;
+        const screenAccess = typeof electron.getScreenAccess =="function" &&  electron.getScreenAccess() || true;
+        if(!screenAccess){
+            const msg = `Le partage d'écran n'est pas activé sur votre système, merci d'activer le partage d'écran dans les paramètres systèmes`;
+            notify.error(msg);
+            return Promise.reject({message:msg});
+        }
+        if(typeof electron.getSources =='function'){
+            sources = await electron.getSources();
+        }
         title = "Effectuer une capture d'écran vidéo";
         fields = {
+            source : Array.isArray(sources)? {
+                text : "Sélectionner la source de l'écran à capturer",
+                type : "select",
+                required : true,
+                items : sources,
+                itemValue : ({item,index})=>item.id,
+                //compare : (a,b)=> a?.id === b?.id,
+                listProps : {itemHeight:200},
+                itemHeight : 250,
+                renderItem : ({item,index})=>{
+                    if(!isObj(item) || !isDataURL(item.thumbnailURL)) return null;
+                    return <View style={[theme.styles.w100,theme.styles.alignItemsFlexStart]} testID = {`RNViewSource_${item.id}`}>
+                        <Label textBold primary>{item.name}</Label>
+                        <Image editable={false} width = {250} rounded = {false} src={item.thumbnailURL}/>
+                    </View>
+                },
+                renderText : ({item,index})=>{
+                    return `${item?.name}`;
+                }
+            } : undefined,
             audio : {
                 text : "Enregistrer le son",
                 type : 'switch',
@@ -291,7 +343,12 @@ export function handleCapture(){
                 itemValue : ({item,index})=>item,
                 renderText : ({item,index}) => item,
                 renderItem : ({item,index}) => item,
-            }
+            },
+            showPreloaderOnScreenCapture : electron?.isElectron ? {
+                text : "Afficher la progression",
+                tooltip : "Afficher la progression au niveau de l'icone de l'application",
+                defaultValue : 1,
+            } : undefined
         }
         yes = {
             text : 'Capturer',
@@ -360,5 +417,62 @@ export function handleCapture(){
     });
 }
 
+export const useRecordingStatus = ()=>{
+    const [status,setStatus] = useState(desktopCapturer.getRecordingStatus());
+    const timerRef = useRef(null);
+    const {isPaused,isRecording,isInactive} = status;
+    const mRecord = canRecord();
+    useEffect(()=>{
+        if(!mRecord) return ()=>{};
+        if(isInactive){
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+        } else {
+            timerRef.current = setInterval(()=>{
+                const nStatus = desktopCapturer.getRecordingStatus();
+                if(nStatus.isPaused !== status.isPaused || nStatus.isInactive !== status.isInactive || nStatus.isRecording !== status.isRecording){
+                    setStatus({...nStatus});
+                }
+            },1000);
+        }
+        return ()=>{
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+        }
+    },[isPaused,isRecording,isInactive]);
+    useEffect(()=>{
+        return ()=>{
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+        }
+    },[]);
+    return status;
+}
+
+/**** le bouton permettant d'exécuter la fonction de recording de l'application */
+export const RecordingButton = function({onPress,testID,...props}){
+    const {desktopCapturer:dParams} = useContext();
+    const {isRecording,isPaused,isInactive} = useRecordingStatus();
+    const canCaptureDesktop = !canRecord()? false : typeof dParams =="function"? !!dParams() : typeof dParams =="boolean"? dParams : true;
+    if(!canCaptureDesktop) return null;
+    testID = defaultStr(props.testID,"RNScreenRecordStatusButton")
+    const color = theme.Colors.setAlpha(theme.colors.text,theme.ALPHA);
+    const buttonContainerProps = {style:[theme.styles.w100,theme.styles.alignItemsFlexStart]}
+    return <View testID={testID+"_Container"} {...buttonContainerProps}>
+        <Button  containerProps = {buttonContainerProps} {...props} style={[{color},buttonContainerProps.style,props.style]} upperCase={false} onPress = {(...args)=>{
+            if(onPress && onPress(...args) === false) return;
+            handleCapture();
+        }}
+        icon={isPaused ? "material-pause-presentation":isRecording ? "record-rec":"record"} iconProps={{color}} testID={testID}
+    >
+            {isPaused ? "Capture vidéo en pause" : isRecording ? "Capture vidéo en cours ..." :"Faire une capture vidéo" }
+        </Button>
+        {isPaused || isRecording ? <ProgressBar
+            indeterminate = {isRecording || undefined}
+            color = {theme.colors.primary}
+            progress = {isPaused ? 50 : undefined}
+        /> : null}
+    </View>
+}
 
 export default desktopCapturer;

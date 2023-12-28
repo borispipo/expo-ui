@@ -7,7 +7,7 @@ import {defaultObj,sortBy,defaultStr,isObj} from "$cutils";
 import appConfig from "$capp/config";
 import useContext from "$econtext/hooks";
 import {useMemo,useEffect,useRef} from "react";
-import eDesktopCapturer,{handleCapture} from "$expo-ui/desktopCapturer";
+import {RecordingButton} from "$expo-ui/desktopCapturer";
 ///les items du drawer
 import { screenName as aboutScreenName} from "$escreens/Help/About";
 import theme from "$theme";
@@ -17,7 +17,7 @@ import Auth,{useIsSignedIn,tableDataPerms} from "$cauth";
 import {getTableDataListRouteName} from "$enavigation/utils";
 import {isValidElement,usePrevious} from "$react";
 const useGetItems = (options)=>{
-    const {navigation:{drawerItems,drawerSections,drawerItemsMutator},desktopCapturer,tablesData} = useContext(); 
+    const {navigation:{drawerItems,drawerSections,drawerItemsMutator},tablesData} = useContext(); 
     options = defaultObj(options);
     const {refresh,force} = options;
     const showProfilOnDrawer = theme.showProfilAvatarOnDrawer;
@@ -96,15 +96,12 @@ const useGetItems = (options)=>{
                 items[item.drawerSection.trim()].items.push(item);
             }
         });
-        const canCaptureDesktop = !eDesktopCapturer.canRecord()? false : typeof desktopCapturer =="function"? !!desktopCapturer() : typeof desktopCapturer =="boolean"? desktopCapturer : true;
-        const captureSide = canCaptureDesktop ? {
-            text : 'Capture d\'écran vidéo',
-            icon : "record",
-            onPress :()=>{
-                return handleCapture();
-            } 
-        }:{};
-        let hasCapture = canCaptureDesktop ? false : true;
+        const captureSide = {
+            label : <RecordingButton/>,
+            style : [theme.styles.noPadding],
+            labelProps : {style : [{flexShrink : 1},theme.styles.alignItemsFlexStart,theme.styles.w100]}
+        };
+        let hasCapture = false;
         if(!hasCapture){
             if(isObj(items.admin) && Array.isArray(items.admin.items)){
                 items.admin = Object.clone(items.admin);

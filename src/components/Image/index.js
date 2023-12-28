@@ -54,7 +54,7 @@ export default function ImageComponent(props){
         options : {}
     })*/ 
     const [isDrawing,setIsDrawing] = React.useState(false);
-    let {disabled,onMount,defaultSource,onUnmount,label,text,labelProps,readOnly,beforeRemove,
+    let {disabled,onMount,defaultSource,editable,onUnmount,label,text,labelProps,readOnly,beforeRemove,
         onChange,draw,round,drawText,drawLabel,rounded,defaultSrc,
         createSignatureOnly,pickImageProps,width,height,cropProps,size,resizeProps,containerProps,
         menuProps,pickUri,drawProps,imageProps,length,testID,...rest} = props;
@@ -73,6 +73,9 @@ export default function ImageComponent(props){
     const flattenStyle = StyleSheet.flatten(props.style) || {};
     defaultSrc = defaultVal(defaultSrc);
     if(disabled){
+        readOnly = true;
+    }
+    if(editable ===false){
         readOnly = true;
     }
     React.useEffect(()=>{
@@ -308,6 +311,7 @@ ImageComponent.propTypes = {
     menuProps : PropTypes.object, ///les props du menu d'édition du composant,
     readOnly : PropTypes.bool,
     disabled: PropTypes.bool,
+    editable : PropTypes.bool,//si la source de l'image peut être modifiée, via le menu Sélectionner une image ou prendre une photo en fonction de la plateforme
     pickUri : PropTypes.bool,////si l'uri sera retournée lorsqu'on pick l'image en lieu et place du dataURL
     imageProps : PropTypes.object, ///les props supplémentaires du composant Image
     draw : PropTypes.bool, //si l'on peut déssiner une image

@@ -91,7 +91,7 @@ export default class Filter extends AppComponent {
       this.manualRunRef.current = value;
   }
   getSessionManualRunValue(){
-    if(this.manualRunRef.current === undefined && this.isFilterSelect()){
+    if(false && this.manualRunRef.current === undefined && this.isFilterSelect()){
       this.manualRunRef.current = true;
     }
     return this.manualRunRef.current;

@@ -96,22 +96,6 @@ const useGetItems = (options)=>{
                 items[item.drawerSection.trim()].items.push(item);
             }
         });
-        if(handleHelp){
-            const dHelp = isObj(items.help)? Object.clone(items.help) : {};
-            items.help = {
-                key : 'help',
-                label : 'Aide',
-                section : true,
-                divider : false,
-                ...dHelp,
-                items : Array.isArray(dHelp.items)? dHelp.items : [],
-            };
-            items.help.items.push({
-                icon : 'help',
-                label : 'A propos de '+APP.getName(),
-                routeName : aboutScreenName,
-            });
-        }
         const dashboard = isObj(items.dashboard) ? Object.clone(items.dashboard) : {};
         const dash = {
             icon : 'view-dashboard',
@@ -134,16 +118,36 @@ const useGetItems = (options)=>{
                 delete items[section];
             }
         });
+        let hasCapture = false;
         const captureSide = {
             label : <RecordingButton/>,
             style : [theme.styles.noPadding],
             labelProps : {style : [{flexShrink : 1},theme.styles.alignItemsFlexStart,theme.styles.w100]}
         };
-        if(isObj(items.help) && Array.isArray(items.help.items)){
-            items.help = Object.clone(items.help);
-            items.help.items.push(captureSide);
-        } else {
-            items.desktopCapturer = captureSide;
+        if(handleHelp){
+            const dHelp = isObj(items.help)? Object.clone(items.help) : {};
+            items.help = {
+                key : 'help',
+                label : 'Aide',
+                section : true,
+                divider : false,
+                ...dHelp,
+                items : Array.isArray(dHelp.items)? dHelp.items : [],
+            };
+            items.help.items.push(captureSide,{
+                icon : 'help',
+                label : 'A propos de '+APP.getName(),
+                routeName : aboutScreenName,
+            });
+            hasCapture = true;
+        }
+        if(!hasCapture){
+            if(isObj(items.help) && Array.isArray(items.help.items)){
+                items.help = Object.clone(items.help);
+                items.help.items.push(captureSide);
+            } else {
+                items.desktopCapturer = captureSide;
+            }
         }
         return items;
     },[showProfilOnDrawer,handleHelp,theme.name,theme.colors.primary,theme.colors.secondary,refreshItemsRef.current,force,isSignedIn])

@@ -2040,6 +2040,7 @@ export default class CommonDatagridComponent extends AppComponent {
                         divider : true,
                         text : "Configurer les graphes",
                         icon :"material-settings",
+                        tooltip : "Cliquez pour configurer les graphes",
                         onPress : ()=>{
                             this.configureChart(false).then((config)=>{
                                 this.setIsLoading(true,()=>{
@@ -2208,7 +2209,7 @@ export default class CommonDatagridComponent extends AppComponent {
         }
    }
    getDefaultChartHeight(){
-        return defaultNumber(this.props.chartProps?.height,this.isDashboard()?80:350);
+        return defaultNumber(this.props.chartProps?.height,this.props.chartConfig?.height,this.isDashboard()?90:350);
    }
    getDefaultChartWidth(){
         return defaultNumber(this.props.chartProps?.width);
@@ -2414,10 +2415,12 @@ export default class CommonDatagridComponent extends AppComponent {
         //const spackLine = chartOptions.chart.sparkline;
         chartOptions.xaxis = defaultObj(chartOptions.xaxis);
         chartOptions.xaxis.labels = defaultObj(chartOptions.xaxis.labels);
-        chartOptions.xaxis.labels.show  = ("showXaxis" in config) ? !!config.showXaxis : !this.isDashboard();
+        chartOptions.xaxis.labels.show  = ("showXaxis" in config) ? !!config.showXaxis : this.isDashboard();
+        
+        console.log("rendering char ",chartOptions,config);
         
         chartOptions.yaxis.labels = defaultObj(chartOptions.yaxis.labels);
-        chartOptions.yaxis.labels.show = ("showYaxis" in config) ? !!config.showYaxis : !this.isDashboard();
+        chartOptions.yaxis.labels.show = ("showYaxis" in config) ? !!config.showYaxis : this.isDashboard();
         
         chartOptions.legend = defaultObj(chartOptions.legend);
         chartOptions.legend.show = ("showLegend" in config) ? !!config.showLegend : !this.isDashboard();
@@ -3777,7 +3780,7 @@ export default class CommonDatagridComponent extends AppComponent {
     }
     renderTitle (){
         const testID = this.getTestID();
-        const title = typeof this.props.title =="function"? this.props.title({context:this}) : this.props.title;
+        const title = typeof this.props.title =="function"? this.props.title({context:this,config:this.getConfig()}) : this.props.title;
         const titleProps = defaultObj(this.props.titleProps);
         return React.isValidElement(title) ? <Label testID={testID+"_Title"} {...titleProps} style={[theme.styles.w100,titleProps.style]}>
             {title}

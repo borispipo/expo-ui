@@ -104,6 +104,8 @@ export default function DatabaseStatisticContainer ({dashboardProps,onRefreshAll
         return fetchFields;
     },[columns]);
     const counUpStyle = {fontSize:20,fontWeight:'bold',color:theme.colors.secondaryOnSurface};
+    title = defaultVal(title,table.label,table.text);
+    icon = defaultVal(icon,table.icon);
     title =  React.isValidElement(title,true)?<Label splitText numberOfLines={1} color={theme.colors.primaryOnSurface} style={[{fontSize:15}]}>{title}</Label>: null;
     const titleText = title && React.getTextContent(title) || null;
     const titleItem = titleText && {text:titleText,icon,divider:true} || null;
@@ -120,22 +122,23 @@ export default function DatabaseStatisticContainer ({dashboardProps,onRefreshAll
         sessionName = {tableName+"-database-statistics"}
         {...props}
         {...dbStatistics}
-        style = {[theme.styles.pr1,props.style]}
+        style = {[theme.styles.pr1,props.style,dbStatistics.style]}
         columns = {columns}
         ref = {datagridRef}
         progressBar = {isLoading?<View/>:<View style={[theme.styles.w100,theme.styles.alignItemsCenter,theme.styles.justifyContentCenter]}>{progressBar}</View>}
         tableName = {tableName}
         table = {table}
         fetchData = {(options)=>{
-            return fetchData({...defaultObj(fetchDataProps),fields:fetchFields,table,tableName,fetch,Auth,...options});
+            return fetchData({...defaultObj(fetchDataProps),fields:fetchFields,table,tableName,...options});
         }}
-        title = {({context})=>{
+        title = {({context,config:chartConfig})=>{
             if(!context || !context.state) return null;
             const {state} = context;
-            const footers = context.getFooters && context.getFooters() || {};
+            //const footers = context.getFooters && context.getFooters() || {};
             const dataSize = context.getStateDataSize && context.getStateDataSize() || 0;
             const footersValues = context.getFooterValues && context.getFooterValues() || {};
-            const y = defaultStr(state.chartConfig?.y);
+            const config = Object.assign({},chartConfig,(typeof context.getConfig =="function"? context.getConfig() : state.config));
+            const y = defaultStr(config.y);
             const footerValue = y && isObj(footersValues) && footersValues[y] || null;
             const format = defaultStr(isObj(footerValue) && isNonNullString(footerValue.format) && footerValue.format || undefined).toLowerCase();
             const aggregatorFunction = isNonNullString(state.aggregatorFunction)? state.aggregatorFunction : undefined;

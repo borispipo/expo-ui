@@ -4,6 +4,7 @@ import {defaultStr} from "$cutils";
 import Swiper from "$ecomponents/Swiper";
 import PropTypes from "prop-types";
 import { StylePropTypes } from '$theme';
+import {isTouchDevice} from "$cplatform";
 
 const TabContentBase = ({
   children,
@@ -14,6 +15,7 @@ const TabContentBase = ({
 }) => {
   return (
     <Swiper
+      gesturesEnabled ={x=>!isTouchDevice()}
       {...rest}
       children = {children}
       testId = {defaultStr(testId,'RN_SwiperTabComponent')}

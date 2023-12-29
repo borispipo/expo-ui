@@ -7,14 +7,12 @@ import {colorsAlias,Colors} from "$theme";
 import {isObj,isNonNullString,defaultStr,extendObj,defaultNumber} from "$cutils";
 import {getMainScreens} from "$escreens/mainScreens";
 import {ExpoUIContext} from "./hooks";
-import {enableAuth,disableAuth} from "$cauth/perms";
 import Login from "$eauth/Login";
 import {modes} from "$ecomponents/TextField";
 import {isMobileMedia} from "$cdimensions";
 import { prepareScreens } from "./TableData";
 import {extendFormFields} from "$ecomponents/Form/Fields";
-import {AuthProvider} from '$cauth';
-import { signInRef } from "$cauth/authSignIn2SignOut";
+import Auth,{AuthProvider,enableAuth,disableAuth} from '$cauth';
 import APP from "$capp/instance";
 import { AppState } from 'react-native'
 import {canFetchOffline} from "$capi/utils";
@@ -101,7 +99,7 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
         return extendProps(cAuth?.loginPropsMutator,props);
       },
     }
-    extendObj(signInRef.current,auth);
+    Auth.setRef(auth);
     extendFormFields(customFormFields);
     structsData = isObj(structsData)? structsData : null;
     appConfig.tablesData = tablesData;

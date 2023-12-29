@@ -378,7 +378,7 @@ SwiperComponent.propTypes = {
   autoHeight : PropTypes.bool,//si la valeur de la taille des éléments sera automatiquement réajusté
   loop: PropTypes.bool,
   timeout: PropTypes.number,
-  gesturesEnabled: PropTypes.func,
+  gesturesEnabled: PropTypes.func, //pour permettre les gestures
   withScrollView : PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.func,

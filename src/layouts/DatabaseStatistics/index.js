@@ -89,4 +89,6 @@ const styles = StyleSheet.create({
     itemContainer : {
         minHeight : 80,
     },
-})
+});
+
+export {DatabaseStatistic};

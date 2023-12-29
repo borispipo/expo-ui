@@ -108,7 +108,7 @@ export default class DatagridDashboard extends TableData {
                     items = {this.renderMenu()}
                 />
             </View> : null}
-            {<View testID={testID+"_ChartContainer"} {...chartContainerProps} style={[theme.styles.w100,chartContainerProps.style]}>
+            {<View testID={testID+"_ChartContainer"} {...chartContainerProps} style={[theme.styles.w100,styles.chartContainer,chartContainerProps.style]}>
                 {this.renderProgressBar()}
                 {this.renderChart()}
             </View>}
@@ -140,4 +140,7 @@ const styles = StyleSheet.create({
         width : '100%',
         //flex:1,
     },
+    chartContainer : {
+        //minHeight : 200,
+    }
 })

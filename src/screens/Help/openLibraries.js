@@ -1,7 +1,7 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
 		"name": "@fto-consult/expo-ui",
-		"version": "7.13.5",
+		"version": "7.13.7",
 		"repository": {
 			"type": "git",
 			"url": "git+https://github.com/borispipo/expo-ui.git"
@@ -19,7 +19,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"@emotion/react": {
-		"version": "11.11.1",
+		"version": "11.11.3",
 		"url": "https://github.com/emotion-js/emotion/tree/main/packages/react",
 		"license": "MIT"
 	},
@@ -44,7 +44,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"@faker-js/faker": {
-		"version": "8.0.2",
+		"version": "8.3.1",
 		"url": "https://github.com/faker-js/faker.git",
 		"license": "MIT"
 	},
@@ -263,7 +263,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"react-native-paper": {
-		"version": "4.12.6",
+		"version": "5.11.5",
 		"url": "https://callstack.github.io/react-native-paper",
 		"license": "MIT"
 	},
@@ -313,7 +313,7 @@ module.exports = {
 		"license": "WTFPL OR ISC"
 	},
 	"sharp-cli": {
-		"version": "2.1.0",
+		"version": "2.1.1",
 		"url": "https://github.com/vseventer/sharp-cli",
 		"license": "MIT"
 	},

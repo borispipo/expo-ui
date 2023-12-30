@@ -1,6 +1,6 @@
 import React from "$react";
 import appConfig from "$capp/config";
-import {MD3LightTheme,MD3DarkTheme} from "react-native-paper";
+import {MD3LightTheme,MD3DarkTheme,configureFonts} from "react-native-paper";
 import { useMaterial3Theme,isDynamicThemeSupported} from '@pchmn/expo-material3-theme';
 import { useColorScheme } from 'react-native';
 import {colorsAlias,Colors} from "$theme";
@@ -183,7 +183,7 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
         if(!isObj(theme)) return;
         const isDark = theme.dark || theme.isDark || isDynamicThemeSupported && isColorShemeDark ;
         const elevation = defaultObj(theme.elevation,isDark ? pTheme.dark?.elevation : pTheme.light?.elevation)
-        const newTheme = isDark ? { ...MD3DarkTheme, colors: pTheme.dark } : { ...MD3LightTheme, colors: pTheme.light };
+        const newTheme = isDark ? { ...MD3DarkTheme,fonts:configureFonts(), colors: pTheme.dark } : { ...MD3LightTheme,fonts:configureFonts(), colors: pTheme.light };
         if(isElectron() && typeof window.ELECTRON =='object' && typeof ELECTRON.setThemeToDark =="function" && typeof ELECTRON.setThemeToLight =="function"){
            if(isDark){
               ELECTRON.setThemeToDark();

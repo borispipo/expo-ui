@@ -47,7 +47,7 @@ const AppbarContent = ({
           style={[
             {
               color: titleTextColor,
-              ...(isIos()? theme.fonts.regular: theme.fonts.medium),
+              ...defaultObj(isIos()? theme.fonts?.regular: theme.fonts?.medium,theme.fonts.default),
             },
             webStyle,
             titleProps.style,

@@ -13,6 +13,7 @@ import PropTypes from "prop-types";
 import {flatMode } from '$ecomponents/TextField/utils';
 import {defaultStr} from "$cutils";
 import Surface from "$ecomponents/Surface";
+import {isObj,defaultObj} from "$cutils";
 
 const ChipComponent = React.forwardRef(({
   mode = flatMode,
@@ -177,7 +178,7 @@ const ChipComponent = React.forwardRef(({
               {userSelect:"none"},
               styles.text,
               {
-                ...theme.fonts.regular,
+                ...(defaultObj(theme.fonts?.regular,theme.fonts?.default)),
                 color: textColor,
                 marginHorizontal : 4,
                 marginLeft: avatar || icon || selected ? 4 : 8,

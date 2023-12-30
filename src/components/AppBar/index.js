@@ -173,7 +173,7 @@ AppBarComponent.GO_BACK_EVENT = GO_BACK_EVENT;
 
 AppBarComponent.propTypes = {
   ...defaultObj(Appbar.propTypes),
-  title : PropTypes.string,
+  title : PropTypes.oneOfType([PropTypes.string,PropTypes.element,PropTypes.node,PropTypes.elementType]),
   /**** le composant pour le rendu des notifications de l'appBar*/
   Notifications : PropTypes.oneOfType([
     PropTypes.element,

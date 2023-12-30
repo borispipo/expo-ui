@@ -142,6 +142,7 @@ const PermLine = ({text,cellProps,isUserMasterAdmin,withGrid,defaultActions,reso
         }
 
     });
+    if(!content.length) return null;
     return <Cell testID={testID+"_Cell"} tabletSize={6} desktopSize={4} phoneSize={12} {...cellProps}>
         <Expandable  
             expandedIcon ={'chevron-right'} 

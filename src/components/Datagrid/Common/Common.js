@@ -2415,12 +2415,11 @@ export default class CommonDatagridComponent extends AppComponent {
         //const spackLine = chartOptions.chart.sparkline;
         chartOptions.xaxis = defaultObj(chartOptions.xaxis);
         chartOptions.xaxis.labels = defaultObj(chartOptions.xaxis.labels);
-        chartOptions.xaxis.labels.show  = ("showXaxis" in config) ? !!config.showXaxis : this.isDashboard();
+        chartOptions.xaxis.labels.show  = ("showXaxis" in config) ? !!config.showXaxis : !this.isDashboard();
         
-        console.log("rendering char ",chartOptions,config);
         
         chartOptions.yaxis.labels = defaultObj(chartOptions.yaxis.labels);
-        chartOptions.yaxis.labels.show = ("showYaxis" in config) ? !!config.showYaxis : this.isDashboard();
+        chartOptions.yaxis.labels.show = ("showYaxis" in config) ? !!config.showYaxis : !this.isDashboard();
         
         chartOptions.legend = defaultObj(chartOptions.legend);
         chartOptions.legend.show = ("showLegend" in config) ? !!config.showLegend : !this.isDashboard();

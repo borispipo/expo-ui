@@ -60,15 +60,15 @@ const PermLines = React.forwardRef(({user,gridProps,defaultActions:cDefaultActio
             const resource = getTableDataPermResourcePrefix(tableName);
             const perms = {};
             Object.map(table.perms,(perm,i)=>{
+                const iLower = i.toLowerCase();
+                if(iLower == 'defaultactions' || iLower =='defaultaction'){
+                    perms.defaultActions = perm;
+                }
                 if(perm ===false) {
                     perms[i] = false;
                     return;
                 }
                 if(!isObj(perm)) return;
-                const iLower = i.toLowerCase();
-                if(iLower == 'defaultactions' || iLower =='defaultaction'){
-                    perms.defaultActions = perm;
-                }
                 if(perm.defaultActions){
                     perm.actions = {
                         ...Object.clone(defaultActions),

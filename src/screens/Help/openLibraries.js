@@ -1,7 +1,7 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
 		"name": "@fto-consult/expo-ui",
-		"version": "7.13.2",
+		"version": "7.13.5",
 		"repository": {
 			"type": "git",
 			"url": "git+https://github.com/borispipo/expo-ui.git"
@@ -49,7 +49,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"@fto-consult/common": {
-		"version": "4.0.1",
+		"version": "4.0.4",
 		"url": "https://github.com/borispipo/common#readme",
 		"license": "ISC"
 	},

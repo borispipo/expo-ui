@@ -41,8 +41,6 @@ import Logo from "$ecomponents/Logo";
 import AppEntryRootView from "./RootView";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-
-
 let MAX_BACK_COUNT = 1;
 let countBack = 0;
 let isBackConfirmShowing = false;  

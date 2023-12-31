@@ -2431,7 +2431,9 @@ export default class CommonDatagridComponent extends AppComponent {
         
         chartOptions.legend = defaultObj(chartOptions.legend);
         chartOptions.legend.show = ("showLegend" in config) ? !!config.showLegend : !this.isDashboard();
-
+        chartOptions.legend.labels = Object.assign({},chartOptions.legend.labels);
+        const legendLabels = chartOptions.legend.labels;
+        chartOptions.legend.labels.colors = (Array.isArray(legendLabels.colors) && legendLabels.colors.length || theme.Colors.isValid(legendLabels.colors)) ? legendLabels.colors : labelColor;
         if("dataLabels" in config){
             chartOptions.dataLabels.enabled = !!config.dataLabels;
         }

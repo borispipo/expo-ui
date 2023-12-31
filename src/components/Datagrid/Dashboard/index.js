@@ -97,6 +97,7 @@ export default class DatagridDashboard extends TableData {
         rest = defaultObj(rest);
         const pointerEvents = this.getPointerEvents();
         const maxHeight = 300;
+        const chartData = this.renderChart();
         return <View {...rest} testID={testID} style={[styles.container,{maxHeight},rest.style]} pointerEvents={pointerEvents}>
             {this.renderTitle()}
             {showPagination ? <View style={[styles.paginationContainer]}>
@@ -110,7 +111,7 @@ export default class DatagridDashboard extends TableData {
             </View> : null}
             {<View testID={testID+"_ChartContainer"} {...chartContainerProps} style={[theme.styles.w100,styles.chartContainer,chartContainerProps.style]}>
                 {this.renderProgressBar()}
-                {this.renderChart()}
+                {chartData}
             </View>}
         </View>
     }

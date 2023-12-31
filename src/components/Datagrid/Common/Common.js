@@ -169,7 +169,6 @@ de l'objet rowData de cette propriété
 export default class CommonDatagridComponent extends AppComponent {
     constructor(props){
         super(props);
-        this.initSession();
         this.autobind();
         let {
             data,
@@ -186,11 +185,14 @@ export default class CommonDatagridComponent extends AppComponent {
                 SET_DATAGRID_QUERY_LIMIT : this.onSetQueryLimit.bind(this),
             });
         }
+        if(this.props.resetSessionData === true){
+            this.resetSessionData();
+        }
         rest = defaultObj(rest);
         this._pagination = defaultObj(rest.pagination);
         this.hasLocalFilters = false;
         data = (data && typeof data == 'object')? Object.toArray(data):[];
-        let sData = this.getSessionData()
+        const sData = this.getSessionData()
         sData.showFooters = defaultVal(sData.showFooters,this.isTableData());
         sData.fixedTable = defaultBool(sData.fixedTable,false);
         this.rowsByKeys = {};
@@ -274,14 +276,15 @@ export default class CommonDatagridComponent extends AppComponent {
             chartSeriesNamesColumnsMapping : {value : {}},//le mappage entre les index des series et les colonnes coorespondantes
         });
         this.setSelectedRows(selectedRows);
-        const config = extendObj(true,{},this.getSessionData("config"),this.props.chartConfig);
+        const config = extendObj(true,{},this.props.chartConfig,this.getSessionData("config"));
         Object.map(config,(v,k)=>{
             if(typeof v =='function'){
                 delete config[k];
             }
         });
         this.state.fetchOnlyVisibleColumns = !!defaultVal(this.props.fetchOnlyVisibleColumns,config.fetchOnlyVisibleColumns,this.getSessionData("fetchOnlyVisibleColumns"));
-        this.state.abreviateValues = "abreviateValues" in this.props? !!this.props.abreviateValues : !!this.getSessionData("abreviateValues");
+        const abreviateVals = this.getSessionData("abreviateValues");
+        this.state.abreviateValues = abreviateVals !== undefined ? !!abreviateVals : "abreviateValues" in this.props? !!this.props.abreviateValues : true;
         const sessionAggregator = this.getSessionData("aggregatorFunction"); 
         this.state.aggregatorFunction= this.isValidAggregator(config.aggregatorFunction) && config.aggregatorFunction || this.isValidAggregator(this.props.aggregatorFunction) && this.props.aggregatorFunction || this.isValidAggregator(sessionAggregator) && sessionAggregator || Object.keys(this.aggregatorFunctions)[0];;
         this.isLoading = this.isLoading.bind(this);
@@ -405,51 +408,41 @@ export default class CommonDatagridComponent extends AppComponent {
     canHandleColumnResize(){
         return false;
     }
-    initSession (){
-        let sessionName = this.props.sessionName;
-        let isDatagrid = this.isDatagrid()
-        if(!isNonNullString(sessionName)){
-            //sessionName = 'datagrid';
+    getSessionKey (){
+        const sessionName = this.props.sessionName;
+        const userCode = Auth.getLoggedUserCode();
+        if(!isNonNullString(sessionName) || (!isNonNullString(userCode) && !this.isDatagrid())) return false;
+        return this.getSessionPrefix()+sessionName.ltrim(this.getSessionPrefix()).replaceAll(" ",'_')+userCode;
+    }
+    getSessionData (sessionKey){
+        const key = this.getSessionKey();
+        const dat = this.props.session !== false && isNonNullString(key) ? defaultObj($session.get(key)) : {}
+        if(isNonNullString(sessionKey)){
+            return dat[sessionKey];
         }
-        let userCode = Auth.getLoggedUserCode();
-        Object.defineProperties(this,{
-            getSessionKey : {
-                value : ()=>{
-                    if(!isNonNullString(sessionName) || (!isNonNullString(userCode) && !isDatagrid)) return false;
-                    return this.getSessionPrefix()+sessionName.ltrim(this.getSessionPrefix()).replaceAll(" ",'_')+userCode;
-                }
-            },
-            getSessionData : {
-                value : (sessionKey)=>{
-                    let key = this.getSessionKey();
-                    let dat = {}
-                    if(isNonNullString(key)){
-                        dat = defaultObj($session.get(key));
-                    }
-                    if(isNonNullString(sessionKey)){
-                        return dat[sessionKey]
-                    }
-                    return dat;
-                }
-            },
-            setSessionData : {
-                value : (sessionKey,sessionValue)=>{
-                    if(this.props.session === false) return;
-                    let key = this.getSessionKey();
-                    if(!isNonNullString(key)) return false;
-                    let dat = defaultObj(this.getSessionData());
-                    if(isNonNullString(sessionKey)){
-                        dat[sessionKey] = sessionValue;
-                    } else if(isObj(sessionKey)){
-                        extendObj(dat,sessionKey);
-                    } else {
-                        return dat;
-                    }
-                    $session.set(key,dat);
-                    return dat;
-                }
-            }
-        })
+        return dat;
+    }
+    setSessionData (sessionKey,sessionValue,reset){
+        if(this.props.session === false) return;
+        const key = this.getSessionKey();
+        if(!isNonNullString(key)) return false;
+        if(reset === true){
+            $session.set(key,{});
+            return {};
+        }
+        const dat = defaultObj(this.getSessionData());
+        if(isNonNullString(sessionKey)){
+            dat[sessionKey] = sessionValue;
+        } else if(isObj(sessionKey)){
+            extendObj(dat,sessionKey);
+        } else {
+            return dat;
+        }
+        $session.set(key,dat);
+        return dat;
+    }
+    resetSessionData(){
+        return this.setSessionData(null,null,true);
     }
     /*** lorsque les filtres locaux changes */
     onLocalFiltersChange(localFilters){
@@ -1609,12 +1602,18 @@ export default class CommonDatagridComponent extends AppComponent {
                         text : "Largeur du graphe",
                         tooltip : "Définissez la valeur 0 si vous voulez que le graphe occupe toute la largeur de con contenueur",
                         defaultValue : this.getDefaultChartWidth(),
+                        formatValue : ({value})=>{
+                            return value.formatNumber()+" px";
+                        },
                     },
                     height : {
                         type : "number",
                         text : "Hauteur du graphe",
                         validType : "numberGreaterThan[0]",
                         defaultValue : this.getDefaultChartHeight(),
+                        formatValue : ({value})=>{
+                            return value.formatNumber()+" px";
+                        },
                     },
                     stacked : stackSettings,
                     sparkline : {
@@ -2413,7 +2412,6 @@ export default class CommonDatagridComponent extends AppComponent {
         }
         const sparkline = !!(typeof config.sparkline !==undefined ? (isObj(config.sparkline)? config.sparkline.enabled : config.sparkline) : (isObj(chartOptions.chart.sparkline)? chartOptions.chart.sparkline.enabled:chartOptions.chart.sparkline));
         chartOptions.chart.sparkline = {enabled: sparkline}
-        
         chartOptions.xaxis = defaultObj(chartOptions.xaxis,config.xaxis);
         chartOptions.xaxis.labels = defaultObj(chartOptions.xaxis.labels);
         const xLabels = chartOptions.xaxis.labels;
@@ -4164,6 +4162,7 @@ CommonDatagridComponent.propTypes = {
     aggregatorFunction : PropTypes.string,
     /*** permet de faire une mutation sur les options de la recherche, immédiatement avant le lancement de la recherche */
     fetchOptionsMutator : PropTypes.func,
+    resetSessionData : PropTypes.bool, //pour forcer la réinitialisation des données de sessions liés à la table data 
     /*** si les données à récupérer à distance seront  */
     fetchOnlyVisibleColumns : PropTypes.bool,
     canFetchOnlyVisibleColumns : PropTypes.bool,//si l'on peut modifier le type d'affichage lié à la possibilité de récupérer uniquement les données reletives aux colonnes visibles

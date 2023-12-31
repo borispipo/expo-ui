@@ -1,5 +1,5 @@
 import {TableData} from "../Common";
-import {defaultObj,defaultArray,defaultStr,defaultDecimal,isNonNullString} from "$cutils";
+import {defaultObj,defaultArray,defaultStr,defaultNumber} from "$cutils";
 import View from "$ecomponents/View";
 import { StyleSheet,Dimensions,Pressable } from "react-native";
 import Icon,{MENU_ICON} from "$ecomponents/Icon";
@@ -96,8 +96,9 @@ export default class DatagridDashboard extends TableData {
         testID = this.getTestID();
         rest = defaultObj(rest);
         const pointerEvents = this.getPointerEvents();
-        const maxHeight = 300;
         const chartData = this.renderChart();
+        const max = defaultNumber(chartData?.props?.options?.chart?.height);
+        const maxHeight = Math.max(300,max+80);
         return <View {...rest} testID={testID} style={[styles.container,{maxHeight},rest.style]} pointerEvents={pointerEvents}>
             {this.renderTitle()}
             {showPagination ? <View style={[styles.paginationContainer]}>

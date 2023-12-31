@@ -2209,10 +2209,10 @@ export default class CommonDatagridComponent extends AppComponent {
         }
    }
    getDefaultChartHeight(){
-        return defaultNumber(this.props.chartProps?.height,this.props.chartConfig?.height,this.isDashboard()?90:350);
+        return defaultNumber(this.props.chartProps?.height,this.props.chartConfig?.height,this.isDashboard()?100:350);
    }
    getDefaultChartWidth(){
-        return defaultNumber(this.props.chartProps?.width);
+        return defaultNumber(this.props.chartProps?.width,this.props.chartConfig?.width);
    }
    /*** permet de formatter les valeurs de la courbe en fonction du type passé en paramètre */
    chartValueFormattter(value,columnType){
@@ -2326,6 +2326,10 @@ export default class CommonDatagridComponent extends AppComponent {
         const mappedColumns = {};
         const abreviateValues = defaultVal(config.abreviateValues,true) || this.state.abreviateValues;
         const dataLabelFormatter = typeof chartProps.dataLabels?.formatter =="function"? chartProps.dataLabels.formatter : undefined;
+        let chartWidth = defaultNumber(config.width) || this.getDefaultChartWidth() || undefined;
+        if(chartWidth ===0){
+            chartWidth = undefined;
+        }
         const chartOptions = {
             ...chartProps,
             dataLabels : extendObj(true,{enabled:false},chartProps.dataLabels,{
@@ -2363,14 +2367,14 @@ export default class CommonDatagridComponent extends AppComponent {
                 chartProps.chart,
                 {
                     height : defaultNumber(config.height,this.getDefaultChartHeight()),
-                    width : defaultNumber(config.width) || this.getDefaultChartWidth() || undefined,
+                    width : chartWidth,
                     type : chartType.type
                 },
             )
         }
-        const labelColor = theme.Colors.isValid(config.labelColor)? config.labelColor : theme.colors.text; 
+        const labelColor = theme.Colors.isValid(config.labelColor)? config.labelColor : theme.setAlphaColor(theme.colors.text); 
         if(!isDonut){
-            chartOptions.xaxis = extendObj(true,{},{type: 'category'},chartProps.xaxis,{xaxis});
+            chartOptions.xaxis = extendObj(true,{},{type: 'category'},chartProps.xaxis,xaxis);
             const xLabels = chartOptions.xaxis.labels = defaultObj(chartOptions.xaxis.labels);
             xLabels.style = defaultObj(xLabels.style)
             xLabels.style.colors = (Array.isArray(xLabels.style.colors) && xLabels.style.colors.length || theme.Colors.isValid(xLabels.style.colors)) ? xLabels.style.colors : labelColor;
@@ -2380,6 +2384,7 @@ export default class CommonDatagridComponent extends AppComponent {
         }
         chartOptions.yaxis = extendObj(true,{},{type: 'category'},defaultObj(chartProps.yaxis));
         const yLabels = chartOptions.yaxis.labels = defaultObj(chartOptions.yaxis.labels);
+        yLabels.align = "right";
         yLabels.style = defaultObj(yLabels.style)
         yLabels.style.colors = (Array.isArray(yLabels.style.colors) && yLabels.style.colors.length || theme.Colors.isValid(yLabels.style.colors)) ? yLabels.style.colors : labelColor;
         const yLabelsSerieName = series?.length == 1 && series[0] && series[0].name ? series[0].name : undefined;
@@ -2406,20 +2411,23 @@ export default class CommonDatagridComponent extends AppComponent {
         if(!chartType.isDonut){
             delete chartOptions.labels;
         }
-        if(this.isDashboard() && typeof chartOptions.chart.sparkline !=='boolean'){
-            chartOptions.chart.sparkline = true;
-        }
-        if(chartOptions.chart.sparkline){
-            chartOptions.chart.sparkline = {enabled: true}
-        } else delete chartOptions.chart.sparkline;
-        //const spackLine = chartOptions.chart.sparkline;
-        chartOptions.xaxis = defaultObj(chartOptions.xaxis);
-        chartOptions.xaxis.labels = defaultObj(chartOptions.xaxis.labels);
-        chartOptions.xaxis.labels.show  = ("showXaxis" in config) ? !!config.showXaxis : !this.isDashboard();
+        const sparkline = !!(typeof config.sparkline !==undefined ? (isObj(config.sparkline)? config.sparkline.enabled : config.sparkline) : (isObj(chartOptions.chart.sparkline)? chartOptions.chart.sparkline.enabled:chartOptions.chart.sparkline));
+        chartOptions.chart.sparkline = {enabled: sparkline}
         
+        chartOptions.xaxis = defaultObj(chartOptions.xaxis,config.xaxis);
+        chartOptions.xaxis.labels = defaultObj(chartOptions.xaxis.labels);
+        const xLabels = chartOptions.xaxis.labels;
+        const showXaxis = sparkline ? false : ("showXaxis" in config) ? !!config.showXaxis : !this.isDashboard();
+        xLabels.show  = showXaxis;
+        chartOptions.xaxis.show = sparkline ? false :  "show" in chartOptions.xaxis ? !! chartOptions.xaxis.show : showXaxis;
+        xLabels.style = Object.assign({},xLabels.style);
+        xLabels.style.colors = (Array.isArray(xLabels.style.colors) && xLabels.style.colors.length || theme.Colors.isValid(xLabels.style.colors)) ? xLabels.style.colors : labelColor;
         
         chartOptions.yaxis.labels = defaultObj(chartOptions.yaxis.labels);
-        chartOptions.yaxis.labels.show = ("showYaxis" in config) ? !!config.showYaxis : !this.isDashboard();
+        const showYaxis = sparkline ? false : ("showYaxis" in config) ? !!config.showYaxis : !this.isDashboard();
+        chartOptions.yaxis.show = sparkline ? false : "show" in chartOptions.yaxis ? !! chartOptions.yaxis.show : showYaxis;
+        chartOptions.yaxis.labels.show = showYaxis;
+        chartOptions.yaxis.show = "show" in chartOptions.yaxis ? !!chartOptions.yaxis : showYaxis;
         
         chartOptions.legend = defaultObj(chartOptions.legend);
         chartOptions.legend.show = ("showLegend" in config) ? !!config.showLegend : !this.isDashboard();

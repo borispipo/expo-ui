@@ -63,6 +63,7 @@ ChartComponent.propTypes = {
       type: PropTypes.string,
     }),
     xaxis : PropTypes.object,
+    yaxis : PropTypes.object,
     series: PropTypes.array.isRequired,
   }).isRequired,
   ///lorsque le chart est rendu en environnement native, les props du webView

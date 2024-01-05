@@ -385,7 +385,7 @@ export default class DropdownAlert extends Component {
     this.animate(0, 250, () => {
       const {onClose, onCancel, onTap} = this.props;
       this.alertData.action = action;
-      this.queue.dequeue();
+      const latest = this.queue.dequeue();
       if (action === ACTION.cancel) {
         onCancel(this.alertData);
       } else {
@@ -393,6 +393,9 @@ export default class DropdownAlert extends Component {
           onTap(this.alertData);
         }
         onClose(this.alertData);
+        if(typeof latest?.onClose ==="function"){
+          latest?.onClose(latest);
+        }
       }
       this.setState({isOpen: false, bottomValue: BOTTOM, height: 0});
       this._processQueue();

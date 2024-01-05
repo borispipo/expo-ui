@@ -19,8 +19,9 @@ export default class Queue {
     }
     dequeue() {
       if (!this.isEmpty) {
-        this.data.shift();
+        return this.data.shift();
       }
+      return null;
     }
     clear() {
       this.data = [];

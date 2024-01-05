@@ -711,6 +711,7 @@ class DropdownComponent extends AppComponent {
             showSearch,
             onAddCallback,
             onAddPress,
+            onAddProps,
             itemLabel,
             checkedIcon:customCheckedIcon,
             mode,
@@ -788,7 +789,8 @@ class DropdownComponent extends AppComponent {
             onPress : (e)=>{
                 React.stopEventPropagation(e);
                 if(iconDisabled) return;
-                const aArgs = {...React.getOnPressArgs(e),isMobile:isMob,context:this,visible:state.visible,field:name,props:this.props};
+                const onAddP = typeof onAddProps ==='function'? onAddProps(props) : onAddProps;
+                const aArgs = {...React.getOnPressArgs(e),...Object.assign({},onAddP),isMobile:isMob,context:this,visible:state.visible,field:name,props:this.props};
                 if(onAdd){onAdd(aArgs);}
                 else if(onAddPress){
                     onAddPress(aArgs)
@@ -1337,6 +1339,10 @@ DropdownComponent.propTypes = {
         PropTypes.bool,
     ]),
     onAdd : PropTypes.func,
+    onAddProps : PropTypes.oneOfType([
+        PropTypes.func,
+        PropTypes.object,
+    ]),
     getItemKey : PropTypes.func,///la fonction prenant en paramètre un item et retourne sa clé unique
 }
 

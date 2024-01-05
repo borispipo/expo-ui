@@ -284,7 +284,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
                         currentField.readOnly = true;
                     }
                 });
-                const cArgs = {field:currentField,columnField,columnDef:currentField,isUpdate:isUpdated,name:columnField,index:i,counterIndex,isPrimary,fields:preparedFields,contex:this,data:this.getCurrentData(),datas,currentIndex,isUpdated,tableName,table};
+                const cArgs = {...rest,field:currentField,columnField,columnDef:currentField,isUpdate:isUpdated,name:columnField,index:i,counterIndex,isPrimary,fields:preparedFields,contex:this,data:this.getCurrentData(),datas,currentIndex,isUpdated,tableName,table};
                 if(isUpdated){
                     //la props readOnlyOnEditing permet de rendre le champ readOnly en cas de mise à jour de la tableData
                     const readOnlyOnEditing = typeof currentField.readOnlyOnEditing =='function'? currentField.readOnlyOnEditing(cArgs) : currentField.readOnlyOnEditing;
@@ -313,6 +313,10 @@ export default class TableDataScreenComponent extends FormDataScreen{
                     return;
                 }
                 
+            }
+            if(rest.archived === true){
+                currentField.readOnly = true;
+                currentField.disabled = true;
             }
             fields[i] = currentField;
         });

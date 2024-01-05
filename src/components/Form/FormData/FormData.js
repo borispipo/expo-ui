@@ -269,8 +269,6 @@ export default class FormDataComponent extends AppComponent{
             archivable,
             onKeyEvent,
             isFormDataDialog,
-            onAddPressOnDropdownFieldCallback,
-            onAddPressOnDropdownField,
             archived,
             withBottomSheet,
             isAllowed,

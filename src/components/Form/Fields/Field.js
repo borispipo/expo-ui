@@ -311,7 +311,7 @@ export default class Field extends AppComponent {
         }
         if(!this.isFilter()){
             const vRule  =defaultStr(this.getValidRule()).toLowerCase();
-            const value = typeof args.value == "undefined" || args.value == null ? "" : String(args.value).replaceAll("/","").replaceAll("\\",'').trim();
+            const value = typeof args.value == "undefined" || args.value == null ? "" : String(args.value).replaceAll("/","").replaceAll("\\",'');
             if(value){
                 if(this.type ==='email' || vRule.contains('email')){
                     if(!isValidEmail(value)){
@@ -321,7 +321,7 @@ export default class Field extends AppComponent {
                     if(!isValidPhoneNumber(value)){
                         return "Merci d'entrer un numéro de téléphone valide";
                     }
-                }  else if(((this.props.allowWhiteSpaces === false) || ((this.type ==='id' || this.type =='piece') && this.props.allowWhiteSpaces !== true))){
+                }  else if(((this.props.allowWhiteSpaces === false) || ((defaultStr(this.type).toLowerCase().trim() ==="selecttabledata" || this.type ==='id' || this.type =='piece') && this.props.allowWhiteSpaces !== true))){
                     if((value.contains(" ") || !isValidDataFileName(value.replaceAll("@","").replaceAll(".","")))){
                         return "Veuillez renseigner une valeur ne contenant pas d'espace ou de caractère accentués";
                     }

@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 import { isRouteActive} from "$cnavigation";
-import {defaultObj,sortBy,defaultStr,isObj} from "$cutils";
+import {defaultObj,sortBy,defaultStr,isObj,isNonNullString,extendObj} from "$cutils";
 import appConfig from "$capp/config";
 import useContext from "$econtext/hooks";
 import {useMemo,useEffect,useRef} from "react";
@@ -16,6 +16,8 @@ import useExpoUI from "$econtext/hooks";
 import Auth,{useIsSignedIn,tableDataPerms} from "$cauth";
 import {getTableDataListRouteName} from "$enavigation/utils";
 import {isValidElement,usePrevious} from "$react";
+
+/***** les props supplémentaires à passer aux drawers items d'une table de données sont dans le champ drawerItemProps */
 const useGetItems = (options)=>{
     const {navigation:{drawerItems,drawerSections,drawerItemsMutator},tablesData} = useContext(); 
     options = defaultObj(options);
@@ -84,8 +86,11 @@ const useGetItems = (options)=>{
                     tProps[v] = table[v];
                 }
             })
+            if(isObj(table.drawerItemProps)){
+                extendObj(tProps,table.drawerItemProps);
+            };
             const toP = {
-                routeName : defaultStr(table.routeName,getTableDataListRouteName(tableName)),
+                routeName : table.routeName === false ? undefined : defaultStr(table.routeName,getTableDataListRouteName(tableName)),
                 ...tProps,
                 routeParams : {tableName,...Object.assign({},tProps.routeParams)}
             };

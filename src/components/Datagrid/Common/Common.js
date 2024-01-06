@@ -291,7 +291,7 @@ export default class CommonDatagridComponent extends AppComponent {
         this.renderProgressBar = this.renderProgressBar.bind(this);
         this.sortRef.current.dir = defaultStr(this.sortRef.current.dir,this.sortRef.current.column == "date"?"desc":'asc')
         this.hasColumnsHalreadyInitialized = false;
-        this.initColumns(props.columns);
+        this.state.columns = this.initColumns(props.columns);
         if(!isNonNullString(this.sortRef.current.column) && "date" in this.state.columns){
             this.sortRef.current.column = "date";
         }
@@ -696,10 +696,10 @@ export default class CommonDatagridComponent extends AppComponent {
     }
     initColumnsCallback(){}
     initColumns (columns){
-        this.state.columns = {};
+        const newColumns = {};
         let colIndex = 0;
         if(this.canHandleSelectableColumn()){
-            this.state.columns[this.getSelectableColumName()] = {
+            newColumns[this.getSelectableColumName()] = {
                 field : this.getSelectableColumName(),
                 style : this.getSelectableColumNameStyle(),
                 width : 40,
@@ -712,7 +712,7 @@ export default class CommonDatagridComponent extends AppComponent {
         }
         if(this.canHandleIndexColumn()){
             colIndex++;
-            this.state.columns [this.getIndexColumnName()] =  { 
+            newColumns [this.getIndexColumnName()] =  { 
                 filter : false,
                 visible : true,
                 width : 50,
@@ -748,7 +748,7 @@ export default class CommonDatagridComponent extends AppComponent {
             colIndex++;
             header.visible = defaultVal(header.visible,true);
             header.colIndex = colIndex;
-            this.state.columns[header.field] = header;
+            newColumns[header.field] = header;
             /*** les pieds de pages sont les données de type decimal, où qu'on peut compter */
             if(header.footer !== false && ((arrayValueExists(['decimal','number','money'],header.type) && header.format) || header.format == 'money' || header.format =='number')){
                 footers[header.field] = Object.clone(header);
@@ -758,7 +758,7 @@ export default class CommonDatagridComponent extends AppComponent {
             }
         });
         this.rowKeysColumns = Object.keys(rowKeysColumns);
-        return footers;
+        return newColumns;
     }
     getFootersFields(init){
         this[this.footerFieldName] = init === true ? {} : defaultObj(this[this.footerFieldName]);
@@ -3676,6 +3676,21 @@ export default class CommonDatagridComponent extends AppComponent {
         return false;
     }
     UNSAFE_componentWillReceiveProps(nextProps){
+        if(false && !React.areEquals(this.props.columns,nextProps.columns)){
+            const newColumns = this.initColumns(nextProps.columns);
+            console.log("will prepare column ",newColumns,this.state.columns);
+            this.setIsLoading(true,()=>{
+                this.setState({columns:newColumns},()=>{
+                    this.prepareColumns();
+                    console.log("preparing data ",nextProps);
+                    this.prepareData({...nextProps,force:true},(state)=>{
+                        console.log("setting state data",state,this.state);
+                        this.setState(state)
+                    })
+                })
+            },0);
+            return;
+        }
         const cb = ()=>{
             if(typeof nextProps.isLoading =='boolean' && nextProps.isLoading !== this.isLoading()){
                 this.setIsLoading(nextProps.isLoading);

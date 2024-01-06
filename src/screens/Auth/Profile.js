@@ -79,7 +79,7 @@ export default function UserProfileScreen({fields,...p}){
         hasChangeRef.current = true;
     }
     if(changeElectronUrl){
-        fields.mainElectronAppUrl = {
+        formFields.mainElectronAppUrl = {
             label : "Url de l'application",
             onValidatorValid : ({value})=>{
                 if(value && !isValidUrl(value)){

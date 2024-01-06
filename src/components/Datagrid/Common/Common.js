@@ -323,7 +323,7 @@ export default class CommonDatagridComponent extends AppComponent {
         if(!("sparkline" in this.state.config) && this.isDashboard()){
             this.state.config.sparkline = true;
         }
-        const dType = defaultStr(this.props.displayType,this.getSessionData("displayType"),"table");
+        const dType = defaultStr(this.getSessionData("displayType"),this.props.displayType,"table");
         this.state.displayType = this.displayTypes[dType] ? this.displayTypes[dType].code : "table" in this.displayTypes ? "table" : Object.keys(this.displayTypes)[0]?.code;
         this.state.displayOnlySectionListHeaders = defaultBool(this.getSessionData("displayOnlySectionListHeaders"),this.props.displayOnlySectionListHeaders,false)
         if(this.state.displayOnlySectionListHeaders){

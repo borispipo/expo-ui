@@ -3678,11 +3678,9 @@ export default class CommonDatagridComponent extends AppComponent {
     UNSAFE_componentWillReceiveProps(nextProps){
         if(false && !React.areEquals(this.props.columns,nextProps.columns)){
             const newColumns = this.initColumns(nextProps.columns);
-            console.log("will prepare column ",newColumns,this.state.columns);
             this.setIsLoading(true,()=>{
                 this.setState({columns:newColumns},()=>{
                     this.prepareColumns();
-                    console.log("preparing data ",nextProps);
                     this.prepareData({...nextProps,force:true},(state)=>{
                         console.log("setting state data",state,this.state);
                         this.setState(state)

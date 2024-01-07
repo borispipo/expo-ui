@@ -10,3 +10,5 @@ Les propriétés d'états :
     1. grouper les éléments du tableau avec au moins une colonne
     2. disposer dans le tableau, des colonnes de totalisation (de type montant et somme)
     3.  
+    
+- Pour que le rendu du graphe soit possible, il faut que parmis les colones du datagrid, au moins une soit de type nombre

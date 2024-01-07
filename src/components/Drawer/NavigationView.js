@@ -69,7 +69,6 @@ const DrawerNavigationViewComponent = React.forwardRef((props,ref)=>{
             </DrawerHeader> : null}
             {React.isValidElement(content)? content : 
                 <DrawerItems
-                    {...defaultObj(opts)}
                     drawerRef = {drawerRef}
                     {...defaultObj(drawerItemsProps)}
                     items = {drawerItems}

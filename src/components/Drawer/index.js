@@ -369,6 +369,8 @@ const iconType = PropTypes.oneOfType([
 
 DrawerComponent.propTypes = {
   ...defaultObj(DrawerLayout.propTypes),
+  position : PropTypes.oneOf(Object.keys(DRAWER_POSITIONS)),
+  minimizable : PropTypes.bool,
   permanent : PropTypes.bool,
   minimized : PropTypes.bool,
   bindResizeEvent : PropTypes.bool,

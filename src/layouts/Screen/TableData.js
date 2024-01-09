@@ -211,7 +211,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
         return defaultStr(this.props.sessionName,"table-form-data"+this.getTableName())
     }
     prepareField(a,...args){
-        if(isObj(a?.field) && !this.canRenderActions()()){
+        if(isObj(a?.field) && !this.canRenderActions()){
             a.field.disabled = true;
         }
         if(typeof this.props.prepareField =='function'){

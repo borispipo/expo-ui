@@ -211,6 +211,9 @@ export default class TableDataScreenComponent extends FormDataScreen{
         return defaultStr(this.props.sessionName,"table-form-data"+this.getTableName())
     }
     prepareField(a,...args){
+        if(isObj(a?.field) && !this.canRenderActions()()){
+            a.field.disabled = true;
+        }
         if(typeof this.props.prepareField =='function'){
             return this.props.prepareField(a,...args);
         }
@@ -268,6 +271,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
         } = this.prepareComponentProps({...props,tableName,context:this,fields:extendObj(true,{},this.fields,props.fields),isUpdated,isUpdate:isUpdated,data,datas,currentIndex});
         const sessionName = this.getSessionName();
         const generatedColumnsProps = this.getGeneratedColumnsProperties();
+        const canRenderActions = this.canRenderActions({...props,...rest});
         ///on effectue une mutator sur le champ en cours de modification
         Object.map(preparedFields,(field,i,counterIndex)=>{
             const currentField = isObj(field)?Object.clone(field):field;
@@ -307,6 +311,9 @@ export default class TableDataScreenComponent extends FormDataScreen{
                     this.primaryKeyFields[columnField] = true;
                 }
                 const isPrimary = this.primaryKeyFields[columnField] && true || false;
+                if(!canRenderActions){
+                    currentField.disabled = true;
+                }
                 const f = this.prepareField(cArgs);  
                 if(f === false) {
                     delete fields[i];
@@ -705,6 +712,9 @@ export default class TableDataScreenComponent extends FormDataScreen{
             return this.setState({data:currentData,datas:[],hasManyData:false},callback);
         }
     }
+    setCurrentData(...args){
+        return this.reloadCurrentData(...args);
+    }
     doSave ({goBack,data,action}){
         action = defaultStr(action,this.clickedEl);
         const cb = ()=>{
@@ -857,6 +867,23 @@ export default class TableDataScreenComponent extends FormDataScreen{
     }
     getTableName(){
         return this.tableName;
+    }
+    triggerUpsert(...rest){
+        const tableName = defaultStr(this.getTableName(),this.props.tableName,this.props.table);
+        if(tableName){
+            return APP.trigger(cActions.upsert(tableName),...rest);
+        }
+        return false;
+    }
+    triggerDelete(...rest){
+        const tableName = defaultStr(this.getTableName(),this.props.tableName,this.props.table);
+        if(tableName){
+            return APP.trigger(cActions.remove(tableName),...rest);
+        }
+        return false;
+    }
+    triggerRemove(...args){
+        return this.triggerDelete(...args);
     }
     getTableText(){
         const tableObj = this.getTableObj();

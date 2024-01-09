@@ -1,7 +1,7 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
 		"name": "@fto-consult/expo-ui",
-		"version": "7.16.9",
+		"version": "7.17.9",
 		"repository": {
 			"type": "git",
 			"url": "git+https://github.com/borispipo/expo-ui.git"
@@ -49,7 +49,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"@fto-consult/common": {
-		"version": "4.1.4",
+		"version": "4.2.1",
 		"url": "https://github.com/borispipo/common#readme",
 		"license": "ISC"
 	},
@@ -263,7 +263,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"react-native-paper": {
-		"version": "5.11.6",
+		"version": "5.11.7",
 		"url": "https://callstack.github.io/react-native-paper",
 		"license": "MIT"
 	},

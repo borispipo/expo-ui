@@ -110,12 +110,24 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
     
     ///swr config settings
     ///garde pour chaque écran sa date de dernière activité
+    ///@see : https://swr.vercel.app/docs/api
     const screensRef = React.useRef({});//la liste des écrans actifs
     const activeScreenRef = React.useRef('');
     const appStateRef = React.useRef({});
     const swrRefreshTimeout = defaultNumber(swrConfig?.refreshTimeout,SWR_REFRESH_TIMEOUT)
     swrConfig = extendObj({
       provider: () => new Map(),
+      dedupingInterval : swrRefreshTimeout,
+      errorRetryInterval : Math.max(swrRefreshTimeout*2,SWR_REFRESH_TIMEOUT),
+      errorRetryCount : 5,
+      revalidateOnMount : true,//enable or disable automatic revalidation when component is mounted
+      revalidateOnFocus : true, //automatically revalidate when window gets focused (details)
+      revalidateOnReconnect : true, //automatically revalidate when the browser regains a network
+      refreshInterval : swrRefreshTimeout, //5 minutes : Disabled by default: refreshInterval = 0, If set to a number, polling interval in milliseconds, If set to a function, the function will receive the latest data and should return the interval in milliseconds
+      refreshWhenHidden : false, //polling when the window is invisible (if refreshInterval is enabled)
+      refreshWhenOffline : false, //polling when the browser is offline (determined by navigator.onLine)
+      shouldRetryOnError : false, //retry when fetcher has an error
+      dedupingInterval : swrRefreshTimeout,//dedupe requests with the same key in this time span in milliseconds
       refreshWhenOffline : canFetchOffline,
       isOnline() {
         /* Customize the network state detector */
@@ -135,13 +147,6 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
            return false;
         }
         return true;
-        const date = screensRef.current[screen];
-        const diff = new Date().getTime() - date.getTime();
-        const ret = diff >= swrRefreshTimeout ? true : false;
-        if(ret){
-          screensRef.current[screen] = new Date();
-        }
-        return ret;
       },
       initFocus(callback) {
         let appState = AppState.currentState

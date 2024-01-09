@@ -20,13 +20,11 @@ import Label from "$ecomponents/Label";
 import { StyleSheet} from "react-native";
 import View from "$ecomponents/View";
 import theme from "$theme";
-import useSWR from "$swr";
 import {getRowsPerPagesLimits} from "./Common/utils";
 import PropTypes from "prop-types";
 import {Menu} from "$ecomponents/BottomSheet";
 import session from "$session";
-import { SWR_REFRESH_TIMEOUT } from "$econtext/utils";
-import useContext,{useScreen} from "$econtext/hooks";
+import {useScreen,useSWR} from "$econtext/hooks";
 
 export const getSessionKey = ()=>{
     return Auth.getSessionKey("swrDatagrid");
@@ -45,25 +43,6 @@ export const setSessionData = (key,value)=>{
     return session.set(getSessionKey(),d);
 }
 
-
-/***@see : https://swr.vercel.app/docs/api */
-
-export const getSWROptions = (defTimeout)=>{
-    const delay = defaultNumber(defTimeout,SWR_REFRESH_TIMEOUT);
-    return {
-        dedupingInterval : delay,
-        errorRetryInterval : Math.max(delay*2,SWR_REFRESH_TIMEOUT),
-        errorRetryCount : 5,
-        revalidateOnMount : false,//enable or disable automatic revalidation when component is mounted
-        revalidateOnFocus : true, //automatically revalidate when window gets focused (details)
-        revalidateOnReconnect : true, //automatically revalidate when the browser regains a network
-        refreshInterval : delay, //5 minutes : Disabled by default: refreshInterval = 0, If set to a number, polling interval in milliseconds, If set to a function, the function will receive the latest data and should return the interval in milliseconds
-        refreshWhenHidden : false, //polling when the window is invisible (if refreshInterval is enabled)
-        refreshWhenOffline : false, //polling when the browser is offline (determined by navigator.onLine)
-        shouldRetryOnError : false, //retry when fetcher has an error
-        dedupingInterval : delay,//dedupe requests with the same key in this time span in milliseconds
-    }
-}
 
 const isValidMakePhoneCallProps = p=> isObj(p) && Object.size(p,true) || typeof p ==='function';
 /****la fonction fetcher doit toujours retourner : 
@@ -101,9 +80,9 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         defaultSortOrder,
         isLoading : customIsLoading,
         icon : cIcon,
+        swrOptions,
         ...rest
     } = props;
-    const {swrConfig} = useContext();
     const screenContext = useScreen();
     rest = defaultObj(rest);
     rest.exportTableProps = defaultObj(rest.exportTableProps)
@@ -153,6 +132,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         title : React.getTextContent(title),
     },rest.exportTableProps.pdf);
     const fetchOptionsRef = React.useRef({});
+    const isFetchPathNull = fetchPath === null || fetchPath ===false;
     const fPathRef = React.useRef(defaultStr(fetchPathKey,uniqid("fetchPath")));
     fetchPath = defaultStr(fetchPath,table?.queryPath,tableName.toLowerCase()).trim();
     if(fetchPath){
@@ -168,8 +148,10 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     const limitRef = React.useRef(!canHandleLimit ?0 : defaultNumber(getSessionData("limit"),500));
     const isInitializedRef = React.useRef(false);
     const hasFetchedRef = React.useRef(false);
+    swrOptions = defaultObj(swrOptions);
+    swrOptions.revalidateOnMount = typeof swrOptions.revalidateOnMount =="boolean"? swrOptions.revalidateOnMount : false;
     testID = defaultStr(testID,"RNSWRDatagridComponent");
-    const {error, isValidating,isLoading,data:result,refresh} = useSWR(fetchPath,{
+    const {error, isValidating,isLoading,data:result,refresh} = useSWR(isFetchPathNull?null:fetchPath,{
         fetcher : (url,opts)=>{
             if(!isInitializedRef.current) {
                 return Promise.resolve({data:[],total:0});
@@ -204,7 +186,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             }
             return apiFetch(url,opts).then(end);
         },
-        swrOptions : getSWROptions(swrConfig.refreshTimeout)
+        swrOptions,
     });
     const dataRef = React.useRef(null);
     const totalRef = React.useRef(0);
@@ -455,10 +437,11 @@ SWRDatagridComponent.displayName = "SWRDatagridComponent";
 
 SWRDatagridComponent.propTypes = {
     ...Datagrid.propTypes,
+    swrOptions : PropTypes.object,//les ooptions supplémentaires à passer à la fonction swr
     handlePagination : PropTypes.bool, //spécifie si le datagrid prendra en compte la pagination
     /*** le nom de la colonne de trie par défaut */
     defaultSortColumn : PropTypes.string,
-    fetchPath : PropTypes.string,
+    fetchPath : PropTypes.oneOfType([PropTypes.string,PropTypes.bool,PropTypes.object]),
     fetchPathKey : PropTypes.string,//la clé permettant de suffixer l'url fecherPath afin que ce ne soit pas unique pour certaines tables
     fetchData : PropTypes.func,
     table : PropTypes.shape({

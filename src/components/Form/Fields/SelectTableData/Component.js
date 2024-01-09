@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 import Dropdown from "$ecomponents/Dropdown";
-import {defaultStr,extendObj,isFunction,defaultVal,isObjOrArray,defaultObj} from "$cutils";
+import {defaultStr,extendObj,isFunction,setQueryParams,defaultVal,isObjOrArray,defaultObj} from "$cutils";
 import PropTypes from "prop-types";
 import actions from "$cactions";
 import {navigateToTableData} from "$enavigation/utils";
@@ -12,6 +12,8 @@ import fetch from "$capi"
 import React from "$react";
 import useApp from "$econtext/hooks";
 import DateLib from "$lib/date";
+import {useSWR} from "$econtext/hooks";
+import stableHash from "stable-hash";
 
 /*** la tabledataSelectField permet de faire des requêtes distantes pour rechercher les données
  *  Elle doit prendre en paramètre et de manière requis : les props suivante : 
@@ -19,7 +21,7 @@ import DateLib from "$lib/date";
  *  foreignKeyTable : la tableData dans laquelle effectuer les donées de la requêtes
  *  foreignKeyLabel : Le libélé dans la table étrangère
  */
-const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabelRenderers,onChange,isStructData,getForeignKeyTable:cGetForeignKeyTable,prepareFilters:cPrepareFilters,bindUpsert2RemoveEvents,onAdd,showAdd:customShowAdd,canShowAdd,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,parseMangoQueries,mutateFetchedItems,onFetchItems,isFilter,isUpdate,isDocEditing,items,onAddProps,fetchOptions,...props},ref)=>{
+const TableDataSelectField = React.forwardRef(({foreignKeyColumn,swrOptions,foreignKeyLabelRenderers,onChange,isStructData,getForeignKeyTable:cGetForeignKeyTable,prepareFilters:cPrepareFilters,bindUpsert2RemoveEvents,onAdd,showAdd:customShowAdd,canShowAdd,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,parseMangoQueries,mutateFetchedItems,onFetchItems,isFilter,isUpdate,isDocEditing,items:customItems,onAddProps,fetchOptions,...props},ref)=>{
     props.data = defaultObj(props.data);
     const type = defaultStr(props.type)?.toLowerCase();
     isStructData = isStructData || type?.replaceAll("-","").replaceAll("_","").trim().contains("structdata");
@@ -38,16 +40,17 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabel
     }
     const getForeignKeyTable = typeof cGetForeignKeyTable =='function'? cGetForeignKeyTable : isStructData ? getStructData: appGetForeignKeyTable;
     parseMangoQueries = defaultBool(parseMangoQueries,datagrid?.parseMangoQueries);
+    const parseMangoQueriesRef = React.useRef(parseMangoQueries);
+    parseMangoQueriesRef.current = parseMangoQueries;
     const foreignKeyTableStr = defaultStr(foreignKeyTable,props.tableName,props.table);
+    const errors = [];
     if(typeof getForeignKeyTable !=='function'){
-        console.error("la fonction getTableData non définie des les paramètres d'initialisation de l'application!!! Rassurez vous d'avoir définier cette fonction!!, options : foreignKeyTable:",foreignKeyTable,"foreignKeyColumn:",foreignKeyColumn,props)
-        return null;
+        errors.push("la fonction getTableData non définie des les paramètres d'initialisation de l'application!!! Rassurez vous d'avoir définier cette fonction!!, options : foreignKeyTable:",foreignKeyTable,"foreignKeyColumn:",foreignKeyColumn,props)
     }
     let fKeyTable = getForeignKeyTable(foreignKeyTableStr,props);
     fetchItemsPath = defaultStr(fetchItemsPath).trim();
     if(!fetchItemsPath && (!isObj(fKeyTable) || !(defaultStr(fKeyTable.tableName,fKeyTable.table)))){
-        console.error("type de données invalide pour la foreignKeyTable ",foreignKeyTable," label : ",foreignKeyLabel,fKeyTable," composant SelectTableData",foreignKeyColumn,foreignKeyTable,props);
-        return null;
+        errors.push("type de données invalide pour la foreignKeyTable ",foreignKeyTable," label : ",foreignKeyLabel,fKeyTable," composant SelectTableData",foreignKeyColumn,foreignKeyTable,props);
     }
     fKeyTable = defaultObj(fKeyTable);
     foreignKeyTable = defaultStr(fKeyTable.tableName,fKeyTable.table,foreignKeyTable).trim().toUpperCase();
@@ -61,16 +64,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabel
         }
     }
     const isMounted = React.useIsMounted();
-    
-    const [stateItems,setItems] = React.useState([]);
-    const [isLoading,setIsLoading] = React.useState(true);
-    fetchOptions = Object.clone(defaultObj(fetchOptions));
-    const queryPath = fetchItemsPath || typeof fKeyTable.queryPath =='string' && fKeyTable.queryPath || typeof fKeyTable.fetchPath =='string' && fKeyTable.fetchPath || '';
-    
-    isUpdate = defaultBool(isUpdate,typeof isDocEditing ==='function' && isDocEditing({data:props.data,foreignKeyTable,foreignKeyColumn}));
-    if(isFilter){
-        isUpdate = false;
-    }
+    const queryPath = fetchItemsPath || typeof fKeyTable.queryPath =='string' && fKeyTable.queryPath || foreignKeyTable;
     const defaultFields = Array.isArray(foreignKeyColumn)? foreignKeyColumn : [foreignKeyColumn];
     if(Array.isArray(foreignKeyLabel)){
         foreignKeyLabel.map(f=>{
@@ -83,42 +77,102 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabel
         foreignKeyLabel = foreignKeyLabel.trim();
         defaultFields.push(foreignKeyLabel);
     } 
-    if(fetchOptions.fields !== 'all' && (!Array.isArray(fetchOptions.fields) || !fetchOptions.fields.length)){
-        fetchOptions.fields = defaultFields;
-    }
-    if(fetchOptions.fields =='all'){
-        delete fetchOptions.fields;
-    }
     const foreignKeyColumnValue = props.defaultValue;
     const defaultValueRef = React.useRef(props.multiple ? Object.toArray(foreignKeyColumnValue) : foreignKeyColumnValue);
     let isDisabled = defaultBool(props.disabled,props.readOnly,false);
     if(!isDisabled && props.readOnly === true){
         isDisabled = true;
     }
-    if(isUpdate && isNonNullString(foreignKeyColumnValue) && (isDisabled)){
-        fetchOptions.selector = defaultObj(fetchOptions.selector);
-        fetchOptions.selector.$and = defaultArray(fetchOptions.selector.$and);
-        let hasF = false;
-        for(let i in fetchOptions.selector.$and){
-            const cFilter = fetchOptions.selector.$and[i];
-            if(isObj(cFilter)) {
-                if(cFilter[foreignKeyColumn] === foreignKeyColumnValue){
-                    hasF = true;
-                    break;
-                }
-            }
+    const hasErrors = !!errors.length;
+    if(!hasErrors){
+        fetchOptions = Object.clone(defaultObj(fetchOptions));
+        if(fetchOptions.fields !== 'all' && (!Array.isArray(fetchOptions.fields) || !fetchOptions.fields.length)){
+            fetchOptions.fields = defaultFields;
         }
-        if(!hasF){
-            fetchOptions.selector.$and.push({[foreignKeyColumn] : foreignKeyColumnValue})
+        if(fetchOptions.fields =='all'){
+            delete fetchOptions.fields;
         }
     }
+    const hashKey = React.useMemo(()=>{
+        return stableHash(fetchOptions);
+    },[fetchOptions]);
     const hasRefreshedRef = React.useRef(false);
+    const showAdd = React.useMemo(()=>{
+        if(isFilter || !foreignKeyTable) return false;
+        if(typeof canShowAdd ==='function'){
+            return !!canShowAdd({...props,table:foreignKeyTable,foreignKeyColumn,foreignKeyLabel,sortDir,foreignKeyTableObj:fKeyTable,foreignKeyTable})
+        } else if(Auth[isStructData?"isStructDataAllowed":"isTableDataAllowed"]({table:foreignKeyTable,action:'create'})){
+            return !!defaultVal(customShowAdd,true);
+        }
+        return false;
+    },[isFilter,foreignKeyTable,customShowAdd]);
+    
+    const fetchItemsRef = React.useRef(customFetchItem);
+    fetchItemsRef.current = customFetchItem;
+    swrOptions = Object.assign({},swrOptions);
+    if(isFilter){
+        swrOptions.refreshInterval = 0;
+    }
+    const restOptionsRef = React.useRef({});
+    const fetchedResultRef = React.useRef({});
+    restOptionsRef.current = {foreignKeyTable,foreignKeyColumn,foreignKeyLabel,foreignKeyColumnValue,sort,sortColumn,sortDir,foreignKeyTableObj:fKeyTable};
+    const queryPathKey = isNonNullString(queryPath) ? setQueryParams(queryPath,{isstabledata:1,"stabledathkey":hashKey,foreignKeyColumn:defaultStr(foreignKeyColumn).toLowerCase()}) : null;
+    const onFetchItemsRef = React.useRef();
+    onFetchItemsRef.current = onFetchItems;
+    const mutateFetchedItemsRef = React.useRef();
+    mutateFetchedItemsRef.current = mutateFetchedItems;
+    const {isLoading:cIsLoading,data:fetchedItems,isValidating,refresh} = useSWR(hasErrors?null:queryPathKey,{
+        fetcher : (url,opts1)=>{
+            if(typeof beforeFetchItems ==='function' && beforeFetchItems({fetchOptions}) === false) return Promise.resolve(fetchedResultRef.current);
+            let opts = Object.clone(fetchOptions);
+            if(parseMangoQueries.current){
+                opts.selector = filtersParseMangoQueries(opts.selector);
+                opts = getFetchOptions(opts);
+                delete opts.selector;
+            } else {
+                opts = {fetchOptions:opts};
+            }
+            opts.showError = false;
+            const cFetch = typeof fetchItemsRef.current =="function" && fetchItemsRef.current || false;
+            const fetchingOpts = {...props,...opts1,...opts,...restOptionsRef.current};
+            return Promise.resolve((cFetch||fetch)(queryPath||url,fetchingOpts)).then((args)=>{
+                if(Array.isArray(args)){
+                    args = {items : args};
+                } else if(!isObj(args)) {
+                    args = {items:[]}
+                }
+                args.items = args.data = Array.isArray(args.items) ? args.items : Array.isArray(args.data) ? args.data : [];
+                if(typeof mutateFetchedItemsRef.current =='function'){
+                    const itx = mutateFetchedItemsRef.current(args.items);
+                    if(Array.isArray(itx)){
+                        args.items = args.data = itx;
+                    }
+                }
+                if(typeof onFetchItemsRef.current ==='function'){
+                    onFetchItemsRef.current({...args,context:{refresh},props});
+                }
+                hasRefreshedRef.current = true;
+                fetchedResultRef.current = args;
+                return fetchedResultRef.current;
+            }).catch((e)=>{
+                console.log(e," fetching list of data select table data ",foreignKeyColumn,foreignKeyTable)
+            });
+        },
+        showError : false,
+        swrOptions,
+    });
+    const isLoading = cIsLoading || isValidating;
+    const items = React.useMemo(()=>{
+        const fItems = isObj(fetchedItems)? fetchedItems: fetchedResultRef.current;
+        if(!isObj(fItems) || !Array.isArray(fItems.items)) return [];
+        return fItems.items;
+    },[fetchedItems]);
     React.useEffect(()=>{
         if(bindUpsert2RemoveEvents === false || !(foreignKeyTableStr)){
             return ()=>{}
         }
         const onUpsertData = ()=>{
-            return isMounted()?context.refresh():undefined
+            return isMounted()?refresh():undefined
         };
         APP.on(actions.upsert(foreignKeyTableStr),onUpsertData);
         APP.on(actions.onRemove(foreignKeyTableStr),onUpsertData);
@@ -126,90 +180,16 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabel
             APP.off(actions.upsert(foreignKeyTableStr),onUpsertData);
             APP.off(actions.onRemove(foreignKeyTableStr),onUpsertData);
         };
-    },[foreignKeyTableStr,bindUpsert2RemoveEvents])
-    React.useEffect(()=>{
-        context.refresh();
-    },[]);
-    
-    let dat = isNonNullString(foreignKeyColumnValue)? {
-        [foreignKeyColumn]:foreignKeyColumnValue, 
-        ...(isNonNullString(foreignKeyLabel) ? {[foreignKeyLabel]:foreignKeyColumnValue+", introuvable dans le système"}:{})
-    } : null;
-    const cFetch = typeof customFetchItem =='function' && customFetchItem;
-    const fetchItems = (opts)=>{
-        opts.showError = false;
-        if(sortColumn){
-            opts.sort = sort;
-        }
-        if(cFetch) return cFetch(queryPath,{...props,sort:{column:sortColumn,dir:sortDir},sortColumn,isUpdate,foreignKeyColumn,foreignKeyLabel,sortDir,foreignKeyTableObj:fKeyTable,foreignKeyTable,...opts});
-        if(queryPath){
-            return fetch(queryPath,opts);
-        }
-    };
-    const context = {
-        refresh : (force,cb)=>{
-            if(!isMounted()) return;
-            if(typeof beforeFetchItems ==='function' && beforeFetchItems({fetchOptions}) === false) return;
-            let opts = Object.clone(fetchOptions);
-            if(parseMangoQueries){
-                opts.selector = filtersParseMangoQueries(opts.selector);
-                opts = getFetchOptions(opts);
-                delete opts.selector;
-            } else {
-                opts = {fetchOptions:opts};
-            }
-            const r = fetchItems(opts);
-            if(r === false) return;
-            setIsLoading(true);
-            if(isPromise(r)){
-                r.then((args)=>{
-                    if(Array.isArray(args)){
-                        args = {data : args};
-                    }
-                    if(!isObj(args)) {
-                        args = {items:[]}
-                    }
-                    let items = args.items = args.data = Array.isArray(args.items) ? args.items : Array.isArray(args.data) ? args.data : [];
-                    if(dat && isUpdate){
-                        if(isFunction(mutateFetchedItems)){
-                            items = mutateFetchedItems(items);
-                        }
-                        let hasFound = false;
-                        if(!isObjOrArray(items)) items = [];
-                        for(let i in items){
-                            if(isObj(items[i]) && items[i][foreignKeyColumn] == foreignKeyColumnValue){
-                                hasFound = true;
-                                break;
-                            }
-                        }
-                        if(!hasFound){
-                            if(Array.isArray(items)){
-                                items.push(dat); 
-                            } else {
-                                items[foreignKeyColumnValue] = dat;
-                            }
-                        }
-                    }
-                    setItems(items);
-                    if(onFetchItems){
-                        onFetchItems({data:items,items,context,props});
-                    }
-                    hasRefreshedRef.current = true;
-                }).catch((e)=>{
-                    console.log(e," fetching list of data select table data ",foreignKeyColumn,foreignKeyTable)
-                }).finally((e)=>{
-                    setIsLoading(false);
-                })
-            } else {
-                setIsLoading(false);
-            }
-        }
+    },[foreignKeyTableStr,bindUpsert2RemoveEvents]);
+    if(hasErrors) {
+        console.error(...errors);
+        return null;
     }
     dropdownActions = isObj(dropdownActions)? {...dropdownActions} : isArray(dropdownActions)? [...dropdownActions] : []
     const isDropdonwsActionsArray = isArray(dropdownActions);
     const refreshItem = {
         text : 'Rafraichir',
-        onPress : context.refresh,
+        onPress : refresh,
         icon : 'refresh',
     }
     if(isDropdonwsActionsArray){
@@ -270,18 +250,9 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabel
         ttitle = txt && tt ? "{0} [{1}]".sprintf(txt,tt) : tt || txt;
     }
     dialogProps.title = ttitle;
-    const showAdd = React.useMemo(()=>{
-        if(isFilter || !foreignKeyTable) return false;
-        if(typeof canShowAdd ==='function'){
-            return !!canShowAdd({...props,table:foreignKeyTable,foreignKeyColumn,foreignKeyLabel,sortDir,foreignKeyTableObj:fKeyTable,foreignKeyTable})
-        } else if(Auth[isStructData?"isStructDataAllowed":"isTableDataAllowed"]({table:foreignKeyTable,action:'create'})){
-            return !!defaultVal(customShowAdd,true);
-        }
-        return false;
-    },[isFilter,foreignKeyTable,customShowAdd]);
     return <Dropdown
         {...props}
-        items = {stateItems}
+        items = {items}
         isFilter = {isFilter}
         showAdd = {showAdd}
         isLoading = {isLoading}
@@ -297,7 +268,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabel
         ref = {ref}
         defaultValue = {foreignKeyColumnValue}
         dropdownActions = {dropdownActions}
-        context = {context}
+        context = {{refresh}}
         itemValue = {(p,...rest) => {
             if(typeof props.itemValue ==='function'){
                 return props.itemValue(p,...rest);
@@ -323,7 +294,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabel
             return rItem(p,...rest);
         }}
         onAdd = {(args)=>{
-            onAddProps = defaultObj(isFunction(onAddProps)? onAddProps.call(context,{context,foreignKeyTable,dbName,props}) : onAddProps);
+            onAddProps = defaultObj(isFunction(onAddProps)? onAddProps({context:{refresh},foreignKeyTable,dbName,props}) : onAddProps);
             if(typeof onAdd =='function'){
                 return onAdd({...args,...onAddProps});
             }
@@ -334,6 +305,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,foreignKeyLabel
 
 TableDataSelectField.propTypes = {
     ...Dropdown.propTypes,
+    swrOptions : PropTypes.object,//les options supplémentaires à passer à la fonction swr
     /*** permet de faire le mappage entre les foreignKeyLabel et les type correspondants */
     foreignKeyLabelRenderers : PropTypes.objectOf(PropTypes.oneOfType([
         PropTypes.string, //représente le type de données associée à la colone dont le nom la clé 
@@ -343,7 +315,9 @@ TableDataSelectField.propTypes = {
     bindUpsert2RemoveEvents : PropTypes.bool,//si le composant écoutera l'évènement de rafraichissement des données
     onAdd : PropTypes.func, //({})=>, la fonction appelée lorsque l'on clique sur le bouton add
     canShowAdd : PropTypes.func, //({foreignKeyTable,foreignKeyColumn})=><boolean> la fonction permettant de spécifier si l'on peut afficher le bouton showAdd
-    mutateFetchedItems : PropTypes.func, //la fonction permettant d'effectuer une mutation sur l'ensemble des donnéees récupérées à distance
+    //la fonction permettant d'effectuer une mutation sur l'ensemble des donnéees récupérées à distance
+    //si le résultat de cette fonction est un array, alors le array en question représentera les nouvelles valeurs des items à considérer
+    mutateFetchedItems : PropTypes.func, 
     fetchItems : PropTypes.func,//la fonction de rappel à utiliser pour faire une requête fetch permettant de selectionner les données à distance
     foreignKeyTable : PropTypes.string, //le nom de la fKeyTable data à laquelle se reporte le champ
     fetchItemsPath : PropTypes.string, //le chemin d'api pour récupérer les items des données étrangères en utilisant la fonction fetch

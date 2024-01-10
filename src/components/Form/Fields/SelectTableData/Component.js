@@ -115,7 +115,6 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,swrOptions,fore
         swrOptions.refreshInterval = 0;
         swrOptions.revalidateOnFocus = false;
         swrOptions.revalidateIfStale = false;
-        swrOptions.revalidateOnMount = false;
         swrOptions.revalidateOnReconnect = false;
     }
     const restOptionsRef = React.useRef({});

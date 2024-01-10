@@ -4175,6 +4175,7 @@ CommonDatagridComponent.propTypes = {
     aggregatorFunction : PropTypes.string,
     /*** permet de faire une mutation sur les options de la recherche, immédiatement avant le lancement de la recherche */
     fetchOptionsMutator : PropTypes.func,
+    fetchOptions : PropTypes.object,
     resetSessionData : PropTypes.bool, //pour forcer la réinitialisation des données de sessions liés à la table data 
     /*** si les données à récupérer à distance seront  */
     fetchOnlyVisibleColumns : PropTypes.bool,

@@ -81,10 +81,12 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         isLoading : customIsLoading,
         icon : cIcon,
         swrOptions,
+        pagination,
         ...rest
     } = props;
     const screenContext = useScreen();
     rest = defaultObj(rest);
+    pagination = defaultObj(pagination);
     rest.exportTableProps = defaultObj(rest.exportTableProps)
     const firstPage = 1;
     const tableName = defaultStr(table?.tableName,table?.table).trim().toUpperCase();
@@ -94,7 +96,8 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     const sColumn = defaultStr(sort.column,defaultSortColumn);
     if(sColumn){
         sort.column = sColumn;
-        if(defaultSortOrder =='asc' || defaultSortOrder =='desc'){
+        sort.dir = defaultStr(sort.dir).toLowerCase().trim();
+        if(!['asc','desc'].includes(sort.dir) && ['asc','desc'].includes(defaultSortOrder)){
             sort.dir = defaultSortOrder;
         }
     } else {
@@ -133,7 +136,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     },rest.exportTableProps.pdf);
     const fetchOptionsRef = React.useRef({});
     const isFetchPathNull = fetchPath === null || fetchPath ===false;
-    const fPathRef = React.useRef(defaultStr(fetchPathKey,uniqid("fetchPath")));
+    const fPathRef = React.useRef(defaultStr(fetchPathKey,"defaultFetchPathKey"));
     fetchPath = defaultStr(fetchPath,table?.queryPath,tableName.toLowerCase()).trim();
     if(fetchPath){
         fetchPath = setQueryParams(fetchPath,"SWRFetchPathKey",fPathRef.current)
@@ -142,10 +145,10 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     const innerRef = React.useRef(null);
     const showProgressRef = React.useRef(true);
     const forceRefreshRef = React.useRef(true);
-    const pageRef = React.useRef(1);
+    const pageRef = React.useRef(defaultNumber(pagination.start,1));
     const canHandlePagination = handlePagination !== false ? true : false;
     const canHandleLimit = handleQueryLimit !== false && canHandlePagination ? true : false;
-    const limitRef = React.useRef(!canHandleLimit ?0 : defaultNumber(getSessionData("limit"),500));
+    const limitRef = React.useRef(!canHandleLimit ?0 : defaultNumber(getSessionData("limit"),pagination.limit,500));
     const isInitializedRef = React.useRef(false);
     const hasFetchedRef = React.useRef(false);
     swrOptions = defaultObj(swrOptions);

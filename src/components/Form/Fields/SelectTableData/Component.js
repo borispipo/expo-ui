@@ -110,8 +110,13 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,swrOptions,fore
     const fetchItemsRef = React.useRef(customFetchItem);
     fetchItemsRef.current = customFetchItem;
     swrOptions = Object.assign({},swrOptions);
-    if(isFilter){
+    ///@see : https://swr.vercel.app/docs/revalidation#disable-automatic-revalidations
+    if(isFilter || isDisabled){
         swrOptions.refreshInterval = 0;
+        swrOptions.revalidateOnFocus = false;
+        swrOptions.revalidateIfStale = false;
+        swrOptions.revalidateOnMount = false;
+        swrOptions.revalidateOnReconnect = false;
     }
     const restOptionsRef = React.useRef({});
     const fetchedResultRef = React.useRef({});

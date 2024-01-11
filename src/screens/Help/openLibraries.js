@@ -50,7 +50,7 @@ module.exports = {
 		"license": "ISC"
 	},
 	"@fto-consult/electron-gen": {
-		"version": "2.3.0",
+		"version": "2.3.1",
 		"license": "ISC"
 	},
 	"@pchmn/expo-material3-theme": {
@@ -259,7 +259,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"react-native-paper": {
-		"version": "5.11.7",
+		"version": "5.12.0",
 		"url": "https://callstack.github.io/react-native-paper",
 		"license": "MIT"
 	},

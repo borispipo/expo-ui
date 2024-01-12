@@ -231,6 +231,12 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
           get customCSS(){
              const prevCSS = defaultStr(typeof customCSS ==='function'? customCSS(theme) : customCSS);
              return `
+                 @media (prefers-color-scheme: dark) {
+                  body {
+                    color: ${theme.colors.text};
+                    background: ${theme.colors.background};
+                  }
+                }
                 #root {
                   overflow:hidden!important;
                   width : 100%!important;

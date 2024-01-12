@@ -5,5 +5,8 @@ export default function print(pdfMakeInstance,options,...rest){
     if(isElectron()){
         return electronPrint(pdfMakeInstance,options,...rest);
     }
-    return pdfMakeInstance[isTouchDevice()?"open":"print"](options,...rest);
+    if(isTouchDevice()){
+        return pdfMakeInstance.open({},window);
+    }
+    return pdfMakeInstance.print({...options,...rest});
 }

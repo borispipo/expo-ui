@@ -40,6 +40,7 @@ import { StyleSheet } from "react-native";
 import Logo from "$ecomponents/Logo";
 import AppEntryRootView from "./RootView";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import {isNeutralino} from "$cplatform";
 
 let MAX_BACK_COUNT = 1;
 let countBack = 0;
@@ -69,7 +70,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,children}) {
      hasCallInitApp : false,
   });
    React.useEffect(() => {
-      
+      console.log(isNeutralino(),window,navigator.userAgent," is neutralino");
       const loadResources = ()=>{
          return new Promise((resolve)=>{
             loadFonts(FontsIconsFilter).catch((e)=>{

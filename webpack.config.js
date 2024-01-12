@@ -17,12 +17,13 @@ module.exports = async function(env, argv,opts) {
     opts = typeof opts =="object" && opts ? opts : {};
     const babel = isObj(opts.babel)? opts.babel : {};
     const isElectron = process.env.isElectron || process.env.platform =="electron" || typeof env.platform =="string" && env.platform.toLowerCase().trim() ==='electron';
-    if(isElectron){
-       env.platform = "electron";
+    const isNeutralino = process.env.isNeutralino || process.env.platform =="neutralino";
+    if(isElectron || isNeutralino){
+       env.platform = isElectron ? "electron":"neutralino";
        env.mode = env.mode =="production" && "production" || "development";
        env.pwa = false;
     }
-    const platform = isElectron && "electron" || process.env.platform && supportedPlatforms.includes(process.platform) && process.platform || typeof opts.platform =="string" && supportedPlatforms.includes(opts.platform)? opts.platform : "web";
+    const platform = isElectron && "electron" || isNeutralino && "neutralino" || process.env.platform && supportedPlatforms.includes(process.platform) && process.platform || typeof opts.platform =="string" && supportedPlatforms.includes(opts.platform)? opts.platform : "web";
     const transpileModules = Array.isArray(opts.transpileModules)? opts.transpileModules : [];
     const projectRoot = opts.projectRoot && typeof opts.projectRoot =="string" && fs.existsSync(opts.projectRoot) && opts.projectRoot || process.cwd();
     const config = await createExpoWebpackConfigAsync(
@@ -64,9 +65,9 @@ module.exports = async function(env, argv,opts) {
     config.devtool = (config.mode === 'development') ? 'inline-source-map' : false;
     require("./compiler.config.js")({config,...opts});
     const extensions = config.resolve.extensions;
-    if(isElectron){
+    if(isElectron || isNeutralino){
       mainExtensions.map((ex)=>{
-        const nExt =  `.electron${ex}`;
+        const nExt =  `.${isElectron?"electron":"neu"}${ex}`;
         if(!extensions.includes(nExt)){
           extensions.unshift(nExt);
         }

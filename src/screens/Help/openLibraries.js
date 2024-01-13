@@ -45,13 +45,13 @@ module.exports = {
 		"license": "MIT"
 	},
 	"@fto-consult/common": {
-		"version": "4.4.0",
+		"version": "4.6.0",
 		"url": "https://github.com/borispipo/common#readme",
 		"license": "ISC"
 	},
-	"@fto-consult/electron-gen": {
-		"version": "2.3.1",
-		"license": "ISC"
+	"@fto-consult/node-utils": {
+		"version": "1.3.4",
+		"license": "MIT"
 	},
 	"@pchmn/expo-material3-theme": {
 		"version": "1.3.1",
@@ -184,7 +184,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"google-libphonenumber": {
-		"version": "3.2.33",
+		"version": "3.2.34",
 		"url": "https://ruimarinho.github.io/google-libphonenumber/",
 		"license": "(MIT AND Apache-2.0)"
 	},
@@ -259,7 +259,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"react-native-paper": {
-		"version": "5.12.0",
+		"version": "5.12.1",
 		"url": "https://callstack.github.io/react-native-paper",
 		"license": "MIT"
 	},

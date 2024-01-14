@@ -6,6 +6,7 @@ import drawerSections from "$navigation/drawerSections";
 import TableDataListScreen from "$screens/TableData/TableDataListScreen";
 import TableDataScreen from "$screens/TableData/TableDataScreen";
 import Notifications from "$components/Notifications";
+import auth from "$src/auth";
 
 export default function AppMainEntry(){
     return <ExpoUIProvider    
@@ -29,11 +30,7 @@ export default function AppMainEntry(){
             },
             screenOptions : {},//les options du composant Stack.Navigator de react-navigation, voir https://reactnavigation.org/docs/native-stack-navigator/
         }}
-        auth = {{
-            enabled : false,//la gestion de l'authentification est désactivée par défaut
-            loginPropsMutator : (props)=>props,//({object})=><{object}>, la fonction permettant de muter les props du composant Login,
-            profilePropsMutator : ({fields,...props})=>({fields,...props}),//la fonction permettant de muter les champs liés à l'écran de mise à jour d'un profil utilisateur
-        }}
+        auth = {auth}
         components = {{
             /*** utilisé pour le renu du contenu des écran de type liste sur les tables de données */
             TableDataListScreen,

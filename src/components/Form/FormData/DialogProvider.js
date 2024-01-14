@@ -3,7 +3,7 @@ import Dialog from "./Dialog";
 import { createProviderRef } from "$ecomponents/Dialog/Provider";
 import {isMobileOrTabletMedia} from "$cplatform/dimensions";
 import {MAX_WIDTH} from "$ecomponents/Dialog/utils";
-import {extendObj,defaultObj,isObj,defaultBool,defaultStr} from "$cutils";
+import {extendObj,defaultObj,isObj,defaultBool,defaultStr,defaultVal} from "$cutils";
 import grid from "$theme/grid";
 import theme from "$theme";
 import {isDesktopMedia} from "$cdimensions";
@@ -11,6 +11,9 @@ import {isDesktopMedia} from "$cdimensions";
 let dialogProviderRef = null;
 
 
+/*** l'on peut override par défaut l'action ok par les props ok|yes
+    l'on peut override par défaut l'acction cancel par les props closeAction|no
+*/
 const FormDataDialogProvider = React.forwardRef((props,innerRef)=>{
     innerRef = innerRef || createProviderRef((eRef)=>{
         dialogProviderRef = eRef;
@@ -59,22 +62,27 @@ const FormDataDialogProvider = React.forwardRef((props,innerRef)=>{
         isProvider
         ref={formRef}  
         windowWidth = {MAX_WIDTH}
-        propsMutator = {(rest)=>{
+        propsMutator = {({cancelButton,...rest})=>{
             const isMob = isMobileOrTabletMedia();
             if(closeAction === true || state.closeAction === true) return rest;
             rest.windowWidth = !isMob ? MAX_WIDTH : undefined;
+            const no = extendObj({},props.no,state.no);
             rest.actions = Array.isArray(rest.actions)? Object.clone(rest.actions) : isObj(rest.actions)? Object.clone(rest.actions) : null;
+            const closeAction = defaultObj(closeAction);
             rest.cancelButton = false;
-            if(rest.actions && (!isMob || rest.fullScreen === false)){
+            if(cancelButton !== false && rest.actions && (!isMob || rest.fullScreen === false) && state.no !== false){
                 if(isDesktopMedia() && typeof rest.maxActions !=='number'){
                     rest.maxActions = 2;
                 }
+                const noText = defaultVal(no.text,no.label,closeAction.text,closeAction.label,'Annuler')
                 const closeBtn ={
-                    text : 'Annuler',
-                    icon : 'close',
+                    ...closeAction,
+                    ...no,
+                    text : noText,
+                    label : noText,
+                    icon : defaultVal(no.icon,closeAction.icon,'close'),
                     isCancelButton : true,
                     error : true,
-                    ...defaultObj(closeAction),
                     onPress : context.close,
                     isAction : false,
                 } 

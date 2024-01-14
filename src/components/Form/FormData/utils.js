@@ -1,4 +1,4 @@
-import {isNonNullString,isObj,defaultObj,isPromise,isFunction,defaultStr,isObjOrArray,defaultFunc} from "$cutils";
+import {isNonNullString,isObj,defaultObj,extendObj,defaultVal,isPromise,isFunction,defaultStr,isObjOrArray,defaultFunc} from "$cutils";
 import notify from "$notify";
 import { getFormData } from "../utils/FormsManager";
 import {isMobileBrowser,isMobileNative} from "$cplatform";
@@ -15,21 +15,25 @@ export const canHandleShurtCut = x=> !isMobileNative(true) && !isMobileBrowser()
 
 const canHandleS = canHandleShurtCut();
 export const getAppBarActionsProps = function(_props){
-    let {actions,formName,save,cancel,actionMutator,saveButton,saveButtonIcon,data,style,...props} = defaultObj(_props);
+    let {actions,formName,save,cancel,actionMutator,saveButton,saveButtonIcon,data,style,yes,ok,...props} = defaultObj(_props);
     props = Object.assign({},props);
     cancel = defaultFunc(cancel);
     save = defaultFunc(save);
     saveButton = isNonNullString(saveButton)? saveButton : Object.size(data,true) > 0 && (isNonNullString(data.code) || isNonNullString(data._id))? "Modifier":'Enregister';
-    saveButtonIcon = defaultStr(saveButtonIcon,'check')
+    saveButtonIcon = defaultStr(saveButtonIcon,'check');
+    const yesOk = extendObj({},yes,ok);
     if(typeof actions =='function'){
         actions = actions(props);
     }
-    if(actions === undefined){
+    if(actions === undefined && yes !== false && ok !== false){
+        const yesOKText = defaultVal(yesOk.text,yesOk.label);
         actions = [{
             formName,
-            text : saveButton,
-            icon : saveButtonIcon,
             isAction: true,
+            ...yesOk,
+            text : yesOKText,
+            label: yesOKText,
+            icon : defaultVal(yesOk.icon,saveButtonIcon),
         }]
     } else {
         actions = (isObjOrArray(actions))?actions : [];

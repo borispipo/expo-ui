@@ -19,6 +19,10 @@ export const useApp = useContext;
 export const ScreenContext = createContext(null);
 
 export const useScreen = x=>useReactContext(ScreenContext);
+export const useIsScreenFocused = x=>{
+    const s = useScreen();
+    return !!(isObj(s) && typeof s.isFocused ==="function" && s.isFocused()) || false
+}
 export const hasScreenContext = x=>!!useScreen();
 
 export const useSWR =  (path,options)=>{

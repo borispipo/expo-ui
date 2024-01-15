@@ -54,6 +54,7 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
     testID,
     keyboardAvoidingViewProps,
     backgroundColor,
+    notificationsProps,
     ...rest
   } = props;
   
@@ -62,9 +63,10 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
   containerProps = defaultObj(containerProps);
   backgroundColor = theme.Colors.isValid(backgroundColor)? backgroundColor : theme.colors.background;
   options = defaultObj(options);
-  appBarProps = defaultObj(appBarProps)
+  appBarProps = defaultObj(appBarProps);
   title = defaultVal(title,appBarProps.title);
   subtitle = defaultVal(subtitle,appBarProps.subtitle);
+  notificationsProps = {...Object.assign({},notificationsProps),...Object.assign({},appBarProps.notificationsProps)};
   const appBarRef = createAppBarRef();
   const navigation = useNavigation();
   fabProps = defaultObj(fabProps);
@@ -93,7 +95,7 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
       }
       navigation.setOptions({
         ...options,
-        appBarProps:{...options.appBarProps,...appBarProps,title,subtitle},
+        appBarProps:{...options.appBarProps,...appBarProps,notificationsProps,title,subtitle},
         subtitle :subtitle,
         title : screenTitle,
       });
@@ -112,11 +114,12 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
       <View  testID={testID+"_ScreenContentContainer"} id={portalId} {...containerProps} style={[styles.container,{backgroundColor},modal && styles.modal,containerProps.style]} >
         <KeyboardAvoidingView testID={testID} {...keyboardAvoidingViewProps} style={[styles.keyboardAvoidingView,keyboardAvoidingViewProps.style]}>
             {withStatusBar !== false ? <StatusBar/> : null}
-            {appBar === false ? null : React.isValidElement(appBar)? state.AppBar :  <AppBar 
+            {appBar === false ? null : React.isValidElement(appBar)? AppBar :  <AppBar 
                 testID={testID+'_AppBar'} 
                 {...appBarProps} 
                 backAction = {defaultVal(appBarProps.backAction,backAction)} 
                 elevation={defaultNumber(appBarProps.elevation,elevation)} 
+                notificationsProps = {notificationsProps}
                 withDrawer={withDrawer} options={options} 
                 ref={appBarRef} title={title} 
                 subtitle={subtitle}

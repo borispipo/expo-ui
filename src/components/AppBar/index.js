@@ -50,6 +50,7 @@ const AppBarComponent = React.forwardRef((props,ref)=> {
     const params = defaultObj(route.params);
     appBarProps = Object.assign({},appBarProps);
     notificationsProps = {...Object.assign({},notificationsProps),...Object.assign({},appBarProps.notificationsProps)};
+    const notif = React.isComponent(Notifications)? <Notifications {...notificationsProps}/> : React.isValidElement(Notifications)? Notifications : null;
     const getCallAgs = ()=>{
       options = defaultObj(options,useScreenOptions());
       return {navigation,
@@ -115,8 +116,7 @@ const AppBarComponent = React.forwardRef((props,ref)=> {
     elevation = typeof elevation === 'number'? elevation : undefined;
     const elevStyle = elevation && Elevations[elevation];
     titleProps = defaultObj(titleProps);
-    React.setRef(ref,context);;
-    const notif = React.isComponent(Notifications)? <Notifications {...notificationsProps}/> : React.isValidElement(Notifications)? Notifications : null;
+    React.setRef(ref,context);
     return (
       <Appbar.Header elevation={elevation} {...appBarProps}  testID={testID} style={[styles.header,{backgroundColor},elevStyle,appBarProps.style]} onLayout={onPageResize}>
         {backAction}

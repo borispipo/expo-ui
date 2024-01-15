@@ -1,8 +1,12 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
-		"version": "7.17.9",
-		"url": "https://github.com/borispipo/expo-ui#readme",
-		"license": "ISC"
+		"name": "@fto-consult/expo-ui",
+		"version": "7.22.1",
+		"repository": {
+			"type": "git",
+			"url": "git+https://github.com/borispipo/expo-ui.git"
+		},
+		"homepage": "https://github.com/borispipo/expo-ui#readme"
 	},
 	"@babel/plugin-proposal-export-namespace-from": {
 		"version": "7.18.9",
@@ -45,7 +49,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"@fto-consult/common": {
-		"version": "4.6.0",
+		"version": "4.6.1",
 		"url": "https://github.com/borispipo/common#readme",
 		"license": "ISC"
 	},

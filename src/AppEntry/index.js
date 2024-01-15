@@ -70,7 +70,6 @@ function App({init:initApp,initialRouteName:appInitialRouteName,children}) {
      hasCallInitApp : false,
   });
    React.useEffect(() => {
-      console.log(isNeutralino(),window,navigator.userAgent," is neutralino");
       const loadResources = ()=>{
          return new Promise((resolve)=>{
             loadFonts(FontsIconsFilter).catch((e)=>{

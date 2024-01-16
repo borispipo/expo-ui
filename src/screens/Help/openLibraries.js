@@ -1,7 +1,7 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
 		"name": "@fto-consult/expo-ui",
-		"version": "7.22.1",
+		"version": "7.23.1",
 		"repository": {
 			"type": "git",
 			"url": "git+https://github.com/borispipo/expo-ui.git"
@@ -49,16 +49,16 @@ module.exports = {
 		"license": "MIT"
 	},
 	"@fto-consult/common": {
-		"version": "4.6.1",
+		"version": "4.7.2",
 		"url": "https://github.com/borispipo/common#readme",
 		"license": "ISC"
 	},
 	"@fto-consult/node-utils": {
-		"version": "1.3.4",
+		"version": "1.4.5",
 		"license": "MIT"
 	},
 	"@pchmn/expo-material3-theme": {
-		"version": "1.3.1",
+		"version": "1.3.2",
 		"url": "https://github.com/pchmn/expo-material3-theme#readme",
 		"license": "MIT"
 	},

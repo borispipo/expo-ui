@@ -22,12 +22,14 @@ const ErrorMessage = React.forwardRef(function(props,ref){
     }
     if(!error || !info || !error.toString) return null;
     const pointerEvents = 'auto';
+    const backgroundColor = theme.colors.backgroundColor;
+    const color = theme.colors.onSurface;
     return <Portal>
           <Screen {...props} modal={false}>
-            <View ref={ref} testID={`${testID}_ErrorMessageContainer`} style={[{pointerEvents},styles.container]}>
+            <View ref={ref} testID={`${testID}_ErrorMessageContainer`} style={[{pointerEvents},styles.container,{backgroundColor}]}>
               <View style={[styles.content,{pointerEvents}]} testID={`${testID}_ErrorMessageContentContainer`}>
-                <Label style={styles.title}>Oops!</Label>
-                <Label style={styles.subtitle}>{'Une erreur est survenue'}</Label>
+                <Label style={[styles.title,{color}]}>Oops!</Label>
+                <Label style={[styles.subtitle,{color}]}>{'Une erreur est survenue'}</Label>
                 <Label style={styles.error}>{error.toString()}</Label>
                 <Button mode="contained" iconProps={{marginVertical:0,pointerEvents,paddingVertical:0}} icon='home-variant' style={{backgroundColor:theme.colors.primary,marginHorizontal:10}} labelStyle={{color:theme.colors.primaryLabel}} onPress={goToHome}>
                     Retour à l'accueil
@@ -35,7 +37,7 @@ const ErrorMessage = React.forwardRef(function(props,ref){
                 <Expandable title="Plus de détail sur l'erreur">
                     <View>
                       <ScrollView style={{flex:1}} contentContainerStyle={{flex:1,flexGrow:1,paddingBottom:30}} testID='RN_ErrorBoundary_ScrollView'>
-                        <Paragraph testID='RN_ErrorBoundary_StackDetails' style={[styles.componentStack,{color:theme.colors.text}]}>
+                        <Paragraph testID='RN_ErrorBoundary_StackDetails' style={[styles.componentStack,{color}]}>
                           {info.componentStack}
                         </Paragraph>
                       </ScrollView>
@@ -65,7 +67,6 @@ ErrorMessage.propTypes = {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fafafa',
     flex: 1,
     justifyContent: 'center',
     ...StyleSheet.absoluteFillObject,

@@ -53,10 +53,10 @@ export default function NavigationComponent (props){
                 initialRouteName={initialRouteName} 
                 screenOptions={getScreenOptions}
             >
-                    {<Stack.Group>
+                    {drawerScreens.length ? <Stack.Group>
                         {drawerScreens}
-                    </Stack.Group>}
-                    <Stack.Group
+                    </Stack.Group>:null}
+                    {stackScreens.length ? <Stack.Group
                         key = {"MODAL-DRAWERS-SCREENS"}
                         screenOptions={function(options){
                             return getScreenOptions(options,{
@@ -67,7 +67,7 @@ export default function NavigationComponent (props){
                         }}
                     >
                         {stackScreens}
-                    </Stack.Group>
+                    </Stack.Group>:null}
                 </Stack.Navigator> }
         </DrawerNavigator>
     </MainNavigationProvider>

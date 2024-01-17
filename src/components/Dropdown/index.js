@@ -774,7 +774,7 @@ class DropdownComponent extends AppComponent {
             showAdd = false;
         }
         if(typeof showAdd ==='function'){
-            showAdd = showAdd(props);
+            showAdd = showAdd(this.props);
         }
         showAdd = defaultBool(showAdd,false);
         if(addIcon ===false) {
@@ -789,7 +789,7 @@ class DropdownComponent extends AppComponent {
             onPress : (e)=>{
                 React.stopEventPropagation(e);
                 if(iconDisabled) return;
-                const onAddP = typeof onAddProps ==='function'? onAddProps(props) : onAddProps;
+                const onAddP = typeof onAddProps ==='function'? onAddProps(this.props) : onAddProps;
                 const aArgs = {...React.getOnPressArgs(e),...Object.assign({},onAddP),isMobile:isMob,context:this,visible:state.visible,field:name,props:this.props};
                 if(onAdd){onAdd(aArgs);}
                 else if(onAddPress){

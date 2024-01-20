@@ -73,7 +73,7 @@ module.exports = function(appName,{projectRoot:root}){
     createAPPJSONFile(projectRoot,{...mainPackage,name});
     createEntryFile(projectRoot);
     copy(path.resolve(getAppDir(),"src"),path.resolve(projectRoot,"src"),{recursive:true,overwrite:false});
-    console.log("intalling dependencies ...");
+    console.log("installing dependencies ...");
     return exec(`npm install`,{projectRoot}).finally(()=>{
       setTimeout(()=>{
         console.log("application ready");

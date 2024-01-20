@@ -40,7 +40,7 @@ module.exports = function(appName,{projectRoot:root}){
             "build-ios" : "eas build --platform ios",
           },
           "dependencies" : {
-            [euModule] : "latest"
+            [euModule] : packageObj.version,
           },
           devDependencies : devDeps
         }

@@ -1,4 +1,4 @@
-const {exec,thowError,copy,writeFile,createDirSync,getDependencyVersion,FILE:{sanitizeFileName},JSONFileManager} = require("./utils");
+const {exec,thowError,copy,writeFile,createDirSync,FILE:{sanitizeFileName},JSONFileManager} = require("./utils");
 const fs = require("fs"), path = require("path");
 const getAppDir = x=>path.resolve(__dirname,"create-app");
 module.exports = function(appName,{projectRoot:root}){
@@ -21,8 +21,6 @@ module.exports = function(appName,{projectRoot:root}){
       ...defaultDevDependencies,
       ...(devDependencies && typeof devDependencies ==='object'? devDependencies : {}),
     };
-    const reactNativeVersion = getDependencyVersion(packageObj,"react-native");
-    const expoVersion = getDependencyVersion(packageObj,"expo");
     const euModule = "@fto-consult/expo-ui";
     let hasUpdateDeps = false;
     console.log("creating application name "+name);
@@ -42,17 +40,13 @@ module.exports = function(appName,{projectRoot:root}){
             "build-ios" : "eas build --platform ios",
           },
           "dependencies" : {
-            [euModule] : "latest",
-            //"expo" : expoVersion,
-            //"react-native" : reactNativeVersion,
+            [euModule] : "latest"
           },
           devDependencies : devDeps
         }
      } else {
       mainPackage.devDependencies = typeof mainPackage.devDependencies =='object' && mainPackage.devDependencies || {};
       mainPackage.dependencies = typeof mainPackage.dependencies ==="object" && mainPackage.dependencies || {};
-      mainPackage.dependencies["react-native"] = reactNativeVersion;
-      mainPackage.dependencies["expo"] = expoVersion;
       mainPackage.main = mainPackage.main || "node_modules/expo/AppEntry.js";
       for(let i in devDeps){
         if(!(i in mainPackage.devDependencies)){

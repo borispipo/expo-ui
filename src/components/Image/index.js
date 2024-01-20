@@ -132,7 +132,9 @@ export default function ImageComponent(props){
     }
     const handlePickedImage = (image,opts)=>{
         opts = defaultObj(opts);
-        image.dataUrl = image.dataURL = 'data:image/jpeg;base64,'+image.base64;
+        if(!isDataURL(image.dataURL)){
+            return notify.error(`Le fichier sélectionné est une image non valide`);
+        }
         let diffWidth = image.width - cropWidth - maxWidthDiff,
         diffHeight = image.height - cropHeight - maxHeightDiff;
         let canCrop = isMobileNative()? false : ((width && diffWidth > 0) || (height && diffHeight > 0)? true : false);

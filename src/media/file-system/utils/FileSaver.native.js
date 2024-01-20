@@ -7,8 +7,18 @@ export const save = ({content,isBase64:isB64,share,directory,fileName,path})=>{
     path = defaultStr(path,directory,Directories.DOCUMENTS).trim().rtrim("/");
     share = defaultBool(share,true);
     let foundDirectory = null,dirToMake = null;
+    fileName = defaultStr(fileName).replaceAll("\\","/").trim();
     for(let i in Directories){
-        if(path.includes(Directories[i].rtrim("/"))){
+        const dir = Directories[i].rtrim("/");
+        if(fileName.includes(dir)){
+            path = Directories[i];
+            const fName = fileName.split(Directories[i])[1];
+            const spl = fName.trim().ltrim("/").rtrim("/").split("/");
+            fileName = spl.pop();
+            path = p.join(path,spl);
+            break;
+        }
+        if(path.includes(dir)){
            foundDirectory = Directories[i];
            break;
         }
@@ -65,15 +75,21 @@ export const save = ({content,isBase64:isB64,share,directory,fileName,path})=>{
                 }
                 const dir = dirToMake.shift();
                 path = p.join(path,dir);
-                return FileSystem.makeDirectoryAsync(path,{ intermediates: true }).then(next).catch(reject);
+                const makeDir = ()=>FileSystem.makeDirectoryAsync(path,{ intermediates: true });
+                // Checks if gif directory exists. If not, creates it
+                return new Promise((r,err)=>{
+                    return FileSystem.getInfoAsync(path).then((info)=>{
+                        if(info.exists){
+                            return r(info);
+                        } else {
+                            return makeDir().then(r);
+                        }
+                    }).catch((e)=>{
+                        return makeDir().then(r).catch(err);
+                    });
+                }).then(next).catch(reject);
             }
-            return (typeof FileSystem.requestDirectoryPermissionsAsync == "function"? FileSystem.requestDirectoryPermissionsAsync: ()=>Promise.resolve(({directoryUri:path,granted:true})))(path).then(({directoryUri,granted})=>{
-                if(granted){
-                    path = directoryUri;
-                    return next();
-                }
-                return {message:`Accès au repertoire ${path} non autorisé par l'utilisateur`}
-            }).catch(reject);
+            return next();
         });
     }
     return success();

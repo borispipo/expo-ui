@@ -1,3 +1,5 @@
+import "$session";
+import "react-native-gesture-handler";
 import React from "$react";
 import appConfig from "$capp/config";
 import {MD3LightTheme,MD3DarkTheme,configureFonts} from "react-native-paper";

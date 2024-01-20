@@ -103,6 +103,16 @@ const createAPPJSONFile = (projectRoot,{name,version})=>{
         writeFile(gP,gitignore);
       } catch{};
     }
+    const imagePluginOptions = {
+      "photosPermission": `Autoriser $(PRODUCT_NAME) d'accéder à vos photos.`,
+      "cameraPermission" : `Autoriser $(PRODUCT_NAME) d'accéder à votre camera`
+    }, cameraPluginsOptions = {
+      "cameraPermission" : `Autoriser $(PRODUCT_NAME) d'accéder à votre camera`
+    };
+    const plugins = [
+      ["expo-image-picker",imagePluginOptions],
+      ["expo-camera",cameraPluginsOptions]
+    ];
     appSheme = name? sanitizeFileName(name).replace(/ /g, '') : null;
     const appJSONPath = path.join(projectRoot,"app.json");
         if(!fs.existsSync(appJSONPath)){
@@ -114,6 +124,7 @@ const createAPPJSONFile = (projectRoot,{name,version})=>{
       "slug": "${name.toLowerCase().replace(/\s\s+/g, '-')}",
       "version":"${version}",
       "orientation": "portrait",
+      "plugins":${JSON.stringify(plugins,null,'\t')},
       "icon": "./assets/icon.png",
       "jsEngine": "hermes",
       "splash": {
@@ -153,6 +164,30 @@ const createAPPJSONFile = (projectRoot,{name,version})=>{
               });
             }
             appJSONManager.set({version})
+            let appPlugins = appJSONManager.get("expo.plugins");
+            if(!Array.isArray(appPlugins)){
+              appPlugins = plugins;
+            } else {
+              let hasFoundCamera = false, hasFoundImagePicker = false;
+              appPlugins.map(pl=>{
+                if(Array.isArray(pl)){
+                  if(typeof pl[0] ==="expo-image-picker"){
+                    hasFoundImagePicker = true;
+                  } else if(pl[0] === "expo-camera"){
+                    hasFoundCamera = true;
+                  }   
+                }
+              });
+              if(!hasFoundImagePicker){
+                appPlugins.push(plugins[0]);
+              }
+              if(!hasFoundCamera){
+                appPlugins.push(plugins[1]);
+              }
+            }
+            appJSONManager.set({
+              expo : {plugins:appPlugins}
+            });
             appJSONManager.save();
         }
     const eas = path.resolve(projectRoot,"eas.json");

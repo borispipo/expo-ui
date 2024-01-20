@@ -27,7 +27,6 @@ import {
   Button,
   Platform
 } from "react-native";
-import Animation from "$ecomponents/Animation";
 export const defaultHeight = 300;
 
 const useNativeDriver = false;

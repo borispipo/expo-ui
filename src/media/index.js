@@ -48,7 +48,13 @@ export * from "./utils";
 
 const prepareImageResult = (result)=>{
     if(!isObj(result)) return result;
-    result.dataURL = result.dataUrl = isBase64(result.base64) ? ('data:image/jpeg;base64,'+result.base64) : undefined;
+    if(Array.isArray(result.assets) && isObj(result.assets[0])){
+        result = {
+            ...result,
+            ...result.assets[0],
+        }
+    }
+    result.dataURL = result.dataUrl = isBase64(result.base64) ? ('data:image/jpeg;base64,'+result.base64) : null;
     return result;
 }
 

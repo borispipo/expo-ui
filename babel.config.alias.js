@@ -54,7 +54,7 @@ module.exports = (opts)=>{
     if(!r["$screen"]){
         r["$screen"] = r["$escreen"];
     }
-    if(!r["$preloader"]){
+    if(!r["$preloader"] || r["$preloader"] === r["$cpreloader"]){
         r["$preloader"] = r["$epreloader"];
     }
     if(!r["$enotify"]){

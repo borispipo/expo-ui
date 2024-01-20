@@ -15,6 +15,7 @@ export default function TestDatagridComponent({count,...props}){
     },[count])
     return <Table 
         title = "Utilisateurs"
+        sessionName="datagrid-test-data"
         accordion = {({rowData})=>{
             return {
                 content : `${rowData.email}`,

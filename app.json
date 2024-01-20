@@ -5,6 +5,7 @@
     "scheme": "fto-consult-expo-ui",
     "version": "1.0.0",
     "orientation": "portrait",
+    "expoSdkVersion" : "50",
     "web": {
       "bundler": "webpack"
     },

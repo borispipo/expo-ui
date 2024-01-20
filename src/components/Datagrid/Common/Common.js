@@ -1787,9 +1787,12 @@ export default class CommonDatagridComponent extends AppComponent {
                     args.isOnlytotal = isOnlytotal;
                     args.sessionData = sData;
                     args.pdfConfig = pdfConfig;
-                    args = this.handleTableExport({...args,excel,pdf});
                     DialogProvider.close();
-                    resolve(args);
+                    Preloader.open("export des données...");
+                    setTimeout(()=>{
+                        args = this.handleTableExport({...args,excel,pdf});
+                        resolve(args);
+                    },500)
                     return args;
                 },
                 onCancel : reject,
@@ -1803,6 +1806,7 @@ export default class CommonDatagridComponent extends AppComponent {
         const wb = XLSX.utils.book_new();
         const ws = XLSX.utils.aoa_to_sheet(data);
         XLSX.utils.book_append_sheet(wb, ws, config.sheetName);
+        Preloader.open(`Export des données, fichier : [${config.fileName|| ''}], fueille : ${config.sheetName}`)
         FileSystem.writeExcel({...config,workbook:wb}).then(({path})=>{
             if(isNonNullString(path)){
                 notify.success("Fichier enregistré dans le répertoire {0}".sprintf(path))

@@ -1,7 +1,7 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
 		"name": "@fto-consult/expo-ui",
-		"version": "7.23.1",
+		"version": "7.24.3",
 		"repository": {
 			"type": "git",
 			"url": "git+https://github.com/borispipo/expo-ui.git"
@@ -49,12 +49,12 @@ module.exports = {
 		"license": "MIT"
 	},
 	"@fto-consult/common": {
-		"version": "4.7.2",
+		"version": "4.8.33",
 		"url": "https://github.com/borispipo/common#readme",
 		"license": "ISC"
 	},
 	"@fto-consult/node-utils": {
-		"version": "1.4.5",
+		"version": "1.4.7",
 		"license": "MIT"
 	},
 	"@pchmn/expo-material3-theme": {
@@ -123,7 +123,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"expo": {
-		"version": "49.0.21",
+		"version": "49.0.22",
 		"url": "https://github.com/expo/expo/tree/main/packages/expo",
 		"license": "MIT"
 	},
@@ -205,11 +205,6 @@ module.exports = {
 		"version": "3.7.5",
 		"license": "BSD-3-Clause"
 	},
-	"pdfmake": {
-		"version": "0.2.9",
-		"url": "http://pdfmake.org",
-		"license": "MIT"
-	},
 	"process": {
 		"version": "0.11.10",
 		"url": "git://github.com/shtylman/node-process.git",
@@ -247,6 +242,11 @@ module.exports = {
 	"react-native-blob-util": {
 		"version": "0.18.6",
 		"url": "https://github.com/RonRadtke/react-native-blob-util",
+		"license": "MIT"
+	},
+	"react-native-gesture-handler": {
+		"version": "2.12.1",
+		"url": "https://github.com/software-mansion/react-native-gesture-handler#readme",
 		"license": "MIT"
 	},
 	"react-native-get-random-values": {

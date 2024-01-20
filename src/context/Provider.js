@@ -88,7 +88,6 @@ Object.map(Utils,(v,i)=>{
     realm : {}, //les options de configurations de la base de données realmdb
 */
 const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,auth:cAuth,components:cComponents,parseMangoQueries,getStructData,tablesData,structsData,...props})=>{
-    require('$session');///initializing session
     const {extendAppTheme} = appConfig;
     const { theme : pTheme } = useMaterial3Theme();
     navigation = defaultObj(navigation);

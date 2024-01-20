@@ -69,7 +69,7 @@ export const getBackActionComponent = ({backAction,backActionProps,withDrawer})=
             ...backActionProps,
             ...props,
         }
-        if(backAction === true) return <Appbar.BackAction {...bProps}/>;
+        if(backAction === true) return <AppBar.BackAction {...bProps}/>;
         const isPermanent = typeof drawerRef?.current?.isPermanent =='function' && drawerRef?.current?.isPermanent(); 
         const isMinimized = typeof drawerRef?.current?.isMinimized =="function" && drawerRef?.current?.isMinimized();
         if(backAction === false || withDrawer === false) return null;

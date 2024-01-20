@@ -8,7 +8,7 @@ import { faker } from '@faker-js/faker';
 import DateLib from "$clib/date";
 export default function TestDatagridComponent({count,...props}){
     const data = React.useMemo(()=>{
-        count = typeof count =='number' && count > 5 ? count : 100;
+        count = typeof count =='number' && count > 5 ? count : 10000;
         return faker.helpers.multiple(createRandomUser, {
             count,
         });

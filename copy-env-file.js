@@ -10,7 +10,7 @@ module.exports = (projectRoot,forceCreate)=>{
     const pWithEnv = path.resolve(projectRoot,`.env.${env}`);
     const environmentPath = fs.existsSync(pWithEnv) ? pWithEnv : path.resolve(projectRoot,".env"); 
     const localEnv = path.resolve(__dirname,".env");
-    if(environmentPath && fs.existsSync(environmentPath)){
+    if(environmentPath && fs.existsSync(environmentPath) && environmentPath !== localEnv){
         // File ".env" will be created or overwritten by default.
         try {
           copy(environmentPath, localEnv,{overwrite:true});

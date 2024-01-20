@@ -3,7 +3,8 @@ import { Appbar} from 'react-native-paper';
 import {defaultObj,defaultVal,defaultStr} from "$cutils";
 import APP from "$capp/instance"
 import {isSplitedActions,renderSplitedActions,splitActions,TITLE_FONT_SIZE,getThemeColors} from "./utils";
-import theme,{Colors,flattenStyle} from "$theme";
+import {Colors} from "$theme";
+import BackAction from "./BackAction";
 import {StyleSheet} from "react-native";
 import {goBack as navGoBack,useNavigation,useRoute,useScreenOptions } from "$cnavigation";
 import PropTypes from "prop-types";
@@ -71,7 +72,7 @@ const AppBarComponent = React.forwardRef((props,ref)=> {
     backActionProps = Object.assign({},backActionProps);
     backActionProps.testID = defaultStr(backActionProps.testID)+"_AppBarBackAction";
     
-    let BackActionComponent  = backAction === false ? null : React.isComponent(backAction)? backAction : back ? Appbar.BackAction : Icon ;
+    let BackActionComponent  = backAction === false ? null : React.isComponent(backAction)? backAction : back ? BackAction : Icon ;
     backActionProps.color = backActionProps.color && Colors.isValid(backActionProps.color)? backActionProps.color : anchorStyle.color;
     
     let {onPress} = backActionProps;
@@ -189,3 +190,7 @@ AppBarComponent.propTypes = {
     PropTypes.object,
   ]),
 }
+
+export {BackAction};
+
+AppBarComponent.BackAction = BackAction;

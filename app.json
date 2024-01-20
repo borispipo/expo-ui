@@ -2,6 +2,7 @@
   "expo": {
     "name": "expo-ui",
     "slug": "fto-consult-expo-ui",
+    "scheme": "fto-consult-expo-ui",
     "version": "1.0.0",
     "orientation": "portrait",
     "web": {

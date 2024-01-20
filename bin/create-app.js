@@ -1,4 +1,4 @@
-const {exec,thowError,copy,writeFile,createDirSync,getDependencyVersion} = require("./utils");
+const {exec,thowError,copy,writeFile,createDirSync,getDependencyVersion,FILE:{sanitizeFileName},JSONFileManager} = require("./utils");
 const fs = require("fs"), path = require("path");
 const getAppDir = x=>path.resolve(__dirname,"create-app");
 module.exports = function(appName,{projectRoot:root}){
@@ -109,12 +109,14 @@ const createAPPJSONFile = (projectRoot,{name,version})=>{
         writeFile(gP,gitignore);
       } catch{};
     }
+    appSheme = name? sanitizeFileName(name).replace(/ /g, '') : null;
     const appJSONPath = path.join(projectRoot,"app.json");
         if(!fs.existsSync(appJSONPath)){
             writeFile(appJSONPath,`
 {
     "expo": {
       "name": "${name}",
+      ${appSheme ? `"scheme": "${appSheme}"`:""}
       "slug": "${name.toLowerCase().replace(/\s\s+/g, '-')}",
       "version":"${version}",
       "orientation": "portrait",
@@ -148,9 +150,16 @@ const createAPPJSONFile = (projectRoot,{name,version})=>{
   }
             `)
         } else {
-            const appJSON = require(`${appJSONPath}`);
-            appJSON.version = version;
-            writeFile(appJSONPath,JSON.stringify(appJSON,null, 2));
+            const appJSONManager = JSONFileManager(appJSONPath);
+            if(appSheme && !appJSONManager.hasKey("expo.scheme")){
+               appJSONManager.set({
+                "expo": {
+                  "scheme":appSheme 
+                },
+              });
+            }
+            appJSONManager.set({version})
+            appJSONManager.save();
         }
     return fs.existsSync(appJSONPath);
 }

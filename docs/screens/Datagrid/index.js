@@ -8,5 +8,5 @@ export default function DatagridScreen(props){
     </Screen>
 };
 
-DatagridScreen.screenName = "Datagrid";
+DatagridScreen.screenName = "datagrid/test";
 DatagridScreen.authRequired = false;

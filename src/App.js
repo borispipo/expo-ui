@@ -14,7 +14,7 @@ import App from "./AppEntry";
  */
 
 export default function ExpoUIAppEntryProvider({children,init,...rest}){
-    return  <Provider {...rest}>
+    return <Provider {...rest}>
         <App init={init} children={children}/>
     </Provider>
 }

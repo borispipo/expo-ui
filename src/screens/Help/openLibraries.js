@@ -1,7 +1,7 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
 		"name": "@fto-consult/expo-ui",
-		"version": "7.24.3",
+		"version": "8.0.3",
 		"repository": {
 			"type": "git",
 			"url": "git+https://github.com/borispipo/expo-ui.git"
@@ -29,18 +29,18 @@ module.exports = {
 		"license": "MIT"
 	},
 	"@expo/metro-config": {
-		"version": "0.10.7",
+		"version": "0.17.3",
 		"url": "https://github.com/expo/expo.git",
 		"license": "MIT"
 	},
 	"@expo/vector-icons": {
-		"version": "13.0.0",
+		"version": "14.0.0",
 		"url": "https://expo.github.io/vector-icons",
 		"license": "MIT"
 	},
 	"@expo/webpack-config": {
-		"version": "19.0.0",
-		"url": "https://github.com/expo/expo-cli.git",
+		"version": "19.0.1",
+		"url": "https://github.com/expo/expo-webpack-integrations/tree/main/packages/webpack-config#readme",
 		"license": "MIT"
 	},
 	"@faker-js/faker": {
@@ -63,17 +63,17 @@ module.exports = {
 		"license": "MIT"
 	},
 	"@react-native-async-storage/async-storage": {
-		"version": "1.18.2",
+		"version": "1.21.0",
 		"url": "https://github.com/react-native-async-storage/async-storage#readme",
 		"license": "MIT"
 	},
 	"@react-native-community/datetimepicker": {
-		"version": "7.2.0",
+		"version": "7.6.1",
 		"url": "https://github.com/react-native-community/datetimepicker#readme",
 		"license": "MIT"
 	},
 	"@react-native-community/netinfo": {
-		"version": "9.3.10",
+		"version": "11.1.0",
 		"url": "https://github.com/react-native-netinfo/react-native-netinfo#readme",
 		"license": "MIT"
 	},
@@ -98,7 +98,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"@shopify/flash-list": {
-		"version": "1.4.3",
+		"version": "1.6.3",
 		"url": "https://shopify.github.io/flash-list/",
 		"license": "MIT"
 	},
@@ -122,58 +122,63 @@ module.exports = {
 		"url": "https://github.com/tj/commander.js.git",
 		"license": "MIT"
 	},
+	"crypto-browserify": {
+		"version": "3.12.0",
+		"url": "https://github.com/crypto-browserify/crypto-browserify",
+		"license": "MIT"
+	},
 	"expo": {
-		"version": "49.0.22",
+		"version": "50.0.2",
 		"url": "https://github.com/expo/expo/tree/main/packages/expo",
 		"license": "MIT"
 	},
 	"expo-camera": {
-		"version": "13.4.4",
+		"version": "14.0.1",
 		"url": "https://docs.expo.dev/versions/latest/sdk/camera/",
 		"license": "MIT"
 	},
 	"expo-clipboard": {
-		"version": "4.3.1",
+		"version": "5.0.1",
 		"url": "https://docs.expo.dev/versions/latest/sdk/clipboard",
 		"license": "MIT"
 	},
 	"expo-font": {
-		"version": "11.4.0",
+		"version": "11.10.2",
 		"url": "https://docs.expo.dev/versions/latest/sdk/font/",
 		"license": "MIT"
 	},
 	"expo-image-picker": {
-		"version": "14.3.2",
+		"version": "14.7.1",
 		"url": "https://docs.expo.dev/versions/latest/sdk/imagepicker/",
 		"license": "MIT"
 	},
 	"expo-linking": {
-		"version": "5.0.2",
+		"version": "6.2.2",
 		"url": "https://docs.expo.dev/versions/latest/sdk/linking",
 		"license": "MIT"
 	},
 	"expo-sharing": {
-		"version": "11.5.0",
+		"version": "11.10.0",
 		"url": "https://docs.expo.dev/versions/latest/sdk/sharing/",
 		"license": "MIT"
 	},
 	"expo-sqlite": {
-		"version": "11.3.3",
+		"version": "13.2.1",
 		"url": "https://docs.expo.dev/versions/latest/sdk/sqlite/",
 		"license": "MIT"
 	},
 	"expo-status-bar": {
-		"version": "1.6.0",
+		"version": "1.11.1",
 		"url": "https://docs.expo.dev/versions/latest/sdk/status-bar/",
 		"license": "MIT"
 	},
 	"expo-system-ui": {
-		"version": "2.4.0",
+		"version": "2.9.3",
 		"url": "https://docs.expo.dev/versions/latest/sdk/system-ui",
 		"license": "MIT"
 	},
 	"expo-web-browser": {
-		"version": "12.3.2",
+		"version": "12.8.1",
 		"url": "https://docs.expo.dev/versions/latest/sdk/webbrowser/",
 		"license": "MIT"
 	},
@@ -231,7 +236,8 @@ module.exports = {
 		"license": "MIT"
 	},
 	"react-native": {
-		"version": "0.72.6",
+		"version": "0.73.2",
+		"url": "https://reactnative.dev/",
 		"license": "MIT"
 	},
 	"react-native-big-list": {
@@ -245,12 +251,12 @@ module.exports = {
 		"license": "MIT"
 	},
 	"react-native-gesture-handler": {
-		"version": "2.12.1",
+		"version": "2.14.1",
 		"url": "https://github.com/software-mansion/react-native-gesture-handler#readme",
 		"license": "MIT"
 	},
 	"react-native-get-random-values": {
-		"version": "1.9.0",
+		"version": "1.8.0",
 		"license": "MIT"
 	},
 	"react-native-iphone-x-helper": {
@@ -273,22 +279,22 @@ module.exports = {
 		"license": "MIT"
 	},
 	"react-native-reanimated": {
-		"version": "3.3.0",
+		"version": "3.6.1",
 		"url": "https://github.com/software-mansion/react-native-reanimated#readme",
 		"license": "MIT"
 	},
 	"react-native-safe-area-context": {
-		"version": "4.6.3",
+		"version": "4.8.2",
 		"url": "https://github.com/th3rdwave/react-native-safe-area-context#readme",
 		"license": "MIT"
 	},
 	"react-native-screens": {
-		"version": "3.22.1",
+		"version": "3.29.0",
 		"url": "https://github.com/software-mansion/react-native-screens#readme",
 		"license": "MIT"
 	},
 	"react-native-svg": {
-		"version": "13.9.0",
+		"version": "14.1.0",
 		"url": "https://github.com/react-native-community/react-native-svg",
 		"license": "MIT"
 	},
@@ -298,13 +304,18 @@ module.exports = {
 		"license": "MIT"
 	},
 	"react-native-webview": {
-		"version": "13.2.2",
+		"version": "13.6.4",
 		"url": "https://github.com/react-native-webview/react-native-webview#readme",
 		"license": "MIT"
 	},
 	"react-virtuoso": {
 		"version": "4.6.2",
 		"url": "https://virtuoso.dev/",
+		"license": "MIT"
+	},
+	"readable-stream": {
+		"version": "4.5.2",
+		"url": "https://github.com/nodejs/readable-stream",
 		"license": "MIT"
 	},
 	"sanitize-filename": {
@@ -315,6 +326,11 @@ module.exports = {
 	"sharp-cli": {
 		"version": "2.1.1",
 		"url": "https://github.com/vseventer/sharp-cli",
+		"license": "MIT"
+	},
+	"stream-browserify": {
+		"version": "3.0.0",
+		"url": "https://github.com/browserify/stream-browserify",
 		"license": "MIT"
 	},
 	"tippy.js": {

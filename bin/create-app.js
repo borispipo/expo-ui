@@ -56,7 +56,7 @@ module.exports = function(appName,{projectRoot:root}){
       }
       if(!(euModule in mainPackage.dependencies)){
           hasUpdateDeps = true;
-          mainPackage.dependencies[euModule] = "latest";
+          mainPackage.dependencies[euModule] = packageObj?.version;
       }
     }
     if(hasUpdateDeps || !hasPackage || !fs.existsSync(mainPackagePath)){

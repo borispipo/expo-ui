@@ -36,7 +36,7 @@ module.exports = function(appName,{projectRoot:root}){
             "dev" : "npx expo start --no-dev --minify -c",
             "serve-web" : "npx serve web-build --single",
             "build-web" : "npx expo export:web",
-            "build-android" : "npx eas build --platform android",
+            "build-android" : "npx eas build --platform android --profile preview",
             "build-ios" : "eas build --platform ios",
           },
           "dependencies" : {
@@ -155,6 +155,12 @@ const createAPPJSONFile = (projectRoot,{name,version})=>{
             appJSONManager.set({version})
             appJSONManager.save();
         }
+    const eas = path.resolve(projectRoot,"eas.json");
+    if(!fs.existsSync(eas)){
+      try {
+        copy(path.resolve(__dirname,"eas.json"),eas,{overwrite:false})
+      } catch{}
+    }
     return fs.existsSync(appJSONPath);
 }
 

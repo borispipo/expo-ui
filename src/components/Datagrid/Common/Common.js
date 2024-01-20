@@ -207,7 +207,7 @@ export default class CommonDatagridComponent extends AppComponent {
         let hasFoundDisplayTypes = false;
         const pArgs = {context:this,data,props:this.props}
         const perm = checkPerm(renderChartIsAllowed,pArgs)
-        const ePDFIsAllowed = checkPerm(exportToPDFIsAllowed,pArgs);
+        const ePDFIsAllowed = !isMobileNative() && checkPerm(exportToPDFIsAllowed,pArgs);
         const eExcelISAllowed = checkPerm(exportToExcelIsAllowed,pArgs);
         const renderSectionListIsAllowedP = checkPerm(renderSectionListIsAllowed,pArgs);
         if(typeof customCheckPerms =='function'){

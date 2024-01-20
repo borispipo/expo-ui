@@ -1,4 +1,4 @@
-import {defaultStr,defaultVal,isNonNullString,defaultNumber,defaultObj} from "$cutils";
+import {defaultStr,defaultVal,isNonNullString,defaultNumber,extendObj,defaultObj} from "$cutils";
 import React from "$react";
 import CountUp from "$ecomponents/CountUp";
 import Avatar from "$ecomponents/Avatar";
@@ -14,28 +14,24 @@ import cActions from "$cactions";
 import {View} from "react-native";
 import {Menu} from "$ecomponents/BottomSheet";
 import Dashboard from "$ecomponents/Datagrid/Dashboard";
-import fetch from "$capi/fetch";
-import Auth from "$cauth";
 import Icon from "$ecomponents/Icon";
 
-export default function DatabaseStatisticContainer ({dashboardProps,onRefreshAll,fetchDataProps,table,fetchCount,index,testID,title,icon,onPress:customOnPress,columns,fetchData,withDashboard,...props}){
+export default function DatabaseStatisticContainer ({dashboardProps,fields,onRefreshAll,fetchDataProps,table,fetchCount,index,testID,title,icon,onPress:customOnPress,columns,fetchData,withDashboard,...props}){
     dashboardProps = defaultObj(dashboardProps);
     const [count,setCount] = React.useState(0);
     const datagridRef = React.useRef(null);
     let {} = props;
     table = defaultObj(table);
-    const dbStatistics = defaultObj(table.databaseStatistics,table.databaseStatisticsProps);
-    const databaseStatisticsFields = defaultObj(table.databaseStatisticsFields);
+    const databaseStatisticsFields = defaultObj(fields,columns,table.databaseStatisticsFields);
     const hasDFields = table.databaseStatistics !== false && Object.size(databaseStatisticsFields,true);
     if(!withDashboard && hasDFields){
         withDashboard = true;
     }
-    const dFields = hasDFields ? databaseStatisticsFields : defaultObj(dbStatistics.fields,dbStatistics.columns);
     if(typeof fetchData !=='function'){
-        fetchData = typeof dbStatistics.fetchData =='function'? dbStatistics.fetchData : undefined;
+        fetchData = undefined;
     }
     withDashboard = withDashboard && typeof fetchData == 'function'? true : false;
-    columns = Object.size(columns,true)? columns : Object.size(dFields,true)? dFields : table.fields;
+    columns = Object.size(columns,true)? columns : Object.size(databaseStatisticsFields,true)? databaseStatisticsFields : table.fields;
     const tableName = defaultStr(table.tableName,table.table).toUpperCase();
     fetchCount = typeof table.fetchCount =='function'? table.fetchCount : typeof fetchCount =='function'? fetchCount : undefined;
     if((!fetchCount && !withDashboard) || !tableName) {
@@ -121,8 +117,7 @@ export default function DatabaseStatisticContainer ({dashboardProps,onRefreshAll
         }}
         sessionName = {tableName+"-database-statistics"}
         {...props}
-        {...dbStatistics}
-        style = {[theme.styles.pr1,props.style,dbStatistics.style]}
+        style = {[theme.styles.pr1,props.style]}
         columns = {columns}
         ref = {datagridRef}
         progressBar = {isLoading?<View/>:<View style={[theme.styles.w100,theme.styles.alignItemsCenter,theme.styles.justifyContentCenter]}>{progressBar}</View>}

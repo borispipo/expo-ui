@@ -6,7 +6,8 @@ import DrawerNavigator from "./Drawer";
 import useContext from "$econtext/hooks";
 import { MainNavigationProvider } from "./hooks";
 import {isWeb,isAndroid} from "$cplatform";
-import Stack,{CardStyleInterpolators} from "./Stack";
+import Stack  from "./Stack";
+import { getAnimation } from "./animationTypes";
 import {extendObj,defaultObj} from "$cutils";
 import theme from "$theme";;
 
@@ -19,7 +20,7 @@ export * from "./utils";
 */
 export default function NavigationComponent (props){
     let {state,hasGetStarted,isLoading,onGetStart,initialRouteName,...rest} = props;
-    const cardStyleInterpolator = isAndroid() ? CardStyleInterpolators.forFadeFromBottomAndroid : CardStyleInterpolators.forHorizontalIOS;
+    const cardStyleInterpolator = null;//getAnimation();
     const {navigation:{screens,screenOptions}} = useContext();
     const allScreens = initScreens({Factory:Stack,screens,ModalFactory:Stack});
     initialRouteName = sanitizeName(initialRouteName);
@@ -40,6 +41,7 @@ export default function NavigationComponent (props){
             animationEnabled : !isWeb(),
             detachPreviousScreen: !navigation.isFocused(),
             cardStyleInterpolator,
+            ...Object.assign({},getAnimation()),
             ...defaultObj(opt2),
         },sOptions);
     }
@@ -53,10 +55,10 @@ export default function NavigationComponent (props){
                 initialRouteName={initialRouteName} 
                 screenOptions={getScreenOptions}
             >
-                    {drawerScreens.length ? <Stack.Group>
+                    {<Stack.Group>
                         {drawerScreens}
-                    </Stack.Group>:null}
-                    {stackScreens.length ? <Stack.Group
+                    </Stack.Group>}
+                    <Stack.Group
                         key = {"MODAL-DRAWERS-SCREENS"}
                         screenOptions={function(options){
                             return getScreenOptions(options,{
@@ -67,10 +69,12 @@ export default function NavigationComponent (props){
                         }}
                     >
                         {stackScreens}
-                    </Stack.Group>:null}
+                    </Stack.Group>
                 </Stack.Navigator> }
         </DrawerNavigator>
     </MainNavigationProvider>
 }
 
 export * from "$cnavigation";
+
+export * from "./animationTypes";

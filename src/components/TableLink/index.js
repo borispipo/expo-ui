@@ -15,6 +15,7 @@ import {navigateToTableData,navigateToStructData} from "$enavigation/utils";
 import Auth from "$cauth";
 import fetch from "$capi/fetch";
 import useContext from "$econtext/hooks";
+import TouchableRipple from "$ecomponents/TouchableRipple";
 /***** la fonction fetchForeignData permet de spécifier s'il s'agit d'une données de structure où non 
     dans le champ isStructData
 */
@@ -22,7 +23,7 @@ const TableLinKComponent = React.forwardRef(({containerProps,children,labelProps
     const {testID,onPressLink,disabled,readOnly,fetchData,navigate,isAllowed:checkIfAllowed,Component,...rest} = usePrepareProps(props);
     containerProps = defaultObj(containerProps);
     labelProps = defaultObj(labelProps);
-    const CP = disabled || readOnly ? View : Pressable;
+    const CP = disabled || readOnly ? View : TouchableRipple;
     return <CP testID={testID} onLongPres={(e)=>React.stopEventPropagation(e)} {...containerProps} onPress={disabled || readOnly? undefined : onPressLink} style={[styles.container,containerProps.style]}>
         <Tooltip testID={testID+"_Tooltip"} {...rest} style={[rest.style,{pointerEvents: disabled || readOnly ? 'none' : 'auto'}]} Component={Component}  onPress={disabled || readOnly?undefined:onPressLink} ref={ref}  readOnly={readOnly} disabled = {disabled}>
             <Label testID={testID+"_Label"} underlined primary {...labelProps} style={[_styles.lh15,labelProps.style]} disabled={disabled} readOnly={readOnly}>{children}</Label>

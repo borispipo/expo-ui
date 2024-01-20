@@ -14,6 +14,8 @@ import {isElectron} from "$cplatform";
 import {isValidUrl} from "$cutils";
 import {screenName} from "./utils";
 import notify from "$notify";
+import {getAnimationType,setAnimationType,animationTypes} from "$enavigation/animationTypes"
+import {isWeb} from "$cplatform";
 
 export default function UserProfileScreen({fields,...p}){
     const {auth:{profilePropsMutator}} = useContext();
@@ -31,6 +33,15 @@ export default function UserProfileScreen({fields,...p}){
                 }
             },
             ...defaultObj(fields?.avatar),
+        },
+        animationType : {
+            type : "select",
+            label : "Transition entre les écrans",
+            items : animationTypes,
+            itemValue : ({item})=>item.code,
+            renderItem : ({item})=>item.label,
+            defaultValue : getAnimationType(),
+            required : true,
         },
     })
     const p2 = {...p,fields};
@@ -104,6 +115,7 @@ export default function UserProfileScreen({fields,...p}){
                 APP.trigger(APP.EVENTS.UPDATE_THEME,user.theme);
                 APP.trigger(APP.EVENTS.AUTH_UPDATE_PROFILE,toSave);
             },100);
+            setAnimationType(data.animationType);
             if(typeof props.onSave ==='function' && props.onSave({...rest,data:toSave,response,goBack,navigate}) === false) return;
             if(props.navigateToHomeOnSave !== true && typeof goBack =='function' && !hasChangeRef.current){
                 return goBack(true);

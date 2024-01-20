@@ -5,7 +5,7 @@
 import PropTypes from "prop-types";
 import View from "$ecomponents/View";
 import {Dimensions,Pressable,StyleSheet,Animated,} from "react-native";
-import {TouchableRipple} from "react-native-paper";
+import {TouchableRipple as RNTouchableRiple} from "react-native-paper";
 import Divider from "$ecomponents/Divider";
 import React, {Fragment,Component as AppComponent} from "$react";
 import theme,{Colors} from "$theme";
@@ -26,6 +26,7 @@ import Chip from "$ecomponents/Chip";
 import {Content as BottomSheet,Menu as BottomSheetMenu,getContentHeight} from "$ecomponents/BottomSheet";
 import {isWeb} from "$cplatform";
 import Tooltip from "$ecomponents/Tooltip";
+import TouchableRipple from "$ecomponents/TouchableRipple";
 
 const _isIos = isIos();
 
@@ -64,7 +65,22 @@ class DropdownComponent extends AppComponent {
                     if(React.isValidElement(item,true) || isDecimal(item) || typeof item =='boolean') return item;
                     if(isObj(item) ) {
                         const itemLabel = this.props.itemLabel;
-                        if(isNonNullString(itemLabel) && item.hasOwnProperty(itemLabel)) return defaultStr(item[itemLabel]);
+                        if(isNonNullString(itemLabel)){
+                            let iLabel = "";
+                            itemLabel.trim().split(",").map((itL)=>{
+                                let itV = item.hasOwnProperty(itL) ? item[itL] : undefined;
+                                if(typeof formatItemLabel ==="function"){
+                                    const itt = formatItemLabel({value:itV,code:itV,columnField:itL,label:itL,item});
+                                    if(isNonNullString(itt) || typeof itt =="number"){
+                                        itV = String(itt);
+                                    }
+                                }
+                                if(itV !== undefined){
+                                    iLabel += " "+String(itV);
+                                }
+                            });
+                            if(iLabel) return iLabel;
+                        }
                         if(isNonNullString(item.label)) return item.label;
                         return defaultStr(item.text,item[index]);
                     }
@@ -896,10 +912,9 @@ class DropdownComponent extends AppComponent {
         const testID = defaultStr(dropdownProps.testID,"RN_DropdownComponent");
         const defRight = defaultVal(textInputProps.right,inputProps.right);
         const enableCopy = defaultBool(inputProps.enableCopy,textInputProps.enableCopy,(iconDisabled || (!multiple && !showAdd)) && !loadingElement ?true : false);
-        const anchor = <Pressable
-                activeOpacity = {0.3}   
+        const anchor = <TouchableRipple
                 onPress={this.open.bind(this)}
-                disabled = {disabled}
+                disabled = {disabled || isWeb()}
                 onLayout={bindResizeEvents === false ? undefined : this.onLayout.bind(this)}
                 style = {{pointerEvents}}
                 aria-label={defaultStr(dropdownProps["aria-label"],label,text)}
@@ -958,7 +973,7 @@ class DropdownComponent extends AppComponent {
                     {!canHandle && isFlatMode && <ProgressBar  color={theme.colors.secondary} {...defaultObj(progressBarProps)} indeterminate />}
                     {helperText}
             </View>
-        </Pressable>
+        </TouchableRipple>
 
         let restProps = {};
         if(!isMob){
@@ -1097,7 +1112,7 @@ class DropdownComponent extends AppComponent {
                             if(renderTag && (self.state.nodes[key].valueKey in self.state.selectedValuesKeys)){
                                 return null;
                             }
-                            const node = self.state.nodes[key];
+                            let node = self.state.nodes[key];
                             const {index,value,valueKey} = node;
                             const _isSelected = self.isSelected(value,valueKey);
                             if(dynamicContent){
@@ -1125,7 +1140,7 @@ class DropdownComponent extends AppComponent {
                                         //style = {[[theme.styles.h100]]}
                                         tooltipProps = {{style:[theme.styles.h100,theme.styles.w100],testID:testID+"_DropdownTooltipPopoverContainer"}}
                                         onPress={onItemPress}
-                                        Component={TouchableRipple}
+                                        Component={RNTouchableRiple}
                                         //testID={testID+"Container"}
                                         style={[
                                             styles.itemContainer,{minHeight:!isBigList?MIN_HEIGHT:undefined},
@@ -1297,6 +1312,13 @@ DropdownComponent.propTypes = {
     "aria-label" : PropTypes.string,
     compare : PropTypes.func,
     temProps : PropTypes.object,
+    /*
+        le champ itemLabel peut être une chaine de caractère de plusieurs champs constituant l'item et séparé par des virgule
+        si si cette valeur est définine, alors ladite fonction sera appelée pour chacun des champ constitué par itemLabel et preneant en paramètre 
+        @return {string|number}
+        @param {<Object { item:{Object},label:{string : le label en cours}, value{any, item[label]}}>}
+    */
+    formatItemLabel : PropTypes.func,
     itemLabel : PropTypes.string,//le nom du champ à utiliser pour le rendu du libelé la méthode appelée pour retourne le libelé de l'item
     itemValue : PropTypes.oneOfType([PropTypes.func]),//le nom du champ de la valeur à récupérer
     renderItem : PropTypes.oneOfType([PropTypes.func]),

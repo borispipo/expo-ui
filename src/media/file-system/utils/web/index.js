@@ -1,5 +1,6 @@
 import { isAssets } from "../../../Assets/utils";
 import {isNonNullString} from "$cutils";
+import {isElectron} from "$cplatform";
 
 export const readBlob = (asset)=>{
     const uri = isAssets(asset)? asset.uri :isNonNullString(asset)? asset : undefined;
@@ -32,3 +33,22 @@ export const readAsStringAsync = async (asset)=>{
 }
 
 export const Directories = {};
+
+export const deleteFile = (filePath,...options)=>{
+    if(!isNonNullString(filePath)){
+        return Promise.reject({message:`Impossible de supprimer le fichier de chemin invalide!! veuillez spécifier une chaine de caractère comme chemin de fichier à supprimer`,filePath})
+    }
+    if(!isElectron() || !window?.ELECTRON || !window.ELECTRON?.FILE || typeof ELECTRON.FILE?.deleteFile !=="function"){
+        return Promise.reject({message:`Impossible de supprimer le fichier dans cet environnement, cet environnement ne supporte  pas la supression des fichier`});
+    }
+    return new Promise((resolve,reject)=>{
+        try {
+            ELECTRON.FILE.deleteFile(filePath,...options);
+            resolve(true);
+        } catch(e){
+            reject(e);
+        }
+    });
+}
+
+export {deleteFile as delete};

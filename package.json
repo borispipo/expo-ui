@@ -46,7 +46,7 @@
     "delete-node-modules": "rimraf ./**/node_modules",
     "dev": "npx expo start --no-dev --minify -c",
     "modifier-url-remote-git": "git remote set-url origin 'https://borispipo@github.com/borispipo/smart-eneo.git'",
-    "update": "npm i @fto-consult/node-utils@latest pdfmake@latest expo @emotion/native@latest react-native-big-list@latest apexcharts@latest file-saver@latest fs-extra@latest google-libphonenumber@latest @pchmn/expo-material3-theme@latest @emotion/native@latest @fto-consult/common@latest @react-navigation/stack react-native-blob-util  react-native-iphone-x-helper@latest react-native-mime-types@latest react-native-paper@5 react-native-paper-dates@latest @react-navigation/native@latest @react-navigation/native-stack@latest react-virtuoso@latest tippy.js@latest websql@latest xlsx@latest react-native-web@latest react-dom@latest && npx expo install --fix && npm run update-apexchart && npm run update-pdfmake && npm run find-licenses"
+    "update": "npm i @fto-consult/node-utils@latest expo @emotion/native@latest react-native-big-list@latest apexcharts@latest file-saver@latest fs-extra@latest google-libphonenumber@latest @pchmn/expo-material3-theme@latest @emotion/native@latest @fto-consult/common@latest @react-navigation/stack react-native-blob-util  react-native-iphone-x-helper@latest react-native-mime-types@latest react-native-paper@5 react-native-paper-dates@latest @react-navigation/native@latest @react-navigation/native-stack@latest react-virtuoso@latest tippy.js@latest websql@latest xlsx@latest react-native-web@latest react-dom@latest && npx expo install --fix && npm run update-apexchart && npm run find-licenses"
   },
   "bin": {
     "expo-ui": "./bin/index.js"
@@ -101,7 +101,6 @@
     "htmlparser2-without-node-native": "^3.9.2",
     "is-plain-obj": "^4.1.0",
     "js-base64": "^3.7.5",
-    "pdfmake": "^0.2.9",
     "process": "^0.11.10",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
@@ -110,6 +109,7 @@
     "react-native": "0.72.6",
     "react-native-big-list": "^1.6.1",
     "react-native-blob-util": "^0.18.6",
+    "react-native-gesture-handler": "~2.12.0",
     "react-native-get-random-values": "~1.9.0",
     "react-native-iphone-x-helper": "^1.3.1",
     "react-native-mime-types": "^2.4.0",

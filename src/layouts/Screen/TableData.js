@@ -385,7 +385,10 @@ export default class TableDataScreenComponent extends FormDataScreen{
                 } : null;
             }
         } else {
-            formProps.style = [theme.styles.noPadding,formProps.style]
+            formProps.style = [!isMobOrTab && theme.styles.noPadding,formProps.style]
+        }
+        if(isMobOrTab){
+            formProps.style = [theme.styles.pb4,formProps.style];
         }
         rActionsArg.contentProps = Object.assign({},customContentProps);
         rActionsArg.containerProps = Object.assign({},customContainerProps);
@@ -699,17 +702,24 @@ export default class TableDataScreenComponent extends FormDataScreen{
     onSaveTableData(){}
     /*** permet de recherger le contenu du form avec la données passée en paramètre
         @param {object} currentData, la nouvelle donnée en cours de modification
-        @param {function} callback, la fonction de rappel à appeler une fois que la données a été mise à jour
+        @param {function|object} callback, la fonction de rappel à appeler une fois que la données a été mise à jour
+        @param {object|func} les données extra à utiliser pour la mise à jour du state, s'il s'agit d'un objet
         @return {this} le contexte
     */
-    reloadCurrentData(currentData,callback){
+    reloadCurrentData(currentData,callback,extraState){
+        if(isObj(callback)){
+            const c = callback;
+            callback  = typeof extraState ==='function'? extraState :undefined;
+            extraState = isObj(extraState)? extraState : c;
+        }
+        extraState = defaultObj(extraState);
         currentData = isObj(currentData)? currentData : {};
         if(this.hasManyData() && Array.isArray(this.state.datas)){
             const sData = [...this.state.datas];
             sData[this.state.currentIndex] = currentData;
-            return this.setState({data:currentData,datas:sData},callback);
+            return this.setState({data:currentData,datas:sData,...extraState},callback);
         } else {
-            return this.setState({data:currentData,datas:[],hasManyData:false},callback);
+            return this.setState({data:currentData,datas:[],hasManyData:false,...extraState},callback);
         }
     }
     setCurrentData(...args){

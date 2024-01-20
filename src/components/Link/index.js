@@ -1,4 +1,4 @@
-import { Pressable } from "react-native";
+import TouchableRipple from "$ecomponents/TouchableRipple";
 import { navigate } from "$cnavigation";
 import PropTypes from "prop-types";
 import {defaultStr,isValidUrl,isValidEmail,defaultNumber} from "$cutils";
@@ -28,7 +28,7 @@ const LinkComponent= React.forwardRef(({Component,navigation,children,params,sto
     if(typeof children =='function'){
         return children ({...rest,onPress:onRoutePress},ref);
     }
-    Component = React.isComponent(Component)? Component : Pressable;
+    Component = React.isComponent(Component)? Component : TouchableRipple;
     return <Component ref={ref} {...rest} onPress={onRoutePress}>
         {children}
     </Component>

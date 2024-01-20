@@ -32,14 +32,19 @@ export default function DatabaseStatisticScreen ({withScreen,fetchDataProps,item
             if(isObj(t) && defaultStr(t.table,t.tableName)){
                table = t;
             }
-            if(table.databaseStatistic === false || table.databaseStatistics === false) return null;
+            const dbStatistics = typeof table.databaseStatistics ==="function"? table.databaseStatistics() : true;
+            if(dbStatistics === false || table.databaseStatistic === false || table.databaseStatistics === false) return null;
+            const dbStatisticsProps = extendObj({},table.databaseStatistics,table.databaseStatisticsProps);
+            let {containerProps,cellProps,...rDBProps} = dbStatisticsProps;
+            cellProps = Object.assign({},cellProps);
+            containerProps = Object.assign({},containerProps);
             const chartAllowedPerm =  defaultStr(table.chartAllowedPerm);
             const testID = "RN_DatabaseStatisticsCell_"+index;
             if(chartAllowedPerm){
                 if(!Auth.isAllowedFromStr(chartAllowedPerm)) return null;
             } else if((!Auth.isTableDataAllowed({table:tableName}))) return null;
-            content.push(<Cell elevation = {5} withSurface mobileSize={12} desktopSize={3} tabletSize={6} {...contentProps} testID={testID} key = {index} >
-                <Surface testID = {testID+"_Surface"} elevation = {5} {...itemContainerProps} style={[theme.styles.w100,styles.itemContainer,itemContainerProps.style]}>
+            content.push(<Cell elevation = {5} withSurface mobileSize={12} desktopSize={3} tabletSize={6} {...contentProps} testID={testID}  {...cellProps} style={[contentProps.style,cellProps.style]} key = {index} >
+                <Surface testID = {testID+"_Surface"} elevation = {5} {...itemContainerProps} {...containerProps} style={[theme.styles.w100,styles.itemContainer,itemContainerProps.style,containerProps.style]}>
                     <DatabaseStatistic
                         icon = {table.icon}
                         key = {index}
@@ -52,6 +57,7 @@ export default function DatabaseStatisticScreen ({withScreen,fetchDataProps,item
                             return fetchCount({table,tableName})
                         }:undefined}
                         {...itemProps}
+                        {...rDBProps}
                     />
                 </Surface>
             </Cell>
@@ -79,7 +85,7 @@ DatabaseStatisticScreen.propTypes = {
     getTable : PropTypes.func,//la fonction permettant de récupérer la table à partir du nom
     tables : PropTypes.oneOfType([
         PropTypes.arrayOf(PropTypes.object),
-        PropTypes.objectOf(PropTypes.object)
+        PropTypes.objectOf(PropTypes.object),
     ]).isRequired,
     /*** la fonction de filtre utilisée pour filtrer les table devant figurer sur le databaseStatistics */
     tableFilter : PropTypes.func,

@@ -34,7 +34,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,swrOptions,fore
     }
     if(isNonNullString(foreignKeyLabel)){
         foreignKeyLabel = foreignKeyLabel.trim().ltrim("[").rtrim("]").split(",");
-        if(!isNonNullString(foreignKeyColumn)){
+        if(isNonNullString(foreignKeyColumn)){
             foreignKeyLabel = foreignKeyLabel.filter((f)=>f?.toLowerCase()?.trim() !== foreignKeyColumn.toLowerCase().trim());
         }
     }
@@ -159,7 +159,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,swrOptions,fore
                 fetchedResultRef.current = args;
                 return fetchedResultRef.current;
             }).catch((e)=>{
-                console.log(e," fetching list of data select table data ",foreignKeyColumn,foreignKeyTable)
+                console.log(e," fetching list of data select table data ",foreignKeyColumn,foreignKeyTable,props)
             });
         },
         showError : false,

@@ -1,7 +1,8 @@
-import {isObj} from "$cutils";
+import {isObj,isBase64} from "$cutils";
 import notify from "$enotify";
 import Camera from "./camera";
 import {isMobileNative} from "$platform";
+import {getFilePickerOptions} from "./utils";
 import React from "react";
 
 let cameraRef = null;
@@ -26,9 +27,9 @@ export const MEDIA_TYPES = {
 
 export {ImagePicker};
 
-export function checkPermission (){
+export function checkPermission (method){
     return new Promise((resolve,reject)=>{
-        ImagePicker.requestMediaLibraryPermissionsAsync().then((r)=>{
+        (typeof method =="function" && method || ImagePicker.requestMediaLibraryPermissionsAsync)().then((r)=>{
             if(isObj(r) && (r.granted || r.status =='granted')){
                 resolve(r);
                 return true;
@@ -43,23 +44,24 @@ export function checkPermission (){
     })
 }
 
+export * from "./utils";
+
+const prepareImageResult = (result)=>{
+    if(!isObj(result)) return result;
+    result.dataURL = result.dataUrl = isBase64(result.base64) ? ('data:image/jpeg;base64,'+result.base64) : undefined;
+    return result;
+}
+
 /**** @see : https://docs.expo.dev/versions/latest/sdk/imagepicker/#imagepickeroptions 
  *  form more options.
  */
 export const pickImageOrVideo = (options)=>{
     return checkPermission().then(()=>{
         return new Promise((resolve,reject)=>{
-            ImagePicker.launchImageLibraryAsync(extendObj({},{
-                allowsEditing : true,
-                allowsMultipleSelection : false,///web only
-                aspect : [4,3], //[number, number]An array with two entries [x, y] specifying the aspect ratio to maintain if the user is allowed to edit the image (by passing allowsEditing: true). This is only applicable on Android, since on iOS the crop rectangle is always a square.
-                base64 : false, //Whether to also include the image data in Base64 format.
-                exif : false, //Whether to also include the EXIF data for the image. On iOS the EXIF data does not include GPS tags in the camera case.
-                mediaTypes : ImagePicker.MediaTypeOptions.All, //@see : https://docs.expo.dev/versions/latest/sdk/imagepicker/#mediatypeoptions
-                quality : 1, //Specify the quality of compression, from 0 to 1. 0 means compress for small size, 1 means compress for maximum quality.
-            },options)).then((result)=>{
-                if(!result.cancelled) resolve(result);
-                else {
+            ImagePicker.launchImageLibraryAsync(getFilePickerOptions(options)).then((result)=>{
+                if(!result.cancelled) {
+                    resolve(prepareImageResult(result));
+                } else {
                     notify.warning("Opération annulée par l'utilisateur");
                     reject(result);
                 }
@@ -101,33 +103,23 @@ export {Camera};
 export async function canTakePhoto(){
     if(!isMobileNative()) return false;
     return true;
-    const canTake = await Camera.isAvailableAsync();
-    return canTake;
-    return isMobileNative() || canTake;
 }
 
 export const takePhoto = (options)=>{
-    console.log(cameraRef," is camera ref")
-    if(!cameraRef){
-        return Promise.reject({
-            msg : "Camera non initialisée"
-        })
-    }
     return new Promise((resolve,reject)=>{
-        (async ()=>{
-            let takeP = await canTakePhoto();
-            if(takeP){
-                //const types = await Camera.getAvailableCameraTypesAsync();
-                //console.log(types," is stypes hein")
-                const permission = await Camera.requestCameraPermissionsAsync();
-                if(permission.status === 'granted' || permission.granted){
-                    return cameraRef.takePictureAsync(options).then(resolve).catch(reject);
+        return checkPermission(ImagePicker.requestCameraPermissionsAsync).then((perm)=>{
+            options = {base64:true,...Object.assign({},options)}
+            return ImagePicker.launchCameraAsync({...getFilePickerOptions(options)}).then((result)=>{
+                if(!result.cancelled) {
+                    resolve(prepareImageResult(result));
                 } else {
-                    notify.error("Impossible d'utiliser l'appareil photo car vous avez interdit l'utilisation de votre camera.")
-                    reject(permission)
+                    notify.warning("Opération annulée par l'utilisateur");
+                    reject(result);
                 }
-            }
-        })();
+                return null;
+            })
+        }).catch(reject);
     })
 }
 
+export const takePicture = takePhoto;

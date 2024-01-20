@@ -125,7 +125,7 @@ const useGetItems = (options)=>{
         });
         let hasCapture = false;
         const captureSide = {
-            label : <RecordingButton/>,
+            label : (p)=><RecordingButton/>,
             style : [theme.styles.noPadding],
             labelProps : {style : [{flexShrink : 1},theme.styles.alignItemsFlexStart,theme.styles.w100]}
         };

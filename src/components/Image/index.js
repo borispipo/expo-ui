@@ -11,7 +11,7 @@ import {isMobileNative} from "$cplatform";
 //import Signature from "$ecomponents/Signature";
 import Label from "$ecomponents/Label";
 //import Editor from "./Editor";
-
+import {Component as CameraComponent} from "$emedia/camera";
 
 import {pickImage,nonZeroMin,canTakePhoto,takePhoto} from "$emedia";
 import addPhoto from "$eassets/add_photo.png";
@@ -57,7 +57,7 @@ export default function ImageComponent(props){
     let {disabled,onMount,defaultSource,editable,onUnmount,label,text,labelProps,readOnly,beforeRemove,
         onChange,draw,round,drawText,drawLabel,rounded,defaultSrc,
         createSignatureOnly,pickImageProps,width,height,cropProps,size,resizeProps,containerProps,
-        menuProps,pickUri,drawProps,imageProps,length,testID,...rest} = props;
+        menuProps,pickUri,drawProps,imageProps,length,testID,withLabel,...rest} = props;
     rest = defaultObj(rest);
     pickImageProps = defaultObj(pickImageProps);
     cropProps = defaultObj(cropProps);
@@ -222,17 +222,15 @@ export default function ImageComponent(props){
             }
         })
     }
-    (async ()=>{
-        if(false && await canTakePhoto()){
-            menuItems.push({
-                label : 'Eng photo',
-                icon : 'camera',
-                onPress : (a)=>{
-                    takePhoto().then(handlePickedImage);
-                }
-            })
-        }
-    })();
+    if(isMobileNative() && !readOnly){
+        menuItems.push({
+            label : 'Enregistrer une photo',
+            icon : 'camera',
+            onPress : (a)=>{
+                takePhoto().then(handlePickedImage);
+            }
+        })
+    }
 
     if(canUpdate && !readOnly){
         menuItems.push({
@@ -253,7 +251,7 @@ export default function ImageComponent(props){
             }
         })
     }
-    const _label = defaultString(label);
+    const _label = withLabel !== false ? defaultString(label) : "";
     const isDisabled = menuItems.length > 0 ? true : false; 
     return <View testID={testID+"_FagmentContainer"}>
         {!createSignatureOnly ? (<Menu
@@ -261,7 +259,7 @@ export default function ImageComponent(props){
                 disabled = {isDisabled}
                 anchor = {(props)=>{
                     return <View aria-label={_label} testID={testID+"_Container"} {...containerProps} style={[label?styles.align:null,containerProps.style,{pointerEvents:disabled|| readOnly? "none":"auto"},label?styles.container:null]}>
-                        {<Label testID={testID+"_Label"} {...labelProps} disabled={disabled} style={[styles.label,labelProps.style]}>{label}</Label>}
+                        {withLabel !== false ? <Label testID={testID+"_Label"} {...labelProps} disabled={disabled} style={[styles.label,labelProps.style]}>{label}</Label>:null}
                         {<Avatar
                             resizeMethod = {"auto"}
                             resizeMode = {"contain"}

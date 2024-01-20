@@ -151,6 +151,7 @@ const DatagridFactory = (Factory)=>{
                         color = {color}
                         image = {src?true :false}
                         suffix = {avatarSuffix}
+                        {...avatarProps}
                     >{avatarContent}</Avatar>
                 } 
             }

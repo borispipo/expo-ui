@@ -22,15 +22,15 @@ const ErrorMessage = React.forwardRef(function(props,ref){
     }
     if(!error || !info || !error.toString) return null;
     const pointerEvents = 'auto';
-    const backgroundColor = theme.colors.backgroundColor;
-    const color = theme.colors.onSurface;
+    const backgroundColor = theme.colors.background;
+    const color = theme.colors.text;
     return <Portal>
           <Screen {...props} modal={false}>
-            <View ref={ref} testID={`${testID}_ErrorMessageContainer`} style={[{pointerEvents},styles.container,{backgroundColor}]}>
+            <View ref={ref} testID={`${testID}_ErrorMessageContainer`} style={[{pointerEvents},{backgroundColor},styles.container]}>
               <View style={[styles.content,{pointerEvents}]} testID={`${testID}_ErrorMessageContentContainer`}>
                 <Label style={[styles.title,{color}]}>Oops!</Label>
                 <Label style={[styles.subtitle,{color}]}>{'Une erreur est survenue'}</Label>
-                <Label style={styles.error}>{error.toString()}</Label>
+                <Label style={[styles.subtitle,{color:theme.colors.error}]}>{error.toString()}</Label>
                 <Button mode="contained" iconProps={{marginVertical:0,pointerEvents,paddingVertical:0}} icon='home-variant' style={{backgroundColor:theme.colors.primary,marginHorizontal:10}} labelStyle={{color:theme.colors.primaryLabel}} onPress={goToHome}>
                     Retour à l'accueil
                 </Button>
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 48,
-    fontWeight: '300',
+    fontWeight: '500',
     paddingBottom: 16,
   },
   subtitle: {

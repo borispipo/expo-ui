@@ -18,7 +18,6 @@ import styles, {
   _dynamicBackgroundOpacity,
 } from "./styles"
 import {useAppComponent} from "$econtext/hooks";
-import theme from "$theme";
 
 const SplashScreenComponent = ({isLoaded,children , duration, delay,logoWidth,logoHeight,backgroundColor,imageBackgroundSource,imageBackgroundResizeMode,
   testID})=>{
@@ -28,6 +27,7 @@ const SplashScreenComponent = ({isLoaded,children , duration, delay,logoWidth,lo
   });
   const { loadingProgress, animationDone} = state;
   const prevIsLoaded = React.usePrevious(isLoaded); 
+  const timerRef = React.useRef(null);
   React.useEffect(()=>{
     if(isLoaded && !prevIsLoaded){
       Animated.timing(loadingProgress, {
@@ -41,6 +41,14 @@ const SplashScreenComponent = ({isLoaded,children , duration, delay,logoWidth,lo
             animationDone:true,
           })
       })
+    } else if(isLoaded){
+       clearTimeout(timerRef.current);
+       timerRef.current = setTimeout(()=>{
+          if(isLoaded && !animationDone){
+            setState({...state,animationDone:true});
+          }
+          clearTimeout(timerRef.current);
+       },delay|2000);
     }
   });
   testID = defaultStr(testID,"RN_SplashscreenComponent")

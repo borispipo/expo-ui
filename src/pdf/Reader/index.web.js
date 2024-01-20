@@ -1,6 +1,6 @@
 /**@see : https://github.com/pipwerks/PDFObject#readme */
-let {Dialog} = require("$components/Dialog")
-let Icon = require("$components/Icon")
+let {Dialog} = require("$ecomponents/Dialog")
+let Icon = require("$ecomponents/Icon")
 require("./styles.css")
 let PDFObject = require("pdfobject")
 let {MenuButton} = require("$ui")

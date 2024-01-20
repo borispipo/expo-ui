@@ -2,7 +2,7 @@ import { Camera,CameraType } from 'expo-camera';
 export {Camera};
 import { useState,useMemo,useEffect,useRef,usePrevious,forwardRef,mergeRefs } from '$react';
 import {HStack} from "$ecomponents/Stack";
-import Dialog from "$components/Dialog";
+import Dialog from "$ecomponents/Dialog";
 import theme from "$theme";
 import Button from "$ecomponents/Button";
 import Label from "$ecomponents/Label";

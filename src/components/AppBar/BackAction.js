@@ -5,7 +5,6 @@ import {isIos} from "$cplatform";
 
 const AppbarBackAction = forwardRef(
   ({ accessibilityLabel = 'Back', ...rest }, ref) => {
-    console.log("will render ",rest);
     return (
         <Icon
           accessibilityLabel={accessibilityLabel}

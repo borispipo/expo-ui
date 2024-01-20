@@ -110,7 +110,7 @@ const createAPPJSONFile = (projectRoot,{name,version})=>{
 {
     "expo": {
       "name": "${name}",
-      ${appSheme ? `"scheme": "${appSheme}"`:""}
+      ${appSheme ? `"scheme": "${appSheme}",`:""}
       "slug": "${name.toLowerCase().replace(/\s\s+/g, '-')}",
       "version":"${version}",
       "orientation": "portrait",

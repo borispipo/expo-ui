@@ -1,6 +1,7 @@
 const {exec,thowError,copy,writeFile,createDirSync,FILE:{sanitizeFileName},JSONFileManager} = require("./utils");
 const fs = require("fs"), path = require("path");
 const getAppDir = x=>path.resolve(__dirname,"create-app");
+const mainAppDependencies = require("./create-app/dependencies");
 module.exports = function(appName,{projectRoot:root}){
     const packageObj = require("../package.json");
     root = root && fs.existsSync(root) && root || process.cwd();
@@ -24,7 +25,6 @@ module.exports = function(appName,{projectRoot:root}){
     delete devDeps.expo
     const euModule = "@fto-consult/expo-ui";
     let hasUpdateDeps = false;
-    const rnModule = "react-native";
     console.log("creating application name "+name);
     if(!hasPackage){
         mainPackage = {
@@ -32,7 +32,7 @@ module.exports = function(appName,{projectRoot:root}){
           version : "1.0.0",
           "description": "",
           "main": "index.js",
-          "main": "node_modules/expo/AppEntry.js",
+          "main": "App.js",
           "scripts" : {
             start : "npx expo start -c",
             "dev" : "npx expo start --no-dev --minify -c",
@@ -43,10 +43,7 @@ module.exports = function(appName,{projectRoot:root}){
           },
           "dependencies" : {
             [euModule] : packageObj.version,
-            "expo" : packageObj.devDependencies.expo,
-            [rnModule] : packageObj.dependencies[rnModule],
-            "react-native-reanimated" : "latest",
-            "react-native-gesture-handler" : "latest",
+            ...mainAppDependencies,
           },
           devDependencies : devDeps
         }
@@ -78,9 +75,14 @@ module.exports = function(appName,{projectRoot:root}){
     });
     createAPPJSONFile(projectRoot,{...mainPackage,name});
     createEntryFile(projectRoot);
+    console.log(projectRoot," is project root");
     copy(path.resolve(getAppDir(),"src"),path.resolve(projectRoot,"src"),{recursive:true,overwrite:false});
     console.log("installing dependencies ...");
-    return exec(`npx expo install --fix`,{projectRoot}).finally(()=>{
+    return new Promise((resolve,reject)=>{
+      return exec(`npm install`,{projectRoot}).then(resolve).catch(resolve);
+    }).then(()=>{
+      return exec('npx expo install --fix',{projectRoot})
+    }).finally(()=>{
       setTimeout(()=>{
         console.log("application ready");
         process.exit();

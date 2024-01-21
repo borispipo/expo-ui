@@ -1,3 +1,6 @@
+import 'react-native-gesture-handler';//please do not remove this line
+import "$session";//please do not remove this line
+import { registerRootComponent } from 'expo';
 import ExpoUIProvider from "$expo-ui"; 
 import screens from "$screens";
 import drawerItems from "$navigation/drawerItems";
@@ -90,3 +93,5 @@ export default function AppMainEntry(){
         handleHelpScreen ={true} //si l'écran d'aide sera pris en compte, l'écran d'aide ainsi que les écrans des termes d'utilisations et autres
     />
 }  
+
+registerRootComponent(AppMainEntry);

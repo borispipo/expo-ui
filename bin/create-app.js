@@ -196,9 +196,10 @@ const createAPPJSONFile = (projectRoot,{name,version})=>{
             appJSONManager.save();
         }
     const eas = path.resolve(projectRoot,"eas.json");
-    if(!fs.existsSync(eas)){
+    const cEas = path.resolve(__dirname,"..","eas.json");
+    if(!fs.existsSync(eas) && fs.existsSync(cEas)){
       try {
-        copy(path.resolve(__dirname,"eas.json"),eas,{overwrite:false})
+        copy(cEas,eas,{overwrite:false})
       } catch{}
     }
     return fs.existsSync(appJSONPath);

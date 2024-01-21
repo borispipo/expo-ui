@@ -21,7 +21,7 @@ export const isAssets = (asset,staticAssets)=>{
 }
 export const isValidImageSrc = (src)=>{
     if(!isNonNullString(src)) return false;
-    return isDataURL(src)? true : isValidURL(src) ? true : src.contains("/static/media/")? true  : false;
+    return isDataURL(src) && !src.includes(",undefined") ? true : isValidURL(src) ? true : src.contains("/static/media/")? true  : false;
 }
 export const resolveAssetSource = (source)=>{
     if(!source && !isDecimal(source)) return undefined;

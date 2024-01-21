@@ -41,7 +41,6 @@ import Logo from "$ecomponents/Logo";
 import AppEntryRootView from "./RootView";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {isNeutralino} from "$cplatform";
-import "react-native-gesture-handler";
 
 let MAX_BACK_COUNT = 1;
 let countBack = 0;

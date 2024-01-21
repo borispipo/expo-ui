@@ -1,4 +1,5 @@
 import React from "$react"
+import "react-native-gesture-handler";
 import { AppState} from "react-native";
 import BackHandler from "$ecomponents/BackHandler";
 import * as Linking from 'expo-linking';
@@ -40,7 +41,6 @@ import { StyleSheet } from "react-native";
 import Logo from "$ecomponents/Logo";
 import AppEntryRootView from "./RootView";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import {isNeutralino} from "$cplatform";
 
 let MAX_BACK_COUNT = 1;
 let countBack = 0;

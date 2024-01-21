@@ -45,6 +45,8 @@ module.exports = function(appName,{projectRoot:root}){
             [euModule] : packageObj.version,
             "expo" : packageObj.devDependencies.expo,
             [rnModule] : packageObj.dependencies[rnModule],
+            "react-native-reanimated" : "latest",
+            "react-native-gesture-handler" : "latest",
           },
           devDependencies : devDeps
         }
@@ -78,7 +80,7 @@ module.exports = function(appName,{projectRoot:root}){
     createEntryFile(projectRoot);
     copy(path.resolve(getAppDir(),"src"),path.resolve(projectRoot,"src"),{recursive:true,overwrite:false});
     console.log("installing dependencies ...");
-    return exec(`npm install`,{projectRoot}).finally(()=>{
+    return exec(`npx expo install --fix`,{projectRoot}).finally(()=>{
       setTimeout(()=>{
         console.log("application ready");
         process.exit();

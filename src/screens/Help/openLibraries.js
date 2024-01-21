@@ -1,7 +1,7 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
 		"name": "@fto-consult/expo-ui",
-		"version": "8.0.7",
+		"version": "8.2.1",
 		"repository": {
 			"type": "git",
 			"url": "git+https://github.com/borispipo/expo-ui.git"
@@ -49,7 +49,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"@fto-consult/common": {
-		"version": "4.8.33",
+		"version": "4.10.11",
 		"url": "https://github.com/borispipo/common#readme",
 		"license": "ISC"
 	},
@@ -187,11 +187,6 @@ module.exports = {
 		"url": "https://github.com/eligrey/FileSaver.js#readme",
 		"license": "MIT"
 	},
-	"fs-extra": {
-		"version": "11.2.0",
-		"url": "https://github.com/jprichardson/node-fs-extra",
-		"license": "MIT"
-	},
 	"google-libphonenumber": {
 		"version": "3.2.34",
 		"url": "https://ruimarinho.github.io/google-libphonenumber/",
@@ -207,7 +202,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"js-base64": {
-		"version": "3.7.5",
+		"version": "3.7.6",
 		"license": "BSD-3-Clause"
 	},
 	"process": {

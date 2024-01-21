@@ -11,6 +11,7 @@ module.exports = function(appName,{projectRoot:root}){
     }
     root = root && fs.existsSync(path.resolve(root))? path.resolve(root) : process.cwd();
     const devDependencies = packageObj.devDependencies;
+    ["expo"].map((d)=>delete devDependencies[d]);
     const inSameFolder = typeof mainPackage?.name =="string" && mainPackage?.name.trim().toLowerCase() === name?.toLowerCase().trim();
     const projectRoot = path.join(`${root}/${!inSameFolder && name || ""}`);
     createDirSync(projectRoot);
@@ -23,6 +24,8 @@ module.exports = function(appName,{projectRoot:root}){
     };
     const euModule = "@fto-consult/expo-ui";
     let hasUpdateDeps = false;
+    const rnModule = "react-native";
+    const expoModule = "expo";
     console.log("creating application name "+name);
     if(!hasPackage){
         mainPackage = {
@@ -41,6 +44,8 @@ module.exports = function(appName,{projectRoot:root}){
           },
           "dependencies" : {
             [euModule] : packageObj.version,
+            [rnModule] : packageObj.dependencies[rnModule],
+            [expoModule] : packageObj.devDependencies[euModule],
           },
           devDependencies : devDeps
         }

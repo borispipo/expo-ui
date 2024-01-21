@@ -9,7 +9,7 @@ export const getFilePickerOptions = (options)=>{
         base64 : false, //Whether to also include the image data in Base64 format.
         exif : false, //Whether to also include the EXIF data for the image. On iOS the EXIF data does not include GPS tags in the camera case.
         mediaTypes : ImagePicker.MediaTypeOptions.All, //@see : https://docs.expo.dev/versions/latest/sdk/imagepicker/#mediatypeoptions
-        quality : 1, //Specify the quality of compression, from 0 to 1. 0 means compress for small size, 1 means compress for maximum quality.
+        quality : 0.5, //Specify the quality of compression, from 0 to 1. 0 means compress for small size, 1 means compress for maximum quality.
     },options);
 }
 /*** retourne les ooptions pour la capture d'une photo

@@ -113,6 +113,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,chevronIconProps
                 if(!withLabel){
                     return <View testID={"RNProfilAvatar_AvatarContainer"} style={[theme.styles.row,theme.styles.alignItemsCenter]}>
                         <Image
+                            pickImageProps = {{quality:0.4}}
                             {...props} 
                             {...aProps}
                             size={size}

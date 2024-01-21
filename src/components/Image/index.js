@@ -174,8 +174,8 @@ export default function ImageComponent(props){
                 setEditorProps({...editorProps,visible:true,...props})
             })
         },
-        pickImage : (opts)=>{
-            opts = getCropProps(opts);
+        pickImage : ()=>{
+            const opts = getCropProps(defaultObj(pickImageProps));
             opts.base64 = true;
             return pickImage(opts).then((image)=>handlePickedImage(image,opts));
         },
@@ -229,7 +229,9 @@ export default function ImageComponent(props){
             label : 'Enregistrer une photo',
             icon : 'camera',
             onPress : (a)=>{
-                takePhoto().then(handlePickedImage);
+                const opts = getCropProps(defaultObj(pickImageProps));
+                opts.base64 = true;
+                takePhoto(opts).then(handlePickedImage);
             }
         })
     }

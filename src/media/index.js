@@ -65,7 +65,7 @@ export const pickImageOrVideo = (options)=>{
     return checkPermission().then(()=>{
         return new Promise((resolve,reject)=>{
             ImagePicker.launchImageLibraryAsync(getFilePickerOptions(options)).then((result)=>{
-                if(!result.cancelled) {
+                if(!result.cancelled && !result.canceled) {
                     resolve(prepareImageResult(result));
                 } else {
                     notify.warning("Opération annulée par l'utilisateur");
@@ -116,7 +116,7 @@ export const takePhoto = (options)=>{
         return checkPermission(ImagePicker.requestCameraPermissionsAsync).then((perm)=>{
             options = {base64:true,...Object.assign({},options)}
             return ImagePicker.launchCameraAsync({...getFilePickerOptions(options)}).then((result)=>{
-                if(!result.cancelled) {
+                if(!result.cancelled && !result.canceled) {
                     resolve(prepareImageResult(result));
                 } else {
                     notify.warning("Opération annulée par l'utilisateur");

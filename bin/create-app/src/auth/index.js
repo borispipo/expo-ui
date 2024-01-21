@@ -22,4 +22,7 @@ export default {
     },
     //retourne le pseudo de l'utilisateur, s'il y en a
     getUserPseudo: (user) => user.pseudo,
+	getUserFirstName : (user)=>user.firstName,
+	getUserLastName : (user)=>user.lastName,
+	getUserFullName : (user)=> user.fullName || `${user.firstName && user.firstName ||''}${user.lastName && ` ${user.lastName}` ||''}`
 }

@@ -108,10 +108,10 @@ const createAPPJSONFile = (projectRoot,{name,version})=>{
       } catch{};
     }
     const imagePluginOptions = {
-      "photosPermission": `Autoriser $(PRODUCT_NAME) d'accéder à vos photos.`,
-      "cameraPermission" : `Autoriser $(PRODUCT_NAME) d'accéder à votre camera`
+      "photosPermission": `Autoriser $(PRODUCT_NAME) à accéder à vos photos.`,
+      "cameraPermission" : `Autoriser $(PRODUCT_NAME) à accéder à votre camera`
     }, cameraPluginsOptions = {
-      "cameraPermission" : `Autoriser $(PRODUCT_NAME) d'accéder à votre camera`
+      "cameraPermission" : `Autoriser $(PRODUCT_NAME) à accéder à votre camera`
     };
     const plugins = [
       ["expo-image-picker",imagePluginOptions],

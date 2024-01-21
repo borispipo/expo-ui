@@ -151,7 +151,8 @@ export const TableDataScreenItem = ({fromTableDataLink,...props})=>{
         return TableDataScreenComponentRef.current;
     },[])
     if(!React.isComponent(Item)) {
-        throw "Impossible de rendre le composant TableDataScreen, car la fonction registerApp n'a pas été initialisé avec un composant devant servir pour le rendu des TableData screens item";
+       console.error("Impossible de rendre le composant TableDataScreen, car le provider ExpoUIProvider n'a pas été initialisé avec un composant (props TableDataListScreen de la props components) devant servir pour le rendu des TableData screens item",Item,props);
+       return null; 
     }
     const {params:cParams,data,tableName:tbName,table:tb2} = fromTableDataLink===true ? props : getRouteOptions(props);
     const params = extendObj({},props.params,cParams);

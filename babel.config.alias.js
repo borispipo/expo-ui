@@ -17,9 +17,6 @@ module.exports = (opts)=>{
     const cpath = fs.existsSync(euCommon)? path.resolve(euCommon,"babel.config.alias") : "@fto-consult/common/babel.config.alias";
     const r = require(`${cpath}`)(opts);
     const expo = path.resolve(expoUI,"src");
-    r.$edocs = path.resolve(expoUI,"docs");//l'alias de la documentation
-    r["$edocs-components"] = path.resolve(r.$edocs,"components");
-    r["$edocs-screens"] = path.resolve(r.$edocs,"screens");
     r["$ecomponents"] = r["$expo-components"] = path.resolve(expo,"components");
     r["$econfirm"] = path.resolve(r["$expo-components"],"Dialog","confirm");
     r["$confirm"] = r["$confirm"] || r["$econfirm"];

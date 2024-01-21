@@ -43,8 +43,8 @@ module.exports = function(appName,{projectRoot:root}){
           },
           "dependencies" : {
             [euModule] : packageObj.version,
-            [rnModule] : packageObj.dependencies[rnModule],
             "expo" : packageObj.devDependencies.expo,
+            [rnModule] : packageObj.dependencies[rnModule],
           },
           devDependencies : devDeps
         }

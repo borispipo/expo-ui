@@ -25,7 +25,6 @@ module.exports = function(appName,{projectRoot:root}){
     const euModule = "@fto-consult/expo-ui";
     let hasUpdateDeps = false;
     const rnModule = "react-native";
-    const expoModule = "expo";
     console.log("creating application name "+name);
     if(!hasPackage){
         mainPackage = {
@@ -45,7 +44,7 @@ module.exports = function(appName,{projectRoot:root}){
           "dependencies" : {
             [euModule] : packageObj.version,
             [rnModule] : packageObj.dependencies[rnModule],
-            [expoModule] : packageObj.devDependencies[euModule],
+            "expo" : packageObj.devDependencies.expo,
           },
           devDependencies : devDeps
         }

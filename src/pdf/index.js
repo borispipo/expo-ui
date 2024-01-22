@@ -55,7 +55,7 @@ export const getFields = (config)=>{
     @paramm {multiple}, 
     @param {object} formDataProps, les prpops à passer au DialogProvider
 */
-export const getPrintSettings = ({multiple,sessionName,formDataProps,...rest})=>{
+export const getPrintSettings = ({multiple,duplicateDocOnPage,pageBreakBeforeEachDoc,sessionName,formDataProps,...rest})=>{
     formDataProps = Object.assign({},formDataProps);
     const hasSession = isNonNullString(sessionName);
     if(hasSession){
@@ -66,7 +66,7 @@ export const getPrintSettings = ({multiple,sessionName,formDataProps,...rest})=>
     const sessionData = hasSession ? defaultObj(session.get(sessionName)) : {};
     const config = {...sessionData,...defaultObj(formDataProps.data)};
     const fields = extendObj(true,{},formDataProps.fields,{
-        duplicateDocOnPage : {
+        duplicateDocOnPage : duplicateDocOnPage !== false ? {
             text :'Dupliquer le(s) document(s)',
             type : 'switch',
             defaultValue :  0,
@@ -90,8 +90,8 @@ export const getPrintSettings = ({multiple,sessionName,formDataProps,...rest})=>
                     }
                 }
             }
-        },
-        pageBreakBeforeEachDoc : {
+        } : undefined,
+        pageBreakBeforeEachDoc : pageBreakBeforeEachDoc !==false ? {
             text :'Saut de page par document',
             type : 'switch',
             defaultValue :  1,
@@ -105,8 +105,8 @@ export const getPrintSettings = ({multiple,sessionName,formDataProps,...rest})=>
                 }
                 return v;
             }
-        },
-        pageMarginAfterEachDoc : {
+        } : null,
+        pageMarginAfterEachDoc : duplicateDocOnPage !== false ? {
             text : "Marge après chaque document",
             tooltip : 'Spécifiez le nombre de ligne à ajouter comme marge après chaque document',
             defaultValue : 2,
@@ -121,7 +121,7 @@ export const getPrintSettings = ({multiple,sessionName,formDataProps,...rest})=>
                 }
                 return v;
             }
-        },
+        } : undefined,
     },getFields(formDataProps.data))
     return new Promise((resolve,reject)=>{
         return DialogProvider.open({

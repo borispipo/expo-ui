@@ -63,3 +63,41 @@ export const prepareOptions = ({textPosition,fontOptions,fontSize,textMargin,tex
         style,
     }
 }
+
+/****
+  encode le barcode passé en paramètre
+  @return {null|object}
+  @param {string|object}
+    si object alors : {
+      value {string}, la valeur à vérifier
+      format {string}, le code du format à vérifier
+    }
+    si string alors {value:{string}}, le format par défaut est le code128
+  @param {string} format, si value est un objet alors le second paramètre peut être considéré comme le format
+*/
+export const encode = (options,format)=>{
+    if(isNonNullString(options)){
+      options = {text:options};
+    } else options = defaultObj(options);
+    const {text:cText,value:cValue,format:cFormat,...rest} = options;
+    const text = defaultStr(options.value,options.text);
+    format = defaultStr(format,options.format);
+    if(!isNonNullString(text)) return null;
+    if(!isNonNullString(format) || !barcodeFormats.includes(format)){
+      format = defaultBarcodeFormat
+    }
+    try {
+      const encoder = new barcodes[format](text, {
+        format,
+        displayValue : true,
+        flat: true,
+        ...rest,
+      });
+      if (!encoder.valid()) {
+        return null;
+      }
+      return encoder.encode();
+    } catch (e){
+      return null;
+    }
+}

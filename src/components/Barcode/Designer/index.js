@@ -1,4 +1,4 @@
-import {useRef,useState,forwardRef,useMergeRefs,useEffect,useMemo} from "$react";
+import React,{useRef,useState,forwardRef,useMergeRefs,useEffect,useMemo} from "$react";
 import Generator from "../Generator";
 import PropTypes from "prop-types";
 import View from "$ecomponents/View";
@@ -18,6 +18,7 @@ import Color from "$ecomponents/Color";
 import Expandable from "$ecomponents/Expandable";
 import session from "$session";
 const sessionKey = "appDesigner-sess"
+import { encode } from "../Generator/utils";
 
 const fontOptionsKeys = ["bold","italic","bold italic"];
 const alignments = ["left","center","right"];
@@ -25,30 +26,35 @@ const alignments = ["left","center","right"];
 const BarcodeDesigner = forwardRef(({
         format,testID,onReady,text,value,flat,onChange,width,height,displayValue,fontOptions,font,textAlign,textPosition,textMargin,fontSize,background,lineColor,margin,marginTop,marginBottom,marginLeft,marginRight,
         sessionName,
+        bottomContent,
+        leftContent,
+        rightContent,
+        topContent,
+        saveAction,
         ...rest
     },ref)=>{
     testID = defaultStr(testID,'RNBarcodeDesigner');
     const sKey = sessionName ? `${sessionKey}-${sessionName}` : null;
-    const getSession = x=> !isNonNullString(sessionName)? {} : defaultObj(session.get(sKey));
-    const sData = getSession();
+    const sData = !isNonNullString(sessionName)? {} : defaultObj(session.get(sKey));
     Dimensions.useWindowDimensions();
     const innerRef = useRef(null);
     const sFormat = !isNonNullString(format) || !barcodeFormats.includes(format) ? isNonNullString(sData.format) && barcodeFormats.includes(sData.format) ? sData.format : defaultBarcodeFormat : format;
     const sHeight = defaultNumber(height,sData.height,100), sWidth = defaultNumber(width,sData.w100,2), sDisplayValue = typeof displayValue =='boolean'? displayValue :sData.displayValue !== undefined ? sData.displayValue:true;
-    const sFontOptions = isNonNullString(fontOptions) && fontOptionsKeys.includes(fontOptions) ?  fontOptions : isNonNullString(sData.fontOptions) ? fontOptionsKeys.includes(sData?.fontOptions) : "bold";
+    const sFontOptions = isNonNullString(fontOptions) && fontOptionsKeys.includes(fontOptions) ?  fontOptions : isNonNullString(sData.fontOptions) && fontOptionsKeys.includes(sData?.fontOptions) ? sData.fontOptions : "bold";
     const sTextAlign = isNonNullString(textAlign) && alignments.includes(textAlign)? textAlign : isNonNullString(sData.textAlign) && alignments.includes(sData.textAlign)? sData.textAlign : "center";
     const sTextPosition = isNonNullString(textPosition) && ["top","bottom"].includes(textPosition) ? textPosition : isNonNullString(sData.textPosition) && ["top","bottom"].includes(sData.textPosition) ? sData.textPosition : "bottom";
     const sFontSize = typeof fontSize ==='number'? fontSize : typeof sData.fontSize ==='number'? sData.fontSize : 20;
     const sLineColor  = theme.Colors.isValid(lineColor)? lineColor : theme.Colors.isValid(sData.lineColor)? sData?.linceColor:"#000000";
     const sBackground = theme.Colors.isValid(background)? background : theme.Colors.isValid(sData.background)? sData.background : "#ffffff";
     const sTextMargin = typeof textMargin =='number'? textMargin : typeof sData.textMargin =='number'? sData.textMargin : 2;
+    const sValue = isNonNullString(value)? value : isNonNullString(sData.value)? sData.value : "";
     const sMargins = {};
     Object.map({marginTop,marginBottom,marginLeft,marginRight},(val,k)=>{
         sMargins[k] = typeof v =='number'? v : typeof sData[k] == null ? sData[k] : 10;
     });
     const marginKeys = Object.keys(sMargins);
     const [state,setState] = useState({
-        format : sFormat,height:sHeight,width : sWidth,value,displayValue :sDisplayValue,fontOptions : sFontOptions,textAlign:sTextAlign,
+        format : sFormat,height:sHeight,width : sWidth,value:sValue,displayValue :sDisplayValue,fontOptions : sFontOptions,textAlign:sTextAlign,
         textPosition : sTextPosition,fontSize : sFontSize,lineColor:sLineColor,background:sBackground,textMargin:sTextMargin,...sMargins
     });
     useEffect(()=>{
@@ -59,18 +65,28 @@ const BarcodeDesigner = forwardRef(({
             onChange({data:state,state,setState});
         }
     },[state]);
+    const isValid = encode(state)!==null;
+    const args = {state,setState,sessionName,isValid,isMobile,isTablet,isDesktop,getState:()=>state,getData:()=>state};
+    leftContent = typeof leftContent =='function'? leftContent(args) : leftContent;
+    rightContent = typeof rightContent =='function'? rightContent(args) : rightContent;
+    bottomContent = typeof bottomContent =='function'? bottomContent(args) : bottomContent;
+    topContent = typeof topContent =='function'? topContent(args) : topContent;
+    saveAction = typeof saveAction =='function'? saveAction(args) : saveAction;
     const isMobile = Dimensions.isMobileMedia(),isTablet= Dimensions.isTabletMedia(),isDesktop= Dimensions.isDesktopMedia();
     const cellProps = {}
-    const inputProps = {mode:"flat",style:{width:"100%"},containerProps:{style:[]}}
+    const inputProps = {mode:"flat",affix:false,style:{width:"100%",paddingLeft:10},labelProps:{style:{paddingLeft:10}},containerProps:{style:[]}}
     return <Surface {...rest} testID={testID} style={[theme.styles.w100,theme.styles.p2,rest.style]}>
         <View testID={testID+"SurfaceContent"} style={[isMobile || isTablet && {flexDirection:"column"},{justifyContent:"flex-start",alignItems:"flex-start"},isDesktop && {flexDirection:"row"}]}>
-            <View elevation={isDesktop?5:0} testID={`${testID}_SettingsContainer`} style={[{paddingHorizontal:5},isDesktop? {width:400,marginRight:10,paddingBottom:20,borderRightColor:theme.colors.divider,borderRightWidth:1}:{width:"100%"}]}>
-                <Expandable defaultExpanded title={<Label primary textBold fontSize={15} children={"Options du Designer"}/>}>
+            <View elevation={isDesktop?5:0} testID={`${testID}_SettingsContainer`} style={[{paddingHorizontal:5},isDesktop? {width:400,marginRight:10,paddingBottom:20,borderColor:theme.colors.divider,borderWidth:1}:{width:"100%"}]}>
+                <Expandable defaultExpanded title={<View style={[theme.styles.row,theme.styles.flexWrap,theme.styles.alignItemsCenter,theme.styles.justifyContentSpaceBetween]}>
+                    <Label primary textBold fontSize={15} children={"Options du Designer"}/>
+                    {React.isValidElement(saveAction)? saveAction : null}
+                </View>}>
                     <View {...cellProps}>
                         <TextField
                             {...inputProps}
                             label = {"Valeur de test"}
-                            defaultValue = {value}
+                            defaultValue = {state.value}
                             onChange = {({value})=>{
                                 setState({...state,value});
                             }}
@@ -230,7 +246,9 @@ const BarcodeDesigner = forwardRef(({
                 </Expandable>
             </View>
             <View testID={`${testID}_DesignerContainer`} style={[!isDesktop && {width:"100%"},{flexDirection:"column"},theme.styles.p1]}> 
-                 <View testID={testID+"_DesignerContent"} style={[theme.styles.w100,theme.styles.justifyContentFlexStart,theme.styles.alignItemsFlexStart]}>
+                 {React.isValidElement(topContent)? topContent : null}
+                 <View testID={testID+"_DesignerContent"} style={[theme.styles.w100,theme.styles.row,theme.styles.justifyContentFlexStart,theme.styles.alignItemsFlexCenter]}>
+                    {React.isValidElement(leftContent)? leftContent : null}
                     <Generator
                         {...state}
                         displayValue = {!!state.displayValue}
@@ -240,12 +258,14 @@ const BarcodeDesigner = forwardRef(({
                         }}
                         ref = {useMergeRefs(ref,innerRef)}
                     />
+                    {React.isValidElement(rightContent) ?rightContent : null}
                 </View>
+                {React.isValidElement(bottomContent) ? bottomContent : null}
             </View>
         </View>
     </Surface>
 });
-
+const contentType = PropTypes.oneOfType([PropTypes.func,PropTypes.node]);
 export const barcodeSetingsFields = {
     sessionName : PropTypes.string,
     format : PropTypes.oneOf(barcodeFormats),
@@ -268,6 +288,11 @@ export const barcodeSetingsFields = {
     marginLeft : PropTypes.number,
     marginRight : PropTypes.number,
     onChange : PropTypes.func,
+    topContent : contentType, //le contenu de l'élément à rendre en haut du Générateur
+    bottomContent : contentType,//le contenu de l'élément à rendre en haut du content
+    leftContent : contentType,
+    saveAction : contentType,
+    rightContent : contentType, //le contenu à render à droite du générateur
 }
 
 BarcodeDesigner.displayName = "BarcodeDesigner";

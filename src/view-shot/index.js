@@ -39,18 +39,7 @@ export async function captureRef(view, options) {
     h2cOptions.y = options.y;
   }
   return html2canvas(view, h2cOptions).then((renderedCanvas)=>{
-    if (false && options.width && options.height) {
-        // Resize result
-        const resizedCanvas = document.createElement('canvas');
-        const resizedContext = resizedCanvas.getContext('2d');
-        resizedCanvas.height = options.height;
-        resizedCanvas.width = options.width;
-        console.log(options.width," is dddd ",options);
-        resizedContext.drawImage(renderedCanvas, 0, 0, resizedCanvas.width, resizedCanvas.height);
-        renderedCanvas = resizedCanvas;
-      }
       const dataUrl = renderedCanvas.toDataURL("image/" + options.format, options.quality);
-      console.log(dataUrl," is ddddddddddd")
       if (options.result === "data-uri" || options.result === "tmpfile") return dataUrl;
       return dataUrl.replace(/data:image\/(\w+);base64,/, '');
   });

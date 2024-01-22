@@ -5,7 +5,7 @@ import theme,{StyleProp} from "$theme";
 import {defaultStr,defaultObj,isNonNullString,extendObj,uniqid,isDataURL} from "$cutils";
 import Generator from "./Generator";
 import {isMobileNative} from "$cplatform";
-import { defaultBarcodeFormat,barcodeFormats,jsbarcodePropTypes,prepareOptions } from './utils';
+import { defaultBarcodeFormat,barcodeFormats,jsbarcodePropTypes,encode } from './utils';
 import { captureRef } from '$expo-ui/view-shot';
 import Base64 from "$base64";
 import Label from "$ecomponents/Label";
@@ -127,21 +127,7 @@ const BarcodeGenerator = forwardRef(({
   },[format,value,width,height,lineColor])
   const toDataURL = ()=>{
     return new Promise((resolve,reject)=>{
-      if(!isMobileNative() && typeof document !=="undefined" && typeof document?.querySelector =='function'){
-        const element = document.querySelector(`#${idRef.current}`);
-        if(element && window?.XMLSerializer){
-          try {
-              const xml = new XMLSerializer().serializeToString(element);
-              const r = 'data:image/svg+xml;base64,' + Base64.encode(xml);
-              if(isDataURL(r) && typeof onConvertToDataURL =="function"){
-                onConvertToDataURL(r);
-              }
-              return resolve(r);
-          } catch (e){
-          }   
-        }
-      }
-      return innerRef.current?.measureInWindow((x, y, width, height) => {
+      const cb2 = (x, y, width, height) => {
         const cb = ()=>{
           return captureRef(innerRef.current,extendObj({},{
             quality: 1,
@@ -151,8 +137,9 @@ const BarcodeGenerator = forwardRef(({
             height,
           },dataURLOptions)).then((r)=>{
               if(isDataURL(r) && typeof onConvertToDataURL =="function"){
-                onConvertToDataURL(r);
+                onConvertToDataURL({dataURL:r});
               }
+              resolve({dataURL:r,width,height});
           }).catch((e)=>{
             console.log(e," is capturing data url");
             reject(e);
@@ -162,10 +149,17 @@ const BarcodeGenerator = forwardRef(({
           return setTimeout(cb,50);
         }
         return cb(); 
-      });
+      };
+      if(!isMobileNative() && typeof document !=="undefined" && typeof document?.querySelector =='function'){
+        const element = document.querySelector(`#${idRef.current}`);
+        if(element && typeof element?.getBoundingClientRect =='function'){
+          const {width,height} = element.getBoundingClientRect();
+          return cb2(undefined,undefined,width,height);
+        }
+      }
+      return innerRef.current?.measureInWindow(cb2);
     })
   }
-  React.setRef(ref,toDataURL);
   return (<Generator
     {...rest}
     errorText = {error ? <Label style={{textAlign:'center'}} error fontSize={15} textBold>
@@ -182,47 +176,15 @@ const BarcodeGenerator = forwardRef(({
     width = {isMobileNative()?barCodeWidth:width}
     height = {height}
     lineColor = {lineColor}
-    ref = {useMergeRefs(ref,innerRef)}
+    ref = {(el)=>{
+      if(el){
+        el.toDataURL = toDataURL;
+      }
+      innerRef.current = el;
+      React.setRef(ref,el);
+    }}
   />);
 });
-
-/****
-  encode le barcode passé en paramètre
-  @return {null|object}
-  @param {string|object}
-    si object alors : {
-      value {string}, la valeur à vérifier
-      format {string}, le code du format à vérifier
-    }
-    si string alors {value:{string}}, le format par défaut est le code128
-  @param {string} format, si value est un objet alors le second paramètre peut être considéré comme le format
-*/
-export const encode = (options,format)=>{
-  if(isNonNullString(options)){
-    options = {text:options};
-  } else options = defaultObj(options);
-  const {text:cText,value:cValue,format:cFormat,...rest} = options;
-  const text = defaultStr(options.value,options.text);
-  format = defaultStr(format,options.format);
-  if(!isNonNullString(text)) return null;
-  if(!isNonNullString(format) || !barcodeFormats.includes(format)){
-    format = defaultBarcodeFormat
-  }
-  try {
-    const encoder = new barcodes[format](text, {
-      format,
-      displayValue : true,
-      flat: true,
-      ...rest,
-    });
-    if (!encoder.valid()) {
-      return null;
-    }
-    return encoder.encode();
-  } catch (e){
-    return null;
-  }
-}
 
 BarcodeGenerator.propTypes = {
   value: PropTypes.string,

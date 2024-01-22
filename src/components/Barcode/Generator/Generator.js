@@ -2,6 +2,7 @@ import React,{forwardRef,useRef,useEffect} from "$react";
 import {uniqid,defaultStr} from "$cutils";
 import JsBarcode from "jsbarcode";
 import {jsbarcodePropTypes } from "./utils";
+import View from "$ecomponents/View";
 
 ///@see : https://lindell.me/JsBarcode/
 const BarcodeGeneratorComponent = forwardRef(({value,format,id,errorText,testID,onReady,text,flat,width,height,displayValue,fontOptions,font,textAlign,textPosition,textMargin,fontSize,background,lineColor,margin,marginTop,marginBottom,marginLeft,marginRight,valid},ref)=>{
@@ -34,7 +35,9 @@ const BarcodeGeneratorComponent = forwardRef(({value,format,id,errorText,testID,
         }
     });
     if(error) return error;
-    return <svg {...jsProps} id={`${idRef.current}`} ref={ref} data-test-id={`${testID}`} className="bar-code-generator-svg"/>
+    return <View style={[{alignSelf:'center'}]} ref={ref}>
+        <svg {...jsProps} id={`${idRef.current}`} data-test-id={`${testID}`} className="bar-code-generator-svg"/>
+    </View>
 });
 
 BarcodeGeneratorComponent.displayName = "BarcodeGeneratorComponent";

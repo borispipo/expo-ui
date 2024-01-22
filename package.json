@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "8.7.1",
+  "version": "8.8.0",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "scripts": {
     "clear-npx-cache": "npx clear-npx-cache",
@@ -80,6 +80,7 @@
     "htmlparser2-without-node-native": "^3.9.2",
     "is-plain-obj": "^4.1.0",
     "js-base64": "^3.7.5",
+    "jsbarcode": "^3.11.6",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-content-loader": "^6.2.1",

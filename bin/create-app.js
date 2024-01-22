@@ -135,7 +135,7 @@ const createAPPJSONFile = (projectRoot,{name,version})=>{
       "slug": "${name.toLowerCase().replace(/\s\s+/g, '-')}",
       "version":"${version}",
       "orientation": "portrait",
-      "plugins":${JSON.stringify(plugins,null,'\t')},
+      "plugins":${JSON.stringify(plugins)},
       "icon": "./assets/icon.png",
       "jsEngine": "hermes",
       "splash": {

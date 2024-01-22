@@ -26,6 +26,7 @@ const ExpandableComponent = React.forwardRef(({
   onLongPress,
   expanded: expandedProp,
   expandedIcon,
+  defaultExpanded,
   expandIconProps,
   unexpandedIcon,
   leftProps,
@@ -57,7 +58,7 @@ const ExpandableComponent = React.forwardRef(({
   expandIconPosition = defaultStr(expandIconPosition,"right").toLowerCase().trim();
   const isIconPositionLeft = expandIconPosition =='left'? true : false;
   const isControlled = typeof expandedProp =='boolean'? true : false;
-  const [expanded, setExpanded] = React.useState(isControlled ? expandedProp : false);
+  const [expanded, setExpanded] = React.useState(isControlled ? expandedProp : !!defaultExpanded);
   const handlePressAction = (e) => {
     onPress?.({...React.getOnPressArgs(e),expanded:!expanded,checked:!expanded});
     if (!isControlled) {

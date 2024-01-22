@@ -7,7 +7,7 @@ export const barcodeFormats = Object.keys(barcodes);
 export const defaultBarcodeFormat = 'CODE128';
 
 export const jsbarcodePropTypes = {
-    value : PropTypes.string.isRequired,
+    value : PropTypes.string,
     format : PropTypes.oneOf(barcodeFormats),
     width : PropTypes.number, //The width option is the width of a single bar., default : 2
     height : PropTypes.number,//The height of the barcode., default 100,
@@ -27,6 +27,7 @@ export const jsbarcodePropTypes = {
     marginBottom : PropTypes.number,
     marginLeft : PropTypes.number,
     marginRight : PropTypes.number,
+    errorText : PropTypes.node,
     valid : PropTypes.func,//function(valid){}	
 }
 
@@ -35,7 +36,7 @@ export const JSBarcodePropTypes = jsbarcodePropTypes;
 export const prepareOptions = ({textPosition,fontOptions,fontSize,textMargin,textAlign,margin,marginLeft,marginRight,marginTop,marginBottom})=>{
     const displayChildOnTop = defaultStr(textPosition,"bottom").toLowerCase().trim() ==="top";
     fontOptions = defaultStr(fontOptions,"bold").toLowerCase();
-    textMargin = defaultNumber(textMargin,2);
+    textMargin = typeof textMargin =="number"? textMargin : 2;
     const style = {
         fontSize:defaultNumber(fontSize,20),
         textAlign : ["center","left","right"].includes(textAlign)  && textAlign ||"center",
@@ -50,10 +51,10 @@ export const prepareOptions = ({textPosition,fontOptions,fontSize,textMargin,tex
     if(displayChildOnTop){
         style.marginBottom = textMargin;
     } else style.marginTop = textMargin;
-    margin = defaultNumber(margin,10);
+    margin = typeof margin =='number' ? margin : 10;
     const svgStyle = {};
     Object.map({marginTop,marginBottom,marginLeft,marginRight},(v,i)=>{
-        svgStyle[i] = defaultNumber(v,margin);
+        svgStyle[i] = typeof v =='number'? v : margin;
     });
     return {
         displayChildOnTop,

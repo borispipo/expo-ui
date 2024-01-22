@@ -8,6 +8,7 @@ import {isMobileNative} from "$cplatform";
 import { defaultBarcodeFormat,barcodeFormats,jsbarcodePropTypes,prepareOptions } from './utils';
 import { captureRef } from '$expo-ui/view-shot';
 import Base64 from "$base64";
+import Label from "$ecomponents/Label";
 
 export * from "./utils";
 
@@ -24,7 +25,7 @@ const BarcodeGenerator = forwardRef(({
   autoConvertToDataURL,
   onConvertToDataURL,
   maxWidth,
-  backgroundColor,
+  background,
   dataURLOptions,
   id,
   ...rest
@@ -36,7 +37,7 @@ const BarcodeGenerator = forwardRef(({
   const setReady = ()=> isReadyRef.current = true;
    const style = theme.flattenStyle(cStyle);
    const idRef = useRef(defaultStr(id,uniqid("bar-code-generator-web")));
-  backgroundColor = theme.Colors.isValid(backgroundColor) ? backgroundColor :  style.backgroundColor = theme.Colors.isValid(style.backgroundColor)? style.backgroundColor : '#ffffff';
+  background = theme.Colors.isValid(background) ? background :  style.backgroundColor = theme.Colors.isValid(style.backgroundColor)? style.backgroundColor : '#ffffff';
   lineColor = theme.Colors.isValid(lineColor)? lineColor : '#000000';
   if(!isNonNullString(format)){
     format = defaultBarcodeFormat;
@@ -90,8 +91,11 @@ const BarcodeGenerator = forwardRef(({
 
   
 
-  const { bars, barCodeWidth } = useMemo(() => {
+  const { bars, barCodeWidth,error } = useMemo(() => {
     try {
+      if(!value){
+        throw new Error(`Valeur du code barre invalide!!\n Merci de spécifier une valeur non nulle`)
+      }
       const encoded = encode({value,width,height,format,lineColor,maxWidth});
       if(!encoded){
         throw new Error(`code barre ${value} invalide pour le format sélectionné ${format}`);
@@ -99,23 +103,22 @@ const BarcodeGenerator = forwardRef(({
       const barCodeWidth = encoded.data.length * width;
       return {
         bars: drawSvgBarCode(encoded),
+        error : false,
         barCodeWidth:
           typeof maxWidth === 'number' && barCodeWidth > maxWidth
             ? maxWidth
             : barCodeWidth,
       };
     } catch (error) {
-      if (__DEV__) {
-        console.error(error.message);
-      }
       if (onError) {
         onError(error);
       }
+      return {
+        bars: [],
+        barCodeWidth: 0,
+        error,
+      };
     }
-    return {
-      bars: [],
-      barCodeWidth: 0,
-    };
   }, [value, width, height, format, lineColor, maxWidth]);
   useEffect(()=>{
     if(autoConvertToDataURL === true){
@@ -135,7 +138,6 @@ const BarcodeGenerator = forwardRef(({
               }
               return resolve(r);
           } catch (e){
-              console.log(e," isdddddd");
           }   
         }
       }
@@ -166,13 +168,17 @@ const BarcodeGenerator = forwardRef(({
   React.setRef(ref,toDataURL);
   return (<Generator
     {...rest}
+    errorText = {error ? <Label style={{textAlign:'center'}} error fontSize={15} textBold>
+    {error?.toString()}
+  </Label>: null}
     id = {idRef.current}
     onReady = {setReady}
     value = {value}
     bars = {bars}
     format = {format}
+    error = {error}
     testID = {testID}
-    background = {backgroundColor}
+    background = {background}
     width = {isMobileNative()?barCodeWidth:width}
     height = {height}
     lineColor = {lineColor}
@@ -195,11 +201,11 @@ export const encode = (options,format)=>{
   if(isNonNullString(options)){
     options = {text:options};
   } else options = defaultObj(options);
-  const text = defaultStr(options.value,options.text);
   const {text:cText,value:cValue,format:cFormat,...rest} = options;
+  const text = defaultStr(options.value,options.text);
   format = defaultStr(format,options.format);
   if(!isNonNullString(text)) return null;
-  if(!isNonNullString(format) || !barcodeFormats[format]){
+  if(!isNonNullString(format) || !barcodeFormats.includes(format)){
     format = defaultBarcodeFormat
   }
   try {
@@ -213,13 +219,13 @@ export const encode = (options,format)=>{
       return null;
     }
     return encoder.encode();
-  } catch{
+  } catch (e){
     return null;
   }
 }
 
 BarcodeGenerator.propTypes = {
-  value: PropTypes.string.isRequired,
+  value: PropTypes.string,
   ...jsbarcodePropTypes,
   dataURLOptions : PropTypes.object,//les options à utiliser pour la convertion en data url
   onConvertToDataURL : PropTypes.func,//lorsque la valeur est converti au format data url

@@ -31,5 +31,6 @@ module.exports = {
     "react-native-svg": "14.1.0",
     "react-native-webview": "13.6.4",
     "react-native-gesture-handler": "~2.14.0",
-    "react-native-reanimated": "~3.6.0"
+    "react-native-reanimated": "~3.6.0",
+    "react-native-view-shot": "3.8.0"
 }

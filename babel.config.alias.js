@@ -26,6 +26,7 @@ module.exports = (opts)=>{
     r["$emedia"] = path.resolve(expo,"media");
     r["$enavigation"] = path.resolve(expo,"navigation");
     r["$escreens"] = path.resolve(expo,"screens");
+    r["$eview-shot"] = path.resolve(expo,"view-shot");
     ///les screens principaux de l'application
     r["$escreen"] = r["$eScreen"] = path.resolve(expo,"layouts/Screen");
     r["$eassets"] = path.resolve(dir,"assets");

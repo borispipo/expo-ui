@@ -8,35 +8,27 @@ import View from "$ecomponents/View";
 const BarcodeGeneratorComponent = forwardRef(({value,format,id,errorText,testID,onReady,text,flat,width,height,displayValue,fontOptions,font,textAlign,textPosition,textMargin,fontSize,background,lineColor,margin,marginTop,marginBottom,marginLeft,marginRight,valid},ref)=>{
     testID = defaultStr(testID,"RN_GeneratorWebSVG");
     const idRef = useRef(defaultStr(id,uniqid("bar-code-generator-web")));
+    const innerRef = useRef(null);
     const error = React.isValidElement(errorText)? errorText : null;
     if(error){
         displayValue = false;
     }
+    const supportedProps = {format,width,flat,text,height,displayValue,fontOptions,font,textAlign,textPosition,textMargin,fontSize,background,lineColor,margin,marginTop,marginBottom,marginLeft,marginRight};
     useEffect(()=>{
         const element = document.querySelector(`#${idRef.current}`);
         if(!element) return;
         if(!error){
             try {
-                JsBarcode(`#${idRef.current}`).init();
+                JsBarcode(`#${idRef.current}`,value,supportedProps);
                 if(typeof onReady ==="function"){
-                    setTimeout(()=>{
-                        onReady();
-                    },50);
+                    onReady();
                 }
-            } catch(e){
-            }
+            } catch(e){}
         }
-    },[value,error,format,id,testID,width,height,displayValue,flat,text,fontOptions,font,textAlign,textPosition,textMargin,fontSize,background,lineColor,margin,marginTop,marginBottom,marginLeft,marginRight])
-    const jsProps = {};
-    const supportedProps = {value,format,width,flat,text,height,displayValue,fontOptions,font,textAlign,textPosition,textMargin,fontSize,background,lineColor,margin,marginTop,marginBottom,marginLeft,marginRight};
-    Object.keys(supportedProps).map(key=>{
-        if(supportedProps[key] !== undefined){
-            jsProps[`jsbarcode-${key.toLowerCase()}`] = String(supportedProps[key]);
-        }
-    });
+    },[value,error,format,width,height,displayValue,flat,text,fontOptions,font,textAlign,textPosition,textMargin,fontSize,background,lineColor,margin,marginTop,marginBottom,marginLeft,marginRight])
     if(error) return error;
     return <View style={[{alignSelf:'center'}]} ref={ref}>
-        <svg {...jsProps} id={`${idRef.current}`} data-test-id={`${testID}`} className="bar-code-generator-svg"/>
+        <canvas id={`${idRef.current}`} data-test-id={`${testID}`} className="bar-code-generator-svg"/>
     </View>
 });
 

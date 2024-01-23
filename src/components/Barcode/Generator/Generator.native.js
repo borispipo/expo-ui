@@ -16,7 +16,7 @@ const BarcodeGeneratorComponent = forwardRef(({width,height,lineColor,errorText,
     >{child}</Label> : null;
     useEffect(()=>{
         if(typeof onReady =='function'){
-            setTimeout(onReady,50);
+            onReady();
         }
     },[width,height,lineColor,bars,value,format,id,testID,text,flat,displayValue,fontOptions,font,textAlign,textPosition,textMargin,fontSize,backgroun,margin,marginTop,marginBottom,marginLeft,marginRight])
     containerProps = Object.assign({},containerProps);

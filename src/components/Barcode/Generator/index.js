@@ -28,13 +28,12 @@ const BarcodeGenerator = forwardRef(({
   background,
   dataURLOptions,
   id,
+  onReady,
   ...rest
 },ref) => {
   dataURLOptions = defaultObj(dataURLOptions);
   testID = defaultStr(testID,"RNBarcodeGenerator");
   const innerRef = useRef(null);
-  const isReadyRef = useRef(false);
-  const setReady = ()=> isReadyRef.current = true;
    const style = theme.flattenStyle(cStyle);
    const idRef = useRef(defaultStr(id,uniqid("bar-code-generator-web")));
   background = theme.Colors.isValid(background) ? background :  style.backgroundColor = theme.Colors.isValid(style.backgroundColor)? style.backgroundColor : '#ffffff';
@@ -121,44 +120,46 @@ const BarcodeGenerator = forwardRef(({
     }
   }, [value, width, height, format, lineColor, maxWidth]);
   useEffect(()=>{
-    if(autoConvertToDataURL === true){
+    if(true || autoConvertToDataURL === true){
       toDataURL();
     }
   },[format,value,width,height,lineColor])
   const toDataURL = ()=>{
     return new Promise((resolve,reject)=>{
       const cb2 = (x, y, width, height) => {
-        const cb = ()=>{
-          return captureRef(innerRef.current,extendObj({},{
-            quality: 1,
-            format: 'png',
-            result : "data-uri",
-            width,
-            height,
-          },dataURLOptions)).then((r)=>{
-              if(isDataURL(r) && typeof onConvertToDataURL =="function"){
-                onConvertToDataURL({dataURL:r});
-              }
-              resolve({dataURL:r,width,height});
-          }).catch((e)=>{
-            console.log(e," is capturing data url");
-            reject(e);
-          });
-        }
-        if(!isReadyRef.current){
-          return setTimeout(cb,50);
-        }
-        return cb(); 
+        return captureRef(innerRef.current,extendObj({},{
+          quality: 1,
+          format: 'png',
+          result : "data-uri",
+          width,
+          height,
+        },dataURLOptions)).then((r)=>{
+            if(isDataURL(r) && typeof onConvertToDataURL =="function"){
+              onConvertToDataURL({dataURL:r});
+            }
+            resolve({dataURL:r,width,height});
+        }).catch((e)=>{
+          console.log(e," is capturing data url");
+          reject(e);
+        }); 
       };
       if(!isMobileNative() && typeof document !=="undefined" && typeof document?.querySelector =='function'){
-        const element = document.querySelector(`#${idRef.current}`);
-        if(element && typeof element?.getBoundingClientRect =='function'){
-          const {width,height} = element.getBoundingClientRect();
-          return cb2(undefined,undefined,width,height);
+        const canvas = document.querySelector(`#${idRef.current}`);
+        if(canvas){
+          if(typeof canvas?.toDataURL =='function'){
+            return resolve(canvas.toDataURL());
+         }
+        } else {
+          try {
+            const {width,height} = canvas?.getBoundingClientRect();
+            return cb2(undefined,undefined,width,height);
+          } catch(e){
+            reject(e);
+          }
         }
       }
       return innerRef.current?.measureInWindow(cb2);
-    })
+    });
   }
   return (<Generator
     {...rest}
@@ -166,7 +167,11 @@ const BarcodeGenerator = forwardRef(({
     {error?.toString()}
   </Label>: null}
     id = {idRef.current}
-    onReady = {setReady}
+    onReady = {()=>{
+      if(typeof onReady =="function"){
+        return onReady({toDataURL});
+      }
+    }}
     value = {value}
     bars = {bars}
     format = {format}

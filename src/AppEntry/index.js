@@ -15,6 +15,7 @@ import {set as setSession,get as getSession} from "$session";
 import { showConfirm } from "$ecomponents/Dialog";
 import {close as closePreloader, isVisible as isPreloaderVisible} from "$epreloader";
 import SplashScreen from "$ecomponents/SplashScreen";
+import {useAppComponent} from "$econtext/hooks";
 import {decycle} from "$cutils/json";
 import { setIsInitialized} from "$capp/utils";
 import {isObj,defaultObj,defaultStr} from "$cutils";
@@ -60,6 +61,7 @@ const NAVIGATION_PERSISTENCE_KEY = 'NAVIGATION_STATE';
  */
 function App({init:initApp,initialRouteName:appInitialRouteName,children}) {
   AppStateService.init();
+  const SplashScreenComponent = useAppComponent("SplashScreen");
   const {FontsIconsFilter,beforeExit,AppWrapper,preferences:appPreferences,navigation,getStartedRouteName,components:{MainProvider}} = useContext();
   const {containerProps} = navigation;
   const [initialState, setInitialState] = React.useState(undefined);
@@ -284,7 +286,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,children}) {
                     <DropdownAlert ref={notificationRef}/>
                     <ErrorBoundary>
                       <StatusBar/>
-                      <SplashScreen isLoaded={isLoaded}>
+                      <SplashScreen Component={SplashScreenComponent} isLoaded={isLoaded}>
                         <PreferencesContext.Provider value={preferences}>
                           {React.isValidElement(content) && content || child}
                         </PreferencesContext.Provider>  

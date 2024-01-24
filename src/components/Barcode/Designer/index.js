@@ -39,11 +39,11 @@ const BarcodeDesigner = forwardRef(({
     Dimensions.useWindowDimensions();
     const innerRef = useRef(null);
     const sFormat = !isNonNullString(format) || !barcodeFormats.includes(format) ? isNonNullString(sData.format) && barcodeFormats.includes(sData.format) ? sData.format : defaultBarcodeFormat : format;
-    const sHeight = defaultNumber(height,sData.height,100), sWidth = defaultNumber(width,sData.w100,2), sDisplayValue = typeof displayValue =='boolean'? displayValue :sData.displayValue !== undefined ? !!sData.displayValue:true;
+    const sHeight = defaultNumber(height,sData.height,50), sWidth = defaultNumber(width,sData.w100,1.5), sDisplayValue = typeof displayValue =='boolean'? displayValue :sData.displayValue !== undefined ? !!sData.displayValue:true;
     const sFontOptions = isNonNullString(fontOptions) && fontOptionsKeys.includes(fontOptions) ?  fontOptions : isNonNullString(sData.fontOptions) && fontOptionsKeys.includes(sData?.fontOptions) ? sData.fontOptions : "bold";
     const sTextAlign = isNonNullString(textAlign) && alignments.includes(textAlign)? textAlign : isNonNullString(sData.textAlign) && alignments.includes(sData.textAlign)? sData.textAlign : "center";
     const sTextPosition = isNonNullString(textPosition) && ["top","bottom"].includes(textPosition) ? textPosition : isNonNullString(sData.textPosition) && ["top","bottom"].includes(sData.textPosition) ? sData.textPosition : "bottom";
-    const sFontSize = typeof fontSize ==='number'? fontSize : typeof sData.fontSize ==='number'? sData.fontSize : 20;
+    const sFontSize = typeof fontSize ==='number'? fontSize : typeof sData.fontSize ==='number'? sData.fontSize : 15;
     const sLineColor  = theme.Colors.isValid(lineColor)? lineColor : theme.Colors.isValid(sData.lineColor)? sData?.linceColor:"#000000";
     const sBackground = theme.Colors.isValid(background)? background : theme.Colors.isValid(sData.background)? sData.background : "#ffffff";
     const sTextMargin = typeof textMargin =='number'? textMargin : typeof sData.textMargin =='number'? sData.textMargin : 2;

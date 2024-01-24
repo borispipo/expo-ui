@@ -28,6 +28,7 @@ const BarcodeGenerator = forwardRef(({
   dataURLOptions,
   id,
   onReady,
+  displayValue,
   ...rest
 },ref) => {
   dataURLOptions = defaultObj(dataURLOptions);
@@ -132,6 +133,7 @@ const BarcodeGenerator = forwardRef(({
   return (<Generator
     {...rest}
     as={as}
+    displayValue = {typeof displayValue =='boolean'? displayValue : typeof displayValue !=='undefined'? !!displayValue : true}
     errorText = {error ? <Label style={{textAlign:'center'}} error fontSize={15} textBold>
     {error?.toString()}
   </Label>: null}
@@ -169,3 +171,5 @@ BarcodeGenerator.propTypes = {
 };
 
 export default BarcodeGenerator;
+
+BarcodeGenerator.displayName = "BarcodeGeneratorComponent";

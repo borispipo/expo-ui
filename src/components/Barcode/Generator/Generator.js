@@ -2,7 +2,6 @@ import React,{forwardRef,useRef,useEffect} from "$react";
 import {uniqid,defaultStr} from "$cutils";
 import JsBarcode from "jsbarcode";
 import {jsbarcodePropTypes } from "./utils";
-import View from "$ecomponents/View";
 
 ///@see : https://lindell.me/JsBarcode/
 const BarcodeGeneratorComponent = forwardRef(({value,as:asTag,format,id,errorText,testID,onReady,text,flat,width,height,displayValue,fontOptions,font,textAlign,textPosition,textMargin,fontSize,background,lineColor,margin,marginTop,marginBottom,marginLeft,marginRight,valid},ref)=>{

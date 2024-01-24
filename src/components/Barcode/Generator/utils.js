@@ -15,7 +15,10 @@ export const jsbarcodePropTypes = {
     width : PropTypes.number, //The width option is the width of a single bar., default : 2
     height : PropTypes.number,//The height of the barcode., default 100,
     text : PropTypes.string, //Overide the text that is diplayed
-    displayValue : PropTypes.bool,
+    displayValue : PropTypes.oneOfType([
+      PropTypes.bool,
+      PropTypes.number,
+    ]),
     fontOptions : PropTypes.string,//With fontOptions you can add bold or italic text to the barcode.
     font : PropTypes.string,
     textAlign : PropTypes.oneOf(["center","left","right"]), //Set the horizontal alignment of the text. Can be left / center / right.

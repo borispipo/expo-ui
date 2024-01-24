@@ -5,10 +5,9 @@ import {jsbarcodePropTypes } from "./utils";
 import View from "$ecomponents/View";
 
 ///@see : https://lindell.me/JsBarcode/
-const BarcodeGeneratorComponent = forwardRef(({value,format,id,errorText,testID,onReady,text,flat,width,height,displayValue,fontOptions,font,textAlign,textPosition,textMargin,fontSize,background,lineColor,margin,marginTop,marginBottom,marginLeft,marginRight,valid},ref)=>{
+const BarcodeGeneratorComponent = forwardRef(({value,as:asTag,format,id,errorText,testID,onReady,text,flat,width,height,displayValue,fontOptions,font,textAlign,textPosition,textMargin,fontSize,background,lineColor,margin,marginTop,marginBottom,marginLeft,marginRight,valid},ref)=>{
     testID = defaultStr(testID,"RN_GeneratorWebSVG");
     const idRef = useRef(defaultStr(id,uniqid("bar-code-generator-web")));
-    const innerRef = useRef(null);
     const error = React.isValidElement(errorText)? errorText : null;
     if(error){
         displayValue = false;
@@ -27,9 +26,8 @@ const BarcodeGeneratorComponent = forwardRef(({value,format,id,errorText,testID,
         }
     },[value,error,format,width,height,displayValue,flat,text,fontOptions,font,textAlign,textPosition,textMargin,fontSize,background,lineColor,margin,marginTop,marginBottom,marginLeft,marginRight])
     if(error) return error;
-    return <View style={[{alignSelf:'center'}]} ref={ref}>
-        <canvas id={`${idRef.current}`} data-test-id={`${testID}`} className="bar-code-generator-svg"/>
-    </View>
+    const Tag = asTag || "img";
+    return <Tag id={`${idRef.current}`} ref={ref} data-test-id={`${testID}`} className="bar-code-generator-svg"/>
 });
 
 BarcodeGeneratorComponent.displayName = "BarcodeGeneratorComponent";

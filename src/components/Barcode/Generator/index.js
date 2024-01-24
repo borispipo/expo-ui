@@ -5,15 +5,14 @@ import theme,{StyleProp} from "$theme";
 import {defaultStr,defaultObj,isNonNullString,extendObj,uniqid,isDataURL} from "$cutils";
 import Generator from "./Generator";
 import {isMobileNative} from "$cplatform";
-import { defaultBarcodeFormat,barcodeFormats,jsbarcodePropTypes,encode } from './utils';
-import { captureRef } from '$expo-ui/view-shot';
-import Base64 from "$base64";
+import { defaultBarcodeFormat,barcodeFormats,toDataURL,jsbarcodePropTypes,encode } from './utils';
 import Label from "$ecomponents/Label";
 
 export * from "./utils";
 
 const BarcodeGenerator = forwardRef(({
   value = '',
+  as,
   width = 2,
   height = 100,
   format,
@@ -119,57 +118,27 @@ const BarcodeGenerator = forwardRef(({
       };
     }
   }, [value, width, height, format, lineColor, maxWidth]);
+  const _toDataURL = ()=>{
+      return toDataURL(innerRef.current,{
+        onConvertToDataURL,dataURLOptions,
+      });
+  }
   useEffect(()=>{
-    if(true || autoConvertToDataURL === true){
-      toDataURL();
+    if(autoConvertToDataURL === true){
+      _toDataURL();
     }
   },[format,value,width,height,lineColor])
-  const toDataURL = ()=>{
-    return new Promise((resolve,reject)=>{
-      const cb2 = (x, y, width, height) => {
-        return captureRef(innerRef.current,extendObj({},{
-          quality: 1,
-          format: 'png',
-          result : "data-uri",
-          width,
-          height,
-        },dataURLOptions)).then((r)=>{
-            if(isDataURL(r) && typeof onConvertToDataURL =="function"){
-              onConvertToDataURL({dataURL:r});
-            }
-            resolve({dataURL:r,width,height});
-        }).catch((e)=>{
-          console.log(e," is capturing data url");
-          reject(e);
-        }); 
-      };
-      if(!isMobileNative() && typeof document !=="undefined" && typeof document?.querySelector =='function'){
-        const canvas = document.querySelector(`#${idRef.current}`);
-        if(canvas){
-          if(typeof canvas?.toDataURL =='function'){
-            return resolve(canvas.toDataURL());
-         }
-        } else {
-          try {
-            const {width,height} = canvas?.getBoundingClientRect();
-            return cb2(undefined,undefined,width,height);
-          } catch(e){
-            reject(e);
-          }
-        }
-      }
-      return innerRef.current?.measureInWindow(cb2);
-    });
-  }
+  
   return (<Generator
     {...rest}
+    as={as}
     errorText = {error ? <Label style={{textAlign:'center'}} error fontSize={15} textBold>
     {error?.toString()}
   </Label>: null}
     id = {idRef.current}
     onReady = {()=>{
       if(typeof onReady =="function"){
-        return onReady({toDataURL});
+        return onReady({toDataURL:_toDataURL});
       }
     }}
     value = {value}
@@ -181,12 +150,9 @@ const BarcodeGenerator = forwardRef(({
     width = {isMobileNative()?barCodeWidth:width}
     height = {height}
     lineColor = {lineColor}
-    ref = {(el)=>{
-      if(el){
-        el.toDataURL = toDataURL;
-      }
-      innerRef.current = el;
-      React.setRef(ref,el);
+    ref = {(element)=>{
+      innerRef.current = element;
+      React.setRef(ref,{element,toDataURL});
     }}
   />);
 });

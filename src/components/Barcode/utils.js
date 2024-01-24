@@ -2,6 +2,7 @@
 import {defaultNumber,isNonNullString} from "$cutils";
 import Preloader from "$preloader";
 import JsBarcode from "jsbarcode";
+import { toDataURL } from "./Generator/utils";
 
 /*** permet de generer une liste des codes barres à partir des props passés en paramètre
 */
@@ -25,18 +26,31 @@ export function generate ({startSequence,onFinish,barcodeTemplate,barcodeOptions
         setTimeout(()=>{
             for(let sequence=startSequence;sequence<=endSequence;sequence++){
                 promises.push(new Promise((resolve)=>{
-                    const canvas = document.createElement('canvas');
+                    const hasSerializer = typeof window?.XMLSerializer !=="undefined" && window?.XMLSerializer; 
+                    const canvas = document.createElement(hasSerializer ? 'svg':'img');
                     const b = generate({sequence,template:barcodeTemplate,barcodeTemplate});
                     const barcode = isNonNullString(b)? b : defaultStr(barcodeTemplate);//.replaceAll("{sequence}",sequence)
                     if(barcode){
                         Preloader.open(`${prefix} [${barcode}]...`)
                         try {
                             JsBarcode(canvas,barcode,barcodeOptions);
-                            const dataURL = canvas.toDataURL();
-                            const ret = {barcode,dataURL};
-                            data.push(ret)
-                            resolve(ret)
+                            if(hasSerializer){
+                                const serializer = new XMLSerializer();
+                                const svg = serializer.serializeToString(canvas);
+                                const ret = {svg,barcode};
+                                data.push(ret)
+                                return resolve(ret);
+                            }
+                            return toDataURL(canvas).then((ret)=>{
+                                ret = {...ret,barcode};
+                                data.push(ret)
+                                resolve(ret)
+                            }).catch((e)=>{
+                                console.log(e," converting ",barcode," to data url")
+                                resolve({message:`Unable to convert barcode ${barcode} to dataURL`,status:false})
+                            })
                         } catch(e){
+                            console.log(e," occurred on generating barcode ",barcode," for sequence ",sequence);
                             resolve({error:e})
                         }
                     } else {
@@ -44,7 +58,7 @@ export function generate ({startSequence,onFinish,barcodeTemplate,barcodeOptions
                     }
                 }));
             }
-            return Promise.all(promises).then(()=>{
+            return Promise.all(promises).then((allD)=>{
                 resolve(data);
             }).catch((e)=>{
                 console.log(e," generation barcode");

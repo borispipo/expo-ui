@@ -253,9 +253,6 @@ const BarcodeDesigner = forwardRef(({
                         {...state}
                         displayValue = {!!state.displayValue}
                         autoConvertToDataURL = {false}
-                        onConvertToDataURL = {(dataURL)=>{
-                            console.log(dataURL,"converting to dataurl");
-                        }}
                         ref = {useMergeRefs(ref,innerRef)}
                     />
                     {React.isValidElement(rightContent) ?rightContent : null}

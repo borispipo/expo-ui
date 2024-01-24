@@ -1,6 +1,9 @@
 import barcodes from 'jsbarcode/src/barcodes';
 import PropTypes from "prop-types";
-import {defaultObj} from "$cutils";
+import {defaultObj,defaultNumber} from "$cutils";
+import { captureRef } from '$expo-ui/view-shot';
+import {isDataURL} from "$cutils";
+import {isMobileNative} from "$cplatform";
 
 export const barcodeFormats = Object.keys(barcodes);
 
@@ -100,4 +103,64 @@ export const encode = (options,format)=>{
     } catch (e){
       return null;
     }
+}
+
+
+/*** exporte au format dataURL
+  @param {domElement|nativeElement} element, l'élement dom ou l'élément react native
+  @param {object} options, les options supplémentaires
+*/
+export const toDataURL = (element,options)=>{
+  if(!element){
+    return Promise.reject({message:`Impossible de convertir le code barre en dataURL, rassurer vous que le premier argument de la fonction toDataURL soit un élément dom ou un élement  react natif`,options})
+  }
+  options = defaultObj(options);
+  const {onConvertToDataURL,...dataURLOptions} = options;
+  return new Promise((resolve,reject)=>{
+    const final = (dataURL,rest)=>{
+        dataURL = isDataURL(dataURL)? dataURL : undefined;
+        const result = {...defaultObj(rest),dataURL};
+        if(dataURL){
+          if(typeof onConvertToDataURL =="function"){
+            onConvertToDataURL(result);
+          }
+          return resolve(result);
+        }
+        reject({...result,message:`Image non valide!! le fichier dataURL généré est non valide`,status:false})
+    }
+    const cb2 = (x, y, width, height) => {
+      return captureRef(element,extendObj({},{
+        quality: 1,
+        format: 'png',
+        result : "data-uri",
+        width,
+        height,
+      },dataURLOptions)).then(final).catch((e)=>{
+        console.log(e," is capturing data url");
+        reject(e);
+      }); 
+    };
+    if(!isMobileNative() && typeof document !=="undefined" && typeof document?.querySelector =='function'){
+      if(typeof element?.toDataURL =='function'){
+        const {width,height} = typeof element.getBoundingClientRect =="function"? element.getBoundingClientRect() : {};
+        return final(element.toDataURL(),{width,height});
+      }
+      const src = typeof element?.getAttribute =='function' && element?.getAttribute("src");
+      if(isDataURL(src)){
+        const width = defaultNumber(element.width,element.naturalWidth,element.clientWidth);
+        const height = defaultNumber(element.height,element.naturalHeight,element.clientHeight);
+        return final(src,{width,height});
+      }
+      try {
+        const ob = element?.getBoundingClientRect();
+        if(isObj(ob)){
+          const {width,height} = ob;
+          return cb2(undefined,undefined,width,height);
+        }
+      } catch(e){
+        reject(e);
+      }
+    }
+    return element?.measureInWindow(cb2);
+  });
 }

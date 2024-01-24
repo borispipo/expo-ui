@@ -13,8 +13,8 @@ import App from "./AppEntry";
  * }
  */
 
-export default function ExpoUIAppEntryProvider({children,withSplashScreen,init,...rest}){
+export default function ExpoUIAppEntryProvider({children,init,...rest}){
     return <Provider {...rest}>
-        <App withSplashScreen = {withSplashScreen} init={init} children={children}/>
+        <App init={init} children={children}/>
     </Provider>
 }

@@ -33,7 +33,7 @@ import notify, {notificationRef} from "$notify";
 import DropdownAlert from '$ecomponents/Dialog/DropdownAlert';
 import { PreferencesContext } from '../Preferences';
 import ErrorBoundary from "$ecomponents/ErrorBoundary";
-import  {updateTheme,defaultTheme} from "$theme";
+import  mainTheme, {updateTheme,defaultTheme} from "$theme";
 import StatusBar from "$ecomponents/StatusBar";
 import {Provider as PaperProvider,Portal } from 'react-native-paper';
 import FontIcon from "$ecomponents/Icon/Font";
@@ -41,6 +41,7 @@ import useContext from "$econtext/hooks";
 import { StyleSheet } from "react-native";
 import Logo from "$ecomponents/Logo";
 import AppEntryRootView from "./RootView";
+import View from "$ecomponents/View";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 let MAX_BACK_COUNT = 1;
@@ -59,10 +60,10 @@ const NAVIGATION_PERSISTENCE_KEY = 'NAVIGATION_STATE';
  *  initialRouteName : la route initiale par défaut
  *  getStartedRouteName : la route par défaut de getStarted lorsque l'application est en mode getStarted, c'est à dire lorsque la fonction init renvoie une erreur (reject)
  */
-function App({init:initApp,initialRouteName:appInitialRouteName,children,withSplashScreen}) {
+function App({init:initApp,initialRouteName:appInitialRouteName,children}) {
   AppStateService.init();
   const SplashScreenComponent = useAppComponent("SplashScreen");
-  const {FontsIconsFilter,beforeExit,AppWrapper,preferences:appPreferences,navigation,getStartedRouteName,components:{MainProvider}} = useContext();
+  const {FontsIconsFilter,beforeExit,AppWrapper,preferences:appPreferences,navigation,getStartedRouteName,withSplashScreen,components:{MainProvider}} = useContext();
   const {containerProps} = navigation;
   const [initialState, setInitialState] = React.useState(undefined);
   const appReadyRef = React.useRef(true);
@@ -253,7 +254,9 @@ function App({init:initApp,initialRouteName:appInitialRouteName,children,withSpl
         containerProps.onStateChange(state,...rest);
       }
     }}
-    fallback = {React.isValidElement(containerProps.fallback) ? containerProps.fallback : <Logo.Progress/>}
+    fallback = {React.isValidElement(containerProps.fallback) ? containerProps.fallback : <View style={[mainTheme.styles.flex1,mainTheme.styles.justifyContentCenter,mainTheme.styles.alignItemsCenter]}>
+       <Logo.Progress/>
+    </View>}
   >
         <Navigation
           initialRouteName = {defaultStr(hasGetStarted ? appInitialRouteName : getStartedRouteName,"Home")}
@@ -266,8 +269,9 @@ function App({init:initApp,initialRouteName:appInitialRouteName,children,withSpl
         />
   </NavigationContainer>  : null;
   const content = isLoaded ? typeof children == 'function'? children({children:child,appConfig,config:appConfig}) : child : null;
-  const SplashComponent = withSplashScreen === false ? React.Fragment : SplashScreen;
-  const splashProps = withSplashScreen === false ? {} : {isLoaded,Component:SplashScreenComponent};
+  const myChildren = <PreferencesContext.Provider value={preferences}>
+      {isLoaded ? React.isValidElement(content) && content || child : null}
+    </PreferencesContext.Provider>;
   return <SafeAreaProvider>
             <AppEntryRootView MainProvider={MainProvider} isInitialized={state.hasCallInitApp} isLoading={isLoading} hasGetStarted={hasGetStarted} isLoaded={isLoaded}>
                 <PaperProvider 
@@ -288,11 +292,11 @@ function App({init:initApp,initialRouteName:appInitialRouteName,children,withSpl
                     <DropdownAlert ref={notificationRef}/>
                     <ErrorBoundary>
                       <StatusBar/>
-                      <SplashComponent {...splashProps}>
-                        <PreferencesContext.Provider value={preferences}>
-                          {isLoaded ? React.isValidElement(content) && content || child : null}
-                        </PreferencesContext.Provider>  
-                      </SplashComponent>
+                      {withSplashScreen !== false ? <SplashScreen
+                        children = {myChildren}
+                        isLoaded = {isLoaded}
+                        Component = {SplashScreenComponent}
+                      /> : myChildren}
                     </ErrorBoundary>
                   </Portal.Host>
               </PaperProvider>

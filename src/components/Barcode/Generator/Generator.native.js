@@ -18,7 +18,7 @@ const BarcodeGeneratorComponent = forwardRef(({width,height,lineColor,errorText,
         if(typeof onReady =='function'){
             onReady();
         }
-    },[width,height,lineColor,bars,value,format,id,testID,text,flat,displayValue,fontOptions,font,textAlign,textPosition,textMargin,fontSize,backgroun,margin,marginTop,marginBottom,marginLeft,marginRight])
+    },[width,height,lineColor,bars,value,format,id,testID,text,flat,displayValue,fontOptions,font,textAlign,textPosition,textMargin,fontSize,background,margin,marginTop,marginBottom,marginLeft,marginRight])
     containerProps = Object.assign({},containerProps);
     return <View ref = {ref} id={id} testID={testID+"_Container"} {...containerProps} style={[{alignSelf:"center"},theme.Colors.isValid(background) && {backgroundColor:background},containerProps.style]}>
         {!error && displayChildOnTop ? chilren : null}

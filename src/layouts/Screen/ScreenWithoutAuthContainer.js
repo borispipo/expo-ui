@@ -129,7 +129,7 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
               <ScrollView
                 testID = {testID+'_ScreenContentScrollView'}
                 {...rest}
-                contentContainerStyle={[contentContainerStyle,styles.container]}
+                contentContainerStyle={[contentContainerStyle,styles.contentContainer]}
                 style={[style]}
               >
                 {children}
@@ -156,6 +156,9 @@ const PortalCP = ({children,screenName})=>{
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  contentContainer : {
+    
   },
   keyboardAvoidingView : {
     flex : 1,

@@ -21,7 +21,7 @@ const BarcodeGeneratorComponent = forwardRef(({width,height,lineColor,errorText,
     },[width,height,lineColor,bars,value,format,id,testID,text,flat,displayValue,fontOptions,font,textAlign,textPosition,textMargin,fontSize,background,margin,marginTop,marginBottom,marginLeft,marginRight])
     containerProps = Object.assign({},containerProps);
     return <View ref = {ref} id={id} testID={testID+"_Container"} {...containerProps} style={[{alignSelf:"center"},theme.Colors.isValid(background) && {backgroundColor:background},containerProps.style]}>
-        {!error && displayChildOnTop ? chilren : null}
+        {!error && displayChildOnTop ? children : null}
         {!error ? <Svg 
             testID={testID}
             height={height} width={width} fill={lineColor}

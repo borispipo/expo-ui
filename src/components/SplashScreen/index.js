@@ -50,7 +50,7 @@ const SplashScreenComponent = ({isLoaded,children , duration, delay,logoWidth,lo
           clearTimeout(timerRef.current);
        },delay|2000);
     }
-  });
+  },[isLoaded,prevIsLoaded,animationDone]);
   testID = defaultStr(testID,"RN_SplashscreenComponent")
   logoWidth = defaultDecimal(logoWidth,150);
   logoHeight = defaultDecimal(logoHeight,250);

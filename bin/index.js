@@ -33,4 +33,11 @@ program.command('generate-getTable')
     require("./generate-tables")();
   });
 
+  program.command('update')
+  .description('permet de mettre à jour les dépendences expo-ui de l\'application')
+  .action((src, options) => {
+    require("./update");
+  });
+
+
   program.parse();

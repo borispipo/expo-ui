@@ -59,7 +59,7 @@ const NAVIGATION_PERSISTENCE_KEY = 'NAVIGATION_STATE';
  *  initialRouteName : la route initiale par défaut
  *  getStartedRouteName : la route par défaut de getStarted lorsque l'application est en mode getStarted, c'est à dire lorsque la fonction init renvoie une erreur (reject)
  */
-function App({init:initApp,initialRouteName:appInitialRouteName,children}) {
+function App({init:initApp,initialRouteName:appInitialRouteName,children,withSplashScreen}) {
   AppStateService.init();
   const SplashScreenComponent = useAppComponent("SplashScreen");
   const {FontsIconsFilter,beforeExit,AppWrapper,preferences:appPreferences,navigation,getStartedRouteName,components:{MainProvider}} = useContext();
@@ -266,6 +266,8 @@ function App({init:initApp,initialRouteName:appInitialRouteName,children}) {
         />
   </NavigationContainer>  : null;
   const content = isLoaded ? typeof children == 'function'? children({children:child,appConfig,config:appConfig}) : child : null;
+  const SplashComponent = withSplashScreen === false ? React.Fragment : SplashScreen;
+  const splashProps = withSplashScreen === false ? {} : {isLoaded,Component:SplashScreenComponent};
   return <SafeAreaProvider>
             <AppEntryRootView MainProvider={MainProvider} isInitialized={state.hasCallInitApp} isLoading={isLoading} hasGetStarted={hasGetStarted} isLoaded={isLoaded}>
                 <PaperProvider 
@@ -286,11 +288,11 @@ function App({init:initApp,initialRouteName:appInitialRouteName,children}) {
                     <DropdownAlert ref={notificationRef}/>
                     <ErrorBoundary>
                       <StatusBar/>
-                      <SplashScreen Component={SplashScreenComponent} isLoaded={isLoaded}>
+                      <SplashComponent {...splashProps}>
                         <PreferencesContext.Provider value={preferences}>
-                          {React.isValidElement(content) && content || child}
+                          {isLoaded ? React.isValidElement(content) && content || child : null}
                         </PreferencesContext.Provider>  
-                      </SplashScreen>
+                      </SplashComponent>
                     </ErrorBoundary>
                   </Portal.Host>
               </PaperProvider>

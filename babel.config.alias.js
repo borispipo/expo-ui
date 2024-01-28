@@ -2,7 +2,6 @@ const path = require("path");
 const fs = require("fs");
 
 module.exports = (opts)=>{
-    const isLocalDev = require("./is-local-dev")();
     const dir = path.resolve(__dirname);
     const projectRoot = typeof opts.projectRoot =='string' && fs.existsSync(opts.projectRoot.trim()) && opts.projectRoot.trim() || process.cwd();
     const assets = path.resolve(dir,"assets");
@@ -19,9 +18,7 @@ module.exports = (opts)=>{
     const expo = path.resolve(expoUI,"src");
     r["$ecomponents"] = r["$expo-components"] = path.resolve(expo,"components");
     r["$econfirm"] = path.resolve(r["$expo-components"],"Dialog","confirm");
-    r["$confirm"] = r["$confirm"] || r["$econfirm"];
     r["$eauth"] = path.resolve(expo,"auth");
-    r["$components"] = r["$components"] || r["$ecomponents"];
     r["$elayouts"] = path.resolve(expo,"layouts");
     r["$emedia"] = path.resolve(expo,"media");
     r["$enavigation"] = path.resolve(expo,"navigation");
@@ -36,8 +33,6 @@ module.exports = (opts)=>{
     r.$tableLink = r.$TableLink = r["$etableLink"] = r["$eTableLink"] = path.resolve(r["$ecomponents"],"TableLink");
     
     r["$Screen"] = r["$Screen"] || r["$eScreen"];
-    r["$screens"] = r["$screens"] || r["$escreens"];
-    
     r["$expo"] = r["$expo-ui"] = expo;
     r["$epreloader"] = path.resolve(expo,"components/Preloader");
     r["$eform"] = path.resolve(expo,"components","Form");
@@ -55,12 +50,7 @@ module.exports = (opts)=>{
     if(!r["$preloader"] || r["$preloader"] === r["$cpreloader"]){
         r["$preloader"] = r["$epreloader"];
     }
-    if(!r["$enotify"]){
-        r["$enotify"] = r["$cnotify"];
-    }
-    if(!r["$chart"]){
-        r["$chart"] = r["$echart"];
-    }
+    r["$enotify"] = r["$cnotify"];
     if(!r["$file-system"]){
         r["$file-system"] = r["$efile-system"];
     }
@@ -84,15 +74,5 @@ module.exports = (opts)=>{
     r.$electronProjectRoot = path.resolve(r.$projectRoot,"electron");
     r.$econtext = path.resolve(expo,"context");
     r.$epdf = path.resolve(expo,"pdf");
-    if(!r.$context){
-        r.$context = r.$econtext;
-    }
-    r["$erealm"] = path.resolve(expo,'realm');
-    if(!r.$realm){
-        r.$realm = r.$erealm;
-    }
-    const {withRealm} = opts; //si la prise en compte de la base de données realm est nécessaire
-    const $realmProvider = path.resolve(r.$realm,"Provider");
-    r.$erealmProvider = r.$realmProvider = false && !withRealm ? path.resolve($realmProvider,"realm.not-enabled.js") : $realmProvider;  
     return r;
 }

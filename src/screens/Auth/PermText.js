@@ -7,6 +7,10 @@ import theme from "$theme";
 
 const PermText = React.forwardRef(({isUserMasterAdmin,disabled,assignPerm,testID,text,title,label,checked,labelStyle,table,type,onToggle,actions,action,resource,tooltip,...props},ref)=>{
     testID = defaultStr(testID,"RN_AuthPermTextComponent");
+    if(!resource){
+        console.error("invalid resource for perm text : resource = ",resource,action,type,text,title," table = ",table,tooltip,props);
+        return null;
+    }
     return <Checkbox
         title = {tooltip || title}
         ref = {ref}

@@ -2,9 +2,11 @@ import { Checkbox } from 'react-native-paper';
 import View from "$ecomponents/View";
 import React from "$react";
 import {isUndefined,defaultObj,defaultVal,defaultStr} from "$cutils";
-import {isIos,isAndroid} from "$cplatform";
+import {isIos,isAndroid,isMobileNative} from "$cplatform";
 import theme,{Colors,DISABLED_OPACITY,ALPHA_OPACITY} from "$theme";
 import { StyleSheet } from 'react-native';
+import CheckboxItem from "./Item";
+
 export const checkedStatus = 'checked';
 export const uncheckedStatus = 'unchecked';
 import PropTypes from "prop-types";
@@ -12,6 +14,7 @@ import Tooltip from "$ecomponents/Tooltip";
 import HelperText from "$ecomponents/HelperText";
 export const leftPosition = 'leading';
 export const rightPosition = "trailing";
+
 
 export const CHECKED_ICON_NAME = isIos()? 'check':'check';
 
@@ -119,8 +122,8 @@ const CheckboxComponent = React.forwardRef((props,ref)=>{
    testID = defaultStr(testID,"RN_CheckboxComponent");
    return <View testID={testID+"_Container"} {...containerProps} style={[containerProps.style,disabledStyle]} pointerEvents={pointerEvents}>
         <Tooltip
-            Component = {Checkbox.Item}
             {...p}
+            Component = {CheckboxItem}
             testID = {testID}
             disabled = {disabled}
             readOnly = {!isEditable}

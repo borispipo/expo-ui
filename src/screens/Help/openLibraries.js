@@ -1,7 +1,7 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
 		"name": "@fto-consult/expo-ui",
-		"version": "8.5.0",
+		"version": "8.14.5",
 		"repository": {
 			"type": "git",
 			"url": "git+https://github.com/borispipo/expo-ui.git"
@@ -34,7 +34,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"@fto-consult/common": {
-		"version": "4.11.1",
+		"version": "4.15.56",
 		"url": "https://github.com/borispipo/common#readme",
 		"license": "ISC"
 	},
@@ -67,11 +67,6 @@ module.exports = {
 		"url": "https://github.com/crypto-browserify/crypto-browserify",
 		"license": "MIT"
 	},
-	"expo": {
-		"version": "50.0.2",
-		"url": "https://github.com/expo/expo/tree/main/packages/expo",
-		"license": "MIT"
-	},
 	"file-saver": {
 		"version": "2.0.5",
 		"url": "https://github.com/eligrey/FileSaver.js#readme",
@@ -81,6 +76,11 @@ module.exports = {
 		"version": "3.2.34",
 		"url": "https://ruimarinho.github.io/google-libphonenumber/",
 		"license": "(MIT AND Apache-2.0)"
+	},
+	"html2canvas": {
+		"version": "1.4.1",
+		"url": "https://html2canvas.hertzen.com",
+		"license": "MIT"
 	},
 	"htmlparser2-without-node-native": {
 		"version": "3.9.2",
@@ -94,6 +94,11 @@ module.exports = {
 	"js-base64": {
 		"version": "3.7.6",
 		"license": "BSD-3-Clause"
+	},
+	"jsbarcode": {
+		"version": "3.11.6",
+		"url": "https://github.com/lindell/JsBarcode#readme",
+		"license": "MIT"
 	},
 	"prop-types": {
 		"version": "15.8.1",
@@ -129,7 +134,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"react-native-paper": {
-		"version": "5.12.1",
+		"version": "5.12.3",
 		"url": "https://callstack.github.io/react-native-paper",
 		"license": "MIT"
 	},

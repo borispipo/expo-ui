@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import React from "$react";
 import {isMobileNative} from "$cplatform";
 import {debounce,isNumber,isNonNullString} from "$cutils";
-import {useMediaQueryUpdateStyle} from "$context/hooks";
+import {useMediaQueryUpdateStyle} from "$econtext/hooks";
 
 
 const ViewComponent = React.forwardRef(({onRender,onLayoutTimeout,pointerEvents,onLayout,autoHeight,autoWidth,elevation,...props},ref)=>{

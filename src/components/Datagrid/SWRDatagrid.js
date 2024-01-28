@@ -309,7 +309,13 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                 return false;
             }}
             renderCustomPagination = {({context})=>{
-                if(!canPaginate()) return null;
+                if(!canPaginate()) {
+                    return <View testID={testID+"_PaginationLabel"}>
+                        <Label textBold primary style={{fontSize:15}}>
+                            {total.formatNumber()}
+                        </Label>
+                    </View>
+                }
                 const page = pageRef.current, totalPages = getTotalPages(), prevPage = getPrevPage(),nextPage = getNextPage();
                 const iconProp = {
                     size : 25,

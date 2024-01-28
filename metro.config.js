@@ -2,7 +2,6 @@ const path = require("path");
 const fs = require("fs");
 const { getDefaultConfig } = require('@expo/metro-config');
 module.exports = function(opts){
-  const isDev = 'development' === process.env.NODE_ENV;
   opts = opts && typeof opts =='object'? opts : {};
   let {assetExts,sourceExts} = opts;
   assetExts = Array.isArray(assetExts)? assetExts: [];
@@ -19,17 +18,6 @@ module.exports = function(opts){
   });
   if(hasTranspilePath){
     config.transformer.babelTransformerPath = transpilePath;
-  }
-  config.watchFolders = Array.isArray(config.watchFolders) && config.watchFolders || [];
-  const isLocalTest = require("./is-local-dev")();
-  if(!isLocalTest && isDev){
-    config.watchFolders.push(localDir);
-  }
-  if(isDev){
-    const commonP = path.resolve(projectRoot,"node_modules","@fto-consult","common");
-    if(fs.existsSync(commonP)){
-      config.watchFolders.push(commonP);
-    }
   }
   // 2. Let Metro know where to resolve packages and in what order
   const nodeModulesPaths = (Array.isArray(config.resolver.nodeModulesPaths)?config.resolver.nodeModulesPaths : []);
@@ -60,13 +48,5 @@ module.exports = function(opts){
   // 3. Force Metro to resolve (sub)dependencies only from the `nodeModulesPaths`, @see : https://docs.expo.dev/guides/monorepos/
   config.resolver.disableHierarchicalLookup = true;
   
-  /*config.platforms = Array.isArray(config.platforms) && config.platforms || [];
-  ['ios', 'android', 'windows', 'web',"electron"].map(p=>{
-    if(!config.platforms.includes(p)){
-       config.platforms.push(p);
-    }
-  });*/
-  ///on génère les librairies open sources utilisées par l'application
-  //require("./find-licenses");
   return config;
 }

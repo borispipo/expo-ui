@@ -1,7 +1,7 @@
 import PermText from "./PermText";
 import React from "$react";
 import Expandable from "$ecomponents/Expandable";
-import {defaultObj,defaultStr,arrayValueExists,isNonNullString,defaultVal} from "$cutils";
+import {defaultObj,defaultStr,isNonNullString,defaultVal} from "$cutils";
 import PropTypes from "prop-types";
 import {hasResource} from "./utils";
 import { StyleSheet } from "react-native";
@@ -55,12 +55,16 @@ const PermLine = ({text,cellProps,isUserMasterAdmin,withGrid,defaultActions,reso
     isUserMasterAdmin = !!isUserMasterAdmin;
     let checked = isUserMasterAdmin;
     const onToggleSingle = ({resource,checked,action})=>{
+        if(!resource){
+            console.error("Invalid resource toggle ",resource,checked,action);
+            return;
+        }
         if(isUserMasterAdmin || !isNonNullString(action) || !isNonNullString(resource) || !isNonNullString(allPerms[resource])){
             return;
         }
         const data = {...state.data};
         const allAction = defaultStr(allPerms[resource]);
-        if(allAction == "all"){
+        if(allAction === "all"){
             if(checked){
                 data[resource] = allAction;
             } else delete data[resource];
@@ -68,10 +72,10 @@ const PermLine = ({text,cellProps,isUserMasterAdmin,withGrid,defaultActions,reso
             data[resource] = defaultStr(data[resource]).toLowerCase();
             let spl = data[resource].split("2");
             if(checked){
-                if(action !== 'read' && arrayValueExists(allAction.toLowerCase().split("2"),'read') && !arrayValueExists(spl,'read')){
+                if(action !== 'read' && allAction.toLowerCase().split("2").includes('read') && !spl.includes('read')){
                     spl.push('read');
                 }
-                if(!arrayValueExists(spl,action,true)){
+                if(!spl.includes(action)){
                     spl.push(action);
                 }
             } else {
@@ -108,40 +112,43 @@ const PermLine = ({text,cellProps,isUserMasterAdmin,withGrid,defaultActions,reso
             onChange({data:state.data,resource,table});
         }
     },[state.data])
-    const content = [];
-    Object.map(perms,(perm,i)=>{
-        const pText = defaultStr(perm.text,perm.label);
-        if(!isObj(perm.actions)){
-            if(!isNonNullString(pText)) return null;
-            allPerms[i] = "all";
-            checked = isUserMasterAdmin? true : isNonNullString(state.data[i]);
-            if(!checked){
-                allChecked = false;
+    const content = React.useStableMemo(()=>{
+        const content = [];
+        Object.map(perms,(perm,i)=>{
+            const pText = defaultStr(perm.text,perm.label);
+            if(!isObj(perm.actions)){
+                if(!isNonNullString(pText)) return null;
+                allPerms[i] = "all";
+                checked = isUserMasterAdmin? true : isNonNullString(state.data[i]);
+                if(!checked){
+                    allChecked = false;
+                }
+                content.push(<PermText isUserMasterAdmin={isUserMasterAdmin} key = {i} table={table} tooltip={defaultStr(perm.tooltip,perm.title,perm.desc)} onToggle={onToggleSingle} text={pText} checked ={checked} resource={i} action ={'all'}/>);
+                return;
+            } 
+            allPerms[i] = "";
+            const splitP = defaultStr(state.data[i]).toLowerCase().split("2");
+            const pContent = []
+            const hasS = isNonNullString(text) && isNonNullString(pText) && pText.toLowerCase() != text.toLowerCase()
+            Object.map(perm.actions,(p,j)=>{
+                if(!isObj(p) || !isNonNullString(p.text)) return null;
+                allPerms[i] = (isNonNullString(allPerms[i])?(allPerms[i]+"2"):"")+j;
+                checked = isUserMasterAdmin? true : splitP.includes(j);
+                if(!checked){
+                    allChecked = false;
+                }
+                pContent.push(<PermText labelStyle ={hasS? styles.permChildren : undefined} isUserMasterAdmin={isUserMasterAdmin}  key={j} table={table} onToggle={onToggleSingle} tooltip={defaultStr(p.tooltip,p.title,p.desc)} text = {p.text} checked ={checked} actions={perm.actions} resource={i} action ={j}/>)
+            });
+            if(pContent.length){
+                content.push(<View key={i} style={{backgroundColor:theme.colors.surface}} testID={testID+"_Content_"+i}>
+                    {hasS ? <Label testID={testID+'_Label'}>{pText}</Label> : null}
+                    {pContent}
+                </View>)
             }
-            content.push(<PermText isUserMasterAdmin={isUserMasterAdmin} key = {i} table={table} tooltip={defaultStr(perm.tooltip,perm.title,perm.desc)} onToggle={onToggleSingle} text={pText} checked ={checked} resource={i} action ={'all'}/>);
-            return;
-        } 
-        allPerms[i] = "";
-        const splitP = defaultStr(state.data[i]).toLowerCase().split("2");
-        const pContent = []
-        const hasS = isNonNullString(text) && isNonNullString(pText) && pText.toLowerCase() != text.toLowerCase()
-        Object.map(perm.actions,(p,j)=>{
-            if(!isObj(p) || !isNonNullString(p.text)) return null;
-            allPerms[i] = (isNonNullString(allPerms[i])?(allPerms[i]+"2"):"")+j;
-            checked = isUserMasterAdmin? true : arrayValueExists(splitP,j,true);
-            if(!checked){
-                allChecked = false;
-            }
-            pContent.push(<PermText labelStyle ={hasS? styles.permChildren : undefined} isUserMasterAdmin={isUserMasterAdmin}  key={j} table={table} onToggle={onToggleSingle} tooltip={defaultStr(p.tooltip,p.title,p.desc)} text = {p.text} checked ={checked} actions={perm.actions} resource={i} action ={j}/>)
+    
         });
-        if(pContent.length){
-            content.push(<View key={i} style={{backgroundColor:theme.colors.surface}} testID={testID+"_Content_"+i}>
-                {hasS ? <Label testID={testID+'_Label'}>{pText}</Label> : null}
-                {pContent}
-            </View>)
-        }
-
-    });
+        return content;
+    },[perms,state.data,state.expanded]);
     if(!content.length) return null;
     return <Cell testID={testID+"_Cell"} tabletSize={6} desktopSize={4} phoneSize={12} {...cellProps}>
         <Expandable  
@@ -162,7 +169,8 @@ const PermLine = ({text,cellProps,isUserMasterAdmin,withGrid,defaultActions,reso
                     labelStyle = {false}
                     checked = {allChecked} 
                     disabled = {disabled}
-                    resource={resource} action={allPerms[resource]} 
+                    resource={resource} 
+                    action={allPerms[resource]} 
                     text={text} 
                     testID = {testID+"_"+table}
                     isUserMasterAdmin = {isUserMasterAdmin}

@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "8.14.5",
+  "version": "8.15.0",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "scripts": {
     "clear-npx-cache": "npx clear-npx-cache",
@@ -48,7 +48,7 @@
     "dev": "npx expo start --no-dev --minify -c",
     "modifier-url-remote-git": "git remote set-url origin 'https://borispipo@github.com/borispipo/smart-eneo.git'",
     "update-app": "expo @emotion/native@latest react-native-big-list@latest @pchmn/expo-material3-theme@latest @emotion/native@latest @react-navigation/stack react-native-blob-util @react-navigation/native@latest @react-navigation/native-stack@latest  && npx expo install --fix",
-    "update": "npm i @fto-consult/node-utils@latest apexcharts@latest file-saver@latest google-libphonenumber@latest  @fto-consult/common@latest   react-native-iphone-x-helper@latest react-native-mime-types@latest react-native-paper@5 react-native-paper-dates@latest react-virtuoso@latest tippy.js@latest websql@latest xlsx@latest react-native-web@latest react-dom@latest react-native-get-random-values@latest && npm run update-apexchart && npm run find-licenses"
+    "update": "npm i @fto-consult/node-utils@latest apexcharts@latest file-saver@latest google-libphonenumber@latest  @fto-consult/common@latest   react-native-iphone-x-helper@latest react-native-mime-types@latest react-native-paper@5 react-native-paper-dates@latest react-virtuoso@latest tippy.js@latest websql@latest xlsx@latest react-native-get-random-values@latest && npm run update-apexchart && npm run find-licenses"
   },
   "bin": {
     "expo-ui": "./bin/index.js"
@@ -70,7 +70,7 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@faker-js/faker": "^8.0.2",
-    "@fto-consult/common": "^4.13.9",
+    "@fto-consult/common": "^4.15.56",
     "@fto-consult/node-utils": "^1.4.7",
     "apexcharts": "^3.45.2",
     "commander": "^11.1.0",
@@ -89,7 +89,7 @@
     "react-native-get-random-values": "^1.10.0",
     "react-native-iphone-x-helper": "^1.3.1",
     "react-native-mime-types": "^2.4.0",
-    "react-native-paper": "^5.12.1",
+    "react-native-paper": "^5.12.3",
     "react-native-paper-dates": "^0.21.7",
     "react-native-web": "^0.19.10",
     "react-virtuoso": "^4.6.2",

@@ -58,7 +58,7 @@ export default function ImageComponent(props){
         onChange,draw,round,drawText,drawLabel,rounded,defaultSrc,
         createSignatureOnly,pickImageProps,width,height,cropProps,size,resizeProps,containerProps,
         menuProps,pickUri,drawProps,imageProps,length,testID,withLabel,...rest} = props;
-    rest = defaultObj(rest);
+    const pickedImageRef = React.useRef(null);
     pickImageProps = defaultObj(pickImageProps);
     cropProps = defaultObj(cropProps);
     draw = defaultBool(draw,true);
@@ -144,6 +144,7 @@ export default function ImageComponent(props){
                 setSrc(imageSrc)
             });
         }
+        pickedImageRef.current = image;
         setSrc(imageSrc);
         return image;
     }
@@ -184,11 +185,15 @@ export default function ImageComponent(props){
         },
     }
     React.useEffect(()=>{
-        if(src === prevSrc)return;
-        if(typeof onChange =='function'){
-            onChange({context,src,deleted:src == null?true:false,dataURL:src,dataUrl:src})
+        if(src === prevSrc) {
+            pickedImageRef.current = null;
+            return;
         }
-    },[src])
+        if(typeof onChange =='function'){
+            onChange({context,...defaultObj(pickedImageRef.current),src,deleted:src == null?true:false,dataURL:src,dataUrl:src})
+        }
+        pickedImageRef.current = null;
+    },[src]);
     React.useEffect(()=>{
         if(typeof onMount =='function'){
             onMount({context});

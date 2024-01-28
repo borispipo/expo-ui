@@ -4,7 +4,6 @@ module.exports = {
 	"@expo/html-elements": "^0.5.1",
 	"@expo/vector-icons": "^14.0.0",
 	"@pchmn/expo-material3-theme": "^1.3.2",
-	"@react-native-community/datetimepicker": "^7.6.1",
 	"@react-native-community/netinfo": "^11.1.0",
 	"@react-native/assets-registry": "^0.72.0",
 	"@react-navigation/native": "^6.1.9",

@@ -4,11 +4,11 @@ import { registerRootComponent } from 'expo';
 import ExpoUIProvider from "$expo-ui"; 
 import screens from "$screens";
 import drawerItems from "$navigation/drawerItems";
-import Logo from "$components/Logo";
+import Logo from "$ecomponents/Logo";
 import drawerSections from "$navigation/drawerSections";
 import TableDataListScreen from "$screens/TableData/TableDataListScreen";
 import TableDataScreen from "$screens/TableData/TableDataScreen";
-import Notifications from "$components/Notifications";
+import Notifications from "$ecomponents/Notifications";
 import auth from "$src/auth";
 
 export default function AppMainEntry(){

@@ -2124,7 +2124,7 @@ export default class CommonDatagridComponent extends AppComponent {
     *       @param {object} chartType le type de chart, l'un des types du tableau displayTypes en haut du présent fichier
     *       @param {object} yAxisColumn la colonne de l'axe vertical y
     *       @param {object} xAxisColumn la colonne de l'axe des x de la courbe, pris dans les configurations du chart, config
-    *       @param {object} la fonction d'aggrégation, l'une des fonctions issues des fonctions d'aggrégations aggregatorsFuncions, @see : dans $components/Datagrid/Footer
+    *       @param {object} la fonction d'aggrégation, l'une des fonctions issues des fonctions d'aggrégations aggregatorsFuncions, @see : dans $ecomponents/Datagrid/Footer
     *   en affichage des tableaux de type sectionList, seul les colonnes de totalisation sont utilisées pour l'affichage du graphe
     *   Le nombre de graphes (series) à afficher est valable pour tous les graphes sauf les graphes de type pie/donut. 
     *   il est récupéré dans la variable chartConfig des configuration du chart, où par défaut le nombre de colonnes de totalisation des tableau (inférieur au nombre maximum de courbes surpportées par appexchart)

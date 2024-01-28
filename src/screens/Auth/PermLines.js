@@ -54,12 +54,16 @@ const PermLines = React.forwardRef(({user,gridProps,defaultActions:cDefaultActio
     const content = React.useMemo(()=>{
         const content = [];
         Object.map(tables,(table,tableName)=>{
-            if(!isObj(table) || !isObj(table.perms)) return null;
+            if(!isObj(table)) return null;
+            const tablePerms = typeof table.perms =="function"? table.perms({user,isMasterAdmin:isUserMasterAdmin,table,tables}) : table.perms;
+            if(!isObj(tablePerms)){
+                return null;
+            }
             tableName = defaultStr(table.tableName,table.table,tableName).toLowerCase().trim();
             const text = defaultStr(table.text,table.label)
             const resource = getTableDataPermResourcePrefix(tableName);
             const perms = {};
-            Object.map(table.perms,(perm,i)=>{
+            Object.map(tablePerms,(perm,i)=>{
                 const iLower = i.toLowerCase();
                 if(iLower == 'defaultactions' || iLower =='defaultaction'){
                     perms.defaultActions = perm;

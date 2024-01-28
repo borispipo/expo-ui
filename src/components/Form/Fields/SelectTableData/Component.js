@@ -14,6 +14,7 @@ import useApp from "$econtext/hooks";
 import DateLib from "$lib/date";
 import {useSWR} from "$econtext/hooks";
 import stableHash from "stable-hash";
+import {formatValue} from "$ecomponents/Datagrid/Common/utils";
 
 /*** la tabledataSelectField permet de faire des requêtes distantes pour rechercher les données
  *  Elle doit prendre en paramètre et de manière requis : les props suivante : 
@@ -21,7 +22,7 @@ import stableHash from "stable-hash";
  *  foreignKeyTable : la tableData dans laquelle effectuer les donées de la requêtes
  *  foreignKeyLabel : Le libélé dans la table étrangère
  */
-const TableDataSelectField = React.forwardRef(({foreignKeyColumn,swrOptions,foreignKeyLabelRenderers,onChange,isStructData,getForeignKeyTable:cGetForeignKeyTable,prepareFilters:cPrepareFilters,bindUpsert2RemoveEvents,onAdd,showAdd:customShowAdd,canShowAdd,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,parseMangoQueries,mutateFetchedItems,onFetchItems,isFilter,isUpdate,isDocEditing,items:customItems,onAddProps,fetchOptions,...props},ref)=>{
+const TableDataSelectField = React.forwardRef(({foreignKeyColumn,swrOptions,onChange,isStructData,getForeignKeyTable:cGetForeignKeyTable,prepareFilters:cPrepareFilters,bindUpsert2RemoveEvents,onAdd,showAdd:customShowAdd,canShowAdd,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,parseMangoQueries,mutateFetchedItems,onFetchItems,isFilter,isUpdate,isDocEditing,items:customItems,onAddProps,fetchOptions,...props},ref)=>{
     props.data = defaultObj(props.data);
     const type = defaultStr(props.type)?.toLowerCase();
     isStructData = isStructData || type?.replaceAll("-","").replaceAll("_","").trim().contains("structdata");
@@ -124,6 +125,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,swrOptions,fore
     const onFetchItemsRef = React.useRef();
     onFetchItemsRef.current = onFetchItems;
     const mutateFetchedItemsRef = React.useRef();
+    const fkeyFields = defaultObj(fKeyTable.fields);
     mutateFetchedItemsRef.current = mutateFetchedItems;
     const {isLoading:cIsLoading,data:fetchedItems,isValidating,refresh} = useSWR(hasErrors?null:queryPathKey,{
         fetcher : (url,opts1)=>{
@@ -201,39 +203,34 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,swrOptions,fore
     } else {
         dropdownActions.trefreshItem = refreshItem;
     }
-    foreignKeyLabelRenderers = defaultObj(foreignKeyLabelRenderers);
     const rItem = (p)=>{
         if(!isObj(p) || !isObj(p.item)) return null;
         let itemLabel = typeof foreignKeyLabel =='function'? foreignKeyLabel(p) : undefined;
         if(Array.isArray(foreignKeyLabel)){
-            let itl = "";
+            let labels = "";
             foreignKeyLabel.map(fk=>{
                 if(!isNonNullString(fk)) return;
-                const render = foreignKeyLabelRenderers[fk.trim()];
-                let itv = p.item[fk];
-                if(typeof render =='function'){
-                    itv = render(p);
-                } else {
-                    ///render c'est le type de données
-                    if(isNonNullString(render)){
-                        const t = render?.toLowerCase().trim();
-                        if(["date","datetime"].includes(t)){
-                            itv = DateLib.format(itv,t=='date'?DateLib.defaultDateFormat:DateLib.defaultDateTimeFormat);
-                        } else if(typeof itv =='number'){
-                            itv = t =='money'? itv.formatMoney()  : itv.formatNumber();
-                        }
-                    }  else {
-                        /***
-                            if(typeof itv =='string' && itv && DateLib.isIsoDateStr(itv)){
-                                itv = DateLib.format(itv,DateLib.defaultDateFormat);
-                            }
-                        */
+                const field = defaultObj(fkeyFields[fk]);
+                const type = defaultStr(field.type,"text").toLowerCase();
+                const format = defaultStr(field.format).toLowerCase();
+                const formatter = typeof field.formatValue =='function' && field.formatValue|| undefined;
+                let value = p.item[fk];
+                if(["date","datetime"].includes(type)){
+                    value = DateLib.format(value,type=='date'?DateLib.defaultDateFormat:DateLib.defaultDateTimeFormat);
+                } else if(format && formatter) {
+                    const v = formatValue(value,format,false,formatter);
+                    if(isNonNullString(v)){
+                        value = v;
                     }
-                }
-                itl+= (itl?" ":"")+ (itv || defaultStr(itv))
+                } else if(typeof value =="number"){
+                    if(format =="money"){
+                        value = value.formatMoney();
+                    } else value = value.formatNumber();
+                }   
+                labels+= (labels?" ":"")+ (defaultStr(value))
             });
-            if(itl){
-                itemLabel = itl;
+            if(labels){
+                itemLabel = labels;
             }
         }
         if(!itemLabel && isNonNullString(foreignKeyLabel)){
@@ -310,11 +307,6 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,swrOptions,fore
 TableDataSelectField.propTypes = {
     ...Dropdown.propTypes,
     swrOptions : PropTypes.object,//les options supplémentaires à passer à la fonction swr
-    /*** permet de faire le mappage entre les foreignKeyLabel et les type correspondants */
-    foreignKeyLabelRenderers : PropTypes.objectOf(PropTypes.oneOfType([
-        PropTypes.string, //représente le type de données associée à la colone dont le nom la clé 
-        PropTypes.func, //la fonction utilisée pour le rendu des colonnes de ce type
-    ])),
     prepareFilters : PropTypes.bool,//si les filtres seront customisé
     bindUpsert2RemoveEvents : PropTypes.bool,//si le composant écoutera l'évènement de rafraichissement des données
     onAdd : PropTypes.func, //({})=>, la fonction appelée lorsque l'on clique sur le bouton add

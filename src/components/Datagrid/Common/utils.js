@@ -235,10 +235,10 @@ export const  renderSelectFieldCell= ({rowData,rowCellValue,columnDef,columnFiel
 }
 
 export const formatValue = (value,format,abreviateValues,formatter)=>{
-    if(typeof value !='number') return value;
     if(typeof value =='boolean'){
         return value ? "Oui" : "Non";
     }
+    if(typeof value !='number') return value;
     format = typeof format =='string'? format.toLowerCase().trim() : "";
     if(typeof formatter =='function'){
         return formatter({value,format,abreviateValues,abreviate:abreviateValues});

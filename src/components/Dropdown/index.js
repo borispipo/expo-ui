@@ -302,9 +302,7 @@ class DropdownComponent extends AppComponent {
                 }
             }
         }
-        const hasNotValid = sDText?false:true;
-        this.toggleHasNotValidSelectedValue(hasNotValid);
-        if(hasNotValid && selectedValues){
+        if(!sDText && selectedValues){
             if(Array.isArray(selectedValues)){
                 for(let i in selectedValues){
                     const text = selectedValues[i];
@@ -319,8 +317,11 @@ class DropdownComponent extends AppComponent {
                     }
                 }
             } else if(isNonNullString(selectedValues)) {
-                return selectedValues
+                sDText = selectedValues
             }
+            this.toggleHasNotValidSelectedValue(!!sDText);
+        } else {
+            this.toggleHasNotValidSelectedValue(false);
         }
         if(this.canHandleMultiple && counter > maxCount && sDText){
             sDText+= ", et "+((counter-maxCount).formatNumber()+" de plus")

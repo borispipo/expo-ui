@@ -116,10 +116,10 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,swrOptions,fore
     const canDisable = isFilter || isDisabled;
     swrOptions.revalidateOnFocus = canDisable? false : typeof swrOptions.revalidateOnFocus === "boolean" ? swrOptions.revalidateOnFocus : false;
     swrOptions.revalidateIfStale = canDisable? false : typeof swrOptions.revalidateIfStale ==="boolean"? swrOptions.revalidateIfStale : false;
+    swrOptions.revalidateOnReconnect = canDisable ? false : typeof swrOptions.revalidateOnReconnect ==="boolean"? swrOptions.revalidateOnReconnect : false;
+    swrOptions.refreshWhenHidden = canDisable ? false :  typeof swrOptions.refreshWhenHidden =="boolean"? swrOptions.refreshWhenHidden : false;
     if(canDisable){
-        swrOptions.refreshInterval = 2500*1000*60;
-        swrOptions.refreshWhenHidden = false;
-        swrOptions.revalidateOnReconnect = false;
+        swrOptions.refreshInterval = 30000*1000*60;
     }
     const restOptionsRef = React.useRef({});
     const fetchedResultRef = React.useRef({});

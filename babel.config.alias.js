@@ -18,6 +18,9 @@ module.exports = (opts)=>{
     const expo = path.resolve(expoUI,"src");
     r["$ecomponents"] = r["$expo-components"] = path.resolve(expo,"components");
     r["$econfirm"] = path.resolve(r["$expo-components"],"Dialog","confirm");
+    if(!r.$confirm){
+        r.$confirm = r.$econfirm;
+    }
     r["$eauth"] = path.resolve(expo,"auth");
     r["$elayouts"] = path.resolve(expo,"layouts");
     r["$emedia"] = path.resolve(expo,"media");

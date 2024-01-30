@@ -20,8 +20,8 @@ if(fs.existsSync(mainJSONPath)){
     const filteredDeps = Object.keys(filterdDObj);
     if(filteredDeps.length){
         const script = filteredDeps.join(" ");
-        exec(`npx expo install ${script}`,{projectRoot}).finally((i)=>{
-            exec(`npx expo install --fix`,{projectRoot}).finally(()=>{
+        exec(`npm install expo`,{projectRoot}).finally(()=>{
+            exec(`npx expo install ${script} --fix`,{projectRoot}).finally((i)=>{
                 const newPackageJS = JSON.parse(fs.readFileSync(mainJSONPath));
                 let hasChanged = false;
                 if(newPackageJS?.dependencies && typeof newPackageJS?.dependencies =="object"){
@@ -42,8 +42,8 @@ module.exports = ${JSON.stringify(dependencies,null,"\t")};
                         console.log(e," is generated error");
                     }
                 }
-            });
-        });
+            });    
+        })
     } else {
         console.log("Aucune dépendence expo à mettre à jour");
     }

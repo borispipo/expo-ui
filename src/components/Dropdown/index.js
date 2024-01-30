@@ -12,7 +12,7 @@ import theme,{Colors} from "$theme";
 import Dialog from "$ecomponents/Dialog";
 import {isMobileOrTabletMedia} from "$cplatform/dimensions";
 import {isIos} from "$cplatform";
-import {defaultVal,defaultStr,defaultObj,defaultBool,defaultFunc,debounce,isNonNullString,compare as NCompare} from "$cutils";
+import {defaultVal,defaultStr,defaultObj,defaultBool,defaultFunc,debounce,isNonNullString,compare as NCompare,uniqid} from "$cutils";
 import MenuComponent from "$ecomponents/Menu";
 import HelperText from "$ecomponents/HelperText";
 import TextField,{flatMode} from "$ecomponents/TextField";
@@ -44,6 +44,16 @@ class DropdownComponent extends AppComponent {
             fieldsToSort : {
                 value : this.prepareSortableFields(),override : false, writable : false,
             },
+            ___hasErrorSymbol : {value:uniqid(`${this.props.name||''}error-symbol-prop`)},
+            hasNotValidSelectedValue : {value:()=>{
+                return !!this[this.___hasErrorSymbol];
+            }},
+            toggleHasNotValidSelectedValue : {value:(bool)=>{
+                if(typeof bool =='boolean'){
+                    this[this.___hasErrorSymbol] = bool;
+                }
+                return this[this.___hasErrorSymbol];
+            }},
             getItemKey : {value : typeof getItemKey =='function' ? getItemKey: (item,index)=>React.key(item,index),override:false,writable:false},
             getValueKey : {
                 value : typeof getValueKey =='function'? getValueKey : (value,warn)=>{
@@ -290,6 +300,26 @@ class DropdownComponent extends AppComponent {
                         sDText+= (sDText?", ":"")+text;
                     }
                 }
+            }
+        }
+        const hasNotValid = sDText?false:true;
+        this.toggleHasNotValidSelectedValue(hasNotValid);
+        if(hasNotValid && selectedValues){
+            if(Array.isArray(selectedValues)){
+                for(let i in selectedValues){
+                    const text = selectedValues[i];
+                    if(!isNonNullString(text)) continue;
+                    if(!this.canHandleMultiple){
+                        sDText = text;
+                    } else {
+                        counter++;
+                        if(counter <= maxCount){
+                            sDText+= (sDText?", ":"")+text;
+                        }
+                    }
+                }
+            } else if(isNonNullString(selectedValues)) {
+                return selectedValues
             }
         }
         if(this.canHandleMultiple && counter > maxCount && sDText){
@@ -869,7 +899,11 @@ class DropdownComponent extends AppComponent {
         if(renderTag){
             tagProps = defaultObj(tagProps);
         }
-        helperText = <HelperText disabled = {disabled} error={error}>{helperText}</HelperText>
+        error = error || this.hasNotValidSelectedValue()
+        if(error && selectedText && (!helperText || !React.isValidElement(helperText,true))){
+            helperText = `Ce champ admet des valeurs par défaut invalide où innexistant dans la liste des éléments à sélectionner`;
+        }
+        helperText = <HelperText disabled={disabled} error={error}>{helperText}</HelperText>
         let labelTextField = defaultVal(label,text);
         const isFlatMode = textInputProps.mode  === flatMode;
         const dropdownStyle = StyleSheet.flatten(dropdownProps?.style);

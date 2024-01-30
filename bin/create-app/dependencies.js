@@ -24,8 +24,6 @@ module.exports = {
 	"expo-web-browser": "~12.8.2",
 	"react-native": "0.73.2",
 	"@react-native-async-storage/async-storage": "1.21.0",
-	"react-native-big-list": "^1.6.1",
-	"react-native-blob-util": "^0.18.6",
 	"react-native-safe-area-context": "4.8.2",
 	"react-native-screens": "~3.29.0",
 	"react-native-svg": "14.1.0",

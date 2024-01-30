@@ -63,7 +63,7 @@ const NAVIGATION_PERSISTENCE_KEY = 'NAVIGATION_STATE';
 function App({init:initApp,initialRouteName:appInitialRouteName,children}) {
   AppStateService.init();
   const SplashScreenComponent = useAppComponent("SplashScreen");
-  const {FontsIconsFilter,beforeExit,AppWrapper,preferences:appPreferences,navigation,getStartedRouteName,withSplashScreen,components:{MainProvider}} = useContext();
+  const {FontsIconsFilter,beforeExit,preferences:appPreferences,navigation,getStartedRouteName,withSplashScreen,components:{MainProvider}} = useContext();
   const {containerProps} = navigation;
   const [initialState, setInitialState] = React.useState(undefined);
   const appReadyRef = React.useRef(true);

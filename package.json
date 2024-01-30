@@ -71,7 +71,6 @@
     "@emotion/react": "^11.11.1",
     "@faker-js/faker": "^8.0.2",
     "@fto-consult/common": "^4.18.3",
-    "@fto-consult/expo-ui": "^8.16.0",
     "@fto-consult/node-utils": "^1.4.7",
     "apexcharts": "^3.45.2",
     "commander": "^11.1.0",

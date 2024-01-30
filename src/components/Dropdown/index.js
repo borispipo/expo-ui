@@ -46,7 +46,7 @@ class DropdownComponent extends AppComponent {
             },
             ___hasErrorSymbol : {value:uniqid(`${this.props.name||''}error-symbol-prop`)},
             hasNotValidSelectedValue : {value:()=>{
-                return !!this[this.___hasErrorSymbol];
+                return this.isLoading()? false :  !!this[this.___hasErrorSymbol];
             }},
             toggleHasNotValidSelectedValue : {value:(bool)=>{
                 if(typeof bool =='boolean'){
@@ -900,7 +900,7 @@ class DropdownComponent extends AppComponent {
         if(renderTag){
             tagProps = defaultObj(tagProps);
         }
-        error = error || this.hasNotValidSelectedValue()
+        error = error || this.hasNotValidSelectedValue() || false;
         if(error && selectedText && (!helperText || !React.isValidElement(helperText,true))){
             helperText = `Ce champ admet des valeurs par défaut invalide où innexistant dans la liste des éléments à sélectionner`;
         }

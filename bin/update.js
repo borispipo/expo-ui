@@ -20,7 +20,7 @@ if(fs.existsSync(mainJSONPath)){
     const filteredDeps = Object.keys(filterdDObj);
     if(filteredDeps.length){
         const script = filteredDeps.join(" ");
-        exec(`npm install ${script}`,{projectRoot}).finally((i)=>{
+        exec(`npx expo install ${script}`,{projectRoot}).finally((i)=>{
             exec(`npx expo install --fix`,{projectRoot}).finally(()=>{
                 const newPackageJS = JSON.parse(fs.readFileSync(mainJSONPath));
                 let hasChanged = false;

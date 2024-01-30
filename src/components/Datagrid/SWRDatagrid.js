@@ -25,6 +25,7 @@ import PropTypes from "prop-types";
 import {Menu} from "$ecomponents/BottomSheet";
 import session from "$session";
 import {useScreen,useSWR} from "$econtext/hooks";
+import {HStack} from "$ecomponents/Stack";
 
 export const getSessionKey = ()=>{
     return Auth.getSessionKey("swrDatagrid");
@@ -82,6 +83,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
         icon : cIcon,
         swrOptions,
         pagination,
+        renderCustomPagination,
         ...rest
     } = props;
     const screenContext = useScreen();
@@ -308,13 +310,15 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                 doRefresh(true);
                 return false;
             }}
-            renderCustomPagination = {({context})=>{
+            renderCustomPagination = {(...args)=>{
+                const cPagination = typeof renderCustomPagination =="function"? renderCustomPagination(...args) : null;
                 if(!canPaginate()) {
-                    return <View testID={testID+"_PaginationLabel"}>
+                    return <HStack testID={testID+"_PaginationLabel"}>
+                        {React.isValidElement(cPagination)? cPagination : null}
                         <Label textBold primary style={{fontSize:15}}>
                             {total.formatNumber()}
                         </Label>
-                    </View>
+                    </HStack>
                 }
                 const page = pageRef.current, totalPages = getTotalPages(), prevPage = getPrevPage(),nextPage = getNextPage();
                 const iconProp = {
@@ -324,6 +328,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                 const sStyle = [styles.limitStyle1,theme.styles.noPadding,theme.styles.noMargin];
                 return <View testID={testID+"_PaginationContainer"} pointerEvents={pointerEvents}>
                     <View style={[theme.styles.row,theme.styles.w100]} pointerEvents={pointerEvents} testID={testID+"_PaginationContentContainer"}>
+                        {React.isValidElement(cPagination)? cPagination : null}
                         <Menu
                             testID={testID+"_SimpleSelect"}
                             style = {sStyle}

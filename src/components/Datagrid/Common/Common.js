@@ -731,7 +731,9 @@ export default class CommonDatagridComponent extends AppComponent {
         const rowKeysColumns = {};
         Object.mapToArray(columns,(headerCol1,headerIndex)=>{
             if(!isObj(headerCol1)) return;
-            const header = Object.clone(headerCol1);
+            const hClone = Object.clone(headerCol1);
+            const header = isObj(hClone.datagrid) ? extendObj(true,{},hClone,hClone.datagrid) : hClone;
+            //delete header.render;
             header.field = defaultStr(header.field, headerIndex)
             if(header.primaryKey){
                 rowKeysColumns[header.field] = true;
@@ -1825,7 +1827,7 @@ export default class CommonDatagridComponent extends AppComponent {
     return this.SetExportOptions({excel:false,pdf:true}).then((opts)=>{
         const {data,config:cConfig,pdfConfig} = opts;
         const config = extendObj({},pdfConfig,cConfig);
-        data[0] = createTableHeader(data[0],{...config,filter:(a)=>{
+        data[0] = createTableHeader(data[0],{filter:(a)=>{
             return true;
         }});
         const pT = defaultStr(config.pdfDocumentTitle).trim();
@@ -2124,7 +2126,7 @@ export default class CommonDatagridComponent extends AppComponent {
     *       @param {object} chartType le type de chart, l'un des types du tableau displayTypes en haut du présent fichier
     *       @param {object} yAxisColumn la colonne de l'axe vertical y
     *       @param {object} xAxisColumn la colonne de l'axe des x de la courbe, pris dans les configurations du chart, config
-    *       @param {object} la fonction d'aggrégation, l'une des fonctions issues des fonctions d'aggrégations aggregatorsFuncions, @see : dans $ecomponents/Datagrid/Footer
+    *       @param {object} la fonction d'aggrégation, l'une des fonctions issues des fonctions d'aggrégations aggregatorsFuncions, @see : dans $components/Datagrid/Footer
     *   en affichage des tableaux de type sectionList, seul les colonnes de totalisation sont utilisées pour l'affichage du graphe
     *   Le nombre de graphes (series) à afficher est valable pour tous les graphes sauf les graphes de type pie/donut. 
     *   il est récupéré dans la variable chartConfig des configuration du chart, où par défaut le nombre de colonnes de totalisation des tableau (inférieur au nombre maximum de courbes surpportées par appexchart)
@@ -3572,8 +3574,8 @@ export default class CommonDatagridComponent extends AppComponent {
                 return rr;
             }
         }
-        const rkey = React.getKeyFromObj(row,rowIndex,rowKey);
-        if(rkey){
+        const rkey = React.getKeyFromObj(row,rowKey);
+        if(rkey && (typeof rkey =="number" || typeof rkey =="string")){
             return rkey;
         }
         if(isNonNullString(rowKey) && isObj(row) && (isNonNullString(row[rowKey]) || isDecimal(row[rowKey]))){

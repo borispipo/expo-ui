@@ -5,12 +5,7 @@ export default class FormSelectStructDataField extends SelectField{
     _render(props){
         return <SelectStructData 
             {...props}
-            onChange = {(args)=>{
-                this.validateWithCallOnChange(args);
-                if(typeof this.props.onChange =='function'){
-                    this.props.onChange(args);
-                }
-            }}
+            onChange = {this.validateWithCallOnChange.bind(this)}
             ref = {(el)=>{
                 this._field = el;
             }}

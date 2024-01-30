@@ -14,12 +14,7 @@ export default class FormFieldSelectFontIcon extends SelectField{
                     props.onMount({context,...rest});
                  }
             }}
-            onChange = {(args)=>{
-                this.validateWithCallOnChange(args);
-                if(typeof props.onChange =='function'){
-                    props.onChange(args);
-                }
-            }}
+            onChange = {this.validateWithCallOnChange.bind(this)}
         />
     }
 }

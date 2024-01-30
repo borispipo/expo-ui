@@ -27,6 +27,7 @@ import {Content as BottomSheet,Menu as BottomSheetMenu,getContentHeight} from "$
 import {isWeb} from "$cplatform";
 import Tooltip from "$ecomponents/Tooltip";
 import TouchableRipple from "$ecomponents/TouchableRipple";
+import stableHash from "stable-hash";
 
 const _isIos = isIos();
 
@@ -168,7 +169,7 @@ class DropdownComponent extends AppComponent {
                     }
                 }
             }
-            if(this.props.onChange){
+            if(typeof this.props.onChange =="function" && stableHash(previousSelected) != stableHash(this.state.selected)){
                 this.props.onChange({value:this.state.selected,selectedKey:valueKey,selectedItems : this.getSelectedItems(),selectedItem,item:selectedItem,items:this.state.data});
             }
         },force);

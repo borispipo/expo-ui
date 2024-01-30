@@ -5,12 +5,7 @@ export default class FormSelectTableDataField extends SelectField{
     _render(props){
         return <SelectTableData 
             {...props}
-            onChange = {(args)=>{
-                this.validateWithCallOnChange(args);
-                if(typeof this.props.onChange =='function'){
-                    this.props.onChange(args);
-                }
-            }}
+            onChange = {this.validateWithCallOnChange.bind(this)}
             beforeFetchItems = {(opts)=>{
                 if(typeof props.beforeFetchItems =='function'){
                     return props.beforeFetchItems({...opts,context:this,dropdownContext : this._field})

@@ -34,6 +34,7 @@ export const useSWR =  (path,options)=>{
         ...Object.assign({},options),
         swrOptions : {
             provider: () => new Map(),
+            keepPreviousData : true,
             ...swrConfig,
             isOnline(...rest) {
                 if(isLocalHost) return true;

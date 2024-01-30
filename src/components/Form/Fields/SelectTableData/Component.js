@@ -16,13 +16,15 @@ import {useSWR} from "$econtext/hooks";
 import stableHash from "stable-hash";
 import {formatValue} from "$ecomponents/Datagrid/Common/utils";
 
+
 /*** la tabledataSelectField permet de faire des requêtes distantes pour rechercher les données
  *  Elle doit prendre en paramètre et de manière requis : les props suivante : 
  *  foreignKeyColumn : La colonne dont le champ fait référence à la clé étrangère, ie fKeyTable dans laquelle faire les requêtes fetch
  *  foreignKeyTable : la tableData dans laquelle effectuer les donées de la requêtes
  *  foreignKeyLabel : Le libélé dans la table étrangère
  */
-const TableDataSelectField = React.forwardRef(({foreignKeyColumn,swrOptions,onChange,isStructData,getForeignKeyTable:cGetForeignKeyTable,prepareFilters:cPrepareFilters,bindUpsert2RemoveEvents,onAdd,showAdd:customShowAdd,canShowAdd,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,parseMangoQueries,mutateFetchedItems,onFetchItems,isFilter,isUpdate,isDocEditing,items:customItems,onAddProps,fetchOptions,...props},ref)=>{
+const TableDataSelectField = React.forwardRef(({foreignKeyColumn,swrOptions,foreignKeyLabelRenderers,onChange,isStructData,getForeignKeyTable:cGetForeignKeyTable,prepareFilters:cPrepareFilters,bindUpsert2RemoveEvents,onAdd,showAdd:customShowAdd,canShowAdd,foreignKeyTable,fetchItemsPath,foreignKeyLabel,foreignKeyLabelIndex,dropdownActions,fields,fetchItems:customFetchItem,parseMangoQueries,mutateFetchedItems,onFetchItems,isFilter,renderFilter,render_filter,isUpdate,isDocEditing,items:customItems,onAddProps,fetchOptions,...props},ref)=>{
+    isFilter = isFilter || !!renderFilter || !!render_filter;
     props.data = defaultObj(props.data);
     const type = defaultStr(props.type)?.toLowerCase();
     isStructData = isStructData || type?.replaceAll("-","").replaceAll("_","").trim().contains("structdata");
@@ -97,7 +99,6 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,swrOptions,onCh
     const hashKey = React.useMemo(()=>{
         return stableHash(fetchOptions);
     },[fetchOptions]);
-    const hasRefreshedRef = React.useRef(false);
     const showAdd = React.useMemo(()=>{
         if(isFilter || !foreignKeyTable) return false;
         if(typeof canShowAdd ==='function'){
@@ -112,10 +113,12 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,swrOptions,onCh
     fetchItemsRef.current = customFetchItem;
     swrOptions = Object.assign({},swrOptions);
     ///@see : https://swr.vercel.app/docs/revalidation#disable-automatic-revalidations
-    if(isFilter || isDisabled){
-        swrOptions.refreshInterval = 0;
-        swrOptions.revalidateOnFocus = false;
-        swrOptions.revalidateIfStale = false;
+    const canDisable = isFilter || isDisabled;
+    swrOptions.revalidateOnFocus = canDisable? false : typeof swrOptions.revalidateOnFocus === "boolean" ? swrOptions.revalidateOnFocus : false;
+    swrOptions.revalidateIfStale = canDisable? false : typeof swrOptions.revalidateIfStale ==="boolean"? swrOptions.revalidateIfStale : false;
+    if(canDisable){
+        swrOptions.refreshInterval = 2500*1000*60;
+        swrOptions.refreshWhenHidden = false;
         swrOptions.revalidateOnReconnect = false;
     }
     const restOptionsRef = React.useRef({});
@@ -157,7 +160,6 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,swrOptions,onCh
                 if(typeof onFetchItemsRef.current ==='function'){
                     onFetchItemsRef.current({...args,context:{refresh},props});
                 }
-                hasRefreshedRef.current = true;
                 fetchedResultRef.current = args;
                 return fetchedResultRef.current;
             }).catch((e)=>{
@@ -203,6 +205,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,swrOptions,onCh
     } else {
         dropdownActions.trefreshItem = refreshItem;
     }
+    foreignKeyLabelRenderers = defaultObj(foreignKeyLabelRenderers);
     const rItem = (p)=>{
         if(!isObj(p) || !isObj(p.item)) return null;
         let itemLabel = typeof foreignKeyLabel =='function'? foreignKeyLabel(p) : undefined;
@@ -258,14 +261,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,swrOptions,onCh
         showAdd = {showAdd}
         isLoading = {isLoading}
         dialogProps = {dialogProps}
-        onChange = {(...args)=>{
-            if(isFilter){
-                if(!hasRefreshedRef.current) return;
-                if(JSON.stringify(defaultValueRef.current) === JSON.stringify(args[0]?.value)) return;
-                defaultValueRef.current = args[0]?.value;
-            }
-            if(onChange) return onChange(...args);
-        }}
+        onChange = {onChange}
         ref = {ref}
         defaultValue = {foreignKeyColumnValue}
         dropdownActions = {dropdownActions}
@@ -307,6 +303,11 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,swrOptions,onCh
 TableDataSelectField.propTypes = {
     ...Dropdown.propTypes,
     swrOptions : PropTypes.object,//les options supplémentaires à passer à la fonction swr
+    /*** permet de faire le mappage entre les foreignKeyLabel et les type correspondants */
+    foreignKeyLabelRenderers : PropTypes.objectOf(PropTypes.oneOfType([
+        PropTypes.string, //représente le type de données associée à la colone dont le nom la clé 
+        PropTypes.func, //la fonction utilisée pour le rendu des colonnes de ce type
+    ])),
     prepareFilters : PropTypes.bool,//si les filtres seront customisé
     bindUpsert2RemoveEvents : PropTypes.bool,//si le composant écoutera l'évènement de rafraichissement des données
     onAdd : PropTypes.func, //({})=>, la fonction appelée lorsque l'on clique sur le bouton add

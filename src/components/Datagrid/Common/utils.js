@@ -32,44 +32,44 @@ export const renderRowCell = (arg)=>{
     const extra = {style},renderArgs = arg;
     renderArgs.extra = extra;
     renderArgs.item = rowData;
-    const defaultValue = renderArgs.defaultValue = renderArgs.value = rowData[columnField];
+    renderArgs.defaultValue = renderArgs.value = rowData[columnField];
     let key = getRowKey.call(context,rowData,rowIndex)+"-"+columnField;
     if(isObj(columnDef.datagrid) && isFunction(columnDef.datagrid.render)){
         _render = columnDef.datagrid.render.call(context,renderArgs);
     } else if(isFunction(columnDef.multiplicater)){
         _render = defaultDecimal(columnDef.multiplicater({...renderArgs,value:rowData[columnField]}),rowData[columnField]);
-    } else {
-        _render = defaultValue;
+    } 
+    const cellValue = defaultVal(_render,rowData[columnField]);
+    {
+        _render = cellValue;
         if(!renderText && defaultStr(columnDef.format).toLowerCase() === 'hashtag'){
-        _render = <Hashtag>{_render}</Hashtag>
-        } else if(typeof columnDef.render === "function"){
-            _render = columnDef.render.call(context,renderArgs);
+            _render = <Hashtag>{_render}</Hashtag>
         } else if(arrayValueExists( _type,["date","datetime","time"])){
-            if(rowData[columnField]){
+            if(cellValue){
                 const sqlFormat =_type === 'time'? undefined : _type ==="datetime" ? DateLib.SQLDateTimeFormat : DateLib.SQLDateFormat;
-                let _dd =DateLib.parse(rowData[columnField],sqlFormat);
+                let _dd =DateLib.parse(cellValue,sqlFormat);
                 if(DateLib.isDateObj(_dd)){
                     const eFormat = defaultStr(columnDef.format,(_type === 'time'?DateLib.defaultTimeFormat:_type=="datetime"? DateLib.defaultDateTimeFormat:DateLib.masks.defaultDate));
                     _render = DateLib.format(_dd,eFormat);
                 }
             }
-            if(!_render) _render = rowData[columnField]
+            if(!_render) _render = cellValue
         } else if(arrayValueExists(_type,['switch','checkbox'])){
             let {checkedLabel,checkedValue,uncheckedLabel,uncheckedValue} = columnDef;
             checkedLabel = defaultStr(checkedLabel,'Oui')
             uncheckedLabel = defaultStr(uncheckedLabel,'Non')
             checkedValue = defaultVal(checkedValue,1); uncheckedValue = defaultVal(uncheckedValue,0)
-            let val = defaultVal(rowData[columnField],columnDef.defaultValue,columnDef.value)
-            if(val === checkedValue){
+            let val = defaultVal(cellValue,columnDef.defaultValue,columnDef.value)
+            if(val == checkedValue){
                 _render = checkedLabel;
             } else _render = uncheckedLabel;
         }
         else if(!renderText && (_type =='selectcountry')){
-            _render = <Flag withCode {...columnDef} length={undefined} width={undefined} height={undefined} code={defaultValue}/>
+            _render = <Flag withCode {...columnDef} length={undefined} width={undefined} height={undefined} code={cellValue}/>
         }
         ///le lien vers le table data se fait via la colonne ayant la propriété foreignKeyTable de type chaine de caractère non nulle
         else if(!renderText && (isNonNullString(columnDef.foreignKeyTable) || columnDef.primaryKey === true || arrayValueExists(['id','piece'],_type))){
-            const id = rowData[columnField]?.toString();
+            const id = defaultStr(cellValue,typeof cellValue ==="number" ? String(cellValue) : undefined)?.toString();
             if(isNonNullString(id) || typeof id ==='number'){
                 const foreignKeyTable = defaultStr(columnDef.foreignKeyTable,columnDef.table,columnDef.tableName);
                 const foreignKeyColumn = defaultStr(columnDef.foreignKeyColumn,columnDef.field);
@@ -100,7 +100,7 @@ export const renderRowCell = (arg)=>{
                             hasC = true;
                             renderedItems++;
                             const suffix = renderedItems === maxItemsToRender && idSplit.length > maxItemsToRender ? <Label>...et {" "+idSplit.length.formatNumber()+" de plus"}</Label> : null;
-                            return suffix ? <>
+                            return suffix ? <React.Fragment key={index}>
                                 <TableLink 
                                     key = {index}
                                     {...rProps}
@@ -109,7 +109,7 @@ export const renderRowCell = (arg)=>{
                                     {sep2+idd}
                                 </TableLink>
                                 {suffix}
-                            </> : <TableLink 
+                            </React.Fragment> : <TableLink 
                                     key = {index}
                                     {...rProps}
                                     id = {idd}
@@ -137,11 +137,11 @@ export const renderRowCell = (arg)=>{
             columnDef.size = defaultDecimal(columnDef.size,50);
             columnDef.readOnly = defaultBool(columnDef.readOnly,true)
             columnDef.rounded = defaultBool(columnDef.rounded,columnDef.round,true);
-            columnDef.src = rowData[columnField];
+            columnDef.src = cellValue;
             _render = <Image {...columnDef}/>
         } 
         if(_render === undefined || _render ===null){
-            _render = rowData[columnField];
+            _render = cellValue;
         }
         if(columnDef.type =="password" && isNonNullString(_render)){
             let l = Math.max(_render.length,20);
@@ -155,7 +155,7 @@ export const renderRowCell = (arg)=>{
         }
     } 
     if(_render ===undefined){
-        _render = rowData[columnField];
+        _render = cellValue;
     }
     if(isArray(_render)){
         _render = _render.join(arrayValueSeparator);
@@ -235,10 +235,10 @@ export const  renderSelectFieldCell= ({rowData,rowCellValue,columnDef,columnFiel
 }
 
 export const formatValue = (value,format,abreviateValues,formatter)=>{
+    if(typeof value !='number') return value;
     if(typeof value =='boolean'){
         return value ? "Oui" : "Non";
     }
-    if(typeof value !='number') return value;
     format = typeof format =='string'? format.toLowerCase().trim() : "";
     if(typeof formatter =='function'){
         return formatter({value,format,abreviateValues,abreviate:abreviateValues});

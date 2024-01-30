@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import KeyboardEventHandler from "../KeyboardEventHandler";
-import { addMediaQueryUpdateStyeSubscription } from "$econtext/hooks";
+import { addMediaQueryUpdateStyeSubscription } from "$context/hooks";
 import Dimensions from "$cdimensions";
 const {getActions,getFormFields,Forms} = require("../utils")
 import TextField,{parseDecimal} from "$ecomponents/TextField";
@@ -23,7 +23,7 @@ import sprintf from "./sprintf";
 import ErrorMessage from "$ecomponents/ErrorBoundary/ErrorMessage";
 import { UPPER_CASE, LOWER_CASE} from "$common/lib/validator";
 import Label from "$ecomponents/Label";
-
+import stableHash from "stable-hash";
 
 export default class Field extends AppComponent {
     constructor(props) {
@@ -65,7 +65,7 @@ export default class Field extends AppComponent {
                 },override : false, writable : false
             },
             isFilter : {
-                value : ()=>defaultVal(renderfilter,render_filter) ? true : false,override : false,writable : false,
+                value : ()=>defaultVal(renderfilter,render_filter,this.props.renderfilter,this.props._render_filter) ? true : false,override : false,writable : false,
             },
             isEditableBySymbol : {
                 value : ()=>{
@@ -253,7 +253,7 @@ export default class Field extends AppComponent {
             this.INITIAL_STATE._lastValidatingValue = value;
             this.setState ({validValue:value,validatingValue:value,previousValue:this.state.validValue,errorText:"",error:false},()=>{
                 this._previousValue  = this.state.validValue;
-                let fields = getFormFields(this.formName);
+                const fields = getFormFields(this.formName);
                 let canEnable = true;
                 for(var k in fields){
                     if(k === this.getName()) continue;
@@ -267,12 +267,12 @@ export default class Field extends AppComponent {
                         break;
                     }
                 }
-                let actions = getActions(this.formName);
-                let action = canEnable?"enable":"disable";
+                const actions = getActions(this.formName);
+                const action = canEnable?"enable":"disable";
                 for(var k in actions){
                     actions[k][action]();
                 }
-                let form = Forms.getForm(this.formName);
+                const form = Forms.getForm(this.formName);
                 typeof this.props.onValidate=="function" && this.props.onValidate.call(this,{...defaultObj(rest),isFilter:this.isFilter(),props:this.props,formName:this.formName,form,name:this.name,field:this.name,value,event,context:this});
                 this.callOnChange({value,event,isValid:true,...rest});
                 if(form && form.props){
@@ -520,7 +520,7 @@ export default class Field extends AppComponent {
         return this._previousValue;
     }
     hasValueChanged(value){
-        return (JSON.stringify(this.state.previousValue) === JSON.stringify(value))? false : true;
+        return (stableHash(this.state.validatingValue) === stableHash(value))? false : true;
     }
     isValidRuleDynamic(){
         return false;
@@ -535,15 +535,15 @@ export default class Field extends AppComponent {
     }
     validate ({value,event,...rest}){
         value = this.parseDecimal(value);
+        if(!this.hasValueChanged(value) && (this.isFilter()? true : this.__hasAlreadyValidated)){
+            return;
+        }
+        this.__hasAlreadyValidated = true;
         this.validatingValue = value;
-        if((!this.canValidate()) && !this.isSelectField()){
-            if(this._isInitialized && !this.hasValueChanged(value)) {
-                return;
-            }
-            this._isInitialized = true;
+        if(((!this.canValidate()) && !this.isSelectField()) || this.isFilter()){
             this._previousValue = this.state.validValue;
             this.trigger("validate",{...defaultObj(rest),context:this,value,event,oldValue:this.INITIAL_STATE._lastValidatingValue},(results)=>{
-                this.setState({validValue:value,validatingValue:value,sk:!this.state.sk,previousValue:this.state.validValue},()=>{
+                this.setState({validValue:value,validatingValue:value,sk:!this.state.sk,previousValue:this.state.validatingValue},()=>{
                     if(isFunction(this.props.onValidate)){
                         this.props.onValidate({...defaultObj(rest),props:this.props,name:this.name,field:this.name,value,event,context:this,oldValue:this.INITIAL_STATE._lastValidatingValue});
                     }
@@ -559,7 +559,7 @@ export default class Field extends AppComponent {
         if(this.isValidRuleDynamic()){
             this.INITIAL_STATE.validRule = this.INITIAL_STATE.validType = validRule;
         }
-        Validator.validate({...defaultObj(rest),onValidatorValid:this.onValidatorValid.bind(this),context:this,value,validRule,validType:validRule,validParams:this.INITIAL_STATE.validParams,event})
+        Validator.validate({...rest,onValidatorValid:this.onValidatorValid.bind(this),context:this,value,validRule,validType:validRule,validParams:this.INITIAL_STATE.validParams,event})
     }
 
     /**** met le focus sur l'élément précédent */
@@ -616,7 +616,9 @@ export default class Field extends AppComponent {
         if(this.canRegisterField()){
             Forms.trigger("registerField",this.getName(),this.getFormName(),this);
         }
-        if(defaultVal(validate,true) && !this.isFilter()) this.validate({context:this,value:defaultVal(this.props.defaultValue)});
+        if(!this.isFilter() && defaultVal(validate,true) && this.props.validateOnMount !== false) {
+            this.validate({context:this,value:defaultVal(this.props.defaultValue)}) 
+        }
     } 
     componentWillUnmount() {
         super.componentWillUnmount();
@@ -1043,6 +1045,9 @@ export default class Field extends AppComponent {
 }
 
 Field.propTypes = {
+    validateOnMount : PropTypes.oneOfType([
+        PropTypes.bool,//si la formField sera validée immédiatement au montage du composant
+    ]),
     left : PropTypes.oneOfType([
         PropTypes.node,
         PropTypes.func,

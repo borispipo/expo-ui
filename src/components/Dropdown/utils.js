@@ -3,7 +3,7 @@ import {isNativeMobile,isTouchDevice} from "$cplatform";
 
 export const matchOperators = /[|\\{}()[\]^$+*?.]/g;
 
-export const SEARCH_TIMEOUT = 1500;
+export const SEARCH_TIMEOUT = 1000;
 
 export const MAX_AUTO_FOCUS_ITEMS = 10;
 

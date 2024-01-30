@@ -115,9 +115,12 @@ const styles = StyleSheet.create({
         justifyContent : 'center',
         paddingVertical : 15,
         paddingHorizontal : 20,
+        flexWrap : "wrap",
     },
     text : {
-        marginLeft:20
+        marginLeft:20,
+        paddingHorizontal : 5,
+        maxWidth : "98%",
     },
     content : {},
     indicatorLeft : {

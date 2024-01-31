@@ -15,12 +15,12 @@ import App from "./AppEntry";
  * }
  */
 
-export default function ExpoUIAppEntryProvider({children,init,...rest}){
+export default function ExpoUIAppEntryProvider({children:cChildren,init,...rest}){
     const [children,setChildren] = useState(null);
     useEffect(()=>{
         const end = ()=>{
             setChildren(<Provider {...rest}>
-                <App init={init} children={children}/>
+                <App init={init} children={cChildren}/>
             </Provider>);
         };
         if(typeof session?.init =="function"){

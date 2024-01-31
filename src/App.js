@@ -1,6 +1,7 @@
 import session from "$session";
 import {useState,useEffect} from "$react";
 import Provider from "$econtext/Provider";
+import {isMobileNative} from "$cplatform";
 import App from "./AppEntry";
 /****
  * les options sont de la forme : 
@@ -17,17 +18,17 @@ import App from "./AppEntry";
 
 export default function ExpoUIAppEntryProvider({children:cChildren,init,...rest}){
     const [children,setChildren] = useState(null);
+    const canInit = typeof session.init =="function";
     useEffect(()=>{
-        const end = ()=>{
-            setChildren(<Provider {...rest}>
+        if(!canInit) return ()=>{}
+        Promise.resolve(init).finally(()=>{
+            console.log("will initializing")
+            return setChildren(<Provider {...rest}>
                 <App init={init} children={cChildren}/>
             </Provider>);
-        };
-        if(typeof session?.init =="function"){
-            return Promise.resolve(init).finally(end);
-        } else {
-            end();
-        }
+        });
     },[]);
-    return children;
+    return canInit ? children : <Provider {...rest}>
+    <App init={init} children={cChildren}/>
+</Provider>;
 }

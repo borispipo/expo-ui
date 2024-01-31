@@ -1,6 +1,6 @@
 import * as SQLite from 'expo-sqlite/next';
 import {isDev} from "$cplatform";
-import appConfig from "$capp/config";
+import {getName} from "$capp/config.utils";
 import {sanitizeFileName,isNonNullString,isObj,defaultObj} from "$cutils";
 import {sanitizeKey as cSanitizeKey,handleGetValue,handleSetValue} from "$csession/utils";
 import * as FileSystem from 'expo-file-system';
@@ -19,7 +19,7 @@ export class SQLiteSession {
       this.data = new Map();
     }
     getDBName(){
-        let appName = appConfig.name;
+        let appName = getName();
         const suffix = "sqlite-sessname";
         if(isNonNullString(appName)){
             appName = sanitizeFileName(appName.replaceAll("\\","/").replaceAll("\\","")).replace(/\s+/g, "").trim();

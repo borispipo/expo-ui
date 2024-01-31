@@ -45,10 +45,10 @@ class DropdownComponent extends AppComponent {
                 value : this.prepareSortableFields(),override : false, writable : false,
             },
             ___hasErrorSymbol : {value:uniqid(`${this.props.name||''}error-symbol-prop`)},
-            hasNotValidSelectedValue : {value:()=>{
+            hasNoValidSelectedValue : {value:()=>{
                 return this.isLoading()? false :  !!this[this.___hasErrorSymbol];
             }},
-            toggleHasNotValidSelectedValue : {value:(bool)=>{
+            toggleHasNoValidSelectedValue : {value:(bool)=>{
                 if(typeof bool =='boolean'){
                     this[this.___hasErrorSymbol] = bool;
                 }
@@ -319,9 +319,9 @@ class DropdownComponent extends AppComponent {
             } else if(isNonNullString(selectedValues)) {
                 sDText = selectedValues
             }
-            this.toggleHasNotValidSelectedValue(!!sDText);
+            this.toggleHasNoValidSelectedValue(!!sDText);
         } else {
-            this.toggleHasNotValidSelectedValue(false);
+            this.toggleHasNoValidSelectedValue(false);
         }
         if(this.canHandleMultiple && counter > maxCount && sDText){
             sDText+= ", et "+((counter-maxCount).formatNumber()+" de plus")
@@ -900,7 +900,7 @@ class DropdownComponent extends AppComponent {
         if(renderTag){
             tagProps = defaultObj(tagProps);
         }
-        error = error || this.hasNotValidSelectedValue() || false;
+        error = error || this.hasNoValidSelectedValue() || false;
         if(error && selectedText && (!helperText || !React.isValidElement(helperText,true))){
             helperText = `Ce champ admet des valeurs par défaut invalide où innexistant dans la liste des éléments à sélectionner`;
         }

@@ -49,7 +49,7 @@ export default class FormSelectField extends Field{
         return !this.isFilter();
     }
     getValue () {
-        if(this._field && isFunction(this._field.getSelected)){
+        if(this._field && isFunction(this._field?.getSelected)){
             let selectedItems = this._field.getSelectedItems(true);
             if(Object.size(selectedItems,true)<=0) {
                 return this.props.multiple ? []  : undefined;
@@ -59,10 +59,20 @@ export default class FormSelectField extends Field{
         return super.getValue();
     }
     getSelectedItems (force){
-        if(this._field && isFunction(this._field.getSelected)){
+        if(this._field && isFunction(this._field?.getSelected)){
             return this._field.getSelectedItems(force);
         }
         return null;
+    }
+    hasNoValidSelectedValue(){
+        if(this._field && isFunction(this._field?.hasNoValidSelectedValue)){
+            return this._field.hasNoValidSelectedValue();
+        }
+        return undefined;
+    }
+    isValid(...args){
+        if(this.hasNoValidSelectedValue() === true) return false;
+        return super.isValid(...args);
     }
     getSelectedItem(index){
         let items = this.getSelectedItems(true);

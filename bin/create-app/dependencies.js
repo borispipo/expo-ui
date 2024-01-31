@@ -30,6 +30,7 @@ module.exports = {
 	"react-native-webview": "13.6.4",
 	"react-native-gesture-handler": "~2.14.0",
 	"react-native-reanimated": "~3.6.2",
-	"react-native-view-shot": "3.8.0"
+	"react-native-view-shot": "3.8.0",
+	"@fto-consult/common" : "latest"
 };
                         

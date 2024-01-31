@@ -34,23 +34,25 @@ export class SQLiteSession {
     }
     async init () {
       if (!this.db || !this.hasInit) {
-        const dbName = this.getDBName();
-        debug(`Opening sqlite database ${dbName} for session storage`);
         if(!this.openingPromise){
-            this.openingPromise = SQLite.openDatabaseAsync(dbName).then((db)=>{
-                return db.execAsync(`
-                    CREATE TABLE IF NOT EXISTS ${SESSION_TABLE} (id INTEGER PRIMARY KEY NOT NULL, key TEXT, value TEXT);
-                `).then((d)=>{
-                    this.db = db;
-                    this.hasInit = true;
-                    this.getAll();
+            const dbName = this.getDBName();
+            debug(`Opening sqlite database ${dbName} for session storage`);
+            this.openingPromise = new Promise((resolve,reject)=>{
+                return SQLite.openDatabaseAsync(dbName).then((db)=>{
+                  return db.execAsync(`CREATE TABLE IF NOT EXISTS ${SESSION_TABLE} (id INTEGER PRIMARY KEY NOT NULL, key TEXT, value TEXT);`).then((d)=>{
+                      this.db = db;
+                      this.hasInit = true;
+                      return this.getAll().then((()=>{
+                        resolve(db);
+                      }));
+                  })
                 }).catch((e)=>{
-                    debug(e," error when initializing sqlite session");
-                    throw e;
-                });
-            }).finally(()=>{
-                delete this.openingPromise;
-            });;
+                  debug(e," error when initializing sqlite session");
+                  reject(e);
+                }).finally(()=>{
+                    delete this.openingPromise;
+                });;
+            });
         }
         return this.openingPromise;
       }

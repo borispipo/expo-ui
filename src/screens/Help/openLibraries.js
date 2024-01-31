@@ -1,8 +1,12 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
-		"version": "8.16.0",
-		"url": "https://github.com/borispipo/expo-ui#readme",
-		"license": "ISC"
+		"name": "@fto-consult/expo-ui",
+		"version": "8.19.0",
+		"repository": {
+			"type": "git",
+			"url": "git+https://github.com/borispipo/expo-ui.git"
+		},
+		"homepage": "https://github.com/borispipo/expo-ui#readme"
 	},
 	"@babel/plugin-proposal-export-namespace-from": {
 		"version": "7.18.9",
@@ -30,7 +34,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"@fto-consult/common": {
-		"version": "4.18.3",
+		"version": "4.19.4",
 		"url": "https://github.com/borispipo/common#readme",
 		"license": "ISC"
 	},
@@ -51,11 +55,6 @@ module.exports = {
 	"babel-plugin-module-resolver": {
 		"version": "5.0.0",
 		"url": "https://github.com/tleunen/babel-plugin-module-resolver.git",
-		"license": "MIT"
-	},
-	"commander": {
-		"version": "11.1.0",
-		"url": "https://github.com/tj/commander.js.git",
 		"license": "MIT"
 	},
 	"crypto-browserify": {
@@ -87,10 +86,6 @@ module.exports = {
 		"version": "4.1.0",
 		"license": "MIT"
 	},
-	"js-base64": {
-		"version": "3.7.6",
-		"license": "BSD-3-Clause"
-	},
 	"jsbarcode": {
 		"version": "3.11.6",
 		"url": "https://github.com/lindell/JsBarcode#readme",
@@ -101,11 +96,6 @@ module.exports = {
 		"url": "https://facebook.github.io/react/",
 		"license": "MIT"
 	},
-	"react": {
-		"version": "18.2.0",
-		"url": "https://reactjs.org/",
-		"license": "MIT"
-	},
 	"react-content-loader": {
 		"version": "6.2.1",
 		"url": "https://github.com/danilowoz/react-content-loader",
@@ -114,6 +104,16 @@ module.exports = {
 	"react-dom": {
 		"version": "18.2.0",
 		"url": "https://reactjs.org/",
+		"license": "MIT"
+	},
+	"react-native-big-list": {
+		"version": "1.6.1",
+		"url": "https://marcocesarato.github.io/react-native-big-list-docs/",
+		"license": "GPL-3.0-or-later"
+	},
+	"react-native-blob-util": {
+		"version": "0.19.6",
+		"url": "https://github.com/RonRadtke/react-native-blob-util",
 		"license": "MIT"
 	},
 	"react-native-get-random-values": {
@@ -135,7 +135,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"react-native-paper-dates": {
-		"version": "0.21.7",
+		"version": "0.21.8",
 		"url": "https://github.com/web-ridge/react-native-paper-dates#readme",
 		"license": "MIT"
 	},
@@ -173,11 +173,6 @@ module.exports = {
 		"version": "6.3.7",
 		"url": "https://atomiks.github.io/tippyjs/",
 		"license": "MIT"
-	},
-	"websql": {
-		"version": "2.0.3",
-		"url": "git://github.com/nolanlawson/node-websql.git",
-		"license": "Apache-2.0"
 	},
 	"xlsx": {
 		"version": "0.18.5",

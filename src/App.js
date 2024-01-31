@@ -21,8 +21,7 @@ export default function ExpoUIAppEntryProvider({children:cChildren,init,...rest}
     const canInit = typeof session.init =="function";
     useEffect(()=>{
         if(!canInit) return ()=>{}
-        Promise.resolve(init).finally(()=>{
-            console.log("will initializing")
+        Promise.resolve(session.init()).finally(()=>{
             return setChildren(<Provider {...rest}>
                 <App init={init} children={cChildren}/>
             </Provider>);

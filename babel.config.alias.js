@@ -77,5 +77,6 @@ module.exports = (opts)=>{
     r.$electronProjectRoot = path.resolve(r.$projectRoot,"electron");
     r.$econtext = path.resolve(expo,"context");
     r.$epdf = path.resolve(expo,"pdf");
+    r.$session = path.resolve(expo,"session");
     return r;
 }

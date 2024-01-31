@@ -25,7 +25,6 @@ import notify from "$cnotify";
 import {showPrompt} from "$ecomponents/Dialog/confirm";
 import {SWRConfig} from "$swr";
 import {Keyboard } from 'react-native';
-import initSQLite from "./init-sqlite";
 
 Object.map(Utils,(v,i)=>{
   if(typeof v =='function' && typeof window !='undefined' && window && !window[i]){
@@ -305,9 +304,7 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
       });
       return [...r,...getMainScreens(handleHelpScreen)];
     },[]);
-    const {linking} = navigation;
     React.useEffect(()=>{
-      initSQLite();
       const onScreenFocus = ({sanitizedName})=>{
           if(activeScreenRef.current){
              screensRef.current[activeScreenRef.current] = null;

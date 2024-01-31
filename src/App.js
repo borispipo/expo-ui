@@ -1,3 +1,5 @@
+import session from "$session";
+import {useState,useEffect} from "$react";
 import Provider from "$econtext/Provider";
 import App from "./AppEntry";
 /****
@@ -14,7 +16,18 @@ import App from "./AppEntry";
  */
 
 export default function ExpoUIAppEntryProvider({children,init,...rest}){
-    return <Provider {...rest}>
-        <App init={init} children={children}/>
-    </Provider>
+    const [children,setChildren] = useState(null);
+    useEffect(()=>{
+        const end = ()=>{
+            setChildren(<Provider {...rest}>
+                <App init={init} children={children}/>
+            </Provider>);
+        };
+        if(typeof session?.init =="function"){
+            return Promise.resolve(init).finally(end);
+        } else {
+            end();
+        }
+    },[]);
+    return children;
 }

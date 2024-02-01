@@ -116,10 +116,6 @@ module.exports = {
 		"url": "https://github.com/RonRadtke/react-native-blob-util",
 		"license": "MIT"
 	},
-	"react-native-get-random-values": {
-		"version": "1.10.0",
-		"license": "MIT"
-	},
 	"react-native-iphone-x-helper": {
 		"version": "1.3.1",
 		"url": "https://github.com/ptelad/react-native-iphone-x-helper#readme",

@@ -6,8 +6,7 @@ module.exports = function(opts){
   let {assetExts,sourceExts} = opts;
   assetExts = Array.isArray(assetExts)? assetExts: [];
   sourceExts= Array.isArray(sourceExts)?sourceExts : [];
-  const projectRoot = path.resolve(process.cwd());
-  const localDir = path.resolve(__dirname);
+  const projectRoot = typeof opts.projectRoot =="string" && opts.projectRoot && fs.existsSync(path.resolve(opts.projectRoot))? path.resolve(opts.projectRoot) : path.resolve(process.cwd());
   const transpilePath = null;//require("./create-transpile-module-transformer")(opts);
   const hasTranspilePath = typeof transpilePath =='string' && transpilePath && fs.existsSync(transpilePath);
   //@see : https://docs.expo.dev/versions/latest/config/metro/
@@ -38,15 +37,21 @@ module.exports = function(opts){
       ...sourceExts,"txt",
       'jsx', 'js','tsx',
   ]
-  
+  config.watchFolders = Array.isArray(config.watchFolders)? config.watchFolders : [];
+  let hasFTO = false;
+  for(let i in config.watchFolders){
+      if(typeof config.watchFolders[i] ==="string" && config.watchFolders[i].includes("@fto-consult")){
+        hasFTO = true;
+      }
+  }
+  if(!hasFTO){
+      config.watchFolders.push(path.resolve(projectRoot,"node_modules","@fto-consult"))
+  }
   // 3. Force Metro to resolve (sub)dependencies only from the `nodeModulesPaths`
   config.resolver.disableHierarchicalLookup = true;
   
   // Remove all console logs in production...
   config.transformer.minifierConfig.compress.drop_console = false;
-  
-  // 3. Force Metro to resolve (sub)dependencies only from the `nodeModulesPaths`, @see : https://docs.expo.dev/guides/monorepos/
-  config.resolver.disableHierarchicalLookup = true;
   
   return config;
 }

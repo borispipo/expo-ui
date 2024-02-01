@@ -1,19 +1,22 @@
+const path = require("path");
+const fs = require("fs");
+
 module.exports = function(api,opts) {
+  api.cache(true);
   opts = typeof opts =='object' && opts ? opts : {};
-  api = api && typeof api =='object'? api : {};
-  ///les chemin vers la variable d'environnement, le chemin du fichier .env,@see : https://github.com/brysgo/babel-plugin-inline-dotenv
-  //console.log(environmentPath," is envvv ",opts);
-  const path = require("path");
-  const fs = require("fs");
-  typeof api.cache =='function' && api.cache(true);
   const inlineDovOptions = { unsafe: true};
-  const options = {...opts,platform:"expo"};
+  const platform = api.caller(caller => caller && caller.platform);
+  const isWeb = platform === 'web';
+  const options = {...opts,isWeb,isAndroid:platform==="android",isIos : platform==="ios",platform:"expo"};
   const environmentPath = require("./copy-env-file")();
   if(environmentPath && fs.existsSync(environmentPath)){
     inlineDovOptions.path ='./.env';
   }
   /*** par défaut, les variables d'environnements sont stockés dans le fichier .env situé à la racine du projet, référencée par la prop base  */
   const alias =  require("./babel.config.alias")(options);
+  if(typeof options.aliasMutator =="function"){
+    options.aliasMutator(alias);
+  }
   require(`${path.resolve(__dirname,"bin","generate-tables")}`)();//génère les tables des bases de données
   const plugins = (Array.isArray(opts.plugins) ? options.plugins : []);
   let reanimated = "react-native-reanimated/plugin";

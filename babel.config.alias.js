@@ -11,7 +11,7 @@ module.exports = (opts)=>{
     opts.projectRoot = opts.projectRoot || projectRoot;
     opts.withPouchDB = opts.withPouchDB !== false && opts.withPouchdb !== false ? true : false;
     delete opts.withPouchdb;
-    const expoUI = require("./expo-ui-path")();
+    const expoUI = opts.isWeb === true ? require("./expo-ui-path")() : path.resolve(projectRoot,"node_modules","@fto-consult","expo-ui");
     const r = require("@fto-consult/common/babel.config.alias")(opts);
     const expo = path.resolve(expoUI,"src");
     r["$ecomponents"] = r["$expo-components"] = path.resolve(expo,"components");
@@ -64,9 +64,7 @@ module.exports = (opts)=>{
     }
     r.$eutils = path.resolve(expo,"utils");
     r.$ehooks = path.resolve(expo,"context","hooks");
-    ///le chemin racine du projet expo-ui
     r["$expo-ui-root-path"] = r["$expo-ui-root"]= path.resolve(expo,"..");
-    
     const $electron = path.resolve(dir,"electron");
     //le chemin ver le repertoire electron
     r.$eelectron = r["$e-electron"] = $electron;

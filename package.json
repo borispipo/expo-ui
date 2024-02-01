@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "8.23.0",
+  "version": "8.23.1",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "scripts": {
     "clear-npx-cache": "npx clear-npx-cache",
@@ -68,7 +68,7 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@faker-js/faker": "^8.0.2",
-    "@fto-consult/common": "^4.23.0",
+    "@fto-consult/common": "^4.23.1",
     "@fto-consult/node-utils": "^1.4.7",
     "apexcharts": "^3.45.2",
     "crypto-browserify": "^3.12.0",

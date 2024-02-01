@@ -14,7 +14,7 @@ module.exports = function(api,opts) {
   /*** par défaut, les variables d'environnements sont stockés dans le fichier .env situé à la racine du projet, référencée par la prop base  */
   const alias =  require("./babel.config.alias")(options);
   if(typeof options.aliasMutator =="function"){
-    options.aliasMutator(alias);
+    options.aliasMutator({...options,alias});
   }
   require(`${path.resolve(__dirname,"bin","generate-tables")}`)();//génère les tables des bases de données
   const plugins = (Array.isArray(opts.plugins) ? options.plugins : []);

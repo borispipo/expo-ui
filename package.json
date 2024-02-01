@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "8.21.3",
+  "version": "8.22.0",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "scripts": {
     "clear-npx-cache": "npx clear-npx-cache",
@@ -46,7 +46,7 @@
     "delete-node-modules": "rimraf ./**/node_modules",
     "dev": "npx expo start --no-dev --minify -c",
     "modifier-url-remote-git": "git remote set-url origin 'https://borispipo@github.com/borispipo/smart-eneo.git'",
-    "update": "npm i @fto-consult/node-utils@latest react-native-web react-native-blob-util@latest react-native-big-list@latest apexcharts@latest file-saver@latest google-libphonenumber@latest  react-native-iphone-x-helper@latest react-native-mime-types@latest react-native-paper@5 react-native-paper-dates@latest react-virtuoso@latest tippy.js@latest xlsx@latest react-native-get-random-values@latest && npm run update-apexchart && npm run find-licenses"
+    "update": "npm i @fto-consult/common@latest @fto-consult/node-utils@latest react-native-web react-native-blob-util@latest react-native-big-list@latest apexcharts@latest file-saver@latest google-libphonenumber@latest  react-native-iphone-x-helper@latest react-native-mime-types@latest react-native-paper@5 react-native-paper-dates@latest react-virtuoso@latest tippy.js@latest xlsx@latest react-native-get-random-values@latest && npm run update-apexchart && npm run find-licenses"
   },
   "bin": {
     "expo-ui": "./bin/index.js"
@@ -68,6 +68,7 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@faker-js/faker": "^8.0.2",
+    "@fto-consult/common": "^4.22.0",
     "@fto-consult/node-utils": "^1.4.7",
     "apexcharts": "^3.45.2",
     "crypto-browserify": "^3.12.0",

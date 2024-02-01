@@ -2,7 +2,6 @@ const path = require("path");
 const fs = require("fs");
 
 module.exports = function(api,opts) {
-  api.cache(true);
   opts = typeof opts =='object' && opts ? opts : {};
   const inlineDovOptions = { unsafe: true};
   const platform = api.caller(caller => caller && caller.platform);

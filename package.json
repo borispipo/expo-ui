@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "8.21.0",
+  "version": "8.21.1",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "scripts": {
     "clear-npx-cache": "npx clear-npx-cache",
@@ -37,8 +37,7 @@
     "logcat-export": "adb -d logcat com.ftc.apps.salite1 *:S > logcat.txt",
     "electron-c": "npm run compile-electron && npm run electron",
     "electron-p": "npm run compile-electron-p && npm run electron",
-    "update-app-version": "node ./update-app-version.js",
-    "find-licenses": "node ./find-licenses.js",
+    "find-licenses": "node ./bin/find-licenses.js",
     "fix-dependencies": "expo-cli doctor --fix-dependencies",
     "expo-fix": "npx expo install --fix",
     "update-apexchart": "node ./bin/update-appex-chart.js",

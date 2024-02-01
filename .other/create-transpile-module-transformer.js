@@ -1,4 +1,4 @@
-const {writeFile} = require("./bin/utils");
+const {writeFile} = require("../bin/utils");
 const fs = require("fs"), path = require("path");
 module.exports = function(opts){
     opts = typeof opts =='object'&& opts || {};

@@ -6,6 +6,7 @@ module.exports = {
 	"@pchmn/expo-material3-theme": "^1.3.2",
 	"@react-native-community/netinfo": "11.1.0",
 	"@react-native/assets-registry": "^0.72.0",
+	"react-native-get-random-values": "~1.8.0",
 	"@react-navigation/native": "^6.1.9",
 	"@react-navigation/native-stack": "^6.9.17",
 	"@react-navigation/stack": "^6.3.20",

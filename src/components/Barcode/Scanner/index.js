@@ -1,23 +1,69 @@
 import React, { useState, useEffect,useMemo } from '$react';
 import { View, StyleSheet} from 'react-native';
-import { BarCodeScanner } from 'expo-barcode-scanner';
+import { CameraView, Camera } from "expo-camera/next";
 import theme from "$theme";
 import ActivityIndicator from "$ecomponents/ActivityIndicator";
 import Label from "$ecomponents/Label";
 import PropTypes from "prop-types";
-import { isNonNullString,defaultStr } from '$cutils';
+import { isNonNullString,defaultStr,defaultObj } from '$cutils';
 import Button from "$ecomponents/Button";
 import Dialog from "$ecomponents/Dialog";
+import {DialogProvider} from "$ecomponents/Form/FormData";
 
-export const scannerTypes = {back:"back",front:"front"};
+export const cameraTypes = {back:"back",front:"front"};
+export const flashModes = {off:{code:"off",label:"Inactif"},on:{code:"on",label:"Actif"},auto:{code:"auto",label:"Automatique"}}
+export const cameraSetingsFields = {
+    enableTorch : {
+        type : "switch",
+        label : "Allumer la torche",
+        defaultValue : false,
+        checkedValue : true,
+        uncheckedValue : false,
+    },
+    flash : {
+      label : "Flash",
+      type : "select",
+      required : true,
+      items : flashModes,
+      defaultValue : flashModes.auto.code,
+    },
+}
 
 /***@see : https://docs.expo.dev/versions/latest/sdk/bar-code-scanner/ */
-export default function App({onScan,onGrantAccess,testID,onDenyAccess,scannerProps,onCancel,dialogProps}) {
+export default function App({onScan,onGrantAccess,testID,onDenyAccess,cameraProps,onCancel,dialogProps}) {
   testID = defaultStr(testID,"RN_BarCodeScanner");
   const [hasPermission, setHasPermission] = useState(null);
   const [visible,setVisible] = useState(true);
   dialogProps = Object.assign({},dialogProps);
-  scannerProps = Object.assign({},scannerProps);
+  cameraProps = Object.assign({},cameraProps);
+  const barCodeScannerSettings = defaultObj(cameraProps.barCodeScannerSettings);
+  const getFlashMode = ()=>{
+      let {flash} = cameraProps;
+      if(isNonNullString(flash)){
+          flash = flash.toLowerCase().trim();
+          if(flashModes[flash]) return flashModes[flash].code;
+      }
+      return flashModes.auto.code;
+  }
+  const isTorchEnabled = ()=>{
+    return !!cameraProps.enableTorch;
+  }
+  const [cameraSetting,setCameraSetting] = useState({
+    enableTorch : isTorchEnabled(),
+    flash : getFlashMode(cameraProps.flash),
+  });
+  useEffect(()=>{
+    const flash = getFlashMode();
+    if(flash !== cameraSetting.flash){
+        setCameraSetting({...cameraSetting,flash});
+    }
+  },[cameraProps.flash]);
+  useEffect(()=>{
+    const enableTorch = isTorchEnabled();
+    if(enableTorch !== cameraSetting.enableTorch){
+      setCameraSetting({...cameraSetting,enableTorch});
+    }
+  },[cameraProps.enableTorch]);
   const prevVisible = React.usePrevious(visible);
   const cancelRef = React.useRef(false);
   const cancel = ()=>{
@@ -25,37 +71,41 @@ export default function App({onScan,onGrantAccess,testID,onDenyAccess,scannerPro
     setVisible(false);
   }
   const getCameraType = ()=>{
-    let {type} = scannerProps;
+    let {type,facing} = cameraProps;
+    if(isNonNullString(facing)){
+      facing = facing.toLowerCase();
+    }
+    if(facing && (isNonNullString(facing) || typeof facing =="number") && cameraType[facing]){
+       return cameraType[facing]
+    }
     if(isNonNullString(type)){
       type = type.toLowerCase().trim();
-    } else type  = scannerTypes.back;
-    if(!scannerTypes[type]){
-      type = scannerTypes.back;
+    } else type  = cameraTypes.back;
+    if(!cameraTypes[type]){
+      type = cameraTypes.back;
     }
     return type;
   }
   const sType = useMemo(()=>{
     return getCameraType();
-  },[scannerProps.type]);
-  const [scannerType,setScannerType] = useState(sType);
+  },[cameraProps.type,cameraProps.facing]);
+  const [cameraType,setCameraType] = useState(sType);
   useEffect(()=>{
     const type = getCameraType();
-    if(type !== scannerType){
-      setScannerType(type);
+    if(type !== cameraType){
+      setCameraType(type);
     }
-  },scannerProps.type)
-  const isBack = scannerType === scannerTypes.back;
+  },cameraProps.type)
+  const isBack = cameraType === cameraTypes.back;
   useEffect(() => {
-    const getBarCodeScannerPermissions = async () => {
-      const { status } = await BarCodeScanner.requestPermissionsAsync();
-      setHasPermission(status === 'granted');
+    const getCameraPermissions = async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      setHasPermission(status === "granted");
     };
-
-    getBarCodeScannerPermissions();
+    getCameraPermissions();
   }, []);
 
   const handleBarCodeScanned = ({ type, data,...rest }) => {
-    //setScanned(true);
     if(typeof onScan =="function"){
         onScan({type,data,code:data,barCode:data,...rest});
     }
@@ -84,12 +134,29 @@ export default function App({onScan,onGrantAccess,testID,onDenyAccess,scannerPro
       icon : "camera-flip",
       tooltip : `Cliquez pour basculer à la camera ${isBack ? "frontable":"arrière"}`,
       onPress : ()=>{
-        setScannerType(isBack ? scannerTypes.front : scannerTypes.back);
+        setCameraType(isBack ? cameraTypes.front : cameraTypes.back);
       }
   };
   return <Dialog 
     fullPage 
-    actions={[switchCameraBtn]} 
+    actions={[
+        switchCameraBtn,
+        {
+          text : "Options de la camera",
+          icon : "material-settings",
+          tooltip : `Définir les options de la camera`,
+          onPress : ()=>{
+            DialogProvider.open({
+                tile : "Options de la camera",
+                data : cameraSetting,
+                fields : cameraSetingsFields,
+                onSuccess : ({data})=>{
+                  setCameraSetting(data);
+                },
+            })
+          }
+      }
+    ]} 
     title = {`Scanner un code barre`}
     {...dialogProps}
     onBackActionPress={cancel}
@@ -102,13 +169,15 @@ export default function App({onScan,onGrantAccess,testID,onDenyAccess,scannerPro
           <ActivityIndicator size={'large'}/>
         </View>}
       </View> : <View style={[theme.styles.flex1]} testID={testID}>
-          <BarCodeScanner
+          <CameraView
             ratio='16:9'
             testID={testID+"_ScannerContent"}
-            {...scannerProps}
-            type={scannerType}
-            style={[theme.styles.flex1,{width:"100%",height:"100%"},scannerProps.style]}
-            onBarCodeScanned={handleBarCodeScanned}
+            {...cameraProps}
+            barCodeScannerSettings = {barCodeScannerSettings}
+            {...cameraSetting}
+            facing = {cameraProps.facing}
+            style={[theme.styles.flex1,{width:"100%",height:"100%"},cameraProps.style]}
+            onBarcodeScanned={handleBarCodeScanned}
           />
           <View style={[styles.row,theme.styles.w100]}>
               <Button

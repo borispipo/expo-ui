@@ -11,7 +11,6 @@ module.exports = {
 	"@react-navigation/stack": "^6.3.20",
 	"@shopify/flash-list": "1.6.3",
 	"expo": "~50.0.5",
-	"expo-barcode-scanner": "~12.9.2",
 	"expo-camera": "~14.0.3",
 	"expo-clipboard": "~5.0.1",
 	"expo-font": "~11.10.2",

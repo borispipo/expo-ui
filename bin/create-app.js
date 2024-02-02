@@ -116,13 +116,10 @@ const createAPPJSONFile = (projectRoot,{name,version})=>{
       "cameraPermission" : `Autoriser $(PRODUCT_NAME) à accéder à votre camera`
     }, cameraPluginsOptions = {
       "cameraPermission" : `Autoriser $(PRODUCT_NAME) à accéder à votre camera`
-    }, barCodePermission = {
-      "cameraPermission": "Autoriser $(PRODUCT_NAME) à accéder à la caméra."
-    };
+    }
     const plugins = [
       ["expo-image-picker",imagePluginOptions],
       ["expo-camera",cameraPluginsOptions],
-      ["expo-barcode-scanner",barCodePermission]
     ];
     appSheme = name? sanitizeFileName(name).replace(/ /g, '') : null;
     const appJSONPath = path.join(projectRoot,"app.json");
@@ -179,15 +176,13 @@ const createAPPJSONFile = (projectRoot,{name,version})=>{
             if(!Array.isArray(appPlugins)){
               appPlugins = plugins;
             } else {
-              let hasFoundCamera = false, hasFoundImagePicker = false,hasFoundBarCode = false;
+              let hasFoundCamera = false, hasFoundImagePicker = false;
               appPlugins.map(pl=>{
                 if(Array.isArray(pl)){
                   if(typeof pl[0] ==="expo-image-picker"){
                     hasFoundImagePicker = true;
                   } else if(pl[0] === "expo-camera"){
                     hasFoundCamera = true;
-                  }  else if(pl[0] =="expo-barcode-scanner"){
-                    hasFoundBarCode = true;
                   } 
                 }
               });
@@ -196,9 +191,6 @@ const createAPPJSONFile = (projectRoot,{name,version})=>{
               }
               if(!hasFoundCamera){
                 appPlugins.push(plugins[1]);
-              }
-              if(!hasFoundBarCode){
-                appPlugins.push(plugins[2]);
               }
             }
             appJSONManager.set({

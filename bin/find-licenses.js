@@ -84,7 +84,7 @@ const findLicencesMain = (options)=>{
             if (a.toLowerCase() > b.toLowerCase()) return 1;
             return 0;
         });
-        const packageJSON = require("./package.json");
+        const packageJSON = require("../package.json");
         const content = {
             [packageJSON.name] : {
                 name : packageJSON.name,
@@ -108,7 +108,7 @@ const findLicencesMain = (options)=>{
 module.exports = ()=>{
     ///on génère les librairies open sources utilisées par l'application
     const root = path.resolve(process.cwd());
-    const expoUI = require("./expo-ui-path")();
+    const expoUI = require("../expo-ui-path")();
     const localNodeModule = path.resolve(root,"node_modules");
     const HelpScreen = path.resolve(expoUI,"src","screens","Help");
     const outputPath = path.resolve(HelpScreen,"openLibraries.js");

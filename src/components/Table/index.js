@@ -62,8 +62,8 @@ const TableComponent = React.forwardRef(({containerProps,tableHeadId,fixedHeader
     const listRef = React.useRef(null),scrollViewRef = React.useRef(null),headerScrollViewRef = React.useRef(null);
     const layoutRef = React.useRef({});
     const {testID,withDatagridContext,getRowByIndex,itemsChanged,hasFooters:stateHasFooters,bordered,totalWidths,keyExtractor,items,data} = useTable();
-    const hasData = !!Object.size(data,true);
-    const emptyData = !hasData && renderListContent === false ?null : typeof renderEmpty =='function' ? renderEmpty() : null;
+    const hasData = !!Object.size(items,true);
+    const emptyData = !hasData && (renderListContent === false ?null : typeof renderEmpty =='function' ? renderEmpty() : null) || null;
     const hasEmptyData = emptyData && React.isValidElement(emptyData);
     const emptyContent = <View onRender={onComponentRender} testID={testID+"_EmptyData"} style={styles.hasNotData}>
         {emptyData}
@@ -165,7 +165,8 @@ const TableComponent = React.forwardRef(({containerProps,tableHeadId,fixedHeader
                     </View>
                 </ScrollView>
             </RNView>}
-            {hasEmptyData && isNative ? emptyContent : <ScrollNative {...scrollViewProps} scrollEventThrottle = {scrollEventThrottle} horizontal contentContainerStyle={[scrollContentContainerStyle,scrollViewProps.contentContainerStyle,{height:'100%'}]} showsVerticalScrollIndicator={false}  
+            {hasEmptyData && isNative ? emptyContent : null}
+            {<ScrollNative {...scrollViewProps} scrollEventThrottle = {scrollEventThrottle} horizontal contentContainerStyle={[scrollContentContainerStyle,scrollViewProps.contentContainerStyle,{height:'100%'}]} showsVerticalScrollIndicator={false}  
                     onScroll = {getOnScrollCb([headerScrollViewRef,footerScrollViewRef],null,(args)=>{
                         const nativeEvent = args.nativeEvent;
                         if(absoluteScrollViewRef.current && absoluteScrollViewRef.current.checkVisibility){

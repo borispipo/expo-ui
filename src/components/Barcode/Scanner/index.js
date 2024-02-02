@@ -13,7 +13,7 @@ import {DialogProvider} from "$ecomponents/Form/FormData";
 export const CameraFacing = {back:"back",front:"front"};
 export const FlashModes = {off:{code:"off",label:"Inactif"},on:{code:"on",label:"Actif"},auto:{code:"auto",label:"Automatique"}}
 export const CameraSettingsFields = {
-    enableTorch : {
+    enableTorch : false && {
         type : "switch",
         label : "Allumer la torche",
         defaultValue : false,
@@ -127,7 +127,7 @@ export default function BarCodeScanner({onScan,onGrantAccess,testID,onDenyAccess
   return <Dialog 
     fullPage 
     actions={[
-        switchCameraBtn,
+        //switchCameraBtn,
         {
           text : "Options de la camera",
           icon : "material-settings",
@@ -167,11 +167,11 @@ export default function BarCodeScanner({onScan,onGrantAccess,testID,onDenyAccess
             onBarcodeScanned={handleBarCodeScanned}
           />
           <View style={[styles.row,theme.styles.w100]}>
-              <Button
+              {false ? <Button
                 primary
                 {...switchCameraBtn}
                 style={[theme.styles.p1]}
-              />
+              />:null}
               <Button
                 error
                 children = {"Annuler"}

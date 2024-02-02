@@ -3,6 +3,7 @@ const fs = require("fs");
 
 module.exports = (opts)=>{
     const dir = path.resolve(__dirname);
+    const isDev = String(process.env.NODE_ENV).toLowerCase() !="production";
     const projectRoot = typeof opts.projectRoot =='string' && fs.existsSync(opts.projectRoot.trim()) && opts.projectRoot.trim() || process.cwd();
     const assets = path.resolve(dir,"assets");
     opts = typeof opts =='object' && opts ? opts : {};
@@ -11,8 +12,9 @@ module.exports = (opts)=>{
     opts.projectRoot = opts.projectRoot || projectRoot;
     opts.withPouchDB = opts.withPouchDB !== false && opts.withPouchdb !== false ? true : false;
     delete opts.withPouchdb;
-    const expoUI = opts.isWeb === true ? require("./expo-ui-path")() : path.resolve(projectRoot,"node_modules","@fto-consult","expo-ui");
-    const r = require("@fto-consult/common/babel.config.alias")(opts);
+    const expoUI = require("./expo-ui-path")();
+    const cPath = isDev && fs.existsSync(path.resolve(expoUI,"node_modules","@fto-consult","common"))? path.resolve(expoUI,"node_modules","@fto-consult","common") : null; 
+    const r = require(`${cPath ? path.resolve(cPath,"babel.config.alias.js"):'@fto-consult/common/babel.config.alias'}`)(opts);
     const expo = path.resolve(expoUI,"src");
     r["$ecomponents"] = r["$expo-components"] = path.resolve(expo,"components");
     r["$econfirm"] = path.resolve(r["$expo-components"],"Dialog","confirm");

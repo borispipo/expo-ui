@@ -184,7 +184,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,children}) {
     loadResources().finally(()=>{
       Promise.resolve((typeof initApp =='function'?initApp : x=>true)({appConfig,contex:{setState}})).then((args)=>{
         if(Auth.isLoggedIn()){
-           Auth.loginUser(false);
+           Auth.updateTheme(Auth.getLoggedUser());
         }
         setState({
           ...state,hasGetStarted:true,...defaultObj(args && args?.state),hasCallInitApp:true,isInitialized:true,isLoading : false,
@@ -292,7 +292,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,children}) {
                     <DropdownAlert ref={notificationRef}/>
                     <ErrorBoundary>
                       <StatusBar/>
-                      {withSplashScreen !== false ? <SplashScreen
+                      {withSplashScreen  !== false || false ? <SplashScreen
                         children = {myChildren}
                         isLoaded = {isLoaded}
                         Component = {SplashScreenComponent}

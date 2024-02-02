@@ -13,9 +13,6 @@ module.exports = function(api,opts) {
   }
   /*** par défaut, les variables d'environnements sont stockés dans le fichier .env situé à la racine du projet, référencée par la prop base  */
   const alias =  require("./babel.config.alias")(options);
-  if(false && !isWeb){
-    alias.uuid = path.resolve(__dirname,"src","uuid");
-  }
   if(typeof options.aliasMutator =="function"){
     options.aliasMutator({...options,alias});
   }

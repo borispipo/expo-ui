@@ -27,7 +27,5 @@ export default function ExpoUIAppEntryProvider({children:cChildren,init,...rest}
             </Provider>);
         });
     },[]);
-    return canInit ? children : <Provider {...rest}>
-    <App init={init} children={cChildren}/>
-</Provider>;
+    return canInit ? children : <Provider {...rest}><App init={init} children={cChildren}/></Provider>;
 }

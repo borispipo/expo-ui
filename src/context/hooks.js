@@ -5,10 +5,9 @@ import {isObj,isNonNullString,extendObj} from "$cutils";
 import { StyleSheet } from "react-native";
 import { createContext,useContext as useReactContext } from "react";
 import _useSWR from "$swr";
-
 export const ExpoUIContext = createContext(null);
 
-export const useExpoUI = ()=> useReactContext(ExpoUIContext);
+export const useExpoUI = ()=> (useReactContext(ExpoUIContext) || {});
 
 export default useExpoUI;
 

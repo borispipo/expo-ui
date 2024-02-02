@@ -1,7 +1,7 @@
 import session from "$session";
+import './uuid/deps';
 import {useState,useEffect} from "$react";
 import Provider from "$econtext/Provider";
-import {isMobileNative} from "$cplatform";
 import App from "./AppEntry";
 /****
  * les options sont de la forme : 

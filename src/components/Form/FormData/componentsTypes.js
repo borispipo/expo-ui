@@ -77,7 +77,6 @@ export const getFilterComponentProps = (_props)=>{
         type,
         visible,
         jsType,
-        filterType,
         getValidValue,
         validate,
         onValidatorValid,///il s'agit de la fonction de rappel appelée immédiatement après que le validateur ait réuissie la validation
@@ -88,7 +87,7 @@ export const getFilterComponentProps = (_props)=>{
     props = defaultObj(props);
     const componentTypes = getComponentTypes();
     let component = componentTypes.TextField;
-    type = defaultStr(filterType,jsType,type,'text').toLowerCase().replaceAll("_","").replaceAll("-","").trim();
+    type = defaultStr(jsType,type,'text').toLowerCase().replaceAll("_","").replaceAll("-","").trim();
     const sanitizedType = type.replaceAll("_","").toLowerCase().trim();
     props = defaultObj(props);
     props.label = defaultStr(label,text);

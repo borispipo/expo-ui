@@ -39,9 +39,8 @@ export const renderRowCell = (arg)=>{
     } else if(isFunction(columnDef.multiplicater)){
         _render = defaultDecimal(columnDef.multiplicater({...renderArgs,value:rowData[columnField]}),rowData[columnField]);
     } 
-    const cellValue = defaultVal(_render,rowData[columnField]);
-    {
-        _render = cellValue;
+    const cellValue = _render = defaultVal(_render,rowData[columnField]);
+    if(!React.isValidElement(_render)){
         if(!renderText && defaultStr(columnDef.format).toLowerCase() === 'hashtag'){
             _render = <Hashtag>{_render}</Hashtag>
         } else if(arrayValueExists( _type,["date","datetime","time"])){
@@ -179,7 +178,7 @@ export const renderRowCell = (arg)=>{
     if((typeof _render ==='string' || typeof _render =='number')){
         _render = <Label userSelect>{_render}</Label>
     }
-    _render = React.isValidElement(_render)|| Array.isArray(_render)?_render:null;
+    _render = React.isValidElement(_render) || Array.isArray(_render)?_render:null;
     return {render:_render,style,extra,key};
 }
 

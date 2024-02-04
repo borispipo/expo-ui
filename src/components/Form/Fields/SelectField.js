@@ -70,7 +70,7 @@ export default class FormSelectField extends Field{
         }
         return undefined;
     }
-    isValid(...args){
+    isValid11(...args){
         if(this.hasNoValidSelectedValue() === true) return false;
         return super.isValid(...args);
     }

@@ -68,7 +68,7 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@faker-js/faker": "^8.0.2",
-    "@fto-consult/common": "^4.25.23",
+    "@fto-consult/common": "^4.26.1",
     "@fto-consult/node-utils": "^1.4.7",
     "apexcharts": "^3.45.2",
     "crypto-browserify": "^3.12.0",

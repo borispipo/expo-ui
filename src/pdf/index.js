@@ -1,12 +1,14 @@
 import {createPDF as cCreatePdf,print as cPrint,fields as pdfFields} from "$cpdf";
 import Preloader from "$preloader";
-import {extendObj} from "$cutils";
 import pdfMake from "$cpdf/pdfmake";
 import notify from "$cnotify";
 import DialogProvider from "$ecomponents/Form/FormData/DialogProvider";
-import {isNonNullString,defaultObj,defaultStr} from "$cutils";
+import {isNonNullString,defaultObj,defaultStr,extendObj} from "$cutils";
 import session from "$session";
 import printPdfMake from "./print";
+import appConfig from "$capp/config";
+import Auth from "$cauth";
+
 
 const {createPdf} = pdfMake;
 pdfMake.createPdf = (docDefinition,...rest)=>{
@@ -140,9 +142,47 @@ export const getPrintSettings = ({multiple,duplicateDocOnPage,pageBreakBeforeEac
                     session.set(sessionName,sessionD);
                 }
                 DialogProvider.close();
-                resolve({...opts,data,fields});
+                resolve({...opts,data:{...config,...data},fields});
             },
-            onCancel : reject,
+            onCancel : (e)=>{
+                reject(e);
+                Preloader.close();
+            },
         })
+    });
+}
+
+/**** permet d'imprimer une table data 
+    @param {Array<object>||object}, la/les donnée(s) à imprimer
+    @param {object<{
+        table|tableName {string}, le nom de la table data à utilser pour l'impression
+        print {funtion}, la fonction à utiliser pour faire l'impression, si cette fonction n'est pas définie, alors la table data lié à la table doit l'implémenter dans l'option print
+    }>}
+    @return Promise
+*/
+export function printTableData(data,options){
+    options = Object.assign({},options);
+    const table = defaultStr(options.table,options.tableName);
+    const tableObj = appConfig.getTable(table);
+    if(!table || !tableObj){
+        return Promise.reject({message:`Vous devez spécifier la table pour laquelle vous souhaitez effectuer l'impression des données`})
+    }    
+    const tableText = defaultStr(tableObj.label,tableObj.text,table);
+    const tablePrint = typeof options.print =="function"? options.print : typeof tableObj.print =="function"? tableObj.print : undefined;
+    if(!tablePrint){
+        return Promise.reject({message : `La fonction d'impression n'est pas supportée par la table [${tableText}]`})
+    }
+    if(!Auth.isTableDataAllowed({table,action:'print'})){
+        return Promise.reject({message:'Vous n\'etes pas autorisé à imprimer ce type de document'});
+    }
+    const printOptions = typeof tableObj.printOptions =="function"? tableObj.printOptions({...options,table,data}) : tableObj.printOptions;
+    return print(data,{
+        getSettings : (options)=>{
+            return getPrintSettings(extendObj(true,{},{sessionName:`print-${table}`},options,printOptions)).then(({data})=>{
+                return data;
+            });
+        },
+        print : tablePrint,
+        ...Object.assign({},options),
     });
 }

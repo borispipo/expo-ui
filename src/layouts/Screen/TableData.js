@@ -985,7 +985,7 @@ TableDataScreenComponent.propTypes = {
         PropTypes.object,
         PropTypes.func,
     ]),
-    fields : PropTypes.objectOf(PropTypes.object),
+    //fields : PropTypes.objectOf(PropTypes.object),
     tabs : PropTypes.oneOfType([
         PropTypes.array,
         PropTypes.object,

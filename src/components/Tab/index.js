@@ -35,12 +35,12 @@ export const getSessionActiveIndex = (props)=>{
 }
 
 const TabComponent = React.forwardRef((props,ref)=>{
-    let {activeIndex:customActiveIndex,tabContentProps,withScrollView,testID,sessionName,children,onChange,tabItemProps,tabItemsProps,...rest} = props;
+    let {activeIndex:customActiveIndex,tabContentProps,withScrollView,testID,sessionName,children,onTabItemClick,onChange,tabItemProps,tabItemsProps,...rest} = props;
     let activeIndex = getSessionActiveIndex(props);
     rest = defaultObj(rest);
     tabItemsProps = defaultObj(tabItemsProps);
     tabItemProps = defaultObj(tabItemProps);
-    tabContentProps = defaultObj(tabContentProps);
+    tabContentProps = defaultObj(tabContentProps);  
 
     const [index, setIndex] = React.useState(getSessionActiveIndex(props));
     const setActiveIndex = (nIndex)=>{
@@ -80,7 +80,7 @@ const TabComponent = React.forwardRef((props,ref)=>{
         return {tabs,contents,childrenProps}
     },[children]);
     return <View {...rest} testID={testID} style={[styles.container,tabItemsProps.style,rest.style]}>
-        <TabItems testID={testID+"_TabItems"} {...tabItemsProps} activeIndex={index} style={[styles.tab,rest.style]} onChange={setActiveIndex}>
+        <TabItems testID={testID+"_TabItems"}  onTabItemClick={onTabItemClick} {...tabItemsProps} activeIndex={index} style={[styles.tab,rest.style]} onChange={setActiveIndex}>
             {tabs}
         </TabItems>
         <TabContent testId={testID+"_TabContent"} withScrollView={withScrollView} {...tabContentProps} childrenProps={childrenProps} activeIndex={index} onChange={setActiveIndex} style={[styles.container,tabContentProps.style]}>
@@ -93,6 +93,7 @@ const TabComponent = React.forwardRef((props,ref)=>{
 TabComponent.propTypes = {
     activeIndex : PropTypes.number,
     onChange : PropTypes.func,
+    onTabItemClick : PropTypes.func,///appelée lorsqu'on clic sur un tab
     tabItemsProps : PropTypes.object,//les props du tab
     tabItemProps : PropTypes.object,//les props des items du tab
     tabContentProps : PropTypes.object, ///les props de la tabContent

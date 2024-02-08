@@ -27,6 +27,7 @@ const TabItemsComponent = ({
   elevation = 7,
   fixed = false,
   testID,
+  onTabItemClick,
   scrollViewProps,
   ...rest
 }) => {
@@ -102,7 +103,10 @@ const TabItemsComponent = ({
       return React.cloneElement(
         child,
         {
-          onPress: () => {
+          onPress: (e) => {
+            if(typeof onTabItemClick =="function"){
+              onTabItemClick({...React.getOnPressArgs(e),index,tabIndex:index,event:e});
+            }
             onChange(index);
           },
           onLayout: (event) => {
@@ -229,6 +233,7 @@ TabItemsComponent.displayName = 'TabComponent.Items';
 TabItemsComponent.propTypes = {
     /** Child position index activeIndex. */
     activeIndex : PropTypes.number,
+    onTabItemClick : PropTypes.func,
   
     /** Makes Tab Scrolling */
     scrollable : PropTypes.bool,

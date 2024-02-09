@@ -3631,6 +3631,9 @@ export default class CommonDatagridComponent extends AppComponent {
         this[this.hidePreloaderOnRenderKey] = !!toggle;
     }
     onRender(){
+        if(typeof this.props.onRender =="function"){
+            this.props.onRender({context:this});
+        }
         if(!this.props.isLoading && this.isLoadingRef.current){
             this.setIsLoading(false);
             return;

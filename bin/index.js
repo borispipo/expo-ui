@@ -38,6 +38,12 @@ program.command('generate-getTable')
   .action((src, options) => {
     require("./update");
   });
+  
+  program.command('install')
+  .description('permet d\'installer les dépendences expo-ui de l\'application')
+  .action((src, options) => {
+    require("./install");
+  });
 
 
   program.parse();

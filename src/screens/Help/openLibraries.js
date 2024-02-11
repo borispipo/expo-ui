@@ -1,6 +1,6 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
-		"version": "8.25.17",
+		"version": "8.25.18",
 		"url": "https://github.com/borispipo/expo-ui#readme",
 		"license": "ISC"
 	},
@@ -15,7 +15,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"@expo/html-elements": {
-		"version": "0.5.1",
+		"version": "0.9.1",
 		"url": "https://github.com/expo/expo/tree/main/packages/html-elements",
 		"license": "MIT"
 	},
@@ -39,33 +39,28 @@ module.exports = {
 		"url": "https://github.com/pchmn/expo-material3-theme#readme",
 		"license": "MIT"
 	},
-	"@react-native-async-storage/async-storage": {
-		"version": "1.21.0",
-		"url": "https://github.com/react-native-async-storage/async-storage#readme",
-		"license": "MIT"
-	},
 	"@react-native-community/netinfo": {
 		"version": "11.1.0",
 		"url": "https://github.com/react-native-netinfo/react-native-netinfo#readme",
 		"license": "MIT"
 	},
 	"@react-native/assets-registry": {
-		"version": "0.72.0",
-		"url": "git@github.com:facebook/react-native.git",
+		"version": "0.74.0",
+		"url": "https://github.com/facebook/react-native/tree/HEAD/packages/assets#readme",
 		"license": "MIT"
 	},
 	"@react-navigation/native": {
-		"version": "6.1.9",
+		"version": "6.1.10",
 		"url": "https://reactnavigation.org",
 		"license": "MIT"
 	},
 	"@react-navigation/native-stack": {
-		"version": "6.9.17",
+		"version": "6.9.18",
 		"url": "https://github.com/software-mansion/react-native-screens#readme",
 		"license": "MIT"
 	},
 	"@react-navigation/stack": {
-		"version": "6.3.20",
+		"version": "6.3.21",
 		"url": "https://reactnavigation.org/docs/stack-navigator/",
 		"license": "MIT"
 	},
@@ -186,11 +181,6 @@ module.exports = {
 	"react-native-webview": {
 		"version": "13.6.4",
 		"url": "https://github.com/react-native-webview/react-native-webview#readme",
-		"license": "MIT"
-	},
-	"socket.io-client": {
-		"version": "4.7.4",
-		"url": "https://github.com/socketio/socket.io-client.git",
 		"license": "MIT"
 	}
 };

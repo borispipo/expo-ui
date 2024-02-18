@@ -3,12 +3,15 @@ import View from "$ecomponents/View";
 import React from "$react";
 import theme,{remToPixel,Colors,flattenStyle} from '$theme';
 import {StyleSheet} from "react-native";
-import {defaultStr,defaultObj,defaultNumber} from "$cutils";
+import {defaultStr,defaultObj,defaultNumber,isPlainObject} from "$cutils";
 import useContext from "$econtext/hooks";
 export const height = 150;
 export const width = undefined;//300;
 export default function Logo (props) {
     const {components:{logo:LogoComponent}} = useContext();
+    if(React.isComponent(LogoComponent)) return <LogoComponent
+        {...props}
+    />
     let {icon,color,style,testID,containerProps,smallStyle,largeStyle,mediumStyle,height:customHeight,withImage,withText} = props;
         testID = defaultStr(testID,"RN_LogoComponent");
         containerProps = defaultObj(containerProps);
@@ -17,9 +20,9 @@ export default function Logo (props) {
         const styles = getStyle({style,color,height:hasHeight?customHeight:undefined,smallStyle,largeStyle,mediumStyle});
         let logoImage = null,img,txt=null,hasTwice = false;
         if(LogoComponent){
-            hasTwice = React.isComponent(LogoComponent.Image) && React.isComponent(LogoComponent.Text);
+            hasTwice = React.isComponent(LogoComponent?.Image) && React.isComponent(LogoComponent?.Text);
             if(!hasTwice){
-                logoImage = React.isValidElement(LogoComponent)? LogoComponent : React.isComponent(LogoComponent)? <LogoComponent {...props} style={[styles.logoContent,props.style]} testID={testID+"_Content"} styles={styles}/> : null;
+                logoImage = React.isValidElement(LogoComponent)? LogoComponent : null;
             } else {
                 img = icon !== false ? <View testID={testID+"_ContentContainer"} style={styles.logoImage}>
                     <LogoComponent.Image styles={styles}/>

@@ -75,7 +75,6 @@ module.exports = function(appName,{projectRoot:root}){
     });
     createAPPJSONFile(projectRoot,{...mainPackage,name});
     createEntryFile(projectRoot);
-    console.log(projectRoot," is project root");
     copy(path.resolve(getAppDir(),"src"),path.resolve(projectRoot,"src"),{recursive:true,overwrite:false});
     console.log("installing dependencies ...");
     return new Promise((resolve,reject)=>{

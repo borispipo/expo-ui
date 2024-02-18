@@ -22,26 +22,28 @@ if(fs.existsSync(mainJSONPath)){
         const script = filteredDeps.join(" ");
         exec(`npm install expo`,{projectRoot}).finally(()=>{
             exec(`npx expo install ${script} --fix`,{projectRoot}).finally((i)=>{
-                const newPackageJS = JSON.parse(fs.readFileSync(mainJSONPath));
-                let hasChanged = false;
-                if(newPackageJS?.dependencies && typeof newPackageJS?.dependencies =="object"){
-                    for(let i in dependencies){
-                        const old = dependencies[i];
-                        dependencies[i] = newPackageJS?.dependencies[i] || dependencies[i];
-                        if(!hasChanged && dependencies[i] !== old){
-                            hasChanged = true;
+                exec(`npm install`,{projectRoot}).finally(()=>{
+                    const newPackageJS = JSON.parse(fs.readFileSync(mainJSONPath));
+                    let hasChanged = false;
+                    if(newPackageJS?.dependencies && typeof newPackageJS?.dependencies =="object"){
+                        for(let i in dependencies){
+                            const old = dependencies[i];
+                            dependencies[i] = newPackageJS?.dependencies[i] || dependencies[i];
+                            if(!hasChanged && dependencies[i] !== old){
+                                hasChanged = true;
+                            }
                         }
                     }
-                }
-                if(hasChanged){
-                    try {
-                        writeFile(dependenciesPath,`
-module.exports = ${JSON.stringify(dependencies,null,"\t")};
-                        `)
-                    } catch(e){
-                        console.log(e," is generated error");
+                    if(hasChanged){
+                        try {
+                            writeFile(dependenciesPath,`
+    module.exports = ${JSON.stringify(dependencies,null,"\t")};
+                            `)
+                        } catch(e){
+                            console.log(e," is generated error");
+                        }
                     }
-                }
+                })
             });    
         })
     } else {

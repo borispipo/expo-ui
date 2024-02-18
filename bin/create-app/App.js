@@ -8,7 +8,7 @@ import Logo from "$ecomponents/Logo";
 import drawerSections from "$navigation/drawerSections";
 import TableDataListScreen from "$screens/TableData/TableDataListScreen";
 import TableDataScreen from "$screens/TableData/TableDataScreen";
-import Notifications from "$ecomponents/Notifications";
+import Notifications from "$components/Notifications";
 import auth from "$src/auth";
 
 export default function AppMainEntry(){

@@ -168,7 +168,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
                 opts.fetchOptions.selector = extendObj(true,{},opts.fetchOptions.selector,fetchOptionsRef.current?.selector);
             }
             opts.fetchOptions.sort = sortRef.current;
-            if(canHandleLimit){
+            if(canHandleLimit && limitRef.current > 0){
                 opts.fetchOptions.limit = limitRef.current;
                 opts.fetchOptions.page = pageRef.current -1;
             } else {
@@ -275,6 +275,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
             text : item.formatNumber(),
             icon : limitRef.current == item ? 'check' : null,
             primary : limitRef.current === item ? true : false,
+            tooltip : item === 0 ? "Sélectionnez cette valeur si vous souhaitez vous en passer de la limite du nombre d'items à afficher" : item.formatNumber(),
             onPress : ()=>{
                 if(item == limitRef.current) return;
                 limitRef.current = item;

@@ -1,5 +1,5 @@
 
-module.exports = {
+    module.exports = {
 	"@emotion/native": "^11.11.0",
 	"@expo/html-elements": "^0.5.1",
 	"@expo/vector-icons": "^14.0.0",
@@ -7,14 +7,14 @@ module.exports = {
 	"@react-native-community/netinfo": "11.1.0",
 	"@react-native/assets-registry": "^0.72.0",
 	"react-native-get-random-values": "~1.8.0",
-	"@react-navigation/native": "^6.1.9",
-	"@react-navigation/native-stack": "^6.9.17",
-	"@react-navigation/stack": "^6.3.20",
+	"@react-navigation/native": "^6.1.10",
+	"@react-navigation/native-stack": "^6.9.18",
+	"@react-navigation/stack": "^6.3.21",
 	"@shopify/flash-list": "1.6.3",
 	"expo": "^50.0.7",
 	"expo-camera": "~14.0.5",
 	"expo-clipboard": "~5.0.1",
-	"expo-font": "~11.10.2",
+	"expo-font": "~11.10.3",
 	"expo-image-picker": "~14.7.1",
 	"expo-linking": "~6.2.2",
 	"expo-sharing": "~11.10.0",
@@ -32,4 +32,4 @@ module.exports = {
 	"react-native-reanimated": "~3.6.2",
 	"react-native-view-shot": "3.8.0"
 };
-                        
+                            

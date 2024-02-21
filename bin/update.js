@@ -11,7 +11,7 @@ if(fs.existsSync(mainJSONPath)){
     const packageDev = typeof packageObj?.dependencies =="object" && packageObj?.dependencies || {};
     const filterdDObj = {};
     dependenciesArr.filter((v,index)=>{
-        if(!!packageDev[v]){
+        if(!!packageDev[v] && v !=="expo"){
             filterdDObj[v] = true;
             return true;
         }
@@ -19,10 +19,17 @@ if(fs.existsSync(mainJSONPath)){
     });
     const filteredDeps = Object.keys(filterdDObj);
     if(filteredDeps.length){
-        const script = filteredDeps.join(" ");
-        exec(`npm install expo`,{projectRoot}).finally(()=>{
-            exec(`npx expo install ${script} --fix`,{projectRoot}).finally((i)=>{
-                exec(`npm install`,{projectRoot}).finally(()=>{
+        exec(`npm install expo@latest`,{projectRoot}).finally(()=>{
+            let i = -1;
+            const next = ()=>{
+                return exec(`npx expo install ${filteredDeps.join(" ")}`,{projectRoot}); 
+                i++;
+                if(i>= filteredDeps.length) return Promise.resolve();
+                const script = filteredDeps[i];
+                return exec(`npx expo install ${script}`,{projectRoot}).finally(next);  
+            }
+            next().finally((i)=>{
+                //exec(`npm install`,{projectRoot}).finally(()=>{
                     const newPackageJS = JSON.parse(fs.readFileSync(mainJSONPath));
                     let hasChanged = false;
                     if(newPackageJS?.dependencies && typeof newPackageJS?.dependencies =="object"){
@@ -43,7 +50,7 @@ if(fs.existsSync(mainJSONPath)){
                             console.log(e," is generated error");
                         }
                     }
-                })
+                //})
             });    
         })
     } else {

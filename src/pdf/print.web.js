@@ -1,9 +1,30 @@
 import {isElectron} from "$cplatform";
 import electronPrint from "./print.electron";
 import {isTouchDevice} from "$cplatform";
+import {canPostWebviewMessage,postWebviewMessage} from "$cutils/webview";
+import {defaultStr,getFileExtension} from "$cutils";
+import DateLib from "$clib/date";
 export default function print(pdfMakeInstance,options,...rest){
     if(isElectron()){
         return electronPrint(pdfMakeInstance,options,...rest);
+    }
+    if(canPostWebviewMessage()){
+        return pdfMakeInstance.getBase64((content)=>{
+            let fileName = defaultStr(options?.fileName);
+            if(!fileName){
+                fileName = "printed-pdf-"+DateLib.format(new Date(),"dd-mm-yyyy HH MM SS");
+            }
+            const ext = getFileExtension(fileName,true);
+            if(!ext || ext.toLowerCase() !=="pdf"){
+                fileName+=".pdf";
+            }
+            return postWebviewMessage("FILE_SAVER_SAVE_FILE",{
+                content,
+                contentType : 'application/pdf',
+                fileName,
+                isBase64 : true,
+            });
+        })
     }
     if(isTouchDevice()){
         return pdfMakeInstance.open({},window);

@@ -1,6 +1,6 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
-		"version": "8.30.0",
+		"version": "8.32.0",
 		"url": "https://github.com/borispipo/expo-ui#readme",
 		"license": "ISC"
 	},
@@ -20,7 +20,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"@expo/metro-config": {
-		"version": "0.17.4",
+		"version": "0.17.5",
 		"url": "https://github.com/expo/expo.git",
 		"license": "MIT"
 	},
@@ -50,17 +50,17 @@ module.exports = {
 		"license": "MIT"
 	},
 	"@react-navigation/native": {
-		"version": "6.1.10",
+		"version": "6.1.12",
 		"url": "https://reactnavigation.org",
 		"license": "MIT"
 	},
 	"@react-navigation/native-stack": {
-		"version": "6.9.18",
+		"version": "6.9.20",
 		"url": "https://github.com/software-mansion/react-native-screens#readme",
 		"license": "MIT"
 	},
 	"@react-navigation/stack": {
-		"version": "6.3.21",
+		"version": "6.3.23",
 		"url": "https://reactnavigation.org/docs/stack-navigator/",
 		"license": "MIT"
 	},
@@ -80,7 +80,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"expo": {
-		"version": "50.0.7",
+		"version": "50.0.8",
 		"url": "https://github.com/expo/expo/tree/main/packages/expo",
 		"license": "MIT"
 	},

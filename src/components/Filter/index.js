@@ -2,7 +2,7 @@
 
 import DateLib from "$lib/date";
 import {isNonNullString,defaultStr,isNullOrEmpty,debounce,isFunction,uniqid} from "$cutils";
-import {regexParser,regexActions,operators as _operators,actions as _actions,periodActions,betweenActions, inActions as _inActions,getFilterStateValues,getSessionData,setSessionData} from "$cfilters";
+import {regexParser,regexActions,operators as _operators,actions as _actions,periodActions,betweenActions, inActions as _inActions,getFilterStateValues,getSessionData,setSessionData,filterDescription} from "$cfilters";
 import {parseDecimal} from "$ecomponents/TextField";
 import notify from "$notify";
 import PropTypes from "prop-types";

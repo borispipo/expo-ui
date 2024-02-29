@@ -182,6 +182,17 @@ const DialogComponent = React.forwardRef((props,ref)=>{
             {content}
         </ScrollView>
     }
+    const getRRProps = (containerProps)=>{
+        return containerProps;
+        if(!isPreloader){
+            const {mediaQueryUpdateStyle} = containerProps;
+            containerProps.mediaQueryUpdateStyle = (...rest)=>{
+                const r = typeof mediaQueryUpdateStyle =="function"? mediaQueryUpdateStyle(...rest) : undefined;
+                return isFullScreenDialog()? [r,theme.styles.alignItemsFlexStart] : r;
+            }
+        }
+        return containerProps;
+    }
     return <ModalComponent
                 onDismiss={(e)=>{
                     return handleBack(e,false);
@@ -194,13 +205,13 @@ const DialogComponent = React.forwardRef((props,ref)=>{
                 style = {[styles.modal,modalProps.style]}
                 ref={modalRef}
                 testID = {testID}
-                contentContainerProps = {contentContainerProps}
+                contentContainerProps = {getRRProps(contentContainerProps)}
             >
                 <DialogContent isFullScreen={isFullScreenDialog} isPreloader={isPreloader}>
                     <Surface 
                         testID = {testID+"_Overlay"}
                         ref={overlayRef}
-                        {...overlayProps} 
+                        {...getRRProps(overlayProps)} 
                         style={[styles.overlay,isAlert && styles.overlayAlert,{backgroundColor},overlayProps.style,fullScreenStyle]}
                     >   
                      {(!isAlert && (actions || title || subtitle)) ? <AppBarDialog
@@ -369,10 +380,8 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         flexGrow : 0,
         marginVertical : 0,
+        //maxWidth : "100%",
         ...Platform.select({
-          /*android: {
-            elevation: 2,
-          },*/
           default: {
             shadowColor: 'rgba(0, 0, 0, .3)',
             shadowOffset: { width: 0, height: 1 },

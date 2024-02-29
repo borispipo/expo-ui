@@ -1,15 +1,16 @@
 import React from "$react";
 import {
   StyleSheet,
-  View,
   TouchableWithoutFeedback,
 } from 'react-native';
+import View from "$ecomponents/View";
 import BackHandler from "$ecomponents/BackHandler";
 import PropTypes from "prop-types";
 import theme,{StyleProp} from "$theme";
 import Animation from "$ecomponents/Animation";
-import { Surface } from "react-native-paper";
+//import { Surface } from "react-native-paper";
 import { Platform } from "react-native";
+import Surface from "$ecomponents/Surface";
 import { Portal } from "react-native-paper";
 import {defaultStr} from "$cutils";
 import {
@@ -41,8 +42,10 @@ const ModalComponent = React.forwardRef((props,ref)=>{
         onDismiss,
         isPreloader,
         children,
+        testID,
         ...rest
     } = props;
+    testID = 'RN__ModalComponent__'+defaultStr(testID);
     if(animate !== false && isMobileNative() && defaultStr(animationType).toLowerCase().trim() !=='slide'){
        animate = false;
     }
@@ -107,9 +110,29 @@ const ModalComponent = React.forwardRef((props,ref)=>{
     },[animate]);
     const wrapperProps = animate ? {enteringCallback:callback,exitingCallback:callback} : {};
     return !visible?null: <Portal>
+      <TouchableWithoutFeedback
+        aria-label={overlayAccessibilityLabel}
+        //role="button"
+        disabled={!dismissable}
+        onPress={dismissable ? hideModal : undefined}
+        importantForAccessibility="no"
+        testID={testID+"__backdrop_Container"}
+      >
+        <View
+          testID={testID+"__backdrop"}
+          {...backdropProps}
+          mediaQueryUpdateStyle = {({width,height})=>{
+            return {width,height};
+          }}
+          style={[
+            styles.backdrop,
+            {backgroundColor:theme.colors.backdrop},
+            backdropProps.style,
+          ]}
+        />
+      </TouchableWithoutFeedback>
       <Anim
         ref={ref}
-        testID={'RN__ModalComponent'}
         {...rest}
         accessibilityViewIsModal
         role="polite"
@@ -118,31 +141,15 @@ const ModalComponent = React.forwardRef((props,ref)=>{
         animationType = {animationType}
         animationDuration = {animationDuration}
         animationPosition = {animationPosition}
+        testID={testID}
       >
-          <TouchableWithoutFeedback
-            aria-label={overlayAccessibilityLabel}
-            //role="button"
-            disabled={!dismissable}
-            onPress={dismissable ? hideModal : undefined}
-            importantForAccessibility="no"
-            testID="RN__ModalComponent__backdrop_Container"
-          >
-            <View
-              testID="RN__ModalComponent__backdrop"
-              {...backdropProps}
-              style={[
-                styles.backdrop,
-                {backgroundColor:theme.colors.backdrop},
-                backdropProps.style,
-              ]}
-            />
-          </TouchableWithoutFeedback>
-          <Surface testID="RN__ModalComponent__ContentContainer"
+          <Surface 
               elevation = {5}
               {...contentContainerProps}
               {...wrapperProps}
               ref = {contentContainerRef}
-              style={[styles.contentContainer,{ marginTop: TOP_INSET, marginBottom: BOTTOM_INSET,backgroundColor:'transparent' },contentContainerProps.style]}
+              testID={testID+"__ModalContentContainer"}
+              style={[styles.contentContainer,styles.surface,contentContainerProps.style]}
           >
             {children}  
           </Surface>
@@ -154,6 +161,14 @@ const ModalComponent = React.forwardRef((props,ref)=>{
 const styles = StyleSheet.create({
   modal : {
     ...StyleSheet.absoluteFillObject,
+    height : "100%",
+    width : "100%",
+  },
+  surface : { 
+    marginTop: TOP_INSET, 
+    marginBottom: BOTTOM_INSET,
+    backgroundColor:'transparent',
+    height : "100%"
   },
   backdrop: {
     flex: 1,

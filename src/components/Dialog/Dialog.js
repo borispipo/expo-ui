@@ -183,12 +183,12 @@ const DialogComponent = React.forwardRef((props,ref)=>{
         </ScrollView>
     }
     const getRRProps = (containerProps)=>{
-        return containerProps;
         if(!isPreloader){
             const {mediaQueryUpdateStyle} = containerProps;
             containerProps.mediaQueryUpdateStyle = (...rest)=>{
                 const r = typeof mediaQueryUpdateStyle =="function"? mediaQueryUpdateStyle(...rest) : undefined;
-                return isFullScreenDialog()? [r,theme.styles.alignItemsFlexStart] : r;
+                const {width,height} = rest[0];
+                return isFullScreenDialog()? [r,{width,height}] : r;
             }
         }
         return containerProps;
@@ -205,7 +205,7 @@ const DialogComponent = React.forwardRef((props,ref)=>{
                 style = {[styles.modal,modalProps.style]}
                 ref={modalRef}
                 testID = {testID}
-                contentContainerProps = {getRRProps(contentContainerProps)}
+                contentContainerProps = {contentContainerProps}
             >
                 <DialogContent isFullScreen={isFullScreenDialog} isPreloader={isPreloader}>
                     <Surface 

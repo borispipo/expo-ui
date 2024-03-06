@@ -91,7 +91,7 @@ const SWRDatagridComponent = React.forwardRef((props,ref)=>{
     pagination = defaultObj(pagination);
     rest.exportTableProps = defaultObj(rest.exportTableProps)
     const firstPage = 1;
-    const tableName = defaultStr(table?.tableName,table?.table).trim().toUpperCase();
+    const tableName = defaultStr(table?.tableName,table?.table,rest?.tableName,rest?.table).trim().toUpperCase();
     defaultSortColumn = defaultStr(defaultSortColumn,table?.defaultSortColumn);
     defaultSortOrder = defaultStr(defaultSortOrder,table?.defaultSortOrder).toLowerCase().trim();
     sort = isNonNullString(sort)? {column:sort} : isObj(sort)?sort : {};

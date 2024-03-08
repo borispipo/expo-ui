@@ -1,6 +1,6 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
-		"version": "8.34.0",
+		"version": "8.36.0",
 		"url": "https://github.com/borispipo/expo-ui#readme",
 		"license": "ISC"
 	},
@@ -20,7 +20,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"@expo/metro-config": {
-		"version": "0.17.5",
+		"version": "0.17.6",
 		"url": "https://github.com/expo/expo.git",
 		"license": "MIT"
 	},
@@ -50,17 +50,17 @@ module.exports = {
 		"license": "MIT"
 	},
 	"@react-navigation/native": {
-		"version": "6.1.12",
+		"version": "6.1.14",
 		"url": "https://reactnavigation.org",
 		"license": "MIT"
 	},
 	"@react-navigation/native-stack": {
-		"version": "6.9.20",
+		"version": "6.9.22",
 		"url": "https://github.com/software-mansion/react-native-screens#readme",
 		"license": "MIT"
 	},
 	"@react-navigation/stack": {
-		"version": "6.3.23",
+		"version": "6.3.25",
 		"url": "https://reactnavigation.org/docs/stack-navigator/",
 		"license": "MIT"
 	},
@@ -80,12 +80,12 @@ module.exports = {
 		"license": "MIT"
 	},
 	"expo": {
-		"version": "50.0.8",
+		"version": "50.0.11",
 		"url": "https://github.com/expo/expo/tree/main/packages/expo",
 		"license": "MIT"
 	},
 	"expo-camera": {
-		"version": "14.0.5",
+		"version": "14.0.6",
 		"url": "https://docs.expo.dev/versions/latest/sdk/camera/",
 		"license": "MIT"
 	},
@@ -115,7 +115,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"expo-sqlite": {
-		"version": "13.2.2",
+		"version": "13.3.0",
 		"url": "https://docs.expo.dev/versions/latest/sdk/sqlite/",
 		"license": "MIT"
 	},

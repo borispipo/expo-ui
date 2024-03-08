@@ -1,6 +1,6 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
-		"version": "8.35.0",
+		"version": "8.34.0",
 		"url": "https://github.com/borispipo/expo-ui#readme",
 		"license": "ISC"
 	},
@@ -39,16 +39,6 @@ module.exports = {
 		"url": "https://github.com/pchmn/expo-material3-theme#readme",
 		"license": "MIT"
 	},
-	"@react-native-async-storage/async-storage": {
-		"version": "1.21.0",
-		"url": "https://github.com/react-native-async-storage/async-storage#readme",
-		"license": "MIT"
-	},
-	"@react-native-community/datetimepicker": {
-		"version": "7.6.1",
-		"url": "https://github.com/react-native-community/datetimepicker#readme",
-		"license": "MIT"
-	},
 	"@react-native-community/netinfo": {
 		"version": "11.1.0",
 		"url": "https://github.com/react-native-netinfo/react-native-netinfo#readme",
@@ -60,17 +50,17 @@ module.exports = {
 		"license": "MIT"
 	},
 	"@react-navigation/native": {
-		"version": "6.1.14",
+		"version": "6.1.12",
 		"url": "https://reactnavigation.org",
 		"license": "MIT"
 	},
 	"@react-navigation/native-stack": {
-		"version": "6.9.22",
+		"version": "6.9.20",
 		"url": "https://github.com/software-mansion/react-native-screens#readme",
 		"license": "MIT"
 	},
 	"@react-navigation/stack": {
-		"version": "6.3.25",
+		"version": "6.3.23",
 		"url": "https://reactnavigation.org/docs/stack-navigator/",
 		"license": "MIT"
 	},
@@ -182,6 +172,11 @@ module.exports = {
 	"react-native-svg": {
 		"version": "14.1.0",
 		"url": "https://github.com/react-native-community/react-native-svg",
+		"license": "MIT"
+	},
+	"react-native-view-shot": {
+		"version": "3.8.0",
+		"url": "https://github.com/gre/react-native-view-shot",
 		"license": "MIT"
 	},
 	"react-native-webview": {

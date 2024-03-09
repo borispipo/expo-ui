@@ -1,7 +1,7 @@
 // Copyright 2022 @fto-consult/Boris Fouomene. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
-import {defaultStr,base64toBlob,dataURLToBlob,getTypeFromDataURL,isNonNullString,getFileName,getFileExtension,defaultNumber,defaultBool,dataURLToBase64,isBlob,isBase64,isDataURL} from "$cutils";
+import {defaultStr,base64toBlob,dataURLToBlob,getTypeFromDataURL,isNonNullString,getFileName,getFileExtension,defaultNumber,defaultBool,dataURLToBase64,isBlob,isBase64,isDataURL,canPostWebviewMessage} from "$cutils";
 const mime = require('react-native-mime-types')
 const XLSX = require("xlsx");
 import Preloader from "$preloader";
@@ -70,7 +70,7 @@ export const writeExcel = ({workbook,content,contentType,fileName,...rest})=>{
     if(isBlob(content)){
         return write({...rest,content,fileName,contentType}).finally(Preloader.close)
     }
-    if(isNative){
+    if(isNative || canPostWebviewMessage()){
         return FileSaver.save({...rest,content:XLSX.write(workbook, {type:'base64', bookType:ext}),fileName}).finally(Preloader.close).finally(Preloader.close);
     }
     return new Promise((resolve,reject)=>{

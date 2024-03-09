@@ -1,7 +1,7 @@
 import {isElectron} from "$cplatform";
 import electronPrint from "./print.electron";
 import {isTouchDevice} from "$cplatform";
-import {canPostWebviewMessage,postWebviewMessage} from "$cutils/webview";
+import {canPostWebviewMessage,postWebviewMessage,logRNWebview,WEBVIEW_SAVE_FILE_EVENT} from "$cutils/rn-webview";
 import {defaultStr,getFileExtension} from "$cutils";
 import DateLib from "$clib/date";
 export default function print(pdfMakeInstance,options,...rest){
@@ -18,7 +18,8 @@ export default function print(pdfMakeInstance,options,...rest){
             if(!ext || ext.toLowerCase() !=="pdf"){
                 fileName+=".pdf";
             }
-            return postWebviewMessage("FILE_SAVER_SAVE_FILE",{
+            logRNWebview("printing pdf file",options?.fileName);
+            return postWebviewMessage(WEBVIEW_SAVE_FILE_EVENT,{
                 content,
                 contentType : 'application/pdf',
                 fileName,

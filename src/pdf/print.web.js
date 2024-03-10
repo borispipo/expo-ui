@@ -12,13 +12,13 @@ export default function print(pdfMakeInstance,options,...rest){
         return pdfMakeInstance.getBase64((content)=>{
             let fileName = defaultStr(options?.fileName);
             if(!fileName){
-                fileName = "printed-pdf-"+DateLib.format(new Date(),"dd-mm-yyyy HH MM SS");
+                fileName = "printed-pdf-"+DateLib.format(new Date(),"dd-mm-yyyy HH MM ss");
             }
             const ext = getFileExtension(fileName,true);
             if(!ext || ext.toLowerCase() !=="pdf"){
                 fileName+=".pdf";
             }
-            logRNWebview("printing pdf file",options?.fileName);
+            logRNWebview("printing pdf file",options?.fileName,WEBVIEW_SAVE_FILE_EVENT);
             return postWebviewMessage(WEBVIEW_SAVE_FILE_EVENT,{
                 content,
                 contentType : 'application/pdf',

@@ -11,7 +11,7 @@ if(fs.existsSync(mainJSONPath)){
     const packageDev = typeof packageObj?.dependencies =="object" && packageObj?.dependencies || {};
     const filterdDObj = {};
     dependenciesArr.filter((v,index)=>{
-        if(!!packageDev[v] && v !=="expo"){
+        if((!!packageDev[v] && v !=="expo") || ["expo-intent-launcher"].includes(v)){
             filterdDObj[v] = true;
             return true;
         }

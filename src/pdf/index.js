@@ -26,8 +26,12 @@ export const hashQRCode = (data)=>{
     }
 }
 
-export const decryptQRCode = (hashedQRCode)=>{
-    return crypToJS.decode(hashedQRCode,QR_CODE_HASH_KEY);
+export const decryptQRCodeData = (hashedQRCode)=>{
+    try {
+        return crypToJS.decode(hashedQRCode,QR_CODE_HASH_KEY);
+    } catch {
+        return null;
+    }
 }
 
 export const isValidQRCode = (data)=>{
@@ -35,7 +39,17 @@ export const isValidQRCode = (data)=>{
         data = JSON.parse(data);
     }
     data = defaultObj(data);
-    return hashQRCode(data.data) === data.hash && QR_CODE_HASH_KEY_PREFIX.toLowerCase() == defaultStr(data.provider).toLowerCase().replace(/\s/g, "");
+    data.data = decryptQRCodeData(data.data);
+    if(!data.data || !isJSON(data.data)) return false;
+    return QR_CODE_HASH_KEY_PREFIX.toLowerCase() == defaultStr(data.provider).toLowerCase().replace(/\s/g, "");
+}
+export const decryptQRCode = (data)=>{
+    if(isJSON(data)){
+        data = JSON.parse(data);
+    }
+    data = defaultObj(data);
+    if(!isValidQRCode(data)) return null;
+    return data;
 }
 
 const {createPdf} = pdfMake;
@@ -198,7 +212,7 @@ export const getPrintSettings = ({multiple,duplicateDocOnPage,isTableData,tableD
             },
             qrCodeFitSize : {
                 type :"number",
-                defaultValue : 150,
+                defaultValue : 120,
                 label : "Taille du QR Code",
                 validType : "numberGreaterThanOrEquals[120]"
             },
@@ -289,7 +303,7 @@ export function printTableData(data,options){
                         const pseudo = Auth.getUserPseudo();
                         const fullName = Auth.getUserFullName() || pseudo || Auth.getLoggedUserCode();
                         const printBy = isNonNullString(fullName)? (`${fullName}${uEmail?`[${uEmail}]`:""}`) : "";
-                        result.content.push({ qr: JSON.stringify({data:qrData,hash:hashQRCode(qrData),provider:defaultStr(appConfig.name).replace(/\s/g, ""),printBy,printDate:new Date().toFormat(DateLib.defaultDateTimeFormat),tableName:table}),margin:[0,8,0,5], fit: defaultNumber(data.qrCodeFitSize,150), alignment: qrCodeAlignmentPosition})
+                        result.content.push({ qr: JSON.stringify({data:hashQRCode(qrData),provider:defaultStr(appConfig.name).replace(/\s/g, ""),printBy,printDate:new Date().toFormat(DateLib.defaultDateTimeFormat),tableName:table}),margin:[0,8,0,5], fit: defaultNumber(data.qrCodeFitSize,120), alignment: qrCodeAlignmentPosition})
                     }
                 }
                 return result;

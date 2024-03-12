@@ -3,13 +3,40 @@ import Preloader from "$preloader";
 import pdfMake from "$cpdf/pdfmake";
 import notify from "$cnotify";
 import DialogProvider from "$ecomponents/Form/FormData/DialogProvider";
-import {isNonNullString,defaultObj,defaultStr,extendObj,defaultNumber} from "$cutils";
+import {isNonNullString,defaultObj,defaultStr,extendObj,defaultNumber,isJSON} from "$cutils";
 import session from "$session";
 import printPdfMake from "./print";
 import appConfig from "$capp/config";
 import Auth from "$cauth";
 import DateLib from "$clib/date";
+import crypToJS from "$clib/crypto-js";
 
+export const QR_CODE_HASH_KEY_PREFIX = defaultStr(appConfig.name).replace(/\s/g, "");
+export const QR_CODE_HASH_KEY = `${QR_CODE_HASH_KEY_PREFIX}-QR_CODE_HASH_KEY`;//la clé de décryptage du QRCODE
+
+
+/****
+    génère la valeur haschée de la données d'un qrCode
+*/
+export const hashQRCode = (data)=>{
+    try {
+        return crypToJS.encode(JSON.stringify(data),QR_CODE_HASH_KEY).toString()
+    } catch(Exception){
+        return null;
+    }
+}
+
+export const decryptQRCode = (hashedQRCode)=>{
+    return crypToJS.decode(hashedQRCode,QR_CODE_HASH_KEY);
+}
+
+export const isValidQRCode = (data)=>{
+    if(isJSON(data)){
+        data = JSON.parse(data);
+    }
+    data = defaultObj(data);
+    return hashQRCode(data.data) === data.hash && QR_CODE_HASH_KEY_PREFIX.toLowerCase() == defaultStr(data.provider).toLowerCase().replace(/\s/g, "");
+}
 
 const {createPdf} = pdfMake;
 pdfMake.createPdf = (docDefinition,...rest)=>{
@@ -173,7 +200,7 @@ export const getPrintSettings = ({multiple,duplicateDocOnPage,isTableData,tableD
                 type :"number",
                 defaultValue : 150,
                 label : "Taille du QR Code",
-                validType : "numberGreaterThanOrEquals[100]"
+                validType : "numberGreaterThanOrEquals[120]"
             },
         }:{})
     },getFields(formDataProps.data))
@@ -262,7 +289,7 @@ export function printTableData(data,options){
                         const pseudo = Auth.getUserPseudo();
                         const fullName = Auth.getUserFullName() || pseudo || Auth.getLoggedUserCode();
                         const printBy = isNonNullString(fullName)? (`${fullName}${uEmail?`[${uEmail}]`:""}`) : "";
-                        result.content.push({ qr: JSON.stringify({data:qrData,printBy,printDate:new Date().toFormat(DateLib.defaultDateTimeFormat),foreignKeyTable:table,table}),margin:[0,8,0,5], fit: defaultNumber(data.qrCodeFitSize,150), alignment: qrCodeAlignmentPosition})
+                        result.content.push({ qr: JSON.stringify({data:qrData,hash:hashQRCode(qrData),provider:defaultStr(appConfig.name).replace(/\s/g, ""),printBy,printDate:new Date().toFormat(DateLib.defaultDateTimeFormat),tableName:table}),margin:[0,8,0,5], fit: defaultNumber(data.qrCodeFitSize,150), alignment: qrCodeAlignmentPosition})
                     }
                 }
                 return result;

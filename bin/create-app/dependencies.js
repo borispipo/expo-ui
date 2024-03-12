@@ -7,9 +7,9 @@
 	"@react-native-community/netinfo": "11.1.0",
 	"@react-native/assets-registry": "^0.72.0",
 	"react-native-get-random-values": "~1.8.0",
-	"@react-navigation/native": "^6.1.14",
-	"@react-navigation/native-stack": "^6.9.22",
-	"@react-navigation/stack": "^6.3.25",
+	"@react-navigation/native": "^6.1.15",
+	"@react-navigation/native-stack": "^6.9.24",
+	"@react-navigation/stack": "^6.3.27",
 	"@shopify/flash-list": "1.6.3",
 	"expo": "^50.0.11",
 	"expo-camera": "~14.0.6",
@@ -31,6 +31,6 @@
 	"react-native-gesture-handler": "~2.14.0",
 	"react-native-reanimated": "~3.6.2",
 	"react-native-view-shot": "3.8.0",
-	"expo-intent-launcher" : "~10.11.0"
+	"expo-intent-launcher": "~10.11.0"
 };
                             

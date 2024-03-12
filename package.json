@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "8.41.0",
+  "version": "8.42.0",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "scripts": {
     "clear-npx-cache": "npx clear-npx-cache",
@@ -93,8 +93,7 @@
     "sharp-cli": "^2.1.0",
     "stream-browserify": "^3.0.0",
     "tippy.js": "^6.3.7",
-    "xlsx": "^0.18.5",
-    "expo-intent-launcher": "~10.11.0"
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@babel/plugin-proposal-export-namespace-from": "^7.18.9",

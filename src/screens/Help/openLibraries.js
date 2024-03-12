@@ -15,7 +15,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"@expo/html-elements": {
-		"version": "0.9.1",
+		"version": "0.5.1",
 		"url": "https://github.com/expo/expo/tree/main/packages/html-elements",
 		"license": "MIT"
 	},
@@ -45,22 +45,22 @@ module.exports = {
 		"license": "MIT"
 	},
 	"@react-native/assets-registry": {
-		"version": "0.74.0",
-		"url": "https://github.com/facebook/react-native/tree/HEAD/packages/assets#readme",
+		"version": "0.72.0",
+		"url": "git@github.com:facebook/react-native.git",
 		"license": "MIT"
 	},
 	"@react-navigation/native": {
-		"version": "6.1.10",
+		"version": "6.1.15",
 		"url": "https://reactnavigation.org",
 		"license": "MIT"
 	},
 	"@react-navigation/native-stack": {
-		"version": "6.9.18",
+		"version": "6.9.24",
 		"url": "https://github.com/software-mansion/react-native-screens#readme",
 		"license": "MIT"
 	},
 	"@react-navigation/stack": {
-		"version": "6.3.21",
+		"version": "6.3.27",
 		"url": "https://reactnavigation.org/docs/stack-navigator/",
 		"license": "MIT"
 	},
@@ -104,6 +104,11 @@ module.exports = {
 		"url": "https://docs.expo.dev/versions/latest/sdk/imagepicker/",
 		"license": "MIT"
 	},
+	"expo-intent-launcher": {
+		"version": "10.11.0",
+		"url": "https://docs.expo.dev/versions/latest/sdk/intent-launcher/",
+		"license": "MIT"
+	},
 	"expo-linking": {
 		"version": "6.2.2",
 		"url": "https://docs.expo.dev/versions/latest/sdk/linking",
@@ -134,23 +139,24 @@ module.exports = {
 		"url": "https://docs.expo.dev/versions/latest/sdk/webbrowser/",
 		"license": "MIT"
 	},
-	"react": {
-		"version": "18.2.0",
-		"url": "https://reactjs.org/",
-		"license": "MIT"
-	},
 	"react-native": {
 		"version": "0.73.4",
 		"url": "https://reactnative.dev/",
 		"license": "MIT"
 	},
+	"react-native-big-list": {
+		"version": "1.6.1",
+		"url": "https://marcocesarato.github.io/react-native-big-list-docs/",
+		"license": "GPL-3.0-or-later"
+	},
+	"react-native-blob-util": {
+		"version": "0.18.6",
+		"url": "https://github.com/RonRadtke/react-native-blob-util",
+		"license": "MIT"
+	},
 	"react-native-gesture-handler": {
 		"version": "2.14.1",
 		"url": "https://github.com/software-mansion/react-native-gesture-handler#readme",
-		"license": "MIT"
-	},
-	"react-native-get-random-values": {
-		"version": "1.8.0",
 		"license": "MIT"
 	},
 	"react-native-reanimated": {

@@ -3,11 +3,12 @@ import Preloader from "$preloader";
 import pdfMake from "$cpdf/pdfmake";
 import notify from "$cnotify";
 import DialogProvider from "$ecomponents/Form/FormData/DialogProvider";
-import {isNonNullString,defaultObj,defaultStr,extendObj} from "$cutils";
+import {isNonNullString,defaultObj,defaultStr,extendObj,defaultNumber} from "$cutils";
 import session from "$session";
 import printPdfMake from "./print";
 import appConfig from "$capp/config";
 import Auth from "$cauth";
+import DateLib from "$clib/date";
 
 
 const {createPdf} = pdfMake;
@@ -57,7 +58,7 @@ export const getFields = (config)=>{
     @paramm {multiple}, 
     @param {object} formDataProps, les prpops à passer au DialogProvider
 */
-export const getPrintSettings = ({multiple,duplicateDocOnPage,pageBreakBeforeEachDoc,sessionName,formDataProps,...rest})=>{
+export const getPrintSettings = ({multiple,duplicateDocOnPage,isTableData,tableDataFields,pageBreakBeforeEachDoc,sessionName,formDataProps,...rest})=>{
     formDataProps = Object.assign({},formDataProps);
     const hasSession = isNonNullString(sessionName);
     if(hasSession){
@@ -67,11 +68,19 @@ export const getPrintSettings = ({multiple,duplicateDocOnPage,pageBreakBeforeEac
     }
     const sessionData = hasSession ? defaultObj(session.get(sessionName)) : {};
     const config = {...sessionData,...defaultObj(formDataProps.data)};
+    const tbFields = {}, tbPrimaryKeyFields = [];
+    Object.map(tableDataFields,(field,index)=>{
+        if(!isObj(field)) return;
+        tbFields[index] = field;
+        if(!!field.primaryKey){
+            tbPrimaryKeyFields.push(index);
+        }
+    });
     const fields = extendObj(true,{},formDataProps.fields,{
         duplicateDocOnPage : duplicateDocOnPage !== false ? {
             text :'Dupliquer le(s) document(s)',
             type : 'switch',
-            defaultValue :  0,
+            defaultValue :  1,
             onValidate : ({value,context}) =>{
                 if(context){
                     const pageBreakBeforeEachDoc = context.getField("pageBreakBeforeEachDoc");
@@ -124,6 +133,49 @@ export const getPrintSettings = ({multiple,duplicateDocOnPage,pageBreakBeforeEac
                 return v;
             }
         } : undefined,
+        ...(isTableData && tbPrimaryKeyFields.length ?{
+            printQRCode : {
+                type : "switch",
+                label : "Imprimer un QR Code",
+                tooltip : "Cochez la case pour inclure un QR Code dans la données imprimée",
+                defaultValue : 0,
+            },
+            qrCodeFields : {
+                type : "select",
+                label : "Champs à inclure dans le QR Code",
+                multiple : true,
+                items : tbFields,
+                filter : ({item,index})=>isObj(item),
+                itemValue : ({item,index})=>index,
+                defaultValue : tbPrimaryKeyFields,
+                onValidatorValid : ({value})=>{
+                    if(!Array.isArray(value) || !value.length) return true;
+                    for(let i in tbPrimaryKeyFields){
+                        const p = tbPrimaryKeyFields[i];
+                        if(!value.includes(p)){
+                            return `Le champ [${p}] en temps que clé primaire doit figurer parmis les champs à imprimer dans le QR Code.`;
+                        }
+                    }
+                    return true;
+                },
+                renderItem : ({item,index})=>{
+                    return `[${index}] ${defaultStr(item.label,item.text)}`;
+                }
+            },
+            qrCodeAlignmentPosition : {
+                type : "select",
+                defaultValue : "center",
+                label : "Position du QR Code",
+                multiple : false,
+                items : [{code:"left",label:"A gauche"},{code:"center",label:"Au centre"},{code:"right",label:"A droite"}]
+            },
+            qrCodeFitSize : {
+                type :"number",
+                defaultValue : 150,
+                label : "Taille du QR Code",
+                validType : "numberGreaterThanOrEquals[100]"
+            },
+        }:{})
     },getFields(formDataProps.data))
     return new Promise((resolve,reject)=>{
         return DialogProvider.open({
@@ -157,6 +209,7 @@ export const getPrintSettings = ({multiple,duplicateDocOnPage,pageBreakBeforeEac
     @param {object<{
         table|tableName {string}, le nom de la table data à utilser pour l'impression
         print {funtion}, la fonction à utiliser pour faire l'impression, si cette fonction n'est pas définie, alors la table data lié à la table doit l'implémenter dans l'option print
+        perm {function|string}, la fonction permettant de vérifier l'accès à la fonction d'impression par l'utilisateur
     }>}
     @return Promise
 */
@@ -172,17 +225,49 @@ export function printTableData(data,options){
     if(!tablePrint){
         return Promise.reject({message : `La fonction d'impression n'est pas supportée par la table [${tableText}]`})
     }
-    if(!Auth.isTableDataAllowed({table,action:'print'})){
+    if(typeof options.perm =="function"){
+        if(!options.perm({table,tableObj})) {
+            return Promise.reject({message:'Vous n\'etes pas autorisé à imprimer ce type de document'});
+        }
+    } else if(isNonNullString(options.perm)){
+        if(!Auth.isAllowedFromString(options.perm)){
+            return Promise.reject({message:'Vous n\'etes pas autorisé à imprimer ce type de document'});
+        }
+    } else if(!Auth.isTableDataAllowed({table,action:'print'})){
         return Promise.reject({message:'Vous n\'etes pas autorisé à imprimer ce type de document'});
     }
     const printOptions = typeof tableObj.printOptions =="function"? tableObj.printOptions({...options,table,data}) : tableObj.printOptions;
     return print(data,{
         getSettings : (options)=>{
-            return getPrintSettings(extendObj(true,{},{sessionName:`print-${table}`},options,printOptions)).then(({data})=>{
+            return getPrintSettings(extendObj(true,{},{sessionName:`print-${table}`,isTableData:true,tableDataFields:defaultObj(options.tableDataFields,tableObj.printableFields,tableObj.fields)},options,printOptions)).then(({data})=>{
                 return data;
             });
         },
-        print : tablePrint,
+        print : (data,...rest)=>{
+            return Promise.resolve(tablePrint(data,...rest)).then((result)=>{
+                if(!!data?.printQRCode && Array.isArray(data?.qrCodeFields) && data.qrCodeFields.length && isObj(result) && Array.isArray(result.content) && isObj(data?.data)){
+                    const qrCodeFields = data.qrCodeFields;
+                    const printingData = data.data;
+                    const qrCodeAlignmentPosition = defaultStr(data.qrCodeAlignmentPosition,"center");
+                    const qrData = {};
+                    let hasQRData = false;
+                    qrCodeFields.map((f)=>{
+                        if(f in printingData){
+                            qrData[f] = ["number","boolean"].includes(typeof printingData[f])? printingData[f] : JSON.stringify(printingData[f]);
+                            hasQRData = true;
+                        }
+                    });
+                    if(hasQRData){
+                        const uEmail = Auth.getUserEmail();
+                        const pseudo = Auth.getUserPseudo();
+                        const fullName = Auth.getUserFullName() || pseudo || Auth.getLoggedUserCode();
+                        const printBy = isNonNullString(fullName)? (`${fullName}${uEmail?`[${uEmail}]`:""}`) : "";
+                        result.content.push({ qr: JSON.stringify({data:qrData,printBy,printDate:new Date().toFormat(DateLib.defaultDateTimeFormat),foreignKeyTable:table,table}),margin:[0,8,0,5], fit: defaultNumber(data.qrCodeFitSize,150), alignment: qrCodeAlignmentPosition})
+                    }
+                }
+                return result;
+            });
+        },
         ...Object.assign({},options),
     });
 }

@@ -110,6 +110,31 @@ const createAPPJSONFile = (projectRoot,{name,version})=>{
         writeFile(gP,gitignore);
       } catch{};
     }
+    const easIgnore = path.resolve(projectRoot,".easignore") ;
+    if(!fs.existsSync(easIgnore)){
+      try {
+        writeFile(easIgnore,`
+        node_modules/**/*
+        .expo/*
+        npm-debug.*
+        *.jks
+        *.p8
+        *.p12
+        *.key
+        *.mobileprovision
+        *.orig.*
+        web-build/**/*
+        web-report/**/*
+        electron/**/*
+        
+        # macOS
+        .DS_Store
+        
+        # Project
+        .tmp/*
+        `);
+      } catch{};
+    }
     const imagePluginOptions = {
       "photosPermission": `Autoriser $(PRODUCT_NAME) à accéder à vos photos.`,
       "cameraPermission" : `Autoriser $(PRODUCT_NAME) à accéder à votre camera`

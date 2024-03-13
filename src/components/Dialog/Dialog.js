@@ -171,8 +171,20 @@ const DialogComponent = React.forwardRef((props,ref)=>{
         paddingRight : borderRadius,
         paddingVertical : borderRadius?10:0,
     };
+    const getRRProps = (containerProps,setDimensions)=>{
+        if(!isPreloader){
+            const {mediaQueryUpdateStyle} = containerProps;
+            containerProps.mediaQueryUpdateStyle = (...rest)=>{
+                const r = typeof mediaQueryUpdateStyle =="function"? mediaQueryUpdateStyle(...rest) : undefined;
+                const {width,height} = rest[0];
+                const rW = setDimensions !==  false ? {width,height} : {};
+                return isFullScreenDialog()? [r,{...rW,maxWidth:"100%",maxHeight:"100%"}] : [r,setDimensions !== false && {maxHeight:getMaxHeight(),maxWidth:getMaxWidth()}];
+            }
+        }
+        return containerProps;
+    }
     const alertContentStyle = isAlert ? {paddingHorizontal:15} : null;
-    content = <View ref={contentRef} testID = {testID+"_Content11"} {...contentProps} style={[fullScreen? {flex:1}:{maxWidth,maxHeight:maxHeight-Math.min(SCREEN_INDENT*2+50,100)},isPreloader && {paddingHorizontal:10},{backgroundColor},alertContentStyle,contentProps.style]}>
+    content = <View ref={contentRef} testID = {testID+"_Content11"} {...getRRProps(contentProps,false)} style={[fullScreen? {flex:1}:{maxWidth,maxHeight:maxHeight-Math.min(SCREEN_INDENT*2+50,100)},isPreloader && {paddingHorizontal:10},{backgroundColor},alertContentStyle,contentProps.style]}>
         {content}
     </View>
     if(withScrollView){
@@ -181,17 +193,6 @@ const DialogComponent = React.forwardRef((props,ref)=>{
         ref={scrollViewRef} testID={testID+"_ScrollViewContent"} {...scrollViewProps}>
             {content}
         </ScrollView>
-    }
-    const getRRProps = (containerProps)=>{
-        if(!isPreloader){
-            const {mediaQueryUpdateStyle} = containerProps;
-            containerProps.mediaQueryUpdateStyle = (...rest)=>{
-                const r = typeof mediaQueryUpdateStyle =="function"? mediaQueryUpdateStyle(...rest) : undefined;
-                const {width,height} = rest[0];
-                return isFullScreenDialog()? [r,{width,height}] : r;
-            }
-        }
-        return containerProps;
     }
     return <ModalComponent
                 onDismiss={(e)=>{

@@ -100,7 +100,6 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
       },
     }
     Auth.setRef(auth);
-    console.log("has set ref auth ",auth);
     extendFormFields(customFormFields);
     structsData = isObj(structsData)? structsData : null;
     appConfig.tablesData = tablesData;

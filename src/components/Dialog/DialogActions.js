@@ -7,10 +7,10 @@ import {renderActions} from "./utils";
 import View from "$ecomponents/View";
 import { StyleSheet } from "react-native";
 import DialogActions from "./RNPDialogActions";
-import {usePageDimensions} from "$cdimensions/utils";
+import {usePageDimensions,useWindowDimensions} from "$cdimensions/utils";
 
 const DialogActionsComponent = React.forwardRef(({actions,isAlert,onAlertRequestClose,testID,containerProps,actionMutator,actionProps,cancelButton,responsive,isFullScreen,fullScreen,actionsProps,menuProps,...rest},ref)=>{
-    usePageDimensions();
+    useWindowDimensions();
     if(responsive && isFullScreen() || fullScreen){
         return null;
     }

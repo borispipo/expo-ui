@@ -5,10 +5,10 @@ import {isNonNullString,defaultObj} from "$cutils";
 import View from "$ecomponents/View";
 import theme from "$theme";
 import { StyleSheet } from "react-native";
-import {usePageDimensions} from "$cdimensions/utils";
+import {useWindowDimensions} from "$cdimensions/utils";
 
 const DialogTitleComponent = React.forwardRef(({responsive,containerProps,title,titleProps,isFullScreen,fullScreen,...rest},ref)=>{
-    usePageDimensions();
+    useWindowDimensions();
     if(responsive && isFullScreen() || fullScreen || !React.isValidElement(title,true)){
         return null;
     }

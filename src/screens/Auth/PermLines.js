@@ -120,6 +120,9 @@ const PermTextType = PropTypes.shape({
     defaultAction : PropTypes.bool,//si les actions par défaut seront associés à la permission en cours
 });
 
+const permsType = PropTypes.oneOfType([
+    PropTypes.func,PropTypes.object,
+]);
 PermLines.propTypes = {
     data : PropTypes.object,
     gridProps : PropTypes.object,//les props du composant Grid, wrapper au contentu expandable
@@ -129,10 +132,10 @@ PermLines.propTypes = {
         PropTypes.shape({
             table : PropTypes.string,
             tableName : PropTypes.string,
-            perms : PropTypes.object,
+            perms : permsType,
         })
     ).isRequired,
-    perms : PropTypes.object,//la liste des permissions qui peuvent associer au compte d'un utilisaters
+    perms : permsType,//la liste des permissions qui peuvent associer au compte d'un utilisaters
     /*** si les élements de permissions seront modifiable où non */
     disabled : PropTypes.bool,
     title : PropTypes.oneOfType([

@@ -1,6 +1,6 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
-		"version": "8.41.0",
+		"version": "8.43.1",
 		"url": "https://github.com/borispipo/expo-ui#readme",
 		"license": "ISC"
 	},
@@ -39,6 +39,11 @@ module.exports = {
 		"url": "https://github.com/pchmn/expo-material3-theme#readme",
 		"license": "MIT"
 	},
+	"@react-native-async-storage/async-storage": {
+		"version": "1.21.0",
+		"url": "https://github.com/react-native-async-storage/async-storage#readme",
+		"license": "MIT"
+	},
 	"@react-native-community/netinfo": {
 		"version": "11.1.0",
 		"url": "https://github.com/react-native-netinfo/react-native-netinfo#readme",
@@ -50,17 +55,17 @@ module.exports = {
 		"license": "MIT"
 	},
 	"@react-navigation/native": {
-		"version": "6.1.15",
+		"version": "6.1.16",
 		"url": "https://reactnavigation.org",
 		"license": "MIT"
 	},
 	"@react-navigation/native-stack": {
-		"version": "6.9.24",
+		"version": "6.9.25",
 		"url": "https://github.com/software-mansion/react-native-screens#readme",
 		"license": "MIT"
 	},
 	"@react-navigation/stack": {
-		"version": "6.3.27",
+		"version": "6.3.28",
 		"url": "https://reactnavigation.org/docs/stack-navigator/",
 		"license": "MIT"
 	},
@@ -139,24 +144,23 @@ module.exports = {
 		"url": "https://docs.expo.dev/versions/latest/sdk/webbrowser/",
 		"license": "MIT"
 	},
+	"react": {
+		"version": "18.2.0",
+		"url": "https://reactjs.org/",
+		"license": "MIT"
+	},
 	"react-native": {
 		"version": "0.73.4",
 		"url": "https://reactnative.dev/",
 		"license": "MIT"
 	},
-	"react-native-big-list": {
-		"version": "1.6.1",
-		"url": "https://marcocesarato.github.io/react-native-big-list-docs/",
-		"license": "GPL-3.0-or-later"
-	},
-	"react-native-blob-util": {
-		"version": "0.18.6",
-		"url": "https://github.com/RonRadtke/react-native-blob-util",
-		"license": "MIT"
-	},
 	"react-native-gesture-handler": {
 		"version": "2.14.1",
 		"url": "https://github.com/software-mansion/react-native-gesture-handler#readme",
+		"license": "MIT"
+	},
+	"react-native-get-random-values": {
+		"version": "1.8.0",
 		"license": "MIT"
 	},
 	"react-native-reanimated": {
@@ -187,6 +191,11 @@ module.exports = {
 	"react-native-webview": {
 		"version": "13.6.4",
 		"url": "https://github.com/react-native-webview/react-native-webview#readme",
+		"license": "MIT"
+	},
+	"socket.io-client": {
+		"version": "4.7.4",
+		"url": "https://github.com/socketio/socket.io-client.git",
 		"license": "MIT"
 	}
 };

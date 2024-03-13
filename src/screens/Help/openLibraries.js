@@ -187,5 +187,10 @@ module.exports = {
 		"version": "13.6.4",
 		"url": "https://github.com/react-native-webview/react-native-webview#readme",
 		"license": "MIT"
+	},
+	"vm": {
+		"version": "0.1.0",
+		"url": "https://github.com/DiegoRBaquero/node-vm#readme",
+		"license": "MIT"
 	}
 };

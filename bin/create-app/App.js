@@ -4,7 +4,7 @@ import { registerRootComponent } from 'expo';
 import ExpoUIProvider from "$expo-ui"; 
 import screens from "$screens";
 import drawerItems from "$navigation/drawerItems";
-import Logo from "$ecomponents/Logo";
+import Logo from "$components/Logo";
 import drawerSections from "$navigation/drawerSections";
 import TableDataListScreen from "$screens/TableData/TableDataListScreen";
 import TableDataScreen from "$screens/TableData/TableDataScreen";

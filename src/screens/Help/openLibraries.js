@@ -1,6 +1,6 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
-		"version": "8.43.1",
+		"version": "8.44.0",
 		"url": "https://github.com/borispipo/expo-ui#readme",
 		"license": "ISC"
 	},
@@ -37,11 +37,6 @@ module.exports = {
 	"@pchmn/expo-material3-theme": {
 		"version": "1.3.2",
 		"url": "https://github.com/pchmn/expo-material3-theme#readme",
-		"license": "MIT"
-	},
-	"@react-native-async-storage/async-storage": {
-		"version": "1.21.0",
-		"url": "https://github.com/react-native-async-storage/async-storage#readme",
 		"license": "MIT"
 	},
 	"@react-native-community/netinfo": {
@@ -164,7 +159,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"react-native-reanimated": {
-		"version": "3.6.2",
+		"version": "3.6.3",
 		"url": "https://github.com/software-mansion/react-native-reanimated#readme",
 		"license": "MIT"
 	},
@@ -191,11 +186,6 @@ module.exports = {
 	"react-native-webview": {
 		"version": "13.6.4",
 		"url": "https://github.com/react-native-webview/react-native-webview#readme",
-		"license": "MIT"
-	},
-	"socket.io-client": {
-		"version": "4.7.4",
-		"url": "https://github.com/socketio/socket.io-client.git",
 		"license": "MIT"
 	}
 };

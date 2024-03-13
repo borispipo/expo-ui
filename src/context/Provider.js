@@ -188,7 +188,7 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
         if(!isObj(theme)) return;
         const isDark = theme.dark || theme.isDark || isDynamicThemeSupported && isColorShemeDark ;
         const elevation = defaultObj(theme.elevation,isDark ? pTheme.dark?.elevation : pTheme.light?.elevation)
-        const newTheme = isDark ? { ...MD3DarkTheme,fonts:configureFonts(), colors: pTheme.dark } : { ...MD3LightTheme,fonts:configureFonts(), colors: pTheme.light };
+        const newTheme = isDark ? { ...MD3DarkTheme,fonts:configureFonts({isV3:true}), colors: pTheme.dark } : { ...MD3LightTheme,fonts:configureFonts({isV3:true}), colors: pTheme.light };
         if(isElectron() && typeof window.ELECTRON =='object' && typeof ELECTRON.setThemeToDark =="function" && typeof ELECTRON.setThemeToLight =="function"){
            if(isDark){
               ELECTRON.setThemeToDark();
@@ -221,6 +221,7 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
         const _theme = (isObj(r) ? r : theme);
         const customCSS = _theme.customCSS;
         extendObj(Theme,{
+          version : 3,
           elevations : elevation,
           elevation,
           colorScheme,

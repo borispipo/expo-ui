@@ -6,7 +6,6 @@ import {defaultObj} from "$cutils";
 
 const ImageEditorComponent = React.forwardRef((props,ref)=>{
     let {source,uri,onSuccess,imageUri,lockAspectRatio,dialogProps,onDismiss,visible,imageProps,...rest} = props;
-    const isMounted = React.useIsMounted();
     const [context] = React.useState({});
     imageProps = defaultObj(imageProps);
     dialogProps = defaultObj(dialogProps);

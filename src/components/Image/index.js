@@ -3,15 +3,15 @@ import Menu from "$ecomponents/Menu";
 import Avatar from "$ecomponents/Avatar";
 import {isDecimal,setQueryParams,isValidURL,defaultDecimal,defaultStr as defaultString,isDataURL,isPromise,defaultBool,isObj,isNonNullString} from "$cutils";
 import notify from "$enotify";
-let maxWidthDiff = 150, maxHeightDiff = 150;
+let maxWidthDiff = 100, maxHeightDiff = 100;
 import {StyleSheet} from "react-native";
 import React from "$react";
 import PropTypes from "prop-types";
 import {isMobileNative} from "$cplatform";
+import {uniqid} from "$cutils";
 //import Signature from "$ecomponents/Signature";
 import Label from "$ecomponents/Label";
-//import Editor from "./Editor";
-import {Component as CameraComponent} from "$emedia/camera";
+//import Cropper from "./Cropper";
 
 import {pickImage,nonZeroMin,canTakePhoto,takePhoto} from "$emedia";
 import addPhoto from "$eassets/add_photo.png";
@@ -48,11 +48,8 @@ export const getUri = (src,onlySting)=>{
 
 export default function ImageComponent(props){
     const [src,setSrc] = React.useState(defaultVal(props.src));
+    const [cropWindowProp,setCropWindowProp] = React.useState(null);
     const prevSrc = React.usePrevious(src);
-    /*const [editorProps,setEditorProps] = React.useState({
-        visible : false,
-        options : {}
-    })*/ 
     const [isDrawing,setIsDrawing] = React.useState(false);
     let {disabled,onMount,defaultSource,editable,onUnmount,label,text,labelProps,readOnly,beforeRemove,
         onChange,draw,round,drawText,drawLabel,rounded,defaultSrc,
@@ -114,8 +111,8 @@ export default function ImageComponent(props){
     if(!imageWidth && !imageHeight){
         imageWidth = imageHeight = rest.size;
     }
-    let cropWidth = nonZeroMin(cropProps.width,width)
-    let cropHeight = nonZeroMin(cropProps.height,height);
+    let cropWidth = nonZeroMin(cropProps.width,imageWidth,width,size)
+    let cropHeight = nonZeroMin(cropProps.height,imageHeight,height,size);
     if(!cropWidth) cropWidth = undefined;
     if(!cropHeight) cropHeight = undefined; 
 
@@ -125,24 +122,26 @@ export default function ImageComponent(props){
         if(cropWidth || cropHeight){
             canCrop = true;
             if(cropWidth) opts.width = cropWidth;
-            else if(cropHeight) opts.height = cropHeight;
+            if(cropHeight) opts.height = cropHeight;
         }
         opts.allowsEditing = canCrop;
-        return opts;
+        return {...cropProps,...opts};
     }
     const handlePickedImage = (image,opts)=>{
         opts = defaultObj(opts);
         if(!isDataURL(image.dataURL)){
             return notify.error(`Le fichier sélectionné est une image non valide`);
         }
-        let diffWidth = image.width - cropWidth - maxWidthDiff,
-        diffHeight = image.height - cropHeight - maxHeightDiff;
-        let canCrop = isMobileNative()? false : ((width && diffWidth > 0) || (height && diffHeight > 0)? true : false);
         const imageSrc = pickUri ? image.uri : image.dataURL;
-        if(canCrop){
-            return context.cropImage({source:image,uri:image.dataURL,...opts}).then((props)=>{
-                setSrc(imageSrc)
-            });
+        if(imageSrc){
+            const diffWidth = image.width - cropWidth - maxWidthDiff,diffHeight = image.height - cropHeight - maxHeightDiff;
+            const canCrop = isMobileNative()? false : ((diffWidth > 0) || (diffHeight > 0)? true : false);
+            if(canCrop){
+                const cProps = getCropProps(opts);
+                return context.cropImage({...cProps,source:image,uri:image.dataURL,src:imageSrc}).then((props)=>{
+                    setSrc(imageSrc)
+                });
+            }
         }
         pickedImageRef.current = image;
         setSrc(imageSrc);
@@ -170,6 +169,11 @@ export default function ImageComponent(props){
         },[src]),
         cropImage : (props)=>{
             return Promise.resolve(props);
+            if(!isMobileNative()){
+                return new Promise((resolve,reject)=>{
+                    setCropWindowProp(props);
+                });
+            }
             return new Promise((resolve,reject)=>{
                 console.log({...editorProps,visible:true,...props},"is editor props");
                 setEditorProps({...editorProps,visible:true,...props})
@@ -263,6 +267,11 @@ export default function ImageComponent(props){
     const _label = withLabel !== false ? defaultString(label) : "";
     const isDisabled = menuItems.length > 0 ? true : false; 
     return <View testID={testID+"_FagmentContainer"}>
+        {false && src && !isMobileNative() && isObj(cropWindowProp) && Object.size(cropWindowProp,true) ? <Cropper
+            src={src}
+            {...cropWindowProp}
+            key = {uniqid("crop-image")}
+        /> : null}
         {!createSignatureOnly ? (<Menu
                 {...menuProps}
                 disabled = {isDisabled}

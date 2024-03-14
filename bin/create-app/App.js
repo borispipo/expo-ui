@@ -10,6 +10,8 @@ import TableDataListScreen from "$screens/TableData/TableDataListScreen";
 import TableDataScreen from "$screens/TableData/TableDataScreen";
 import Notifications from "$components/Notifications";
 import auth from "$src/auth";
+import tablesData, { getTable as getTableData } from "$database/tables";
+import {defaultStr} from "$cutils";
 
 export default function AppMainEntry(){
     return <ExpoUIProvider    
@@ -22,8 +24,8 @@ export default function AppMainEntry(){
             screens,
             /** {object}, les options du composant Stack.Navigator, voir https://reactnavigation.org/docs/native-stack-navigator */
             screenOptions : {},
-            drawerItems, //application main drawer items,
-            drawerSections,
+            drawerItems,  //application main drawer items,
+            drawerSections, //les différentes sections du drawer principal de l'application
             /***** mutate drawerItems before rendering
                 @param {object : {[drawerSection1]:{ label:section1Label,items:<Array>},[drawerSection2]:{}, ...[drawerSectionN]:{}}} drawerItems
                 @return {object}
@@ -34,6 +36,8 @@ export default function AppMainEntry(){
             screenOptions : {},//les options du composant Stack.Navigator de react-navigation, voir https://reactnavigation.org/docs/native-stack-navigator/
         }}
         auth = {auth}
+        tablesData={tablesData}
+        getTableData={getTableData}
         components = {{
             /*** utilisé pour le renu du contenu des écran de type liste sur les tables de données */
             TableDataListScreen,
@@ -69,9 +73,37 @@ export default function AppMainEntry(){
             logo : Logo,//logo component's properties
             /**** les form fields personnalisés doivent être définis ici */
             customFormFields : {},//custom form fields
-            /*** la fonction permettant de muter les props du composant TableLink, permetant de lier les tables entre elles */
+            /*** 
+                la fonction permettant de muter les props du composant TableLink, permetant de lier les tables entre elles
+                Le composant TableLink permet de lier les données d'une tableData, L'usage dudit composant est définit dans la documentation de l'application
+            */
             tableLinkPropsMutator : (props)=>{ 
-                return props;
+                return {
+                    ...props,
+                    /***
+                        la fonction fetchForeignData est appelée lorsqu'on clique sur un élément du composant TableLink, permetant de lier un objet de la table table Data
+                        foreignKeyTable {string} represente la table lié à la donnée
+                        foreignKeyColumn {string} represenet le nom de la colonne qu'on souhaite récupérer la données
+                        id {any}, represente la valeur actuelle sur laquelle on a cliqué
+                    */
+                    fetchForeignData : ({foreignKeyTable,foreignKeyColumn,tableName,table,id,...args})=>{
+                        const tableName = defaultStr(foreignKeyTable,table,tableName);
+                        const tableObj = getTableData(tableName); //table object represente l'objet table, lié à la liste des tables data déclaré dans l'application
+                        if (!tableObj) {
+                            return Promise.reject({
+                              message: `Impossible de récupérer la données associée à la table ${tableName}. Rassurez vous qu'elle figure dans la liste des tables supportées par l'application`,
+                            });
+                        }
+                        //Vous pouvez dès cet instant accédes aux props de l'objet tableObj, notemment queryPath, qui permet de récupérer les données liés à la table data
+                        const fieldName = defaultStr(foreignKeyColumn);
+                        /*
+                            implémenter votre logique pour récupérer l'objet associé à la table tableName, dont la colonne est fieldName, et la valeur est id.
+                            //ajouter l'instruction d'importation de la fonction fetch : import fetch from "$capi/fetch";
+                            exemple : return fetch(`${table.queryPath}/${id}${fieldName ? `?fieldName=${fieldName}`:""}`).then((resp) => resp.data);
+                        */
+                        return Promise.resolve(null);
+                    },
+                };
             }
         }}
         /*** //for application initialization

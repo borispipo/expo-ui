@@ -31,8 +31,8 @@ module.exports = function(appName,{projectRoot:root}){
           name,
           version : "1.0.0",
           "description": "",
-          "main": "index.js",
           "main": "App.js",
+          "tablesDataPath": "./src/database/tables",
           "scripts" : {
             start : "npx expo start -c",
             "dev" : "npx expo start --no-dev --minify -c",
@@ -40,6 +40,7 @@ module.exports = function(appName,{projectRoot:root}){
             "build-web" : "npx expo export:web",
             "build-android" : "npx eas build --platform android --profile preview",
             "build-ios" : "eas build --platform ios",
+            "generate-getTable" : "nxp @fto-consult/expo-ui generate-getTable"
           },
           "dependencies" : {
             [euModule] : packageObj.version,

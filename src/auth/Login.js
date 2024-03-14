@@ -27,7 +27,7 @@ const WIDTH = 400;
 
 export default function LoginComponent(props){
     let {formName,step,appBarProps,onSuccess,withPortal,testID} = props;
-    const {auth:{loginPropsMutator}} = useContext();
+    const {auth:{loginPropsMutator,Login}} = useContext();
     const loginTitle = getTitle();
     testID = defaultStr(testID,"RN_Auth.LoginComponent");
     formName = React.useRef(uniqid(defaultStr(formName,"login-formname"))).current;
@@ -74,7 +74,6 @@ export default function LoginComponent(props){
         }
     }
     
-    
     if(withPortal){
         appBarProps = defaultObj(appBarProps);
         appBarProps.backAction = false;
@@ -86,6 +85,27 @@ export default function LoginComponent(props){
             },1000)
         }
     },[withPortal]);
+    React.useEffect(()=>{
+        Preloader.closeAll();
+        /*** pour initializer les cordonnées du composant login */
+        if(typeof initialize =='function'){
+            initialize();
+        }
+    },[]);
+    const prevStep = React.usePrevious(state.step);
+    React.useEffect(()=>{
+        /*** lorsque le state du composant change */
+        if(typeof onStepChange =='function'){
+            return onStepChange({...state,previousStep:prevStep,focusField,nextButtonRef})
+        }
+    },[state.step]);
+    if(React.isComponent(Login)) return <Login
+        {...props}
+        withPortal = {withPortal}
+        appBarProps = {appBarProps}
+        onSuccess = {onSuccess}
+        auth = {auth}
+    />
     const getButtonAction = (buttonRef)=>{
         return {
             ref : buttonRef,
@@ -122,20 +142,6 @@ export default function LoginComponent(props){
     const containerProps = defaultObj(customContainerProps);
     const contentProps = defaultObj(customContentProps);
 
-    React.useEffect(()=>{
-        Preloader.closeAll();
-        /*** pour initializer les cordonnées du composant login */
-        if(typeof initialize =='function'){
-            initialize();
-        }
-    },[]);
-    const prevStep = React.usePrevious(state.step);
-    React.useEffect(()=>{
-        /*** lorsque le state du composant change */
-        if(typeof onStepChange =='function'){
-            return onStepChange({...state,previousStep:prevStep,focusField,nextButtonRef})
-        }
-    },[state.step]);
     /****la fonction à utiliser pour vérifier si l'on peut envoyer les données pour connextion
      * par défaut, on envoie les données lorssqu'on est à l'étappe 2
      * **/

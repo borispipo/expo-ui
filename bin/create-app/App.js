@@ -67,10 +67,14 @@ export default function AppMainEntry(){
             MainProvider : function({children,isLoaded,isLoading,isInitialized,hasGedStarted,...props}){
                 return children;
             },
-            /*** logo : ReactNode|ReactElement | ReactComponent | object {
-               image{ReactComponent} :,text {ReactComponent}
+            /*** 
+                le composant en charge du rendu du logo de l'application
+                logo | Logo :  ReactNode | ReactComponent | object {
+                   image{ReactComponent} :,
+                   text {ReactComponent}
+                },
             },*/
-            logo : Logo,//logo component's properties
+            logo : Logo,
             /**** les form fields personnalisés doivent être définis ici */
             customFormFields : {},//custom form fields
             /*** 
@@ -104,7 +108,11 @@ export default function AppMainEntry(){
                         return Promise.resolve(null);
                     },
                 };
-            }
+            },
+            /***
+                ({object})=><{object}>, la fonction permettant de muter les props du composant Fab, affiché dans les écrans par défaut
+            */
+            fabPropsMutator : (props)=>props,
         }}
         /*** //for application initialization
             @param {

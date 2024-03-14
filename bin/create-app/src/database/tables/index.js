@@ -11,7 +11,8 @@
        datagrid <object>, //les props à passer au composant datagrid lié à la table de données
        drawerSection <string>, //le nom de la section associé au drawer dans lequel figurera le table data
        print <function ({data,...settings})>=> <Promise<{content:[],...rest}>, //la fonction utile pour l'impression de la tabel de données suivant les recommandation de la libraririe pdfmake
-       printOptions <object>, //les options à passer à la fonction print        
+       printOptions <object>, //les options à passer à la fonction print,
+       fabProps {object|function({tableName})}, retourne les props à appliquer au composant fab lié à la table data,si elle définit une propriété nomée actions de types tableau, alors, ces actions seront utilisées commes actions personnalisées du fab
     }
 */
 export default {

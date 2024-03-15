@@ -40,7 +40,7 @@ module.exports = function(appName,{projectRoot:root}){
             "build-web" : "npx expo export:web",
             "build-android" : "npx eas build --platform android --profile preview",
             "build-ios" : "eas build --platform ios",
-            "generate-getTable" : "nxp @fto-consult/expo-ui generate-getTable"
+            "generate-getTable" : "npx @fto-consult/expo-ui generate-getTable"
           },
           "dependencies" : {
             [euModule] : packageObj.version,

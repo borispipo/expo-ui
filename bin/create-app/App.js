@@ -103,7 +103,7 @@ export default function AppMainEntry(){
                         id {any}, represente la valeur actuelle sur laquelle on a cliqué
                     */
                     fetchForeignData : ({foreignKeyTable,foreignKeyColumn,tableName,table,id,...args})=>{
-                        const tableName = defaultStr(foreignKeyTable,table,tableName);
+                        tableName = defaultStr(foreignKeyTable,table,tableName);
                         const tableObj = getTableData(tableName); //table object represente l'objet table, lié à la liste des tables data déclaré dans l'application
                         if (!tableObj) {
                             return Promise.reject({

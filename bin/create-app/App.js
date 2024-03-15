@@ -75,8 +75,20 @@ export default function AppMainEntry(){
                 },
             },*/
             logo : Logo,
-            /**** les form fields personnalisés doivent être définis ici */
-            customFormFields : {},//custom form fields
+            /****
+                custom form fields
+                les form fields personnalisés doivent être définis ici 
+                de la forme : {
+                    [typeCustomField1] : <ReactComponent>,
+                    ...
+                    [typeCustomFieldn] : <ReactComponent>
+                }
+                par exemple, si l'on souhaite définir un form field de type test, la déclaration sera de la forme : 
+                {
+                    test : Test, //ou test est le fom field associé au type test, ie le composant qui sera rendu pour ce type de Champ,
+                }
+            */
+            customFormFields : {},
             /*** 
                 la fonction permettant de muter les props du composant TableLink, permetant de lier les tables entre elles
                 Le composant TableLink permet de lier les données d'une tableData, L'usage dudit composant est définit dans la documentation de l'application

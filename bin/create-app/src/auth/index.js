@@ -45,7 +45,7 @@ export default {
     Login : null,
     /*
         la fonction loginPropsMutator de muter les props du composant Login par défaut, prise en compte lorsque le composant de connexion n'est pas remplacer par celui définit dans la prop login,
-        @param {object} props : les props de la fonction login, les props ont des propriétés suivantes : 
+        @param {object} props : les propriétés de la fonction login, les props ont des propriétés suivantes : 
         {
             onSuccess : ({object})=><Any>, la fonction appelée en cas de success
             setState : (newState)=>(...newState),//la fonction utilisée pour update le state du composant. elle doit remplacer le state du composant
@@ -79,7 +79,9 @@ export default {
             header : <ReactComponent| ReactNode>, le contenu du qui sera rendu immédiatement après le composant Header, par défaut, le texte "Connectez vous svp est affiché". Ce contenu doit être rendu si l'on souhaite override le texte "Connectez vous SVP" 
             containerProps : <object>, les props du composant <Surface/>, le composant qui est le wrapper du composant FormData en charge de récupérer les données de l'interface de connexion
             withHeaderAvatar : <boolean>, si l'avatar ou l'iconne de connexion sera afficher à l'interface de connexion par défaut
-            ...loginProps {object}, les composant Supplémentaires à passer au composant FormData utilisé pour le rendu du formulaire de connexion
+            canSubmit : ({step,...rest})=> <boolean>, //si les donées du formulaire peuvent être submit
+            beforeSubmit : ({step,data,...rest})=><void>, //la fonction appélée immédiatement avant le submit des donénes
+            ...loginProps {object}, les props Supplémentaires à passer au composant FormData utilisé pour le rendu du formulaire de connexion
         }
     */
     loginPropsMutator : (props)=>{

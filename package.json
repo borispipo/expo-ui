@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "8.50.6",
+  "version": "8.50.7",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "react-native-paper-doc": "https://github.com/callstack/react-native-paper/tree/main/docs/docs/guides",
   "scripts": {
@@ -50,7 +50,7 @@
     "update": "npm i @fto-consult/common@latest @fto-consult/node-utils@latest react-native-web react-native-big-list@latest apexcharts@latest file-saver@latest google-libphonenumber@latest  react-native-iphone-x-helper@latest react-native-mime-types@latest react-native-paper@latest react-native-paper-dates@latest react-virtuoso@latest tippy.js@latest xlsx@latest && npm run update-apexchart && npm run find-licenses"
   },
   "bin": {
-    "expo-ui": "./bin/index.js"
+    "expo-ui": "bin/index.js"
   },
   "repository": {
     "type": "git",

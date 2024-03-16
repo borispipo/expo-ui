@@ -7,4 +7,5 @@ export default {
     newElementLabel : require("./newElementLabel").default,
     sortable : false, //la table n'est pas triable
     filterable : false,//la table n'est pas filterable
+    drawerSection : "main",
 }

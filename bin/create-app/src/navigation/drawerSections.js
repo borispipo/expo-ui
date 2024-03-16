@@ -1,4 +1,9 @@
 export default {
+    main : {
+        label : "Principal",
+        order : 1,
+        divider : true,
+    },
     ///your own drawerSections,
     help : {
         label : "Aide",

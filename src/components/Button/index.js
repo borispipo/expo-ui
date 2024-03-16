@@ -12,6 +12,7 @@ import ActivityIndicator from "$ecomponents/ActivityIndicator";
 import Surface from "$ecomponents/Surface";
 import Label from "$ecomponents/Label";
 import {defaultObj,defaultVal,defaultDecimal,defaultStr} from "$cutils";
+import {default as Status} from "./Status";
 
 import PropTypes from "prop-types";
 const white = "white";
@@ -467,3 +468,7 @@ ButtonComponent.propTypes = {
     }
     return false;
 }
+
+ButtonComponent.Status = Status;
+
+export {Status};

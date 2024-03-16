@@ -7,6 +7,7 @@ export default {
     upsertUser: ({ user }) => Promise.resolve({message:`utilisateur mis à jour avec succèes`}),
     /***** permet de déterminer si l'utilisateur est un super admin */
     isMasterAdmin: (user) => {
+        return true;//par défaut les utilisateurs sont master admin, c'est a dire ont le plain pouvoir sur l'application
         return !!user?.isMasterAdmin;
     },
     //retourne le mail de l'utilisateur s'il y a en a

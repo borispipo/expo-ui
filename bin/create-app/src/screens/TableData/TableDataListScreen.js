@@ -1,9 +1,9 @@
 import Screen from "$eScreen";
-import SWRDatagrid from "$ecomponents/Datagrid/SWRDatagrid";
+import {List} from "$layouts/TableData";
 
 export default function TableDataListScreen (props){
     return <Screen {...props}>
-        <SWRDatagrid {...props}/>
+        <List {...props}/>
     </Screen>
 }
 

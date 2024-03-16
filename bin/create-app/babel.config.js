@@ -7,6 +7,7 @@ module.exports = function(api) {
       $components : path.resolve($src,"components"),
       $navigation : path.resolve($src,"navigation"),
       $screens : path.resolve($src,"screens"),
+      $layouts : path.resolve($src,"layouts"),
       $database: path.resolve($src, "database"), //le repertoire dédié au données d'accès à la base de données
       //...your custom module resolver alias, @see : https://www.npmjs.com/package/babel-plugin-module-resolver
     }

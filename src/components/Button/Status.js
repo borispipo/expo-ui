@@ -12,8 +12,12 @@ const ButtonStatusComponent = React.forwardRef(({status,withIcon,color,backgroun
     testID = defaultStr(testID,"RN_ButtonStatusComponent_"+status);
     const style = defaultObj(StyleSheet.flatten(containerProps.style));
     color = theme.Colors.isValid(color) ? color : theme.Colors.isValid(style.color)? style.color : undefined;
-    backgroundColor = theme.Colors.isValid(backgroundColor) ? backgroundColor : theme.color.isValid(style.backgroundColor)?style.backgroundColor : undefined;
+    backgroundColor = theme.Colors.isValid(backgroundColor) ? backgroundColor : theme.Colors.isValid(style.backgroundColor)?style.backgroundColor : undefined;
     const rP = {style:[color && {color}, backgroundColor && {backgroundColor}]};
+    if(!backgroundColor && !color){
+        backgroundColor = theme.colors.surface;
+        color = theme.colors.onSurface;
+    }
     if(color){
         rP.color = color;
     }

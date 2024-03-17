@@ -19,7 +19,6 @@ import {modes} from "$ecomponents/TextField/utils";
 import { useColorScheme } from "react-native";
 import {createMaterial3Theme,getMaterial3Theme} from "@pchmn/expo-material3-theme";
 import notify from "$cnotify";
-import appConfig from "$capp/config";
 
 const mColors = [
     {

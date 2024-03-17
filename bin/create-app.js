@@ -33,6 +33,14 @@ module.exports = function(appName,{projectRoot:root}){
           "description": "",
           "main": "App.js",
           "tablesDataPath": "./src/database/tables",
+          "theme": {
+            "light": {
+              "primary": "#3D8B5F",
+              "secondary": "#354448",
+              "onPrimary" : "white",
+              "onSecondary" : "white"
+            }
+          },
           "scripts" : {
             start : "npx expo start -c",
             "dev" : "npx expo start --no-dev --minify -c",

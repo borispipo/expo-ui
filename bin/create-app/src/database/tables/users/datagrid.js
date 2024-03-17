@@ -6,9 +6,14 @@ import addIcon from "./addIcon";
 import newElementLabel from "./newElementLabel";
 import { generateData } from "./utils";
 
+const dataRef = {current : []};
+
 export default {
     fetcher : (url,options)=>{ //la fonction fetcher à passer au composant SWRDatagrid
-        return Promise.resolve(generateData(1000)); //génère 100 utilisateurs à l'aide de la librarire faker
+        if(!dataRef.current.length){
+            dataRef.current = generateData(1000);
+        }
+        return Promise.resolve(dataRef.current); //génère 100 utilisateurs à l'aide de la librarire faker
     },
     accordionProps : {
         accordion,

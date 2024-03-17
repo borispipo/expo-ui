@@ -1,7 +1,8 @@
 export default {
     table : require("./table").default,
     icon : 'material-people',
-    title : "Exemple table : Utilisateurs",
+    fields : require("./fields").default,
+    label : "Exemple table : Utilisateurs",
     datagrid : require("./datagrid").default,
     perms : require("./perms").default,
     newElementLabel : require("./newElementLabel").default,

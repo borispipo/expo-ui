@@ -31,6 +31,7 @@ export default class TableDataScreenItem extends TableData{
     */
     upsertToDB({data,tableName,...rest}){
         notify.error("Consultez le fichier : $src/screens/TableData/TableDataScreen.js afin d'implémenter la logique d'enregistrement en base de données de la données : "+JSON.stringify(data));
+        return false;
         return Promise.resolve({data});
     }
     prepareComponentProps (...rest){

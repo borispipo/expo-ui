@@ -6,6 +6,6 @@ export default function accordion({rowData}){
         content : `${rowData.email}`,
         title : rowData?.username,
         avatar : rowData.avatar,
-        right : DateLib.format(rowData.birthdate),
+        right : DateLib.format(rowData.birthdate,DateLib.defaultDateFormat),
     }
 }

@@ -1,7 +1,20 @@
 
 export default {
+    avatar : {
+        type : "image",
+        label: 'Avatar',
+        withLabel : false,
+        size : 150,
+        datagrid : {
+            size : 50,
+        },
+        responsiveProps : {
+             style : [{width:"100%",padding:10,alignItems:"center"}]
+        }
+    },
     userId : {
         primaryKey : true,
+        upper : false,
         text :"Id",
         type : "id", //il s'agit d'un champ de type id
         visibleOnlyOnEditing : true, //l'id de sera généré depuis la base de données, donc pas question d'afficher au moment de création de la table data
@@ -14,14 +27,12 @@ export default {
     amount : {
         type : "number",
         label : "Amount",
+        format : "number",
     },
     email : {
         type : "email",
         label : 'Email',
-    },
-    avatar : {
-       type : "image",
-       label: 'Avatar',
+        width : 180,
     },
     birthdate : {
         type : "date",

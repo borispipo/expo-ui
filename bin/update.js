@@ -1,17 +1,22 @@
 const fs = require("fs");
 const path = require("path");
 const projectRoot = process.cwd();
-const {exec,writeFile} = require("@fto-consult/node-utils");
+const {exec,writeFile,isPlainObj} = require("@fto-consult/node-utils");
 const dependencies = require("./create-app/dependencies");
 const dependenciesArr = Object.keys(dependencies);
 const dependenciesPath = path.resolve(__dirname,"create-app","dependencies.js")
 const mainJSONPath = path.resolve(projectRoot,"package.json");
+const euiPackageJSON = require("../package.json");
+const euDevDependencies = isPlainObj(euiPackageJSON?.devDependencies) ? euiPackageJSON?.devDependencies : {};
 if(fs.existsSync(mainJSONPath)){
     const packageObj = JSON.parse(fs.readFileSync(mainJSONPath));
     const packageDev = typeof packageObj?.dependencies =="object" && packageObj?.dependencies || {};
+    const devDependencies = [];
     const filterdDObj = {};
     dependenciesArr.filter((v,index)=>{
-        if((!!packageDev[v] && v !=="expo") || ["expo-intent-launcher"].includes(v)){
+        if(euDevDependencies[packageDev[v]]){
+            devDependencies.push(packageDev[v]);
+        } else if((!!packageDev[v] && v !=="expo") || ["expo-intent-launcher"].includes(v)){
             filterdDObj[v] = true;
             return true;
         }
@@ -19,17 +24,13 @@ if(fs.existsSync(mainJSONPath)){
     });
     const filteredDeps = Object.keys(filterdDObj);
     if(filteredDeps.length){
-        exec(`npm install expo@latest`,{projectRoot}).finally(()=>{
-            let i = -1;
-            const next = ()=>{
-                return exec(`npx expo install ${filteredDeps.join(" ")}`,{projectRoot}); 
-                i++;
-                if(i>= filteredDeps.length) return Promise.resolve();
-                const script = filteredDeps[i];
-                return exec(`npx expo install ${script}`,{projectRoot}).finally(next);  
-            }
-            next().finally((i)=>{
-                //exec(`npm install`,{projectRoot}).finally(()=>{
+        exec(`npm install @fto-consult/expo-ui@latest expo@latest`,{projectRoot}).finally(()=>{
+            exec(`npx expo install ${filteredDeps.join(" ")}`,{projectRoot}).finally((i)=>{
+                (new Promise((resolve)=>{
+                    devDependencies.length ? exec(`npm uninstall ${devDependencies.join(" ")}`,{projectRoot}).finally(()=>{
+                        exec(`npm install -D ${devDependencies.join(" ")}`,{projectRoot}).finally(resolve);
+                    }) : resolve({});
+                })).finally(()=>{
                     const newPackageJS = JSON.parse(fs.readFileSync(mainJSONPath));
                     let hasChanged = false;
                     if(newPackageJS?.dependencies && typeof newPackageJS?.dependencies =="object"){
@@ -51,6 +52,7 @@ if(fs.existsSync(mainJSONPath)){
                         }
                     }
                 //})
+                })
             });    
         })
     } else {

@@ -5,7 +5,7 @@ export function createRandomUser (){
       username: faker.internet.userName(),
       amount : faker.number.int(),
       email: faker.internet.email(),
-      avatar: faker.image.dataUri({height:50,width:50}),
+      avatar: faker.image.avatar(),
       password: faker.internet.password(),
       birthdate: faker.date.birthdate(),
       registeredAt: faker.date.past(),

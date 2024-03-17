@@ -16,7 +16,6 @@ const TableDataListLayoutComponent = forwardRef(
         filterable={true} //si la table de données est filterable, spécifiez la valeur false, pour que les données ne soit pas filtrable
         canFetchOnlyVisibleColumns={false} //si uniquement les colonnes visisible seront récupérérs depuis la base de données, via le champ fields des options envoyés à la fonction fetcher
         parseMangoQueries = {true} //Spécifiez la valeur false, si vous utilisez une base de données qui accepte les requêtes mangoes (Voir https://www.mongodb.com/docs/manual/tutorial/query-documents) et true pour un backend lié à une BD relationnelle
-        {...rProps}
         {...defaultObj(tableObj.datagrid)} //les props du datagrid lié à la table data
         exportToExcelIsAllowed={"{0}:exporttoexcel".sprintf(tableName)} //la permission pour l'export des données de la table data au format Excel, vous pouvez définir également une fonction de la forme : ()=><boolean>
         exportToPDFIsAllowed={"{0}:exporttopdf".sprintf(tableName)} //la permission pour l'export des données au format pdf, vous pouvez également définir une fonction de la forme : ()=><boolean>
@@ -25,6 +24,9 @@ const TableDataListLayoutComponent = forwardRef(
         fetcher={(url, opts) => {
           if(typeof fetcher ==="function"){
             return fetcher(url,opts);
+          }
+          if(typeof tableObj?.datagrid?.fetcher ==="function"){
+            return tableObj?.datagrid.fetcher(url,opts);
           }
           delete opts.fields;
           delete opts?.fetchOptions?.fields;

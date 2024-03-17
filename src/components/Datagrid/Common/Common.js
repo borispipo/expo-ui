@@ -284,7 +284,7 @@ export default class CommonDatagridComponent extends AppComponent {
         });
         this.state.fetchOnlyVisibleColumns = !!defaultVal(this.props.fetchOnlyVisibleColumns,config.fetchOnlyVisibleColumns,this.getSessionData("fetchOnlyVisibleColumns"));
         const abreviateVals = this.getSessionData("abreviateValues");
-        this.state.abreviateValues = abreviateVals !== undefined ? !!abreviateVals : "abreviateValues" in this.props? !!this.props.abreviateValues : true;
+        this.state.abreviateValues = abreviateVals !== undefined ? !!abreviateVals : "abreviateValues" in this.props? !!this.props.abreviateValues : false;
         const sessionAggregator = this.getSessionData("aggregatorFunction"); 
         this.state.aggregatorFunction= this.isValidAggregator(config.aggregatorFunction) && config.aggregatorFunction || this.isValidAggregator(this.props.aggregatorFunction) && this.props.aggregatorFunction || this.isValidAggregator(sessionAggregator) && sessionAggregator || Object.keys(this.aggregatorFunctions)[0];;
         this.isLoading = this.isLoading.bind(this);
@@ -1573,7 +1573,7 @@ export default class CommonDatagridComponent extends AppComponent {
                     abreviateValues : {
                         type : "switch",
                         label : "Abréger les valeurs numériques",
-                        defaultValue : true,
+                        defaultValue : false,
                     },
                     showXaxis : {
                         type : "switch",

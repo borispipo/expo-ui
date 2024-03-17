@@ -73,7 +73,7 @@ const Notifications = forwardRef(({testID,items:cItems,menuProps,title,container
               >
                 {title !== false ? (
                     React.isValidElement(title)? title : <Label fontSize={17} textBold primary>
-                        Notifications{meter.name||""}
+                        Notifications
                     </Label>
                 ) : null}
                 {clearAllButton !== false && (React.isValidElement(clearAllButton)? clearAllButton : 

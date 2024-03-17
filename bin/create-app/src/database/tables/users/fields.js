@@ -39,6 +39,6 @@ export default {
     },
     birthdate : {
         type : "date",
-        label : "Date",
+        label : "Date de naissance",
     },
 }

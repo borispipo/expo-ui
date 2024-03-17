@@ -1,6 +1,6 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
-		"version": "8.52.6",
+		"version": "8.53.1",
 		"url": "https://github.com/borispipo/expo-ui#readme",
 		"license": "ISC"
 	},
@@ -42,6 +42,11 @@ module.exports = {
 	"@react-native-async-storage/async-storage": {
 		"version": "1.21.0",
 		"url": "https://github.com/react-native-async-storage/async-storage#readme",
+		"license": "MIT"
+	},
+	"@react-native-community/datetimepicker": {
+		"version": "7.6.1",
+		"url": "https://github.com/react-native-community/datetimepicker#readme",
 		"license": "MIT"
 	},
 	"@react-native-community/netinfo": {
@@ -149,23 +154,24 @@ module.exports = {
 		"url": "https://docs.expo.dev/versions/latest/sdk/webbrowser/",
 		"license": "MIT"
 	},
-	"react": {
-		"version": "18.2.0",
-		"url": "https://reactjs.org/",
-		"license": "MIT"
-	},
 	"react-native": {
 		"version": "0.73.5",
 		"url": "https://reactnative.dev/",
 		"license": "MIT"
 	},
+	"react-native-big-list": {
+		"version": "1.6.1",
+		"url": "https://marcocesarato.github.io/react-native-big-list-docs/",
+		"license": "GPL-3.0-or-later"
+	},
+	"react-native-blob-util": {
+		"version": "0.18.6",
+		"url": "https://github.com/RonRadtke/react-native-blob-util",
+		"license": "MIT"
+	},
 	"react-native-gesture-handler": {
 		"version": "2.14.1",
 		"url": "https://github.com/software-mansion/react-native-gesture-handler#readme",
-		"license": "MIT"
-	},
-	"react-native-get-random-values": {
-		"version": "1.8.0",
 		"license": "MIT"
 	},
 	"react-native-reanimated": {
@@ -188,19 +194,9 @@ module.exports = {
 		"url": "https://github.com/react-native-community/react-native-svg",
 		"license": "MIT"
 	},
-	"react-native-view-shot": {
-		"version": "3.8.0",
-		"url": "https://github.com/gre/react-native-view-shot",
-		"license": "MIT"
-	},
 	"react-native-webview": {
 		"version": "13.6.4",
 		"url": "https://github.com/react-native-webview/react-native-webview#readme",
-		"license": "MIT"
-	},
-	"socket.io-client": {
-		"version": "4.7.4",
-		"url": "https://github.com/socketio/socket.io-client.git",
 		"license": "MIT"
 	},
 	"stream-browserify": {

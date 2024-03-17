@@ -45,6 +45,11 @@ export default function TestDatagridComponent({count,...props}){
         avatar : {
            type : "image",
            label: 'Avatar',
+           withLabel : false,
+           size : 120,
+           datagrid : {
+            size : 50,
+           }
         },
         birthdate : {
             type : "date",

@@ -99,7 +99,7 @@ export const getFields = (config)=>{
     @paramm {multiple}, 
     @param {object} formDataProps, les prpops à passer au DialogProvider
 */
-export const getPrintSettings = ({multiple,duplicateDocOnPage,isTableData,tableDataFields,pageBreakBeforeEachDoc,sessionName,formDataProps,...rest})=>{
+export const getPrintSettings = ({multiple,duplicateDocOnPage,printQRCode,isTableData,tableDataFields,pageBreakBeforeEachDoc,sessionName,formDataProps,...rest})=>{
     formDataProps = Object.assign({},formDataProps);
     const hasSession = isNonNullString(sessionName);
     if(hasSession){
@@ -174,7 +174,7 @@ export const getPrintSettings = ({multiple,duplicateDocOnPage,isTableData,tableD
                 return v;
             }
         } : undefined,
-        ...(isTableData && tbPrimaryKeyFields.length ?{
+        ...(isTableData && printQRCode !== false && tbPrimaryKeyFields.length ?{
             printQRCode : {
                 type : "switch",
                 label : "Imprimer un QR Code",

@@ -73,7 +73,7 @@ const Notifications = forwardRef(({testID,items:cItems,menuProps,title,container
               >
                 {title !== false ? (
                     React.isValidElement(title)? title : <Label fontSize={17} textBold primary>
-                        Notifications
+                        Notifications : {items.length?.formatNumber()}
                     </Label>
                 ) : null}
                 {clearAllButton !== false && (React.isValidElement(clearAllButton)? clearAllButton : 
@@ -94,9 +94,6 @@ const Notifications = forwardRef(({testID,items:cItems,menuProps,title,container
                         Effacer tout
                       </Button>
                 )  || null}
-                <Label success textBold>
-                  {items.length?.formatNumber()}
-                </Label>
               </HStack>
               <Divider style={[theme.styles.w100, theme.styles.mt1]} />
             </View>

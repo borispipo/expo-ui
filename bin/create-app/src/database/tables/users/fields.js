@@ -13,6 +13,7 @@ export default {
         },
         sortable : false, //on ne peut trier les avatars
         filterable : false, //on ne peut également filtrer
+        exportable : false,//le champ avatar n'est pas exportable
     },
     userId : {
         primaryKey : true,

@@ -25,6 +25,7 @@ const AvatarImage = React.forwardRef(({
   testID,
   imageProps,
   rounded,
+  alt,
   ...rest
 },ref) => {
   imageProps = defaultObj(imageProps);
@@ -66,6 +67,7 @@ const AvatarImage = React.forwardRef(({
           source={source}
           {...cProps}
           {...imageProps}
+          alt = {defaultStr(alt,React.getTextContent(rest.label),React.getTextContent(rest.text))}
           style={[
             hasImage && { width,height,borderRadius},
             //!hasImage &&  width && {width},

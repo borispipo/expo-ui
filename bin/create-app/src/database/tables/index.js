@@ -46,7 +46,7 @@
                     //si false est retournée, alors rien n'est fait et le status de ce champ reste toujours à invalide. il sera donc impossible d'enregistrer le formulaire form data
                     //si true est retourneé, alors la formField est valide 
                 onValidatorValid : ({value,context,....rest}) => <boolean | object {} | string | Promise <boolean | object : {} | string>>,
-                
+                exportable : <boolean>, //si le champ est exportable au format pdf ou excel
                 //Cette fonction est appélée à chaque échec de validation du form field
                 onValidatorNoValid : ({value,context,...rest}) => <any>
                 

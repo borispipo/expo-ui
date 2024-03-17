@@ -92,7 +92,7 @@ module.exports = function(appName,{projectRoot:root}){
       return exec('npx expo install --fix',{projectRoot})
     }).finally(()=>{
       setTimeout(()=>{
-        console.log("application ready");
+        console.log("application ready. Please type cd "+name+" and then npx expo start to start your application");
         process.exit();
       },1000);
     });

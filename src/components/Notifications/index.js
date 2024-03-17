@@ -123,16 +123,16 @@ Notifications.displayName = "NotificationsComponents";
 Notifications.propTypes = {
     ...Object.assign({},List.propTypes), ///les props identiques au composant List
     items : PropTypes.array.isRequired,//les items à afficher dans le menu
-    menuProps : Object.assign({},Menu.propTypes), //les props du composant menu
+    menuProps : PropTypes.shape(Object.assign({},Menu.propTypes)), //les props du composant menu
     containerProps : PropTypes.object,
     contentContainerProps : PropTypes.object, //les props du contentContainer, composant wrapper au composant List
     title : PropTypes.oneOfType([
         PropTypes.bool, //si false, alors le titre qui s'affiche lorsque le menu est ouvert ne sera pas rendu
-        PropTypes.ReactNode, //si un composant react alors il sera utilisé pour substituer le composant title par défaut
+        PropTypes.node, //si un composant react alors il sera utilisé pour substituer le composant title par défaut
     ]),
     clearAllButton : PropTypes.oneOfType([
         PropTypes.bool, //si false, alors le bouton clearAll ne sera pas affiché
-        PropTypes.ReactNode, //si un composant react alors il sera utilisé pour substituer le composant bouton par défaut
+        PropTypes.node, //si un composant react alors il sera utilisé pour substituer le composant bouton par défaut
     ])
 }
 

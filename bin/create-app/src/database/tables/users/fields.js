@@ -4,13 +4,15 @@ export default {
         type : "image",
         label: 'Avatar',
         withLabel : false,
-        size : 150,
+        size : 150,//la taille de l'avatar
         datagrid : {
             size : 50,
         },
         responsiveProps : {
              style : [{width:"100%",padding:10,alignItems:"center"}]
-        }
+        },
+        sortable : false, //on ne peut trier les avatars
+        filterable : false, //on ne peut également filtrer
     },
     userId : {
         primaryKey : true,

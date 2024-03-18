@@ -14,6 +14,12 @@ export default class FormIDField extends TextField {
         this.newFieldIdValue = undefined;
         return super.UNSAFE_componentWillReceiveProps(nextProps);
     }
+    /***
+        détermnine si la valeur est valide
+    */
+    isValidIdValue(value){
+        return isNonNullString(value) || typeof value =="number";
+    }
     componentDidMount(){
         super.componentDidMount();
         this.fetchNewId(false);
@@ -26,40 +32,51 @@ export default class FormIDField extends TextField {
             errorCb(e);
         }
     }
-
+    
+    /****
+        récupère la valeur de l'id distante
+        @param {function} cb, la fonction de rappel à appeler pour le rendu du résultata
+    */
+    fetchNewIdRemotely(cb){
+        const data = defaultObj(this.props.data);
+        const fId = typeof this.props.fetchNewId =='function'? this.props.fetchNewId({...this.props,data,columnField:this.name}) : null;
+        if(isPromise(fId)){
+            return fId.then(cb).catch(e=>{
+                console.log(e," fetching new piece id ",this.name);
+            });
+        }
+        return cb(fId);
+    }
+    
+ 
     /*** met à jour la données du numéro de piece */
     fetchNewId(focus){
         if(this.isFilter()){
             return Promise.resolve("");
         }
         const data = defaultObj(this.props.data);
-        if(!isNonNullString(this.name)) return undefined;
+        const name = defaultStr(this.name, this.props.name);
+        if(!name) return Promise.resolve("");
         const cb = (value)=>{
-            if(isNonNullString(value)){
+            if(this.isValidIdValue(value)){
                 this.newFieldIdValue = value;
                 this.validate({value}); 
                 if(focus) this.focus();
             }
         }
-        if(isNonNullString(data[this.name])){
-            cb(data[this.name]);
-            return data[this.name]
+        if(this.isValidIdValue(data[name])){
+            cb(data[name]);
+            return data[name]
         }
         setTimeout(()=>{
-            const fId = typeof this.props.fetchNewId =='function'? this.props.fetchNewId({...this.props,data,columnField:this.name}) : null;
-            if(isPromise(fId)){
-                return fId.then(cb).catch(e=>{
-                    console.log(e," fetching new piece id ",this.name);
-                });
-            }
-            return cb(fId);
+            this.fetchNewIdRemotely(cb);
         },10);
     }
     /*** retourne la valeur validée */
     getValidValue(data){
         const validValue = super.getValidValue(data);
         if(!isNonNullString(this.name)) return validValue;
-        data[this.name] = defaultStr(data[this.name],validValue,this.newFieldIdValue);
+        data[this.name] = this.isValidIdValue(data[this.name])? data[this.name] : this.isValidIdValue(validValue)? validValue : this.newFieldIdValue;
         return validValue;
     }
     isValidRuleDynamic(){
@@ -69,30 +86,34 @@ export default class FormIDField extends TextField {
         return false;
     }
     componentDidUpdate(){
-        if(!this.isFilter() && !isNonNullString(this.newFieldIdValue)){
+        if(!this.isFilter() && !this.isValidIdValue(this.newFieldIdValue)){
             this.fetchNewId();
         }
     }
     _render(props,setRef){
         delete props.validType;
+        const data = defaultObj(props.data);
+        const name = defaultStr(this.name, this.props.name);
+        const hasV = this.isValidIdValue(data[name]);
+        props.upper = typeof props.upper =="boolean"? props.upper : true;
         if(!this.isFilter()){
-            const upper = props.upper !== false ? UPPER_CASE : "";
-            if(isNonNullString(this.name) && isObj(props.data) && isNonNullString(props.data[this.name])){
+            const upper = props.upper ? UPPER_CASE : "";
+            if(name && hasV){
                 props.disabled = true;         
                 props.validType = upper;
-                props.defaultValue = props.data[this.name];
+                props.defaultValue = data[name];
             } else {
                 props.validType = 'required|'+upper;
             }
             if(typeof props.minLength !=='number'){
-                props.minLength = 2;
+                props.minLength = 2; //la longueur minimale d'un champ de type id est de 2
             }
-            const defValue = props.defaultValue = isNonNullString(props.defaultValue)? props.defaultValue : isNonNullString(this.newFieldIdValue)? this.newFieldIdValue : undefined;
+            const defValue = props.defaultValue = this.isValidIdValue(props.defaultValue)? props.defaultValue : this.isValidIdValue(this.newFieldIdValue)? this.newFieldIdValue : undefined;
             props.validRule = props.validType;
             props.contentContainerProps = Object.assign({},props.contentContainerProps)
             props.contentContainerProps.pointerEvents = defaultStr(props.contentContainerProps.pointerEvents,"auto");
             props.enableCopy = typeof props.enableCopy ==='boolean'? props.enableCopy : (props.defaultValue || this.newFieldIdValue ? true : false);
-            props.readOnly = typeof props.disabled ==='boolean' ? !!!props.disabled : typeof props.readOnly =="boolean"? !!!props.disabled : false;
+            props.readOnly = typeof props.readOnly =="boolean"? props.readOnly : typeof props.disabled ==='boolean' ? props.disabled : false;
             
             const {right} = props;
             props.right = (props)=>{
@@ -105,7 +126,6 @@ export default class FormIDField extends TextField {
                 }
                 return r;
             }
-                
             this.setValidRule(props.validType);
         } else {
             props.enableCopy = false;

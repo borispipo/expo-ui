@@ -8,16 +8,42 @@
 
 import TableData from "$eScreen/TableData";
 import notify from "$cnotify";
+import {defaultStr} from "$cutils";
+import getTable from "$database/tables/getTable"
 
 
 export default class TableDataScreenItem extends TableData{
     /**** cette méthode est très utile pour la vérification des id de type unique en base de données
+        Elle est valable pour les champs de type id, de type piece, ou dont la propriété primaryKey est à true ou la proprité unique est à true,
+        Elle est appelée pour les champs de type id en cas d'ajout d'un élément de la table data; Lorsque l'évènement onBlur est appelé sur le champ de type id, 
+        La fonction suivante est appelée dans le but de vérifier s'il existe déjà en base de données une valeur idenetique à celle renseignée par l'utilisateur. 
         par exemple, vous avez une table en base de données dont l'id est le code et en création de la nouvelle données, vous vérifiez si celle entrée par l'utilisateur existe déjà en base ou non
         Cette fonction doit retourner une promise, qui lorsque la donnée existe, elle doit retourner l'objet correspondant à l'id recherché en bd ou généer une exception si elle n'existe pas
-           
+        @return {Promise<object>}
     */
-    fetchUniqueId ({value,field,fieldName,foreignKeyColumn,table:customT,foreignKeyTable}){
-        return Promise.resolve({});
+    fetchUniqueId ({value,field,fieldName,foreignKeyColumn,table:customTable,tableName:customTableName,foreignKeyTable}){
+        const tableObj = this.getTableObj(); //tableObj représente la table data, enreigstré dans $src/database/tables dont le nom est passé à l'item en cours
+        let tableName = defaultStr(foreignKeyTable,this.tableName,customTable,customTableName).trim().toUpperCase();
+        const foreignTableObj = tableName !== this.tableName ? getTable(tableName) : tableObj
+        foreignKeyColumn = defaultStr(foreignKeyColumn,field,fieldName);
+        if(!foreignKeyColumn){
+            return Promise.reject({message:"Impossible de faire un fetch de l'id unique  pour la  table"+foreignKeyTable+", de valuer :  "+value})
+        }
+        if(!foreignTableObj){
+            return Promise.reject({message:`Impossible de récupérer la données d'id unique lié à la table ${foreignKeyTable}, colonne ${foreignKeyColumn} car la table data est invalide`})
+        }
+        tableName = defaultStr(foreignTableObj.tableName,this.tableName,foreignTableObj.table,tableName).toUpperCase();
+        //il s'agit là de récupérer une données en base de données, ayant dont la colonne [foreignKeyColumn.trim()] = value;
+        const where = {
+            [foreignKeyColumn.trim()] : value //la condition d'appel de la données à récupérer en base de données
+        };
+        /***
+            implémenter votre propre logique afin de récupérer la données, au backend; il est à noter que l'objet à retourner, si existant en bd doit être avoir au moins un champ définit de la forme : {[foreignKeyColmn]:[valuerEnBD]}
+            Si une exception est généré, alors cette exception doit avoir un champ status = 404, pour signifier que l'objet n'existe pas en bd
+        */
+        return Promise.reject({
+            message : `Veuillez implémenter votre logique de récupération en bd du champ ${foreignKeyColumn} pour la valeur ${value} de la table data ${tableName}. Consultez le fichier $src/screens/TableDataScreen afin d'implémenetr la fonction fetchUniqueId`
+        });
     }
     /*** implémenter la routine beforeSave, avant l'enregistrement de la données liée à la table encours
         -si cette fonction retourne une chaine de caractère, alors cette chaine est considérée comme une erreur et elle est affichée via une notification à l'utilisateur

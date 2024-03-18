@@ -463,8 +463,9 @@ export default class FormListComponent extends AppComponent {
         primaryText = defaultFunc(primaryText,x=>null);
         renderAvatar = defaultFunc(renderAvatar,x=>null);
         /*** les props de chaque items de la liste */
-        itemProps= {...defaultObj(itemProps)}
+        itemProps= Object.clone(defaultObj(itemProps))
         const descriptionNumberOfLines = typeof itemProps.rows ==='number' && itemProps.rows ? itemProps.rows : 3;
+        const {left:itemLeft,right:itemRight} = itemProps;
         let counter = -1;
         let is_o = this.isHandlingObject;
         let addIconObj = null;
@@ -563,8 +564,9 @@ export default class FormListComponent extends AppComponent {
                 </View>
                 <View testID={testID+"_FormListWrapper"} style={[theme.styles.ph1]}>
                     <FlashList
-                        items = {allData}
                         responsive
+                        {...defaultObj(this.props.listProps)}
+                        items = {allData}
                         prepareItems = {(items)=>{
                             const itx = [];
                             Object.map(items,(data,index,ct)=>{
@@ -572,7 +574,7 @@ export default class FormListComponent extends AppComponent {
                                 const _index = this.getIndex({data,index,allData:items});
                                 if(is_o &&  (!isNumber(_index) && !isNonNullString(_index))) return null;
                                 counter++;
-                                const pArgs = {avatarProps,context,itemProps,data:data,index,allData:allData};
+                                const pArgs = {avatarProps,context,itemProps,data,item:data,index,allData:allData};
                                 const deletable = deletableFunc(pArgs),
                                       readOnly = readOnlyFunc(pArgs);
                                 let avatar = renderAvatar.call(context,pArgs);
@@ -590,6 +592,12 @@ export default class FormListComponent extends AppComponent {
                                         avatar = undefined;
                                     }
                                     itemProps.left = (lProps)=>{
+                                        const l = typeof itemLeft =="function"? itemLeft({...lProps,...pArgs}) : itemLeft;
+                                        if(l && React.isValidElement(l)){
+                                            return <>
+                                                {l}<Avatar suffix={ct} {...avatarProps} src={src}>{avatar}</Avatar>
+                                            </>
+                                        }
                                         return <Avatar suffix={ct} {...avatarProps} src={src}>{avatar}</Avatar>
                                     };
                                 }
@@ -616,6 +624,7 @@ export default class FormListComponent extends AppComponent {
                         renderItem = {({item})=>{
                             const {data,title,description,key,_index,props,index,readOnly,deletable} = item;
                             const titleText = React.getTextContent(title);
+                            const r = typeof itemRight =="function"? itemRight(item) : itemRight;
                             return <View key={key} testID={testID+".Cell"+key} style={[theme.styles.w100]}>
                                 <Surface key={key} elevation={5} {...itemContainerProps} style={[styles.itemContainer,itemContainerProps.style]}>
                                     <List.Item
@@ -637,6 +646,7 @@ export default class FormListComponent extends AppComponent {
                                                     React.stopEventPropagation(e);
                                                     this.delete({...data},index,title);
                                                 }}></Icon>}
+                                                {React.isValidElement(r)? r : null}
                                             </View>
                                         }}
                                     />
@@ -767,6 +777,7 @@ FormListComponent.propTypes = {
     //sa peut être un contenu noeu où alors un élément où une chaine de caractère
     onRemove : PropTypes.func,
     onDelete : PropTypes.func,
+    listProps : PropTypes.object, //les props à passer au composant FlashList
 }
 
 const styles = StyleSheet.create({

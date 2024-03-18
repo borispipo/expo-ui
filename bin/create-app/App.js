@@ -12,6 +12,8 @@ import Notifications from "$components/Notifications";
 import auth from "$src/auth";
 import tablesData, { getTable as getTableData } from "$database/tables";
 import {defaultStr} from "$cutils";
+import customFormFields from "$components/Form/customFields";
+
 
 export default function AppMainEntry(){
     return <ExpoUIProvider    
@@ -88,7 +90,7 @@ export default function AppMainEntry(){
                     test : Test, //ou test est le fom field associé au type test, ie le composant qui sera rendu pour ce type de Champ,
                 }
             */
-            customFormFields : {},
+            customFormFields,
             /*** 
                 la fonction permettant de muter les props du composant TableLink, permetant de lier les tables entre elles
                 Le composant TableLink permet de lier les données d'une tableData, L'usage dudit composant est définit dans la documentation de l'application

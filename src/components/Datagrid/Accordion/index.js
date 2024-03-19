@@ -212,7 +212,7 @@ const DatagridFactory = (Factory)=>{
                     this.renderingItemsProps[rowKey] = defaultObj(this.renderingItemsProps[rowKey]);
                     this.renderingItemsProps[rowKey].ref = el;
                 }}
-                style = {style}
+                style = {[style,this.props.accordionProps?.style]}
                 callArgs = {this.getItemCallArgs({item,index})}
                 onRowPress = {this.props.onRowPress}
                 onRowLongPress = {this.props.onRowLongPress}

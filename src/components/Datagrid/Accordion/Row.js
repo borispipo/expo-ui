@@ -10,9 +10,7 @@ import {styles as rStyles,getRowStyle} from "../utils";
 import { useIsRowSelected,useDatagrid} from "../hooks";
 import {HStack} from "$ecomponents/Stack";
 
-const DatagridAccordionRow = React.forwardRef((props,ref)=>{
-    const {
-        selectable,
+const DatagridAccordionRow = React.forwardRef(({selectable,
         rowKey,
         bottomSheetTitle:customBottomSheetTitle,
         bottomSheetTitlePrefix,
@@ -24,14 +22,22 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
         item,
         index,
         style,
+        contentContainerProps,
         numColumns,
         onToggleExpand,
         callArgs,
-    } = props;
+        title,
+        right,
+        rightProps,
+        description,
+        avatarContent,
+        rowProps,
+        testID,
+        ...restProps},ref)=>{
     const {context} = useDatagrid();
-    let {title,right,rightProps,description,avatarContent,rowProps} = props;
     rowProps = defaultObj(rowProps);
     rightProps = defaultObj(rightProps);
+    contentContainerProps = defaultObj(contentContainerProps);
     if(!isObj(item)) {
         return null;
     }
@@ -63,7 +69,7 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
 
     let rowIndex = defaultDecimal(index);
     let rowIndexCount = index+1;
-    const testID = defaultStr(props.testID,"RN_DatagridAccordionRow"+(rowKey||rowIndex))
+    testID = defaultStr(testID,"RN_DatagridAccordionRow"+(rowKey||rowIndex))
     const hasAvatar = React.isValidElement(avatarContent);
     const handleRowToggle = (event)=>{
         if(selectable === false) return;
@@ -111,6 +117,7 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
     right = typeof right === 'function'? right ({color:theme.colors.primaryOnSurface,selectable:true,style:[rStyles.lineHeight,styles.right]}) : right;
     return  <Pressable
                 disabled = {selectable===false?true : false}
+                {...restProps}
                 {...rowProps}
                 testID={testID}
                 children = {null}
@@ -121,10 +128,10 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
                     styles.bordered,
                     wrapStyle,
                     rowProps.style,
+                    style,
                     numColumns > 1 && styles.multiColumns,
                     selected && styles.selected,
                     selectable !== false && theme.styles.cursorPointer,
-                    //style,
                 ]}
                 ref = {(el)=>{
                     if(el){
@@ -137,8 +144,9 @@ const DatagridAccordionRow = React.forwardRef((props,ref)=>{
                 }}
         >
         <HStack 
-                style={[styles.renderedContent,!hasAvatar && styles.renderedContentHasNotAvatar,viewWrapperStyle,!hasAvatar && styles.contentContainerNotAvatar]} 
             testID={testID+'_ContentContainer'}
+            {...contentContainerProps}
+            style={[styles.renderedContent,!hasAvatar && styles.renderedContentHasNotAvatar,viewWrapperStyle,!hasAvatar && styles.contentContainerNotAvatar,contentContainerProps.style]} 
         >
             {hasAvatar?<View testID={testID+"_AvatarContentContainer"} style={[styles.avatarContent]}>
                 {avatarContent}
@@ -205,6 +213,7 @@ const styles = StyleSheet.create({
         paddingHorizontal : 0,
         paddingRight : 10,
         width : "100%",
+        flexWrap : "nowrap"
     },
     renderedContentHasNotAvatar : {
         justifyContent : "space-between",
@@ -216,6 +225,8 @@ const styles = StyleSheet.create({
         paddingVertical : 5,
         fontSize:13,
         flexWrap: 'nowrap',
+        textAlign : "right",
+        alignSelf : "right",
     },
     row : {
         flexDirection:'row',
@@ -227,7 +238,7 @@ const styles = StyleSheet.create({
     },
     container : {
         paddingVertical : 0,
-        paddingHorizontal : 0,
+        paddingHorizontal : 7,
         marginHorizontal : 0,
         flexWrap : 'nowrap',
         justifyContent : 'center',

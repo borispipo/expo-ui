@@ -20,7 +20,7 @@ export default function TestDatagridComponent({count,...props}){
             return {
                 content : `${rowData.email}`,
                 title : rowData?.username,
-                //avatar : rowData.avatar,
+                avatar : rowData.avatar,
                 right : DateLib.format(rowData.birthdate),
             }
         }}

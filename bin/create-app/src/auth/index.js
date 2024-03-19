@@ -31,9 +31,9 @@ export default {
         Pour override l'interface de connexion par défaut, vous dévez définir le contenu de cette propriété comme étant un composant React qui sera rendu 
         rendu en lieu et place du composant de connexion par défaut : Ce composant aura comme props : 
         {
-            withPortal : {boolean}, //si le contenu de l'écran doit être rendu dans un portal
+            withScreen : {boolean}, //si le contenu de l'écran doit être rendu dans un Screen ReactNative
             onSuccess <function> : (data)=><any>, la fonction appelée en cas de success
-            appBarProps <object>, les props à passer au composant ApppBar de l'écran de connexion, lorsque withPortal est à true
+            appBarProps <object>, les props à passer au composant ApppBar de l'écran de connexion, lorsque withScreen est à true
             auth <object>, //le composant auth récupérer à l'aide du hook useAuth de $cauth. définit les fonctions suivantes : 
             {
                 signIn : (data)=><Promise>, la fonction permettant de connecter l'utilisateur
@@ -78,7 +78,6 @@ export default {
             headerTopContent : <ReactComponent | ReactNode, le contenu a afficher au headerTop de l'interface de connexion
             header : <ReactComponent| ReactNode>, le contenu du qui sera rendu immédiatement après le composant Header, par défaut, le texte "Connectez vous svp est affiché". Ce contenu doit être rendu si l'on souhaite override le texte "Connectez vous SVP" 
             containerProps : <object>, les props du composant <Surface/>, le composant qui est le wrapper du composant FormData en charge de récupérer les données de l'interface de connexion
-            withHeaderAvatar : <boolean>, si l'avatar ou l'iconne de connexion sera afficher à l'interface de connexion par défaut
             canSubmit : ({step,...rest})=> <boolean>, //si les donées du formulaire peuvent être submit
             beforeSubmit : ({step,data,...rest})=><void>, //la fonction appélée immédiatement avant le submit des donénes
             ...loginProps {object}, les props Supplémentaires à passer au composant FormData utilisé pour le rendu du formulaire de connexion

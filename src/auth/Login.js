@@ -101,7 +101,7 @@ export default function LoginComponent(props){
     },[state.step]);
     if(React.isComponent(Login)) return <Login
         {...props}
-        withPortal = {withPortal}
+        withScreen = {withPortal}
         appBarProps = {appBarProps}
         onSuccess = {onSuccess}
         auth = {auth}
@@ -119,7 +119,6 @@ export default function LoginComponent(props){
     const {header,
         headerTopContent:HeaderTopContent,
         containerProps : customContainerProps,
-        withHeaderAvatar,
         contentProps : customContentProps,
         withScrollView:customWithScrollView,children,initialize,contentTop,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,mutateData,beforeSubmit:beforeSubmitForm,canSubmit:canSubmitForm,onStepChange,...loginProps} = loginPropsMutator({
         ...state,
@@ -141,7 +140,6 @@ export default function LoginComponent(props){
     });
     const containerProps = defaultObj(customContainerProps);
     const contentProps = defaultObj(customContentProps);
-
     /****la fonction à utiliser pour vérifier si l'on peut envoyer les données pour connextion
      * par défaut, on envoie les données lorssqu'on est à l'étappe 2
      * **/
@@ -232,12 +230,9 @@ export default function LoginComponent(props){
                     formName = {formName}
                     testID = {testID+"_FormData"}
                     style = {[styles.formData,{backgroundColor}]}
-                    header = {<View style = {[styles.header]}>
-                        {withHeaderAvatar !== false && <Avatar testID={testID+"_Avatar"} size={50} secondary icon = 'lock'/> || null}
-                        {
-                            React.isValidElement(header)? header : 
-                            <Label testID={testID+"_HeaderText"} bool style={{color:theme.colors.primaryOnSurface,fontSize:18,paddingTop:10}}>Connectez vous SVP</Label>
-                        }
+                    header = {React.isValidElement(header)? header : <View testID={`${testID}_HeaderContainer`} style = {[styles.header]}>
+                        <Avatar testID={testID+"_Avatar"} size={50} secondary icon = 'lock'/>
+                        <Label testID={testID+"_HeaderText"} bool style={{color:theme.colors.primaryOnSurface,fontSize:18,paddingTop:10}}>Connectez vous SVP</Label>
                     </View>}
                     responsive  = {false}
                     {...loginProps}
@@ -349,7 +344,6 @@ const styles = StyleSheet.create({
 });
 
 LoginComponent.propTypes = {
-    withHeaderAvatar:PropTypes.bool,//si l'on affichera l'avatar de connexion
     headerTopContent : PropTypes.oneOfType([
         PropTypes.func,
         PropTypes.node,

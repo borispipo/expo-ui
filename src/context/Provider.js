@@ -86,7 +86,6 @@ Object.map(Utils,(v,i)=>{
       loginPropsMutator : ({object})=><{object}>, la fonction permettant de muter les props du composant Login,
     }
     swrConfig : {object},//les paramètres de configuration de l'objet swr utilisée dans le composant SWRDatagrid
-    realm : {}, //les options de configurations de la base de données realmdb
 */
 const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,auth:cAuth,components:cComponents,parseMangoQueries,getStructData,tablesData,structsData,...props})=>{
     const {extendAppTheme} = appConfig;

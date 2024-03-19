@@ -129,9 +129,12 @@ export default function UserProfileScreen({fields,...p}){
             },1000);
         });
     }
-    
+    let uLogin = defaultStr(Auth.getLoginId(user));
+    if(uLogin){
+        uLogin = " ["+uLogin+"]  | ";
+    }
     return <FormDataScreen
-        title = {(user.label?(user.label+" ["+Auth.getLoginId(user)+"]  | "):"")+"Profil : Modifier"}
+        title = {(user.label?(user.label+uLogin):"")+"Profil : Modifier"}
         {...props}
         modal
         withScrollView

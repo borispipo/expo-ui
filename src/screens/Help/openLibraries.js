@@ -1,6 +1,6 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
-		"version": "8.54.1",
+		"version": "8.55.0",
 		"url": "https://github.com/borispipo/expo-ui#readme",
 		"license": "ISC"
 	},
@@ -15,7 +15,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"@expo/html-elements": {
-		"version": "0.9.1",
+		"version": "0.5.1",
 		"url": "https://github.com/expo/expo/tree/main/packages/html-elements",
 		"license": "MIT"
 	},
@@ -39,28 +39,38 @@ module.exports = {
 		"url": "https://github.com/pchmn/expo-material3-theme#readme",
 		"license": "MIT"
 	},
+	"@react-native-async-storage/async-storage": {
+		"version": "1.21.0",
+		"url": "https://github.com/react-native-async-storage/async-storage#readme",
+		"license": "MIT"
+	},
+	"@react-native-community/datetimepicker": {
+		"version": "7.6.1",
+		"url": "https://github.com/react-native-community/datetimepicker#readme",
+		"license": "MIT"
+	},
 	"@react-native-community/netinfo": {
 		"version": "11.1.0",
 		"url": "https://github.com/react-native-netinfo/react-native-netinfo#readme",
 		"license": "MIT"
 	},
 	"@react-native/assets-registry": {
-		"version": "0.74.75",
-		"url": "https://github.com/facebook/react-native/tree/HEAD/packages/assets#readme",
+		"version": "0.72.0",
+		"url": "git@github.com:facebook/react-native.git",
 		"license": "MIT"
 	},
 	"@react-navigation/native": {
-		"version": "6.1.17",
+		"version": "6.1.16",
 		"url": "https://reactnavigation.org",
 		"license": "MIT"
 	},
 	"@react-navigation/native-stack": {
-		"version": "6.9.26",
+		"version": "6.9.25",
 		"url": "https://github.com/software-mansion/react-native-screens#readme",
 		"license": "MIT"
 	},
 	"@react-navigation/stack": {
-		"version": "6.3.29",
+		"version": "6.3.28",
 		"url": "https://reactnavigation.org/docs/stack-navigator/",
 		"license": "MIT"
 	},
@@ -104,11 +114,6 @@ module.exports = {
 		"url": "https://docs.expo.dev/versions/latest/sdk/font/",
 		"license": "MIT"
 	},
-	"expo-image-manipulator": {
-		"version": "11.8.0",
-		"url": "https://docs.expo.dev/versions/latest/sdk/imagemanipulator/",
-		"license": "MIT"
-	},
 	"expo-image-picker": {
 		"version": "14.7.1",
 		"url": "https://docs.expo.dev/versions/latest/sdk/imagepicker/",
@@ -149,23 +154,24 @@ module.exports = {
 		"url": "https://docs.expo.dev/versions/latest/sdk/webbrowser/",
 		"license": "MIT"
 	},
-	"react": {
-		"version": "18.2.0",
-		"url": "https://reactjs.org/",
-		"license": "MIT"
-	},
 	"react-native": {
 		"version": "0.73.5",
 		"url": "https://reactnative.dev/",
 		"license": "MIT"
 	},
+	"react-native-big-list": {
+		"version": "1.6.1",
+		"url": "https://marcocesarato.github.io/react-native-big-list-docs/",
+		"license": "GPL-3.0-or-later"
+	},
+	"react-native-blob-util": {
+		"version": "0.18.6",
+		"url": "https://github.com/RonRadtke/react-native-blob-util",
+		"license": "MIT"
+	},
 	"react-native-gesture-handler": {
 		"version": "2.14.1",
 		"url": "https://github.com/software-mansion/react-native-gesture-handler#readme",
-		"license": "MIT"
-	},
-	"react-native-get-random-values": {
-		"version": "1.8.0",
 		"license": "MIT"
 	},
 	"react-native-reanimated": {
@@ -186,11 +192,6 @@ module.exports = {
 	"react-native-svg": {
 		"version": "14.1.0",
 		"url": "https://github.com/react-native-community/react-native-svg",
-		"license": "MIT"
-	},
-	"react-native-view-shot": {
-		"version": "3.8.0",
-		"url": "https://github.com/gre/react-native-view-shot",
 		"license": "MIT"
 	},
 	"react-native-webview": {

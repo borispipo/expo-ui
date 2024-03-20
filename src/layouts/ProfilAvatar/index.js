@@ -16,6 +16,7 @@ import appConfig from "$capp/config";
 import Preloader from "$preloader";
 import {defaultNumber} from "$cutils";
 import Tooltip from "$ecomponents/Tooltip";
+
 const UserProfileAvatarComponent = React.forwardRef(({drawerRef,chevronIconProps:customChevronIconProps,size,withLabel,...props},ref)=>{
     let u = defaultObj(Auth.getLoggedUser());
     const deviceNameRef = React.useRef(null);
@@ -35,7 +36,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,chevronIconProps
     props.src = u.avatar;
     size = defaultNumber(size,!withLabel?40:40);
     const userPseudo = Auth.getUserPseudo();
-    const pseudo = defaultStr(userPseudo,Auth.getUserCode(),Auth.getUserEmail());
+    const pseudo = defaultStr(userPseudo,Auth.getUserCode(),Auth.getUserEmail(),appConfig.authDefaultUsername,"appConfig.authDefaultUsername");
     const label = defaultStr(Auth.getUserFullName(),userPseudo);
     const onLongPress = ()=>{
         appConfig.setDeviceId().then((r)=>{
@@ -76,7 +77,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,chevronIconProps
                     });
                 }
             },
-            Auth.canSignOut() && {
+            Auth.canSignOut() || true && {
                 label : i18n.lang("logout",'Déconnexion'),
                 icon : "logout",
                 onPress : (a)=>{

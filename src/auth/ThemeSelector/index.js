@@ -267,7 +267,7 @@ export const getThemeFieldProps = (props,ref)=>{
             let sText = defaultStr(secondaryName,split[1],secondary);
             //<Icon icon={dark?'brightness-6':'brightness-4'} size={15} title={dark?'Sombre':'Clair'}/> 
             return <View style={[styles.buttonContainer]}>
-                <Label style={[getStyle(primary),{height:'100%',borderLeftWidth:10,borderLeftColor:dark?defaultDarkTheme.colors.surface:defaultLightTheme.colors.background}]}>
+                <Label style={[getStyle(primary),{height:'100%',borderLeftWidth:10,borderLeftColor:dark?"black":"white"}]}>
                     {pText}
                 </Label>
                 <View style={[styles.labelRight]}>

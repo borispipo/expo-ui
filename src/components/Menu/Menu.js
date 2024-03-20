@@ -505,7 +505,7 @@ class _Menu extends AppComponent {
                     ]
                   }
                 >
-                  {((scrollableMenuHeight|| contentContainerStyle) && (<ScrollView contentContainerStyle={contentContainerStyle} testID={testID+"_ScrollView"}>{children}</ScrollView>
+                  {((scrollableMenuHeight|| contentContainerStyle) && (<ScrollView contentContainerStyle={[styles.contentContainerStyle,contentContainerStyle]} testID={testID+"_ScrollView"}>{children}</ScrollView>
                   )) || children}
                 </Surface>
               </Animated.View> : null}
@@ -526,6 +526,9 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     elevation: 8,
   },
+  contentContainerStyle : {
+    paddingBottom : 5,
+  }
 });
 
 

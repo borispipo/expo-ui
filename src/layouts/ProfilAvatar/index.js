@@ -36,7 +36,8 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,chevronIconProps
     props.src = u.avatar;
     size = defaultNumber(size,!withLabel?40:40);
     const userPseudo = Auth.getUserPseudo();
-    const pseudo = defaultStr(userPseudo,Auth.getUserCode(),Auth.getUserEmail(),appConfig.authDefaultUsername,"appConfig.authDefaultUsername");
+    const defaultPseudo = "appConfig.authDefaultUsername";
+    const pseudo = defaultStr(userPseudo,Auth.getUserCode(),Auth.getUserEmail(),appConfig.authDefaultUsername,defaultPseudo);
     const label = defaultStr(Auth.getUserFullName(),userPseudo);
     const onLongPress = ()=>{
         appConfig.setDeviceId().then((r)=>{
@@ -45,7 +46,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,chevronIconProps
             }
         });
     };
-    const tooltip = "Pressez longtemps pour définir un identifiant unique pour l'appareil";
+    const tooltip = "Pressez longtemps pour définir un identifiant unique pour l'appareil"+(pseudo == defaultPseudo ? `\nPour modifier la valeur du pseudo actuel, définissez dans le fichier package.json, la propriété : authDefaultUsername`:"");
     const children = <View style={[styles.labelContainer,!withLabel && theme.styles.justifyContentCenter]}>
         <Label splitText numberOfLines={1} style={{color:theme.colors.primaryOnSurface,fontSize:15}}>{pseudo}</Label>
         <Label splitText numberOfLines={1} style={[{fontSize:12,color:theme.colors.secondaryOnSurface,marginTop:6},!withLabel && {textAlign:'center'}]}>

@@ -6,14 +6,12 @@ import {
   TouchableWithoutFeedback
 } from 'react-native';
 import View from "$ecomponents/View";
-import {FAB,Text,Card,withTheme} from "react-native-paper";
-import colorFn from 'color';
+import {Text,Card,withTheme} from "react-native-paper";
 import PropTypes from "prop-types";
 import Action from "$ecomponents/Form/Action";
 import theme,{ disabledStyle,StylePropTypes,cursorPointer,Colors,cursorNotAllowed } from '$theme';
 import {defaultStr} from "$cutils";
-
-
+import CustomFabItem from "./FabItem";
 
 const FABGroup = ({
   actions,
@@ -159,8 +157,8 @@ const FABGroup = ({
             )
           })}
         </View>
-        <FAB
-          small = {false}
+        <CustomFabItem
+          size = 'medium'
           {...defaultObj(rest)}
           onPress={() => {
             onPress?.();
@@ -204,7 +202,6 @@ FABGroup.propTypes = {
    * - `labelTextColor`: custom label text color of the action item
    * - `style`: pass additional styles for the fab item, for example, `backgroundColor`
    * - `labelStyle`: pass additional styles for the fab item label, for example, `backgroundColor`
-   * - `small`: boolean describing whether small or normal sized FAB is rendered. Defaults to `true`
    * - `onPress`: callback that is called when `FAB` is pressed (required)
    */
   actions: PropTypes.arrayOf(PropTypes.shape({
@@ -214,7 +211,6 @@ FABGroup.propTypes = {
     labelTextColor: PropTypes.string,
     style: StylePropTypes,
     labelStyle: StylePropTypes,
-    small: PropTypes.bool,
     onPress: PropTypes.func,
     testID: PropTypes.string,
   })),
@@ -314,8 +310,8 @@ const _FabItem = function({children,label,disabled:customDisabled,pointerEvents,
                </Card>
              </View>
            ) : null}
-           <FAB
-             small={typeof small =='boolean' ? small : true}
+           <CustomFabItem
+             size={typeof small =='boolean' && small ? "small":"medium"}
              icon={icon}
              color={color}
              disabled = {disabled}

@@ -1,4 +1,4 @@
-import { FAB } from 'react-native-paper';
+import FAB from "./FabItem";
 import {defaultObj} from "$cutils";
 import React from "$react";
 import { StyleSheet } from 'react-native';

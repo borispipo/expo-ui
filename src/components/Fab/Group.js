@@ -1,4 +1,4 @@
-import { FAB} from 'react-native-paper';
+import FAB from "./FabItem";
 import React from "$react";
 import {StyleSheet} from "react-native";
 import {defaultStr,isNonNullString,isObj,defaultObj} from "$cutils";
@@ -184,7 +184,6 @@ const actionType = PropTypes.shape({
     small : PropTypes.bool,
 });
 FabGroupComponent.propTypes = {
-    ...defaultObj(FAB.Group.propTypes),
     fabId : PropTypes.string,//l'id du fab
     onMount : PropTypes.func, ///lorsque le composant est monté
     onUnmount : PropTypes.func, //lorsque le composant est démonté

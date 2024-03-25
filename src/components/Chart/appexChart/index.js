@@ -8,7 +8,11 @@ const AppexChartComponent = React.forwardRef(({chartContext,style,options,...pro
     const viewRef = React.useRef(null);
     React.useEffect(()=>{
       chartContext.current = new ApexChart(viewRef.current,options)
-      chartContext.current.render();
+      try {
+        chartContext.current.render();
+      } catch(e){
+        console.log(e," rendering chartt with options ",options);
+      }
       React.setRef(ref,chartContext.current)
       return ()=>{
         React.setRef(ref,chartContext.current)

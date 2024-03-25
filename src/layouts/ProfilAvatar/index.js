@@ -82,7 +82,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,chevronIconProps
                     });
                 }
             },
-            Auth.canSignOut() || true && {
+            Auth.canSignOut() && {
                 label : i18n.lang("logout",'Déconnexion'),
                 icon : "logout",
                 onPress : (a)=>{

@@ -136,7 +136,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"react-virtuoso": {
-		"version": "4.7.4",
+		"version": "4.7.5",
 		"url": "https://virtuoso.dev/",
 		"license": "MIT"
 	},

@@ -153,6 +153,7 @@ electron/**/*
     const plugins = [
       ["expo-image-picker",imagePluginOptions],
       ["expo-camera",cameraPluginsOptions],
+      ["expo-document-picker",{"iCloudContainerEnvironment": "Production" }]
     ];
     appSheme = name? sanitizeFileName(name).replace(/ /g, '') : null;
     const appJSONPath = path.join(projectRoot,"app.json");
@@ -165,7 +166,7 @@ electron/**/*
       "slug": "${name.toLowerCase().replace(/\s\s+/g, '-')}",
       "version":"${version}",
       "orientation": "portrait",
-      "plugins":${JSON.stringify(plugins)},
+      "plugins":${JSON.stringify(plugins,null,2)},
       "icon": "./assets/icon.png",
       "jsEngine": "hermes",
       "splash": {

@@ -3565,6 +3565,16 @@ export default class CommonDatagridComponent extends AppComponent {
         opts.onSuccess = cb = typeof cb =="function"? cb : typeof opts.onSuccess =='function'? opts.onSuccess : undefined;
         opts.force = defaultBool(force,opts.force,true)
         return new Promise((resolve,reject)=>{
+            if(typeof this.props.onRefreshDatagrid =="function"){
+                const r = this.props.onRefreshDatagrid({context:this});
+                if(r === false){
+                    return resolve([]);
+                }
+                if(isPromise(r)){
+                    return r.then(resolve).catch(reject);
+                }
+                return resolve(r);
+            }
             return this.fetchData(opts).then((data)=>{
                 if(isFunction(cb)){
                     cb(data,{...opts,context:this});
@@ -3572,11 +3582,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 if(typeof this.props.onRefresh ==='function'){
                     this.props.onRefresh({...opts,context:this});
                 }
-            }).then(resolve).catch(reject).finally(()=>{
-                if(typeof this.props.onRefreshDatagrid =="function"){
-                    this.props.onRefreshDatagrid({context:this});
-                }
-            });
+            }).then(resolve).catch(reject);
         })
     }
     componentDidMount(){

@@ -153,7 +153,6 @@ const FAB = React.forwardRef(
             ) : null}
             {label ? (
               <Text
-                variant="labelLarge"
                 selectable={false}
                 testID={`${testID}-text`}
                 style={[

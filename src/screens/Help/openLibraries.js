@@ -1,7 +1,7 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
 		"name": "@fto-consult/expo-ui",
-		"version": "8.59.0",
+		"version": "8.60.0",
 		"repository": {
 			"type": "git",
 			"url": "git+https://github.com/borispipo/expo-ui.git"
@@ -136,7 +136,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"react-virtuoso": {
-		"version": "4.7.5",
+		"version": "4.7.7",
 		"url": "https://virtuoso.dev/",
 		"license": "MIT"
 	},

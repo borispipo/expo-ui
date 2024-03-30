@@ -1054,7 +1054,8 @@ export default class CommonDatagridComponent extends AppComponent {
         });
         customMenu.push({
             icon : "bookmark-remove",
-            text : "Supprimer les données de sessions",
+            text : "Suppr données de session",
+            tooltip : "Cliquez pour rénitialiser les données de sessions liés au composant Datagrid",
             onPress : ()=>{
                 this.resetSessionData();
                 this.setIsLoading(true,()=>{
@@ -3949,11 +3950,10 @@ CommonDatagridComponent.getDefaultPreloader = (r)=>{
     const {isDashboard,...props} = defaultObj(r);
     return isDashboard? <ActivityIndicator size={"large"} {...props} style={[theme.styles.pb10,props.style]}/> : <Preloader {...props}/>
 }
-
-const chartDisplayType = PropTypes.oneOf(Object.keys(displayTypes).filter(type=>{
+const chartDisplayType = PropTypes.oneOf([...Object.keys(displayTypes).filter(type=>{
     const x = displayTypes[type];
     return typeof x =='object' && x && typeof x.disabled !== true && x.isChart === true && true || false;
-}));
+}),"table"]);
 CommonDatagridComponent.propTypes = {
     isRowSelectable : PropTypes.func,//spécifie si la ligne rowData est selectionable : function({row,rowData,context})=><boolean>
     title : PropTypes.oneOfType([

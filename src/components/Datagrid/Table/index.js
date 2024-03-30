@@ -165,7 +165,7 @@ const DatagridFactory = (Factory)=>{
             let max = this.getMaxSelectableRows();
             if(selectableMultiple && max){
                 max = max.formatNumber();
-                if(selectableMultiple && !canRenderChart){
+                if(selectableMultiple && !canRenderChart && this.canRenderActions()){
                     restItems.push({
                         label : "Sélectionner "+max.formatNumber(),
                         icon : "select-all",

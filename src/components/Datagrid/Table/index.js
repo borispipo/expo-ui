@@ -185,10 +185,10 @@ const DatagridFactory = (Factory)=>{
             const rPagination = showPagination ? <View style={[styles.paginationContainer]}>
                 <ScrollView testID={testID+"_Datagrid_Headers"} horizontal  style={styles.paginationContainerStyle} contentContainerStyle={styles.minW100}>
                     <View testID={testID+"_HeaderPaginationContent"} style={[styles.paginationContent]}>
+                        {this.renderCustomPagination()}
                         <View testID={testID+"_HeaderQueryLimit"}>
                             {this.renderQueryLimit(this.getStateDataSize().formatNumber())}
                         </View>
-                        {this.renderCustomPagination()}
                         {!isMobile && <>
                             <Button normal style={[styles.paginationItem]} icon = {"refresh"} onPress = {this.refresh.bind(this)}>
                                 Rafraichir

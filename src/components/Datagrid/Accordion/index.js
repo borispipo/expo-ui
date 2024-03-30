@@ -409,10 +409,10 @@ const DatagridFactory = (Factory)=>{
                 <ScrollView testID={testID+"_HeaderScrollView"} horizontal  contentContainerStyle={StyleSheet.flatten([styles.contentContainerStyle,styles.minW100])}>
                     <View testID={testID+"_HeaderContentContainer"} style={[styles.table,theme.styles.ph1,styles.pullRight]}>
                         {/*this.renderDataSourceSelector()*/}
+                        {this.renderCustomPagination()}
                         <View testID={testID+"_HeaderQueryLimit"} style={[styles.paginationItem]}>
                             {this.renderQueryLimit(this.getStateDataSize().formatNumber())}
                         </View>
-                        {this.renderCustomPagination()}
                         {sortedColumnsLength ? <View testID={testID+"_HeaderSortedColumns"} style={[styles.sortableItems,styles.paginationItem,{paddingRight:10}]}>
                             <Icon 
                                 testID={testID+"_HeaderSortIcon"}

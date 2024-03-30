@@ -317,7 +317,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
                 testID={testID+"_Container"}
                 {...contentContainerProps}
                 style={[{     
-                        paddingHorizontal : 10,
+                        paddingHorizontal : 0,
                         paddingVertical:0,
                         height : !isMob?contentContainerHeight:'90%',
                         width : !isMob ? Math.max(layout.width,180) : undefined,
@@ -391,6 +391,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
                                         width : "100%",
                                         fontWeight : isSelected ? 'bold' : 'normal',
                                         alignItems: "center",
+                                        paddingHorizontal : 10,
                                     }}
                                     onPress={(e) => {
                                         React.stopEventPropagation(e);

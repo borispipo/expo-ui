@@ -325,6 +325,10 @@ export default class CommonDatagridComponent extends AppComponent {
         }
         const dType = defaultStr(this.getSessionData("displayType"),this.props.displayType,"table");
         this.state.displayType = this.displayTypes[dType] ? this.displayTypes[dType].code : "table" in this.displayTypes ? "table" : Object.keys(this.displayTypes)[0]?.code;
+        if(!this.canRenderChart()){
+            this.state.displayType = "table";
+            this.persistDisplayType("table")
+        }
         this.state.displayOnlySectionListHeaders = defaultBool(this.getSessionData("displayOnlySectionListHeaders"),this.props.displayOnlySectionListHeaders,false)
         if(this.state.displayOnlySectionListHeaders){
             this.state.showFooters = true;
@@ -1048,6 +1052,20 @@ export default class CommonDatagridComponent extends AppComponent {
                 })
             }
         });
+        customMenu.push({
+            icon : "bookmark-remove",
+            text : "Supprimer les données de sessions",
+            onPress : ()=>{
+                this.resetSessionData();
+                this.setIsLoading(true,()=>{
+                    this.setState({
+                        displayType  : "table",
+                    },()=>{
+                        this.removeAllColumnsInSectionList();
+                    });
+                });
+            }
+        });
         return customMenu;
     }
     /*** aller à la dernière page */
@@ -1338,7 +1356,22 @@ export default class CommonDatagridComponent extends AppComponent {
         return isNonNullString(config.x) && isNonNullString(config.y);
    }
    canRenderChart(){
-        return this.isChartRendable() && isNonNullString(this.state.displayType) && displayTypes[this.state.displayType]?.isChart === true ? true : false;
+        if(!(this.isChartRendable() && isNonNullString(this.state.displayType) && displayTypes[this.state.displayType]?.isChart === true ? true : false)) return false;
+        if(!this.isValidChartConfig()) return false;
+        const chartType = displayTypes[this.state.displayType];
+        if(!isObj(chartType) || !isNonNullString(chartType.type)) return false;
+        if(typeof chartType.isRendable =='function' && chartType.isRendable(this.getChartIsRendableArgs()) === false) {
+            //console.warn("impossible d'afficher le graphe de type ",chartType.label," car le type de données requis pour le rendu de ce graphe est invalide")
+            return false;
+        }
+        if(isObj(this.state.columns)){
+            const config = this.getConfig();
+            if(!this.state.columns[config.y]) return false;
+            const yAxisColumn = this.state.columns[config.y];
+            const type = defaultStr(yAxisColumn.jsType,yAxisColumn.type).toLowerCase();
+            if(type !== 'number'&& type !== 'decimal') return false;
+        }
+        return true;
    }
    persistDisplayType(displayType){
     this.setSessionData("displayType",displayType);
@@ -2223,21 +2256,18 @@ export default class CommonDatagridComponent extends AppComponent {
    chartValueFormattter(value,columnType){
         
    }
+   returnNull(){
+     setTimeout(()=>{
+        this.onRender();
+     },500);
+     return null;
+   }
    renderChart(){
-        if(!this.canRenderChart()) return null;
-        if(!this.isValidChartConfig()) return null;
+        if(!this.canRenderChart()) return this.returnNull();
         const chartType = displayTypes[this.state.displayType];
-        if(!isObj(chartType) || !isNonNullString(chartType.type)) return null;
-        if(typeof chartType.isRendable =='function' && chartType.isRendable(this.getChartIsRendableArgs()) === false) {
-            //console.warn("impossible d'afficher le graphe de type ",chartType.label," car le type de données requis pour le rendu de ce graphe est invalide")
-            return null;
-        }
         const isDonut = chartType.isDonut || chartType.isRadial;
         const config = this.getConfig();
-        if(!this.state.columns[config.y]) return null;
         const yAxisColumn = this.state.columns[config.y];
-        const type = defaultStr(yAxisColumn.jsType,yAxisColumn.type).toLowerCase();
-        if(type !== 'number'&& type !== 'decimal') return null;
         const isEmptyY = config.x === this.emptySectionListHeaderValue;
         let seriesConfig = Array.isArray(config.series) && config.series.length ? config.series : [yAxisColumn.field];
         const snConfig = [];
@@ -2249,7 +2279,7 @@ export default class CommonDatagridComponent extends AppComponent {
         let xAxisColumn = null;
         if(!isEmptyY){
             if(!this.state.columns[config.x]){
-                return null;
+                return this.returnNull();
             }
             xAxisColumn = this.state.columns[config.x];
         }
@@ -2315,7 +2345,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 xaxis = isObj(customXaxis)? customXaxis : xaxis;
                 customConfig = rest;
             } else {
-                return null;
+                return this.returnNull();
             }
         }
         customConfig = defaultObj(customConfig);

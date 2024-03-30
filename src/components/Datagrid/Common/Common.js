@@ -3572,7 +3572,11 @@ export default class CommonDatagridComponent extends AppComponent {
                 if(typeof this.props.onRefresh ==='function'){
                     this.props.onRefresh({...opts,context:this});
                 }
-            }).then(resolve).catch(reject);
+            }).then(resolve).catch(reject).finally(()=>{
+                if(typeof this.props.onRefreshDatagrid =="function"){
+                    this.props.onRefreshDatagrid({context:this});
+                }
+            });
         })
     }
     componentDidMount(){

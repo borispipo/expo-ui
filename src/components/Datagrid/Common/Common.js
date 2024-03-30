@@ -412,10 +412,16 @@ export default class CommonDatagridComponent extends AppComponent {
     canHandleColumnResize(){
         return false;
     }
-    getSessionKey (){
+    hasSessionName(){
         const sessionName = this.props.sessionName;
         const userCode = Auth.getLoggedUserCode();
         if(!isNonNullString(sessionName) || (!isNonNullString(userCode) && !this.isDatagrid())) return false;
+        return true;
+    }
+    getSessionKey (){
+        const sessionName = this.props.sessionName;
+        const userCode = Auth.getLoggedUserCode();
+        if(!isNonNullString(sessionName) || (!isNonNullString(userCode) && !this.isDatagrid())) return "";
         return this.getSessionPrefix()+sessionName.ltrim(this.getSessionPrefix()).replaceAll(" ",'_')+userCode;
     }
     getSessionData (sessionKey){
@@ -1052,21 +1058,23 @@ export default class CommonDatagridComponent extends AppComponent {
                 })
             }
         });
-        customMenu.push({
-            icon : "bookmark-remove",
-            text : "Suppr données de session",
-            tooltip : "Cliquez pour rénitialiser les données de sessions liés au composant Datagrid",
-            onPress : ()=>{
-                this.resetSessionData();
-                this.setIsLoading(true,()=>{
-                    this.setState({
-                        displayType  : "table",
-                    },()=>{
-                        this.removeAllColumnsInSectionList();
+        if(this.hasSessionName() && this.props.displayResetSessionButton !== false){
+            customMenu.push({
+                icon : "bookmark-remove",
+                text : "Suppr données de session",
+                tooltip : "Cliquez pour rénitialiser les données de sessions liés au composant Datagrid",
+                onPress : ()=>{
+                    this.resetSessionData();
+                    this.setIsLoading(true,()=>{
+                        this.setState({
+                            displayType  : "table",
+                        },()=>{
+                            this.removeAllColumnsInSectionList();
+                        });
                     });
-                });
-            }
-        });
+                }
+            });
+        }
         return customMenu;
     }
     /*** aller à la dernière page */
@@ -4126,6 +4134,7 @@ CommonDatagridComponent.propTypes = {
         style : StyleProps,
         testID : PropTypes.string,///le test id
     }),
+    displayResetSessionButton : PropTypes.bool,//si le bouton supprimer les données de sessions sera affiché où pas,
     ///pour l'affichage où non des filtres
     toggleFilters : PropTypes.bool,
     desktop: PropTypes.bool,

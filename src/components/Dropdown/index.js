@@ -305,9 +305,9 @@ class DropdownComponent extends AppComponent {
             if(Array.isArray(selectedValues)){
                 for(let i in selectedValues){
                     const text = selectedValues[i];
-                    if(!isNonNullString(text)) continue;
+                    if(!isNonNullString(text) && typeof text !=="number") continue;
                     if(!this.canHandleMultiple){
-                        sDText = text;
+                        sDText = String(text);
                     } else {
                         counter++;
                         if(counter <= maxCount){
@@ -315,10 +315,10 @@ class DropdownComponent extends AppComponent {
                         }
                     }
                 }
-            } else if(isNonNullString(selectedValues)) {
-                sDText = selectedValues
+            } else if(isNonNullString(selectedValues) || typeof selectedValues ==="number") {
+                sDText = String(selectedValues);
             }
-            this.toggleHasNoValidSelectedValue(!!!sDText);
+            this.toggleHasNoValidSelectedValue(!!sDText);
         } else {
             this.toggleHasNoValidSelectedValue(false);
         }

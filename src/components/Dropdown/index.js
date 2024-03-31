@@ -93,7 +93,7 @@ class DropdownComponent extends AppComponent {
                             if(iLabel) return iLabel;
                         }
                         if(isNonNullString(item.label)) return item.label;
-                        return defaultStr(item.text,item[index]);
+                        return defaultStr(item.text,item[index],item.code);
                     }
                     return undefined;
                 },override : false, writable : false
@@ -211,7 +211,7 @@ class DropdownComponent extends AppComponent {
             selectedValuesKeys = {};
             if(select){
                 selectedValuesKeys[valueKey] = true;
-            } 
+            }
         }
         this.willHandleFilter = false;
         let nState = {};
@@ -294,7 +294,6 @@ class DropdownComponent extends AppComponent {
                 if(!this.canHandleMultiple){
                     sDText = text;
                 } else {
-                    
                     counter++;
                     if(counter <= maxCount){
                         sDText+= (sDText?", ":"")+text;
@@ -319,7 +318,7 @@ class DropdownComponent extends AppComponent {
             } else if(isNonNullString(selectedValues)) {
                 sDText = selectedValues
             }
-            this.toggleHasNoValidSelectedValue(!!sDText);
+            this.toggleHasNoValidSelectedValue(!!!sDText);
         } else {
             this.toggleHasNoValidSelectedValue(false);
         }
@@ -658,11 +657,6 @@ class DropdownComponent extends AppComponent {
         if(isFunc || !React.areEquals(items,this.props.items)){
             const nState = this.prepareItems({items,defaultValue,selected});
             return this.updateSelected(nState,!isFunc);
-            const val = this.prepareSelected({defaultValue});
-            if(!this.compare(val,this.state.selected)){
-                return this.selectValue(defaultValue,true);
-            }
-            return;
         }
         let value = this.prepareSelected({defaultValue});
         let areEquals = !this.canHandleMultiple ? this.compare(value,this.state.selected) : false;

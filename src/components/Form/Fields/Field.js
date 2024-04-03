@@ -1021,6 +1021,7 @@ export default class Field extends AppComponent {
         rest.error = this.state.error;
         rest.onFocus = this.onFocusField.bind(this);
         rest.testID = defaultStr(rest.testID,"RN_FormField_"+this.getName());
+        rest.tooltip = tooltip;
         if(this.canHandleWidthOrHeightProps()){
             if(width){
                 rest.width = width;

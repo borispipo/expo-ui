@@ -81,6 +81,7 @@ export const selectDateFormatFieldProps = ({onAdd:customOnAdd,onAddCustomFormat,
         getItemValue : ({item})=>item.code,
         renderItem : dateFormatSelectorRenderItem,
         showAdd : true,
+        label : "Format de date",
         ...props,
         inputProps : {
             enableCopy:false,...inputProps,

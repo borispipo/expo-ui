@@ -60,7 +60,7 @@ const Provider = React.forwardRef((props,innerRef)=>{
         },
     };
     React.setRef(ref,context);        
-    return <Dialog {...props} {...state} visible={visible} controlled onDismiss = {(e)=>{
+    return <Dialog {...props} {...state} isProvider visible={visible} controlled onDismiss = {(e)=>{
         if(visible){
             setVisible(false);
         }

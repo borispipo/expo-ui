@@ -93,7 +93,7 @@ const DialogComponent = React.forwardRef((props,ref)=>{
     if(isNonNullString(no)){
         no = {label:no};
     }
-    if(isObj(no) && (no.label||no.text)){
+    if(isObj(no)){
         cancelButton = cancelButton ? {...no,...cancelButton} : no;
         backActionProps = {...no,...backActionProps};
     }

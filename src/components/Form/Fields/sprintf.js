@@ -1,7 +1,7 @@
 import selectors from "./sprintfSelectors";
 import {isNonNullString,defaultFunc,isObj,isPromise} from "$cutils";
 
-export default  ({value,val,formatter,cb,success})=>{
+export default  ({value,val,formatter,cb,success,...rest})=>{
     val = defaultStr(value,val)
     if(!isNonNullString(val)){
         return null;
@@ -46,13 +46,13 @@ export default  ({value,val,formatter,cb,success})=>{
             } else {
                 key = keys[index];
                 if(!isNonNullString(key)) {return next();}
-                let indexName = i.toLowerCase();
+                let indexName = key.toLowerCase();
                 let selector = selectors[indexName];
                 if(!selector){
-                    indexName = i.toUpperCase();
+                    indexName = key.toUpperCase();
                     selector = selectors[indexName];
                 }
-                sKeys[i] = indexName;
+                sKeys[key] = indexName;
                 const select = isObj(selector)? selector.select : selector;
                 if(typeof cb =='function'){
                     const v = select({...rest,selector,selectors,indexName,selectorIndex:indexName,selectorName:indexName,results,index:key,keys,key,value:val});

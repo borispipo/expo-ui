@@ -830,7 +830,9 @@ export default class Field extends AppComponent {
             return this.state.errorText;
         }
     }
-    
+    getHashTagTooltip(){
+        return "Cliquer insérer un hashtag.\nle motif &sdate& permet de sélectionner une date; le motif &date& insère la date actuelle au format : jj/mm/aaaa; Le motif &heure& insère l'heure actuelle; Le motif &dateheure& insère l'heure actuelle au format jj/mm/aaaa hh:mm:ss.";
+    }
     render (){
         let {
             data,onKeyEvent,
@@ -962,7 +964,7 @@ export default class Field extends AppComponent {
             rest.contentContainerProps.pointerEvents = defaultStr(rest.contentContainerProps.pointerEvents,"auto");
         }
         if(!isFilter && this.canRenderInlineIndicator()){
-            const canRenderHashtag = format === 'hashtag' && (!isNonNullString(_type) || _type ==='text');
+            const canRenderHashtag = format === 'hashtag' && isEditable && (!isNonNullString(_type) || _type ==='text');
             const renderRigth = (props)=>{
                 let right = null;
                 let cRight = typeof customRight ==='function'? customRight(props) : customRight;
@@ -976,7 +978,7 @@ export default class Field extends AppComponent {
                     right = <Icon color={theme.colors.primary} {...props} tooltip = {tooltip} style={[styles.icon,props.style]} icon="information"/>;
                 }
                 if(canRenderHashtag && !rest.disabled && !rest.readOnly){
-                    const nRight = <Icon {...props} icon={"format-header-pound"} style={[right||cRight?{marginLeft:-5}:null,props.style]} title={"Cliquer insérer un hashtag, ie faire référence à une données externe"} onPress={this.sprintf.bind(this)}/>;
+                    const nRight = <Icon {...props} icon={"format-header-pound"} style={[right||cRight?{marginLeft:-5}:null,props.style]} title={this.getHashTagTooltip()} onPress={this.sprintf.bind(this)}/>;
                     right = right ? <>{right}{nRight}</> : nRight;
                 }
                 return (cRight)? <>{cRight}{right}</> : right;

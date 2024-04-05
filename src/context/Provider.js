@@ -114,7 +114,7 @@ const Provider = ({children,getTableData,handleHelpScreen,navigation,swrConfig,a
     const activeScreenRef = React.useRef('');
     const appStateRef = React.useRef({});
     const swrRefreshTimeout = defaultNumber(swrConfig?.refreshTimeout,SWR_REFRESH_TIMEOUT)
-    swrConfig = extendObj({
+    swrConfig = extendObj({},{
       provider: () => new Map(),
       dedupingInterval : swrRefreshTimeout,
       errorRetryInterval : Math.max(swrRefreshTimeout*2,SWR_REFRESH_TIMEOUT),

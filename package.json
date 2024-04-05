@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "8.64.0",
+  "version": "8.64.1",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "react-native-paper-doc": "https://github.com/callstack/react-native-paper/tree/main/docs/docs/guides",
   "scripts": {
@@ -69,7 +69,7 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@faker-js/faker": "^8.0.2",
-    "@fto-consult/common": "^4.39.8",
+    "@fto-consult/common": "^4.39.11",
     "@fto-consult/node-utils": "^1.7.1",
     "apexcharts": "^3.48.0",
     "file-saver": "^2.0.5",

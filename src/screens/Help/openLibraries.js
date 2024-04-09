@@ -1,7 +1,7 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
 		"name": "@fto-consult/expo-ui",
-		"version": "8.64.1",
+		"version": "8.65.1",
 		"repository": {
 			"type": "git",
 			"url": "git+https://github.com/borispipo/expo-ui.git"

@@ -134,7 +134,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,swrOptions,fore
         fetcher : (url,opts1)=>{
             if(typeof beforeFetchItems ==='function' && beforeFetchItems({fetchOptions}) === false) return Promise.resolve(fetchedResultRef.current);
             let opts = Object.clone(fetchOptions);
-            if(parseMangoQueries.current){
+            if(parseMangoQueriesRef.current){
                 opts.selector = filtersParseMangoQueries(opts.selector);
                 opts = getFetchOptions(opts);
                 delete opts.selector;

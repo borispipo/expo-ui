@@ -692,7 +692,7 @@ class DropdownComponent extends AppComponent {
             }
         }
         if(areEquals) return;
-        this.setState({
+        this.updateSelected({
             selectedValuesKeys,
             selected:newSelected,
             selectedText : this.getSelectedText(newSelected,selectedValuesKeys)

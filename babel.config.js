@@ -27,6 +27,7 @@ module.exports = function(api,opts) {
     }
     return true;
   })
+  require("./bin/generate-jsonconfig")({...opts,alias});
   return {
     presets: [
       ...filteredPlugins,

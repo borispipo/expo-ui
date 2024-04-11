@@ -27,7 +27,7 @@ module.exports = function(api,opts) {
     }
     return true;
   })
-  require("./bin/generate-jsonconfig")({...opts,alias});
+  require("@fto-consult/common/bin/generate-jsonconfig")({...opts,alias});
   return {
     presets: [
       ...filteredPlugins,

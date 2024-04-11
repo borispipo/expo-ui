@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "8.67.2",
+  "version": "8.68.0",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "react-native-paper-doc": "https://github.com/callstack/react-native-paper/tree/main/docs/docs/guides",
   "scripts": {
@@ -47,7 +47,7 @@
     "delete-node-modules": "rimraf ./**/node_modules",
     "dev": "npx expo start --no-dev --minify -c",
     "modifier-url-remote-git": "git remote set-url origin 'https://borispipo@github.com/borispipo/smart-eneo.git'",
-    "update": "npm i @fto-consult/common@latest @fto-consult/node-utils@latest react-native-web react-native-big-list@latest apexcharts@latest file-saver@latest google-libphonenumber@latest  react-native-iphone-x-helper@latest react-native-mime-types@latest react-native-paper@latest react-native-paper-dates@latest react-virtuoso@latest tippy.js@latest xlsx@latest && npm run update-apexchart && npm run find-licenses"
+    "update": "npm i @fto-consult/common@latest react-native-web react-native-big-list@latest apexcharts@latest file-saver@latest google-libphonenumber@latest  react-native-iphone-x-helper@latest react-native-mime-types@latest react-native-paper@latest react-native-paper-dates@latest react-virtuoso@latest tippy.js@latest xlsx@latest && npm run update-apexchart && npm run find-licenses"
   },
   "bin": {
     "expo-ui": "bin/index.js"
@@ -69,8 +69,7 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@faker-js/faker": "^8.0.2",
-    "@fto-consult/common": "^4.39.11",
-    "@fto-consult/node-utils": "^1.7.1",
+    "@fto-consult/common": "^4.39.12",
     "apexcharts": "^3.48.0",
     "file-saver": "^2.0.5",
     "google-libphonenumber": "^3.2.34",

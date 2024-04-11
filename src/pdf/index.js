@@ -121,7 +121,7 @@ export const getPrintSettings = ({multiple,duplicateDocOnPage,printQRCode,isTabl
         duplicateDocOnPage : duplicateDocOnPage !== false ? {
             text :'Dupliquer le(s) document(s)',
             type : 'switch',
-            defaultValue :  1,
+            defaultValue :  0,
             onValidate : ({value,context}) =>{
                 if(context){
                     const pageBreakBeforeEachDoc = context.getField("pageBreakBeforeEachDoc");

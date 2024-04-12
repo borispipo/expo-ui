@@ -176,6 +176,11 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,swrOptions,fore
         return fItems.items;
     },[fetchedItems]);
     React.useEffect(()=>{
+        if(!isLoading && !Object.size(items,true)){
+            refresh();
+        }
+    },[])
+    React.useEffect(()=>{
         if(bindUpsert2RemoveEvents === false || !(foreignKeyTableStr)){
             return ()=>{}
         }

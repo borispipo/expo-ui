@@ -21,7 +21,8 @@ import BackToTop from "$ecomponents/BackToTop";
 import FiltersAccordionComponent from "./Filters";
 import RenderType from "../RenderType";
 import { flatMode} from "$ecomponents/TextField";
-import List from "$ecomponents/Table/List";
+//import List from "$ecomponents/Table/List";
+import List from "$ecomponents/List/FlashList";
 import theme,{Colors} from "$theme";
 import {styles as rStyles} from "../utils";
 import Avatar from "$ecomponents/Avatar";
@@ -551,7 +552,7 @@ const DatagridFactory = (Factory)=>{
                         extraData = {this.state.refresh}
                         contentInset={{ right: 10, top: 10, left: 10, bottom: 10 }}
                         itemHeight = {undefined}
-                        responsive = {defaultBool(responsive,accordionProps.responsive,true)}
+                        responsive = {defaultBool(responsive,rest.responsive,accordionProps.responsive,true)}
                         filter = {filter}
                         getItemType = {this.getFlashListItemType.bind(this)}
                         renderItem = {this.renderItem.bind(this)}

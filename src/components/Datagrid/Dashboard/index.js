@@ -112,7 +112,7 @@ export default class DatagridDashboard extends TableData {
             </View> : null}
             {<View testID={testID+"_ChartContainer"} {...chartContainerProps} style={[theme.styles.w100,styles.chartContainer,chartContainerProps.style]}>
                 {this.renderProgressBar()}
-                {chartData}
+                {Array.isArray(chartData.props?.options?.series) && chartData?.props?.options?.series.length && chartData || null}
             </View>}
         </View>
     }

@@ -2,7 +2,7 @@ module.exports = `
 
 # dependencies
 node_modules/
-
+jsconfig.json
 electron/node_modules/
 
 /node_modules/

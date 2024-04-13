@@ -12,11 +12,11 @@ import { useList,useGetNumColumns } from "./hooks";
 
 const CommonListComponent = React.forwardRef((props,ref)=>{
     const context = useList(props);
-    let {testID,isBigList,defaultItemHeight,itemHeight,onRender,componentProps,columnWrapperStyle,onViewableItemsChanged,withFlatListItem,Component,withBackToTop,backToTopRef:customBackToTopRef,withBackToTopButton,onScroll,onScrollEnd,onMount,onUnmount,renderScrollViewWrapper,prepareItems,getItemKey,getKey,keyExtractor,items,filter,renderItem,numColumns,containerProps,bindResizeEvents,...rest} = props;
+    let {testID,isBigList,defaultItemHeight,itemHeight,onRender,componentProps,columnWrapperStyle,onViewableItemsChanged,withFlatListItem,Component,withBackToTop,backToTopRef:customBackToTopRef,withBackToTopButton,onScroll,onScrollEnd,onMount,onUnmount,renderScrollViewWrapper,prepareItems,getItemKey,getKey,keyExtractor,items,filter,renderItem,numColumns:cNumColumns,containerProps,bindResizeEvents,...rest} = props;
     withBackToTopButton = withBackToTop === true || withBackToTopButton == true || isMobileMedia()? true : false;
     rest = defaultObj(rest);
     containerProps = defaultObj(containerProps);
-    const {itemWindowWidth} = useGetNumColumns(props);  
+    const {itemWindowWidth,numColumns} = useGetNumColumns(props);  
     let scrollEndTimeout = React.useRef(null);
     const listRef = React.useRef(null);
     const hasCustomBackToTop = typeof customBackToTopRef == 'function'? true : false;

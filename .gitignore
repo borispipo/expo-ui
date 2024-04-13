@@ -30,3 +30,4 @@ electron/package.app.json
 mainPackageJSON.js
 mainPackageJSON.json
 package-lock.json
+jsconfig.json

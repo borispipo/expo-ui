@@ -34,12 +34,11 @@ module.exports = function(appName,{projectRoot:root}){
           "main": "App.js",
           "tablesDataPath": "./src/database/tables",
           "theme": {
-            "light": {
-              "primary": "#3D8B5F",
-              "secondary": "#354448",
-              "onPrimary" : "white",
-              "onSecondary" : "white"
-            }
+            "dark" : false,
+            "primary": "#3D8B5F",
+            "secondary": "#354448",
+            "onPrimary" : "white",
+            "onSecondary" : "white"
           },
           "scripts" : {
             start : "npx expo start -c",
@@ -48,7 +47,8 @@ module.exports = function(appName,{projectRoot:root}){
             "build-web" : "npx expo export:web",
             "build-android" : "npx eas build --platform android --profile preview",
             "build-ios" : "eas build --platform ios",
-            "generate-getTable" : "npx @fto-consult/expo-ui generate-getTable"
+            "generate-getTable" : "npx @fto-consult/expo-ui generate-getTable",
+            "update" : "npx @fto-consult/expo-ui update"
           },
           "dependencies" : {
             [euModule] : packageObj.version,

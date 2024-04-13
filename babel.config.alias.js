@@ -16,8 +16,8 @@ module.exports = (opts)=>{
     const cPath = isDev && fs.existsSync(path.resolve(expoUI,"node_modules","@fto-consult","common"))? path.resolve(expoUI,"node_modules","@fto-consult","common") : null; 
     const r = require(`${cPath ? path.resolve(cPath,"babel.config.alias.js"):'@fto-consult/common/babel.config.alias'}`)(opts);
     const expo = path.resolve(expoUI,"src");
-    r["$ecomponents"] = r["$expo-components"] = path.resolve(expo,"components");
-    r["$econfirm"] = path.resolve(r["$expo-components"],"Dialog","confirm");
+    r["$ecomponents"] = path.resolve(expo,"components");
+    r["$econfirm"] = path.resolve(r["$ecomponents"],"Dialog","confirm");
     if(!r.$confirm){
         r.$confirm = r.$econfirm;
     }

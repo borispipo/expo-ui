@@ -19,7 +19,8 @@ import "$cutils";
 import React from "$react";
 import SelectDateFormat from "./SelectDateFormat";
 import CurrencyFormat from "./CurrencyFormat";
-import SelectFontIcon from "./SelectFontIcon"
+import SelectFontIcon from "./SelectFontIcon";
+import DocumentPicker from "./DocumentPicker";
 
 const defFormFields = {
     Field,
@@ -43,6 +44,7 @@ const defFormFields = {
     ,SelectDateFormat
     ,Html
     ,SelectFontIcon,
+    DocumentPicker,
 }
 
 export default defFormFields;

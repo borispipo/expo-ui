@@ -20,11 +20,16 @@ import TouchableRipple from "$ecomponents/TouchableRipple";
     dans le champ isStructData
 */
 const TableLinKComponent = React.forwardRef(({containerProps,children,labelProps,...props},ref)=>{
-    const {testID,onPressLink,disabled,readOnly,fetchData,navigate,isAllowed:checkIfAllowed,Component,...rest} = usePrepareProps(props);
+    const {testID,onPressLink,disabled,readOnly,fetchData,navigate,isAllowed:checkIfAllowed,onLongPres,Component,...rest} = usePrepareProps(props);
     containerProps = defaultObj(containerProps);
     labelProps = defaultObj(labelProps);
     const CP = disabled || readOnly ? View : TouchableRipple;
-    return <CP testID={testID} onLongPres={(e)=>React.stopEventPropagation(e)} {...containerProps} onPress={disabled || readOnly? undefined : onPressLink} style={[styles.container,containerProps.style]}>
+    return <CP testID={testID} onLongPres={(e,...rest)=>{
+        React.stopEventPropagation(e); 
+        if(typeof onLongPres =="function"){
+            onLongPres(e,...rest);
+        }
+    }} {...containerProps} onPress={disabled || readOnly? undefined : onPressLink} style={[styles.container,containerProps.style]}>
         <Tooltip testID={testID+"_Tooltip"} {...rest} style={[rest.style,{pointerEvents: disabled || readOnly ? 'none' : 'auto'}]} Component={Component}  onPress={disabled || readOnly?undefined:onPressLink} ref={ref}  readOnly={readOnly} disabled = {disabled}>
             <Label testID={testID+"_Label"} underlined primary {...labelProps} style={[_styles.lh15,labelProps.style]} disabled={disabled} readOnly={readOnly}>{children}</Label>
         </Tooltip>
@@ -90,7 +95,7 @@ TableLinKComponent.propTypes = {
     ///les props à utiliser pour afficher la table de données en cas de click sur le lien
     triggerProps : PropTypes.object,
     /*** l'id de la données à récupérer en cas de clic sur le lien */
-    id : PropTypes.oneOfType([PropTypes.number,PropTypes.string]),
+    id : PropTypes.oneOfType([PropTypes.number,PropTypes.string,PropTypes.array,PropTypes.object]),
     routeName : PropTypes.string,///la route via laquelle on devra naviguer
     routeParam : PropTypes.object,///les props à passer à la route en question
     children : PropTypes.node

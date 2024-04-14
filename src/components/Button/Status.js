@@ -28,7 +28,7 @@ const ButtonStatusComponent = React.forwardRef(({status,withIcon,color,backgroun
     left = typeof left =='function'? left(rP) : left;
     right = typeof right =='function'? right(rP) : right;
     const icProps = {color,size:15,...iconProps,style:[theme.styles.noMargin,theme.styles.noPadding,iconProps.style],onPress}
-    return <Pressable ref={ref} onPres={onPress} testID={`${testID}_Container`} {...containerProps} style={[{borderRadius:15,paddingVertical:4,paddingHorizontal:10,alignSelf: 'flex-start'},theme.styles.row,theme.styles.flexWrap,backgroundColor && {backgroundColor},style]}>
+    return <Pressable ref={ref} onPres={onPress} testID={`${testID}_Container`} {...containerProps} style={[styles.button,theme.styles.row,theme.styles.flexWrap,backgroundColor && {backgroundColor},style]}>
         {React.isValidElement(left)? left : null}
         {withIcon !== false && React.isValidElement(icon,true) ? <Icon {...icProps} icon={icon} />:null}
         {label ? <Label testID={`${testID}_Label`} {...labelProps} style={[color && {color},{fontSize:13},labelProps.style]}>{label}</Label> : null}
@@ -45,6 +45,15 @@ ButtonStatusComponent.defaultProps = {
     withIcon : true,
     editable : false,
 }
+
+const styles = StyleSheet.create({
+    button : {
+        borderRadius:15,
+        paddingVertical:4,
+        paddingHorizontal:10,
+        alignSelf: 'flex-start',
+    }
+});
 
 ButtonStatusComponent.propTypes = {
     label : PropTypes.oneOfType([ //le libelé à faire figurer sur le status

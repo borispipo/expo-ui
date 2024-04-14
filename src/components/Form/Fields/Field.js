@@ -251,8 +251,7 @@ export default class Field extends AppComponent {
             }
             this.validatingValue = value;
             this.INITIAL_STATE._lastValidatingValue = value;
-            this.setState ({validValue:value,validatingValue:value,previousValue:this.state.validValue,errorText:"",error:false},()=>{
-                this._previousValue  = this.state.validValue;
+            this.setState ({validValue:value,previousValidatedValue:this.state.validValue,validatingValue:value,previousValue:this.state.validValue,errorText:"",error:false},()=>{
                 const fields = getFormFields(this.formName);
                 let canEnable = true;
                 for(var k in fields){
@@ -405,7 +404,7 @@ export default class Field extends AppComponent {
         return this.formName;
     }
     getOldValue () {
-        return this._previousValue;
+        return this.state.previousValidatedValue;
     }
     /*** la valeur qui a été validée 
      * @param : l'ensemble des données du formulaire à retourner
@@ -517,7 +516,7 @@ export default class Field extends AppComponent {
         return false;
     }
     getPreviousValue (){
-        return this._previousValue;
+        return this.state.previousValidatedValue;
     }
     hasValueChanged(value){
         return (stableHash(this.state.validatingValue) === stableHash(value))? false : true;
@@ -541,9 +540,8 @@ export default class Field extends AppComponent {
         this.__hasAlreadyValidated = true;
         this.validatingValue = value;
         if(((!this.canValidate()) && !this.isSelectField()) || this.isFilter()){
-            this._previousValue = this.state.validValue;
             this.trigger("validate",{...defaultObj(rest),context:this,value,event,oldValue:this.INITIAL_STATE._lastValidatingValue},(results)=>{
-                this.setState({validValue:value,validatingValue:value,sk:!this.state.sk,previousValue:this.state.validatingValue},()=>{
+                this.setState({validValue:value,previousValidatedValue:this.state.validValue,validatingValue:value,sk:!this.state.sk,previousValue:this.state.validatingValue},()=>{
                     if(isFunction(this.props.onValidate)){
                         this.props.onValidate({...defaultObj(rest),props:this.props,name:this.name,field:this.name,value,event,context:this,oldValue:this.INITIAL_STATE._lastValidatingValue});
                     }

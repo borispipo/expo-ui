@@ -30,6 +30,7 @@ export const getComponentTypes = ()=>{
         scheduler : Fields.Scheduler,
         default : Fields.TextField,
         selecticon : Fields.SelectFontIcon,
+        documentpicker : Fields.DocumentPicker,
         ...Fields,
     };
 }

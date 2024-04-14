@@ -14,7 +14,7 @@
     "start-no-minify": "npx expo start --no-dev --minify",
     "start-no-dev": "npx expo start --no-dev --minify",
     "expo-start-client": "npx expo start --dev --no-minify --dev-client",
-    "generate-jsonconfig" : "node ./bin/generate-jsonconfig.js",
+    "generate-jsonconfig": "node ./bin/generate-jsonconfig.js",
     "start-m": "npx expo start - c--dev--no -minify",
     "android": "npx expo start --android -c",
     "ios": "npx expo start --ios",
@@ -70,7 +70,7 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@faker-js/faker": "^8.0.2",
-    "@fto-consult/common": "^4.41.0",
+    "@fto-consult/common": "^4.41.1",
     "apexcharts": "^3.48.0",
     "file-saver": "^2.0.5",
     "google-libphonenumber": "^3.2.34",

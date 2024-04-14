@@ -11,7 +11,7 @@ export const getContentHeight = (innerRef,cb,screenIndent)=>{
                 if(isDecimal(y) && isDecimal(height)){
                     const winHeight = Dimensions.get("window").height;
                     const rHeight = winHeight - defaultDecimal(y) - defaultDecimal(height) - defaultDecimal(screenIndent,20);
-                    result.height = rHeight > 200 ? rHeight : undefined;
+                    result.height = rHeight > 200 ? (rHeight < winHeight-100? rHeight : Math.max(Math.min(rHeight,winHeight-150),250)) : undefined;
                 }
                 if(typeof cb =='function'){
                     cb(result);

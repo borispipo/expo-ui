@@ -1,6 +1,6 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
-		"version": "8.70.3",
+		"version": "8.70.6",
 		"url": "https://github.com/borispipo/expo-ui#readme",
 		"license": "ISC"
 	},
@@ -37,16 +37,6 @@ module.exports = {
 	"@pchmn/expo-material3-theme": {
 		"version": "1.3.2",
 		"url": "https://github.com/pchmn/expo-material3-theme#readme",
-		"license": "MIT"
-	},
-	"@react-native-async-storage/async-storage": {
-		"version": "1.21.0",
-		"url": "https://github.com/react-native-async-storage/async-storage#readme",
-		"license": "MIT"
-	},
-	"@react-native-community/datetimepicker": {
-		"version": "7.6.1",
-		"url": "https://github.com/react-native-community/datetimepicker#readme",
 		"license": "MIT"
 	},
 	"@react-native-community/netinfo": {
@@ -107,6 +97,11 @@ module.exports = {
 	"expo-clipboard": {
 		"version": "5.0.1",
 		"url": "https://docs.expo.dev/versions/latest/sdk/clipboard",
+		"license": "MIT"
+	},
+	"expo-document-picker": {
+		"version": "11.10.1",
+		"url": "https://docs.expo.dev/versions/latest/sdk/document-picker/",
 		"license": "MIT"
 	},
 	"expo-font": {
@@ -194,6 +189,11 @@ module.exports = {
 		"url": "https://github.com/react-native-community/react-native-svg",
 		"license": "MIT"
 	},
+	"react-native-view-shot": {
+		"version": "3.8.0",
+		"url": "https://github.com/gre/react-native-view-shot",
+		"license": "MIT"
+	},
 	"react-native-webview": {
 		"version": "13.6.4",
 		"url": "https://github.com/react-native-webview/react-native-webview#readme",
@@ -207,6 +207,11 @@ module.exports = {
 	"stream-browserify": {
 		"version": "3.0.0",
 		"url": "https://github.com/browserify/stream-browserify",
+		"license": "MIT"
+	},
+	"vm": {
+		"version": "0.1.0",
+		"url": "https://github.com/DiegoRBaquero/node-vm#readme",
 		"license": "MIT"
 	}
 };

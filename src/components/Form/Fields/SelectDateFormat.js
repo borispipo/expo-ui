@@ -1,6 +1,5 @@
 import SelectField from "./SelectField";
 import {selectDateFormatFieldProps,getDateFormatSelectorItems} from "$ecomponents/Date/FormatSelector";
-import DateLib from "$date";
 
 export default class FormFieldSelectDateFormat extends SelectField{
     constructor(props){

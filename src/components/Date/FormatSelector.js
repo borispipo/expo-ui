@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 import DateLib from "$date";
-import React from "$react";
+import React,{useState} from "$react";
 import {defaultObj,isNonNullString} from "$cutils";
 import SimpleSelect from "$ecomponents/SimpleSelect";
 import Provider from "$ecomponents/Dialog/Provider";
@@ -14,7 +14,9 @@ import { View } from "react-native";
 import Icon from "$ecomponents/Icon";
 
 const DateFormatSelector = React.forwardRef((props,ref)=>{
-    return <SimpleSelect ref={ref} {...selectDateFormatFieldProps(props)}/>
+    return <SimpleSelect
+        ref={ref} {...selectDateFormatFieldProps(props)}
+    />
 });
 
 DateFormatSelector.displayName = "DateFormatSelector";
@@ -70,6 +72,9 @@ export const selectDateFormatFieldProps = ({onAdd:customOnAdd,onAddCustomFormat,
                     if(typeof customOnAdd =='function'){
                         customOnAdd(valueRef.current);
                     }
+                    if(typeof onAddCustomFormat =="function"){
+                        onAddCustomFormat(valueRef.current);
+                    }
                     Provider.close();
                 }
             }],
@@ -77,11 +82,11 @@ export const selectDateFormatFieldProps = ({onAdd:customOnAdd,onAddCustomFormat,
     };
     inputProps = defaultObj(props.inputProps);
     return {
-        items : getDateFormatSelectorItems(),
         getItemValue : ({item})=>item.code,
         renderItem : dateFormatSelectorRenderItem,
         showAdd : true,
         label : "Format de date",
+        items : getDateFormatSelectorItems(props),
         ...props,
         inputProps : {
             enableCopy:false,...inputProps,
@@ -93,8 +98,6 @@ export const selectDateFormatFieldProps = ({onAdd:customOnAdd,onAddCustomFormat,
         },
         defaultValue : defaultStr(props.defaultValue,props.format),
         onAdd,
-        onAdd : undefined,
-        showAdd : false,
     }
 }
 export const getDateFormatSelectorItems = x=> Object.map(DateLib.sortedFormats,(format)=>{

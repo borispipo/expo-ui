@@ -1,8 +1,8 @@
 import { Asset} from 'expo-asset';
-import {isObj,isNonNullString} from "$cutils";
+import {isObj,isNonNullString,defaultStr} from "$cutils";
 
 export const loadAsset = async (asset)=>{
-    if(isObj(asset) && isAssets(asset)){
+    if(isObj(asset) && (isAssets(asset) || isDocumentPickerAsset(asset))){
         return Promise.resolve(asset);
     }
     return await new Promise((resolve,reject)=>{
@@ -23,6 +23,13 @@ export const load = loadAsset;
 
 export const isAssets = (asset,staticAssets)=>{
     return isObj(asset) && "width" in (asset) && "height" in (asset) && isNonNullString(asset.uri) && (staticAssets ? asset.uri.contains("/static/"):true);
+}
+export const isDocumentPickerAsset = (asset)=>{
+   if(isObj(asset) && assets.lastModified && assets.mimeType && assets.name && isNonNullString(assets.uri)){
+     asset.localUri =  defaultStr(asset.localUri,asset.uri);
+     return true;
+   } 
+   return false;
 }
 export const isValid = isAssets;
 export const isValidAssets = isAssets;

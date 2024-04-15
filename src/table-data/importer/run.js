@@ -6,7 +6,6 @@ module.exports = (args,options)=>{
     let {getDB,constants} = require("$database");
     let validate = require("./validate")
     let {notify} = require("$components/Dialog")
-    let parser = require("papaparse");
     fileName = defaultStr(fileName,name);
     let extraData = require("$database/data/tables/extra");
     let fFields = isFunction(importer.getFields)? importer.getFields("import") : {};

@@ -59,7 +59,6 @@ const BottomSheetComponent = React.forwardRef((props,ref)=> {
         modalProps,
         titleProps : _titleProps,
         withScrollView,
-        bindResizeEvent,
         scrollViewProps : _scrollViewProps,
         actionTitle,
         elevation:customElevation,
@@ -228,12 +227,8 @@ const BottomSheetComponent = React.forwardRef((props,ref)=> {
     
     React.setRef(ref,{close:closeModal,open})
     React.useEffect(()=>{
-        if(bindResizeEvent){
-            APP.on(APP.EVENTS.RESIZE_PAGE,closeModal);
-        }
         return ()=>{
             removeListeners();
-            APP.off(APP.EVENTS.RESIZE_PAGE,closeModal);
             React.setRef(ref,null);
         }
     },[]);
@@ -326,7 +321,6 @@ BottomSheetComponent.propTypes = {
 
 BottomSheetComponent.defaultProps = {
   withScrollView : PropTypes.bool,
-  bindResizeEvent : PropTypes.bool,
   animationType: isNativeMobile ? "slide" : "fade",//Background animation ("none", "fade", "slide")
   height:undefined,//Height of Bottom Sheet
   minClosingHeight: 0,//Minimum height of Bottom Sheet before close

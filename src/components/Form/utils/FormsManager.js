@@ -20,14 +20,17 @@ if(!isObj(APP.FormsManager)){
     });
     observable(APP.FormsManager);
     addObserver(APP.FormsManager);
+    const fManager = APP.FormsManager;
     APP.FormsManager.on("mount",(formName,formObject)=>{
         formObject._fields = defaultObj(formObject._fields);
         formObject._actions= defaultObj(formObject._actions);
         APP.FormsManager.forms[formName] = formObject;
         APP.trigger("MOUNT_FORM",formName);
-    }).on("unmount",(formName)=>{
+    });
+    fManager.on("unmount",(formName)=>{
         delete APP.FormsManager.forms[formName];
-    }).on("registerField",(fieldName,formName,fieldObj)=>{
+    });
+    fManager.on("registerField",(fieldName,formName,fieldObj)=>{
         if(fieldObj && isObservable(fieldObj)){
             APP.FormsManager.forms[formName] = defaultObj(APP.FormsManager.forms[formName]);
             APP.FormsManager.forms[formName]._fields = defaultObj(APP.FormsManager.forms[formName]._fields);
@@ -36,13 +39,15 @@ if(!isObj(APP.FormsManager)){
             let formField = form._fields[fieldName];
             if(isFunction(formField.onRegister)) formField.onRegister(fieldName,fieldObj);
         }
-    }).on("unregisterField",(fieldName,formName)=>{
+    });
+    fManager.on("unregisterField",(fieldName,formName)=>{
         if(isNonNullString(fieldName) && isNonNullString(formName)){
             APP.FormsManager.forms[formName] = defaultObj(APP.FormsManager.forms[formName]);
             APP.FormsManager.forms[formName]._fields = defaultObj(APP.FormsManager.forms[formName]._fields);
             delete APP.FormsManager.forms[formName]._fields[fieldName];
         }
-    }).on("mountAction",(formName,actionObj)=>{
+    });
+    fManager.on("mountAction",(formName,actionObj)=>{
         if(!isNonNullString(formName) || !isObj(actionObj)) {
             console.error("MSForm Action, l'action, nom du formulaire non définit ",formName,actionObj)
             return;
@@ -50,7 +55,8 @@ if(!isObj(APP.FormsManager)){
         APP.FormsManager.actions = defaultObj(APP.FormsManager.actions);
         APP.FormsManager.actions[formName] = defaultObj(APP.FormsManager.actions[formName]);
         APP.FormsManager.actions[formName][actionObj.getId()] = actionObj;
-    }).on("unmountAction",(formName,actionId)=>{
+    });
+    fManager.on("unmountAction",(formName,actionId)=>{
         if(!isNonNullString(formName) || !isNonNullString(actionId)) return;
         if(!isObj(APP.FormsManager.actions) || !isObj(APP.FormsManager.actions[formName])) return;
         delete APP.FormsManager.actions[formName][actionId]

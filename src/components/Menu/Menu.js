@@ -56,7 +56,11 @@ class _Menu extends AppComponent {
       opacityAnimation: new Animated.Value(0),
       scaleAnimation: new Animated.ValueXY({ x: 0, y: 0 }),
     });
-    this._events.RESIZE_PAGE = this.handleDismiss.bind(this);
+    Object.defineProperties(this._events,{
+      RESIZE_PAGE : {
+        value : this.handleDismiss.bind(this),
+      }
+    });
   }
 
   componentDidUpdate(prevProps) {
@@ -153,10 +157,8 @@ class _Menu extends AppComponent {
     } else {
       BackHandler.removeEventListener('hardwareBackPress', this.handleDismiss);
     }
-
     APP.off(RESIZE_PAGE,this._events.RESIZE_PAGE);
     this.clearEvents();
-
     this.isBrowser() &&
       document.removeEventListener('keyup', this.handleKeypress);
   };

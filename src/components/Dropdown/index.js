@@ -35,6 +35,11 @@ const MAX_SELECTED_ITEMS = 2;
 
 export const isValidValueKey = valueKey => isNonNullString(valueKey);
 
+/***
+    au cas où les données sont chargées depuis la bd,
+    la props isLoading doit être passée à true à ce compossant
+    elle devra être remise à false une fois le chargement des données terminé
+*/
 class DropdownComponent extends AppComponent {
     constructor(props){
         super(props);
@@ -106,7 +111,7 @@ class DropdownComponent extends AppComponent {
                     return index;
                 }, override : false, writable : false
             },
-            canHandleMultiple : {
+            isDefaultMultiplePropEnabled : {
                 value  : !!multiple,
                 override : false, writable : false,
             },
@@ -120,6 +125,7 @@ class DropdownComponent extends AppComponent {
 
         extendObj(this.state,{
             initialized : false,
+            selected : this.prepareSelected({defaultValue}),
             filterText : "",
             anchorHeight : undefined,
             isMobileMedia : isMobileOrTabletMedia(),
@@ -133,6 +139,9 @@ class DropdownComponent extends AppComponent {
         this.anchorRef = React.createRef(null);
         this.inputRef = React.createRef(null);
         this.listRef = React.createRef(null);
+    }
+    canHandleMultiple (){
+        return !!this.props.multiple;
     }
     updateSelected (nState,force){
         nState = defaultObj(nState);
@@ -148,7 +157,7 @@ class DropdownComponent extends AppComponent {
             let selectedItem = null;
             const valueKey = this.getValueKey(this.state.selected);
             if(this.state.initialized && !force){
-                if(!this.canHandleMultiple){
+                if(!this.canHandleMultiple()){
                     if(valueKey && this.state.valuesKeys[valueKey]){
                         selectedItem = this.state.valuesKeys[valueKey].item;
                     }
@@ -185,9 +194,9 @@ class DropdownComponent extends AppComponent {
         },force);
     }
     selectItem ({value,select,valueKey}){
-        let selected = this.canHandleMultiple ? [...this.state.selected] : undefined;
+        let selected = this.canHandleMultiple() ? [...this.state.selected] : undefined;
         let selectedValuesKeys = {...this.state.selectedValuesKeys};
-        if(this.canHandleMultiple){
+        if(this.canHandleMultiple()){
             if(!select){
                 if(valueKey in selectedValuesKeys){
                     const newS = [];
@@ -215,7 +224,7 @@ class DropdownComponent extends AppComponent {
         }
         this.willHandleFilter = false;
         let nState = {};
-        if(!this.canHandleMultiple){
+        if(!this.canHandleMultiple()){
             nState.visible = false;
         }
         this.updateSelected({...nState,data:!this.isBigList?[...this.state.data]: this.state.data,selected,selectedValuesKeys});
@@ -234,7 +243,7 @@ class DropdownComponent extends AppComponent {
         if(valueKey && forceCheck !== true){
             return valueKey in this.state.selectedValuesKeys ? true : false;
         }
-        if(this.canHandleMultiple) {
+        if(this.canHandleMultiple()) {
             currentSelected = Array.isArray(currentSelected)? currentSelected :  this.state.selected;
             for(let i in currentSelected){
                 if(this.compare(currentValue,currentSelected[i])) return true;
@@ -246,7 +255,7 @@ class DropdownComponent extends AppComponent {
     }
     prepareSelected({defaultValue}){
         let s = defaultValue !== undefined ? defaultValue : undefined;
-        if(this.canHandleMultiple){
+        if(this.canHandleMultiple()){
             if(isNonNullString(s)){
                 s = s.split(",");//si c'est un tableau, ça doit être séparé de virgule
             } else {
@@ -291,7 +300,7 @@ class DropdownComponent extends AppComponent {
             if(isObj(valuesKeys[valueKey])){
                 const node = valuesKeys[valueKey];
                 const text = node.text;
-                if(!this.canHandleMultiple){
+                if(!this.canHandleMultiple()){
                     sDText = text;
                 } else {
                     counter++;
@@ -306,7 +315,7 @@ class DropdownComponent extends AppComponent {
                 for(let i in selectedValues){
                     const text = selectedValues[i];
                     if(!isNonNullString(text) && typeof text !=="number") continue;
-                    if(!this.canHandleMultiple){
+                    if(!this.canHandleMultiple()){
                         sDText = String(text);
                     } else {
                         counter++;
@@ -322,13 +331,13 @@ class DropdownComponent extends AppComponent {
         } else {
             this.toggleHasNoValidSelectedValue(false);
         }
-        if(this.canHandleMultiple && counter > maxCount && sDText){
+        if(this.canHandleMultiple() && counter > maxCount && sDText){
             sDText+= ", et "+((counter-maxCount).formatNumber()+" de plus")
         }
         return sDText;
     }
     pushSelectedValue(value,selectedStateValue){
-        if(this.canHandleMultiple){
+        if(this.canHandleMultiple()){
             selectedStateValue = Array.isArray(selectedStateValue)?selectedStateValue : [];
             selectedStateValue.push(value);
             return selectedStateValue;
@@ -349,7 +358,7 @@ class DropdownComponent extends AppComponent {
         const valuesKeys = {};
         const {filter} = this.props;
         const currentSelected = this.prepareSelected({defaultValue:this.props.defaultValue,...args});
-        let selected = this.canHandleMultiple ? []:undefined,selectedValuesKeys={};
+        let selected = this.canHandleMultiple() ? []:undefined,selectedValuesKeys={};
         const itemProps = defaultObj(this.props.itemProps);
         const itemsData = this.getItemsData(args);
         Object.map(itemsData,(item,index,_index)=>{
@@ -402,12 +411,12 @@ class DropdownComponent extends AppComponent {
         let hasChanged = false;
         selectOnlyOne = selectOnlyOne === true ? true : false;
         let newSelected = undefined;
-        if(this.canHandleMultiple){
+        if(this.canHandleMultiple()){
             newSelected = selectOnlyOne ? [] : [...this.state.selected];
         }
         const selectedValuesKeys = selectOnlyOne?{}:{...this.state.selectedValuesKeys};
         const sVal = this.prepareSelected({defaultValue:value});
-        if(this.canHandleMultiple){
+        if(this.canHandleMultiple()){
             if(sVal.length !== this.state.selected.length){
                 hasChanged = true;
             }
@@ -436,7 +445,7 @@ class DropdownComponent extends AppComponent {
     }
 
     selectAll (){
-        if(!this.canHandleMultiple) return;
+        if(!this.canHandleMultiple()) return;
         const newSelected = [],selectedValuesKeys={};
         this.state.data.map((item,_index)=>{
             const key = this.keysRefs[_index];
@@ -447,11 +456,11 @@ class DropdownComponent extends AppComponent {
         this.updateSelected({selected:newSelected,selectedValuesKeys,selectedText:this.getSelectedText(newSelected,selectedValuesKeys)});
     }
     unselectAll() {
-        if(!this.canHandleMultiple) return;
+        if(!this.canHandleMultiple()) return;
         this.updateSelected({selected:[],selectedValuesKeys:{},selectedText:''})
     }
     unselect (oState){
-        this.updateSelected({...defaultObj(oState),selected:this.canHandleMultiple ?[]:undefined,selectedValuesKeys:{},selectedText:""});
+        this.updateSelected({...defaultObj(oState),selected:this.canHandleMultiple() ?[]:undefined,selectedValuesKeys:{},selectedText:""});
     }
     getSelectedValue (){
         return this.getSelected();
@@ -461,7 +470,7 @@ class DropdownComponent extends AppComponent {
     }
     getSelectedItems (){
         let ret = {};
-        if(this.canHandleMultiple){
+        if(this.canHandleMultiple()){
             Object.map(this.state.selected,(value)=>{
                 const nodeKey = this.getNodeFromValue(value);
                 if(!nodeKey.valueKey) return;
@@ -654,15 +663,18 @@ class DropdownComponent extends AppComponent {
     UNSAFE_componentWillReceiveProps(nextProps){
         const {items,defaultValue,selected} = nextProps;
         const isFunc = typeof nextProps.items == "function";
+        if(nextProps.isLoading === true) return;
         if(isFunc || !React.areEquals(items,this.props.items)){
             const nState = this.prepareItems({items,defaultValue,selected});
             return this.updateSelected(nState,!isFunc);
         }
         let value = this.prepareSelected({defaultValue});
-        let areEquals = !this.canHandleMultiple ? this.compare(value,this.state.selected) : false;
-        if(areEquals) return;
-        let selectedValuesKeys = {}, newSelected = this.canHandleMultiple ? [] : value;
-        if(this.canHandleMultiple){
+        let areEquals = !this.canHandleMultiple() ? this.compare(value,this.state.selected) : false;
+        if(areEquals) {
+            return;
+        }
+        let selectedValuesKeys = {}, newSelected = this.canHandleMultiple() ? [] : value;
+        if(this.canHandleMultiple()){
             areEquals = value.length === this.state.selected.length;
             if(areEquals && !value.length){
                 areEquals = true;
@@ -771,7 +783,7 @@ class DropdownComponent extends AppComponent {
         const flattenStyle = StyleSheet.flatten(dropdownProps.style) || {};
         itemContainerProps = defaultObj(itemContainerProps);
         dropdownProps = defaultObj(dropdownProps);
-        const multiple = this.canHandleMultiple;
+        const multiple = this.canHandleMultiple();
         const renderTag = multiple && (display == 'tags' || display === 'tag' )? true : false;
         this.willRenderTag = renderTag;
     

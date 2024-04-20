@@ -81,7 +81,6 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,swrOptions,fore
         defaultFields.push(foreignKeyLabel);
     } 
     const foreignKeyColumnValue = props.defaultValue;
-    const defaultValueRef = React.useRef(props.multiple ? Object.toArray(foreignKeyColumnValue) : foreignKeyColumnValue);
     let isDisabled = defaultBool(props.disabled,props.readOnly,false);
     if(!isDisabled && props.readOnly === true){
         isDisabled = true;
@@ -112,17 +111,26 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,swrOptions,fore
     const fetchItemsRef = React.useRef(customFetchItem);
     fetchItemsRef.current = customFetchItem;
     swrOptions = Object.assign({},swrOptions);
+    const itemsRef = React.useRef([]);
+    const restOptionsRef = React.useRef({});
+    const fetchedResultRef = React.useRef({});
+    const isMountedRef = React.useRef(false);
     ///@see : https://swr.vercel.app/docs/revalidation#disable-automatic-revalidations
     const canDisable = isFilter || isDisabled;
     swrOptions.revalidateOnFocus = canDisable? false : typeof swrOptions.revalidateOnFocus === "boolean" ? swrOptions.revalidateOnFocus : false;
+    swrOptions.revalidateOnMount = typeof swrOptions.revalidateOnMount =="boolean"? swrOptions.revalidateOnMount : true;
     swrOptions.revalidateIfStale = canDisable? false : typeof swrOptions.revalidateIfStale ==="boolean"? swrOptions.revalidateIfStale : false;
     swrOptions.revalidateOnReconnect = canDisable ? false : typeof swrOptions.revalidateOnReconnect ==="boolean"? swrOptions.revalidateOnReconnect : false;
     swrOptions.refreshWhenHidden = canDisable ? false :  typeof swrOptions.refreshWhenHidden =="boolean"? swrOptions.refreshWhenHidden : false;
+    swrOptions.dedupingInterval = canDisable ? 24*60*1000 : typeof swrOptions.dedupingInterval ==="number"? dedupingInterval : isMountedRef.current ?  60*1000:undefined;
     if(canDisable){
         swrOptions.refreshInterval = 30000*1000*60;
     }
-    const restOptionsRef = React.useRef({});
-    const fetchedResultRef = React.useRef({});
+    if(canDisable || typeof swrOptions.isVisible !="function"){
+        swrOptions.isVisible = () =>{
+            return canDisable ? false : !!!Object.size(itemsRef.current,true); //on rafraichit au focus uniquement lorsque la liste des items est vide
+        };
+    }
     restOptionsRef.current = {foreignKeyTable,foreignKeyColumn,foreignKeyLabel,foreignKeyColumnValue,sort,sortColumn,sortDir,foreignKeyTableObj:fKeyTable};
     const queryPathKey = isNonNullString(queryPath) ? setQueryParams(queryPath,{isstabledata:1,"stabledathkey":hashKey,foreignKeyColumn:defaultStr(foreignKeyColumn).toLowerCase()}) : null;
     const onFetchItemsRef = React.useRef();
@@ -131,6 +139,8 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,swrOptions,fore
     const fkeyFields = defaultObj(fKeyTable.fields);
     mutateFetchedItemsRef.current = mutateFetchedItems;
     const {isLoading:cIsLoading,data:fetchedItems,isValidating,refresh} = useSWR(hasErrors?null:queryPathKey,{
+        isSelectField : true,
+        fieldName : props.name,
         fetcher : (url,opts1)=>{
             if(typeof beforeFetchItems ==='function' && beforeFetchItems({fetchOptions}) === false) return Promise.resolve(fetchedResultRef.current);
             let opts = Object.clone(fetchOptions);
@@ -171,11 +181,17 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,swrOptions,fore
     });
     const isLoading = cIsLoading || isValidating;
     const items = React.useMemo(()=>{
+        if(isLoading) return itemsRef.current;
         const fItems = isObj(fetchedItems)? fetchedItems: fetchedResultRef.current;
-        if(!isObj(fItems) || !Array.isArray(fItems.items)) return [];
-        return fItems.items;
-    },[fetchedItems]);
+        if(!isObj(fItems) || !Array.isArray(fItems.items)) {
+            itemsRef.current = [];
+        } else {
+            itemsRef.current = fItems.items;
+        }
+        return itemsRef.current;
+    },[fetchedItems,isLoading]);
     React.useEffect(()=>{
+        isMountedRef.current = true;
         if(!isLoading && !Object.size(items,true)){
             refresh();
         }
@@ -261,6 +277,7 @@ const TableDataSelectField = React.forwardRef(({foreignKeyColumn,swrOptions,fore
     dialogProps.title = ttitle;
     return <Dropdown
         {...props}
+        fetchOptions = {fetchOptions}
         items = {items}
         isFilter = {isFilter}
         showAdd = {showAdd}

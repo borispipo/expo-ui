@@ -108,7 +108,7 @@ export default class FormSelectField extends Field{
                 args.selectedItems = this._field.getSelectedItems();
             }
             args.value = this._field.prepareSelected({defaultValue:args.value})
-            if(!this._field.canHandleMultiple && !args.selectedItem){
+            if(!(typeof this._field.canHandleMultiple =='function' && this._field.canHandleMultiple()) && !args.selectedItem){
                 const valueKey = this._field.getValueKey(args.value);
                 if(valueKey && isObj(this._field.state.valuesKeys) && this._field.state.valuesKeys[valueKey]){
                     args.selectedItem = args.item = this._field.state.valuesKeys[valueKey].item;

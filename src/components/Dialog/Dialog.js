@@ -177,8 +177,11 @@ const DialogComponent = React.forwardRef((props,ref)=>{
             containerProps.mediaQueryUpdateStyle = (...rest)=>{
                 const r = typeof mediaQueryUpdateStyle =="function"? mediaQueryUpdateStyle(...rest) : undefined;
                 const {width,height} = rest[0];
-                const rW = setDimensions !==  false ? {width,height} : {};
-                return isFullScreenDialog()? [r,{...rW,maxWidth:"100%",maxHeight:"100%"}] : [r,setDimensions !== false && {maxHeight:getMaxHeight(),maxWidth:getMaxWidth()}];
+                let rW = setDimensions !==  false ? {width,height} : {};
+                if(setDimensions !== false && isFullScreenDialog()){
+                    rW = {width:'100%',height:'100%',minHeight:height,maxWidth:"100%",maxHeight:"100%"};
+                }
+                return isFullScreenDialog()? [r,rW] : [r,setDimensions !== false && {maxHeight:getMaxHeight(),maxWidth:getMaxWidth()}];
             }
         }
         return containerProps;

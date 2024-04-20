@@ -1,4 +1,4 @@
-import {defaultStr,isNumber,isPromise,defaultVal,extendObj,defaultObj,uniqid,isObj,isObjOrArray} from "$cutils";
+import {defaultStr,isNumber,isPromise,defaultVal,extendObj,defaultObj,uniqid,isObj,isPlainObject,isObjOrArray} from "$cutils";
 import {FormData} from "$ecomponents/Form";
 import FormDataScreen from "./FormData";
 import ScreenContainer from "./Screen";
@@ -319,7 +319,6 @@ export default class TableDataScreenComponent extends FormDataScreen{
                     delete fields[i];
                     return;
                 }
-                
             }
             if(rest.archived === true){
                 currentField.readOnly = true;

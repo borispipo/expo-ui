@@ -127,6 +127,27 @@ export default function AppMainEntry(){
                 ({object})=><{object}>, la fonction permettant de muter les props du composant Fab, affiché dans les écrans par défaut
             */
             fabPropsMutator : (props)=>props,
+            /****
+                les props personnalisés à passer au composant ProfilAvatar
+                @param {
+                    user <Object>, l'objet en rapport à l'utilisateur connecté
+                    canSignOut <boolean>, renseigne si l'utilisateur peut se déconnecté. est à false lorsque la gestion de l'authentification est désactivé,
+                    renderedOnAppBar <boolean>, renseigne si l'avatar est rendu sur l'AppBar où sur le drawer
+                    closeDrawer : (callback<function>)=><any>, la fonction permettant de fermer le drawer, lorsque celui-ci est en mode temporaire
+                    navigateToPreferences : <func>, la fonction permettant de naviguer vers les préférences utilisateurs,
+                    signOut <func>, la fonction permetant de déconnecter l'utilisateur 
+                    ...rest,
+                },
+                @return <object> {
+                    pseudo <string>, le pseudo à utiliser pour l'affichage du profil avatar
+                    label <string>, le label, le sous nom à afficher juste en bas du pseudo
+                    ...imageProps <object>, les props à utilser pour le rendu de l'avatar, idem au props du composant image,
+                    menuItems : <array | object>, les items supplémentaires à afficher pour le rendu du menu,
+                    preferencesMenuItem : <boolean>, si l'items préférence sera rendu dans les items du menu
+                    signOutMenuItem : <boolean>, si l'item Déconnection sera rendu des les items de menu
+                }
+            */
+            profilAvatarProps : ({user,renderedOnAppBar,closeDrawer,canSignOut})=>({}),
         }}
         /*** //for application initialization
             @param {
@@ -145,6 +166,14 @@ export default function AppMainEntry(){
         beforeExit = {()=>Promise.resolve(true)}    
         
         handleHelpScreen ={true} //si l'écran d'aide sera pris en compte, l'écran d'aide ainsi que les écrans des termes d'utilisations et autres
+        /***
+            Les filtres vers les icons Set
+            @param {object} font, l'objet font parmis la liste des fonts icons supportés : voir : https://icons.expo.fyi/Index
+            @param {string} fontName, le nom de la font
+            @param {string} fontNameLower, le nom de la font en lowerCase
+            @return {boolean}, si true, l'icon set sera pris en compte
+        */
+        FontsIconsFilter ={(font,fontName,fontNameLower)=>false}
     />
 }  
 

@@ -6,10 +6,10 @@ import Container from "$cauth/Container";
 import ScreenWithoutAuthContainer from "./ScreenWithoutAuthContainer";
 import ProfilAvatar from "$elayouts/ProfilAvatar";
 import {defaultObj,defaultBool} from "$cutils";
-import View from "$ecomponents/View";
 import theme from "$theme";
+import React from "$react";
 
-export default function MainScreenComponent({profilAvatarProps,withDrawer,allowDrawer,profilAvatarContainerProps,withProfilAvatarOnAppBar:cWithPorilAvatarOnAppbar,authProps,authRequired,...props}){
+export default function MainScreenComponent({profilAvatarProps,appBarProps,testID,withDrawer,allowDrawer,profilAvatarContainerProps,withProfilAvatarOnAppBar:cWithPorilAvatarOnAppbar,authProps,authRequired,...props}){
     authProps = Object.assign({},authProps),
     profilAvatarContainerProps = defaultObj(profilAvatarContainerProps);
     profilAvatarProps = defaultObj(profilAvatarProps);
@@ -18,16 +18,26 @@ export default function MainScreenComponent({profilAvatarProps,withDrawer,allowD
     if(allowDrawer === false){
        withDrawer = false;
     }
+    testID = defaultStr(testID,"RN_MainScreenComponent");
     const withProfilAvatarOnAppBar = cWithPorilAvatarOnAppbar !== false && withDrawer && !theme.showProfilAvatarOnDrawer ? true : false;
-    return <Container authProps={authProps} required={authRequired}>
+    appBarProps = defaultObj(appBarProps);
+    const {right} = appBarProps;
+    if(withProfilAvatarOnAppBar){
+      appBarProps.right = (...p)=>{
+         const r = typeof right =='function'? right(p) : right;
+         return <>
+            <ProfilAvatar renderedOnAppBar withLabel={false} size={40}  {...profilAvatarProps}/>
+            {React.isValidElement(r)? r : null}
+         </>
+      }
+    }
+    return <Container authProps={authProps} required={authRequired} testID={testID}>
         <ScreenWithoutAuthContainer
           {...props}
           withDrawer={withDrawer}
           allowDrawer={allowDrawer}
           authRequired = {authRequired}
-          right = {withProfilAvatarOnAppBar && <View testID={testID+"_ProfilAvatar_Container"}  {...profilAvatarContainerProps} style={[profilAvatarContainerProps.style,styles.profilAvatarContainer]} >
-            {<ProfilAvatar withLabel={false}  {...profilAvatarProps}/>}
-         </View> || null}
+          appBarProps={appBarProps}
       />
     </Container>
 }

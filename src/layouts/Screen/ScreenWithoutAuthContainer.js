@@ -37,7 +37,7 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
     contentContainerStyle,
     options,
     backAction,
-    appBarProps,
+    appBarProps:cAppbarProps,
     elevation,
     withFab,
     withNotifications,
@@ -63,7 +63,7 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
   containerProps = defaultObj(containerProps);
   backgroundColor = theme.Colors.isValid(backgroundColor)? backgroundColor : theme.colors.background;
   options = defaultObj(options);
-  appBarProps = defaultObj(appBarProps);
+  const {right,left,...appBarProps} = defaultObj(cAppbarProps);
   title = defaultVal(title,appBarProps.title);
   subtitle = defaultVal(subtitle,appBarProps.subtitle);
   notificationsProps = {...Object.assign({},notificationsProps),...Object.assign({},appBarProps.notificationsProps)};
@@ -117,6 +117,7 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
             {appBar === false ? null : React.isValidElement(appBar)? AppBar :  <AppBar 
                 testID={testID+'_AppBar'} 
                 {...appBarProps} 
+                left = {left}
                 backAction = {defaultVal(appBarProps.backAction,backAction)} 
                 elevation={defaultNumber(appBarProps.elevation,elevation)} 
                 notificationsProps = {notificationsProps}
@@ -124,6 +125,7 @@ export default function MainScreenScreenWithoutAuthContainer(props) {
                 ref={appBarRef} title={title} 
                 subtitle={subtitle}
                 withNotifications = {withNotifications}
+                right = {right}
             />}
             {withScrollView !== false ? (
               <ScrollView

@@ -19,6 +19,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import Octicons from "@expo/vector-icons/Octicons";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import Zocial from "@expo/vector-icons/Zocial";
+import Colors from "$theme/colors";
 
 /*** @see : https://icons.expo.fyi/ popur tous les icons supportés*/
 /*** L'iconSet par défaut est le MaterialCommunityIcon qui ne nécessite pas de préfixer les noms des icones

@@ -1,6 +1,6 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
-		"version": "8.73.0",
+		"version": "8.74.2",
 		"url": "https://github.com/borispipo/expo-ui#readme",
 		"license": "ISC"
 	},

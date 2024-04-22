@@ -147,7 +147,7 @@ class DropdownComponent extends AppComponent {
         nState = defaultObj(nState);
         //this.countEee = defaultNumber(this.countEee)+1;
         if(!("selectedText" in nState)){
-            nState.selectedText = this.getSelectedText(nState.selected,nState.selectedValuesKeys);
+            nState.selectedText = this.getSelectedText(nState);
         }
         const previousSelected = this.state.selected;
         const prevValueKey = this.getValueKey(previousSelected);
@@ -290,11 +290,19 @@ class DropdownComponent extends AppComponent {
             content,
         }
     }
-    getSelectedText (selectedValues,selectedValuesKeys,valuesKeys){
+    /****
+        @param {object {
+            selected, la nouvelle valeur sélectionnée
+            selectedKeys {object}, les clés des valeurs sélectionnées
+            
+        }}
+    */
+    getSelectedText (opts){
+        if(!isObj(opts)) return this.state.selectedText;
+        let selectedValues = "selected" in opts ? opts.selected : this.state.selected;
+        let selectedValuesKeys = isObj(opts.selectedValuesKeys) ? opts.selectedValuesKeys : isObj(this.state.selectedValuesKeys) ? this.state.selectedValuesKeys: {};
+        const valuesKeys = isObj(opts.valuesKeys) && Object.size(opts.valuesKeys,true)? opts.valuesKeys : isObj(this.state.valuesKeys)? this.state.valuesKeys: {};
         let counter = 0,sDText = "";
-        selectedValuesKeys = isObj(selectedValuesKeys)? selectedValuesKeys : isObj(this.state.selectedValuesKeys) ? this.state.selectedValuesKeys: {};
-        selectedValues = selectedValues !== undefined ? selectedValues : this.state.selected;
-        valuesKeys = isObj(valuesKeys) && Object.size(valuesKeys,true)? valuesKeys : isObj(this.state.valuesKeys)? this.state.valuesKeys: {};
         const maxCount = MAX_SELECTED_ITEMS;
         for(let valueKey in selectedValuesKeys){
             if(isObj(valuesKeys[valueKey])){
@@ -391,7 +399,7 @@ class DropdownComponent extends AppComponent {
             data.push(item);
             keys.push(key);
         });
-        return ({selected,selectedValuesKeys,currentSelected,selectedText:this.getSelectedText(selected,selectedValuesKeys,valuesKeys),valuesKeys,nodes,valuesKeys,data,keys,initialized:true});
+        return ({selected,selectedValuesKeys,currentSelected,selectedText:this.getSelectedText({selected,selectedValuesKeys,valuesKeys}),valuesKeys,nodes,valuesKeys,data,keys,initialized:true});
     }
     getDefaultValue(){
         return this.state.currentSelected;
@@ -446,14 +454,14 @@ class DropdownComponent extends AppComponent {
 
     selectAll (){
         if(!this.canHandleMultiple()) return;
-        const newSelected = [],selectedValuesKeys={};
+        const selected = [],selectedValuesKeys={};
         this.state.data.map((item,_index)=>{
             const key = this.keysRefs[_index];
             if(!this.state.nodes[key]) return;
-            newSelected.push(this.state.nodes[key].value);
+            selected.push(this.state.nodes[key].value);
             selectedValuesKeys[this.state.nodes[key].valueKey] = true;
         });
-        this.updateSelected({selected:newSelected,selectedValuesKeys,selectedText:this.getSelectedText(newSelected,selectedValuesKeys)});
+        this.updateSelected({selected,selectedValuesKeys,selectedText:this.getSelectedText({selected,selectedValuesKeys})});
     }
     unselectAll() {
         if(!this.canHandleMultiple()) return;
@@ -664,6 +672,7 @@ class DropdownComponent extends AppComponent {
         const {items,defaultValue,selected} = nextProps;
         const isFunc = typeof nextProps.items == "function";
         if(nextProps.isLoading === true) return;
+        const isThirdParty = this.props.name == "thirdParty";
         if(isFunc || !React.areEquals(items,this.props.items)){
             const nState = this.prepareItems({items,defaultValue,selected});
             return this.updateSelected(nState,!isFunc);
@@ -707,7 +716,7 @@ class DropdownComponent extends AppComponent {
         this.updateSelected({
             selectedValuesKeys,
             selected:newSelected,
-            selectedText : this.getSelectedText(newSelected,selectedValuesKeys)
+            selectedText : this.getSelectedText({selected:newSelected,selectedValuesKeys})
         });
     }
     isVisible(){
@@ -909,6 +918,7 @@ class DropdownComponent extends AppComponent {
         error = error || this.hasNoValidSelectedValue() || false;
         if(error && selectedText && (!helperText || !React.isValidElement(helperText,true))){
             helperText = `Ce champ admet des valeurs par défaut invalide où innexistant dans la liste des éléments à sélectionner`;
+            console.warn("dropdown has invalid value for items ",error,", selectedText = ",selectedText," selected from state = ",this.state.selected,", state is ",this.state,", props is ",this.props);
         }
         helperText = <HelperText disabled={disabled} error={error}>{helperText}</HelperText>
         let labelTextField = defaultVal(label,text);

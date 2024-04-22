@@ -1,4 +1,4 @@
-import {TableData} from "../Common";
+import Datagrid from "../Common";
 import {defaultObj,defaultArray,defaultStr,defaultNumber} from "$cutils";
 import View from "$ecomponents/View";
 import { StyleSheet,Dimensions,Pressable } from "react-native";
@@ -9,7 +9,7 @@ import { chartTypes } from "../Common/Common";
 import theme from "$theme";
 import FiltersAccordionComponent from "../Accordion/Filters";
 
-export default class DatagridDashboard extends TableData {
+export default class DatagridDashboard extends Datagrid {
     constructor(props){
         super(props);
         Object.map(this.displayTypes,(t,i)=>{
@@ -121,9 +121,8 @@ export default class DatagridDashboard extends TableData {
 DatagridDashboard.displayName = "DatagridDashboardComponent";
 
 DatagridDashboard.propTypes = {
-    ...defaultObj(TableData.propTypes),
+    ...defaultObj(Datagrid.propTypes),
 }
-
 
 const styles = StyleSheet.create({
     paginationContainer : {

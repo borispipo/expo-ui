@@ -46,6 +46,7 @@ import ActivityIndicator from "$ecomponents/ActivityIndicator";
 import {createTableHeader,fields as pdfFields,pageHeaderMargin,sprintf as pdfSprintf} from "$cpdf";
 import {isWeb,isMobileNative} from "$cplatform";
 import { createPDF,getFields as getPdfFields } from '$expo-ui/pdf';
+import actions from '$cactions';
 
 export const TIMEOUT = 100;
 
@@ -178,13 +179,11 @@ export default class CommonDatagridComponent extends AppComponent {
             exportToExcelIsAllowed,
             renderSectionListIsAllowed,
             checkPerms : customCheckPerms,
+            tableName,
+            table,
+            dataSource,
             ...rest
         } = props;
-        if(this.bindResizeEvents()){
-            extendObj(this._events,{
-                SET_DATAGRID_QUERY_LIMIT : this.onSetQueryLimit.bind(this),
-            });
-        }
         if(this.props.resetSessionData === true){
             this.resetSessionData();
         }
@@ -230,8 +229,11 @@ export default class CommonDatagridComponent extends AppComponent {
         Object.map(displayTypes,(t,i)=>{
             if(t.isChart && !perm) return;
             allowedDisplayTypes[i] = Object.clone(t);
-        })
+        });
+        dataSource = CommonDatagridComponent.getDataSource({...props,dataSource,context:this});
+        tableName = defaultStr(tableName,table).toUpperCase();
         Object.defineProperties(this,{
+            tableName : {value:tableName,override:false,writable:false},
             layoutRef : {
                 value : React.createRef(null),
             },
@@ -346,6 +348,10 @@ export default class CommonDatagridComponent extends AppComponent {
         this.currentDataSources = Object.toArray(this.getSessionData().selectedDataSources);
         this.setSessionData({selectedDataSources:this.currentDataSources});
         this.persistDisplayType(this.state.displayType);
+    }
+    /*** lorsque la données est modifiée */
+    onUpsertData =(arg) =>{
+        return this.refresh({force:true,renderProgressBar:false});
     }
     /*** si l'on peut récuperer à distance, les colonnes seulement visibles */
     canFetchOnlyVisibleColumns(){
@@ -3595,12 +3601,38 @@ export default class CommonDatagridComponent extends AppComponent {
     }
     componentDidMount(){
         super.componentDidMount();
+        extendObj(this._events,{
+            SET_DATAGRID_QUERY_LIMIT : this.onSetQueryLimit.bind(this),
+        });
         APP.on(APP.EVENTS.SET_DATAGRID_QUERY_LIMIT,this._events.SET_DATAGRID_QUERY_LIMIT);
+        if(isNonNullString(this.tableName)){
+            extendObj(this._events,{
+                onUpsertData : this.onUpsertData.bind(this),
+            });
+            this.onUpsertDataSubscription = APP.on(actions.upsert(this.tableName),this._events.onUpsertData);
+            this.onRemoteDataSubscription = APP.on(actions.remove(this.tableName),this._events.onUpsertData);
+        }
+        if(isNonNullString(this.tableName)){
+            this.fetchData({force:true});
+        }
     }
     componentWillUnmount(){
         super.componentWillUnmount();
+        if(isNonNullString(this.tableName)){
+            if(typeof this.onUpsertDataSubscription?.remove =="function"){
+                this.onUpsertDataSubscription.remove();
+            }
+            if(this._events.onUpsertData){
+                APP.off(actions.upsert(this.tableName),this._events.onUpsertData);
+                APP.off(actions.remove(this.tableName),this._events.onUpsertData);
+            }
+            if(typeof this.onRemoteDataSubscription?.remove =="function"){
+                this.onRemoteDataSubscription.remove();
+            }
+        }
         APP.off(APP.EVENTS.SET_DATAGRID_QUERY_LIMIT,this._events.SET_DATAGRID_QUERY_LIMIT);
         this.clearEvents();
+        this.setSelectedRows();
     }
 
     /*** s'il s'agit d'un datagrid virtualisé, ie à utiliser le composant react-base-table */
@@ -3731,7 +3763,7 @@ export default class CommonDatagridComponent extends AppComponent {
         return "auto";
     }
     isTableData(){
-        return false;
+        return isNonNullString(this.tableName);
     }
     UNSAFE_componentWillReceiveProps(nextProps){
         if(false && !React.areEquals(this.props.columns,nextProps.columns)){
@@ -4033,7 +4065,12 @@ CommonDatagridComponent.propTypes = {
     /*** si le pied de page sera affiché */
     showFooters : PropTypes.bool,
     /*** les donnnées peuvent être soient retournées par une fonction, soit par un tableau soit une promesse */
-    data : PropTypes.oneOfType([PropTypes.array, PropTypes.func,PropTypes.object]),//.isRequired,
+    data : PropTypes.oneOfType([
+        PropTypes.func,
+        PropTypes.string,
+        PropTypes.object,
+        PropTypes.array,
+    ]),
     /****
         la prop column def contient dans la propriété datagrid, la prop maxItemsToRender, le nombre d'items maximal à rendre pour le composant de type select table data multiple
         la prop column def de la colonne de type number, qui contient dans la prop datagrid, la fonction render doit retourner un nombre pour otenir les valeur léie à ladite colonne

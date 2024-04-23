@@ -11,7 +11,7 @@
        datagrid <object>, //les props à passer au composant datagrid lié à la table de données
        drawerSection <string>, //le nom de la section associé au drawer dans lequel figurera le table data
        print <function ({data,...settings})>=> <Promise<{content:[],...rest}>, //la fonction utile pour l'impression de la tabel de données suivant les recommandation de la libraririe pdfmake
-       printOptions <object>, //les options à passer à la fonction print,
+       printOptions < funcion<{data<object>,...options}=><object> | object>, //les options à passer à la fonction print,
        newElementLabel : <string>, //le texte à utiliser pour le rendu du bouton lorsqu'il s'agit d'un nouvel element de la table data
        databaseStatistics <function ()=> <boolean> | boolean>, //si la table data figurera dans les Statistiques en BD, validable si le composant DatabaseStatistics est appélé dans l'application
        

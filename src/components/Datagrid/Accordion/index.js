@@ -194,7 +194,7 @@ export default class DatagridAccordionComponent extends Datagrid {
         if(!(item) || typeof item !== 'object') return null;
         const canHandleRow = typeof this.props.filter =='function' ? this.props.filter(this.getItemCallArgs({item,index})) : true;
         if(canHandleRow === false || canHandleRow === null) return null;
-        const rowKey = this.getRowKeyByIndex(index);
+        const rowKey = this.getRowKey(item);
         return <DatagridAccordionRow 
             item = {item}
             index = {index}

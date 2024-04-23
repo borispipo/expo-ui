@@ -25,6 +25,7 @@ import i18n from "$i18n";
 import fetch from "$capi/fetch";
 import appConfig from "$capp/config";
 import {Vertical} from "$ecomponents/AutoSizer";
+import {printTableData} from "$epdf";
 
 
 const HIDE_PRELOADER_TIMEOUT = 300;
@@ -566,6 +567,9 @@ export default class TableDataScreenComponent extends FormDataScreen{
         return true;    
     }
     isPrintable(){
+        if(typeof this.props.printable ==='function'){
+            return !!this.props.printable({context:this,tableName:this.getTableName(),isTableData:true,table:this.getTableName()})
+        }
         return !!(this.props.printable);
     }
     /*** retourne la liste des valeurs de clé primarire associés à la table data pour la données en cours de modification 
@@ -596,10 +600,11 @@ export default class TableDataScreenComponent extends FormDataScreen{
     print(data){   
         if(!this.isPrintable()) return;
         data = this.isDocEditing(data)? data : isObj(data) && this.isDocEditing(data.data)? data.data : {};
+        const opts = {tableName:this.getTableName(),table:this.getTableName(),isTableData:true,fromTableData:true,context:this};
         if(typeof this.props.print ==='function'){
-            return this.props.print.call(this,data);
-        }
-        return data;
+            return this.props.print.call(this,data,opts);
+        } 
+        return printTableData(data,opts);
     }
     isClonable(){
         return !!(this.props.clonable !==false);
@@ -961,6 +966,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
 
 TableDataScreenComponent.propTypes = {
     ...defaultObj(FormData.propTypes),
+    printable : PropTypes.oneOfType([PropTypes.func,PropTypes.bool]),//si la table data est imprimable
     renderTabsType : PropTypes.oneOf([...defaultRendersTypes,undefined,"responsive"]),//spécifie le type de rendue : mobile, alors le tab sera rendu en mobile, desktop, ce sera rendu en desktop, responsible ou undefined, alors les deux rendu seront possible
     prepareComponentProps : PropTypes.func, //permet d'appreter les components props à utiliser pour le rendu des données
     prepareField : PropTypes.func,//La fonction permettant de faire des mutations sur le champ field à passer au formulaire form. si elle retourne false alors la field ne sera pas pris een compte

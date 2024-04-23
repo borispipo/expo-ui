@@ -47,6 +47,7 @@ import {createTableHeader,fields as pdfFields,pageHeaderMargin,sprintf as pdfSpr
 import {isWeb,isMobileNative} from "$cplatform";
 import { createPDF,getFields as getPdfFields } from '$expo-ui/pdf';
 import actions from '$cactions';
+import {printTableData} from "$epdf";
 
 export const TIMEOUT = 100;
 
@@ -831,15 +832,21 @@ export default class CommonDatagridComponent extends AppComponent {
         }
         return copyToClipboard({...rest,isDatagrid:true,data:row,fields : this.props.columns,sessionName:defaultStr(this.props.sessionName,"datagrid")});
     }
-    
+    isPrintable(){
+        if(!this.isTableData() || this.props.printAction === false) return false;
+        if(typeof this.props.printable ==='function'){
+            return !!this.props.printable({context:this,tableName:this.tableName,table:this.tableName,context:this,isDatagrid:true,isTableData:false});
+        }
+        return this.props.printable === true;
+    }
     /*** les actions représentes les différents menus apparaissant lorsqu'une ligne est sélectionnée
      *   ou pas.
      */
     renderSelectedRowsActions(sActions){
         let {makePhoneCallProps,canMakePhoneCall,archivable} = this.props;
         const size = this.getSelectedRowsCount();
-        let r = [];
-        let endActs = [];
+        const r = [];
+        const endActs = [];
         if(size <=0) {
             return r
         };
@@ -850,6 +857,28 @@ export default class CommonDatagridComponent extends AppComponent {
         sArgs.selectedRows = this.getSelectedRows();
         if(isFunction(selectedR)) {
             selectedR = selectedR.call(this,sArgs)
+        }
+        if(this.isPrintable()){
+            const {filter:printFilter,onPress,...printAction} = defaultObj(this.props.printAction);
+            r.push({
+                icon : "printer",
+                ...printAction,
+                text : printAction.text || printAction.label || "Imprimer",
+                label : printAction.label || printAction.label || 'Imprimer',
+                onPress : (r)=>{
+                    const opts2 = {isTableData:false,context:this,isDatagrid:true,tableName:this.tableName,table:this.tableName};
+                    const args = {...React.getOnPressArgs(r),...sArgs,...opts2};
+                    if(typeof onPress =='function' && onPress(args) === false) return;
+                    const printDat = [];
+                    const filter = typeof printFilter =="function" ? printFilter : x=>true;
+                    Object.map(args.selectedRows,(row,rowKey,index)=>{
+                        if(!!!filter({...args,data:row,key:rowKey,rowData:row,index,rowIndex:index})) return;
+                        printDat.push(row); 
+                    });
+                    if(!printDat.length) return notify.error(printAction.noDataError,"Aucune données sélectionnée pour l'impression");
+                    return this.print(printDat,opts2);
+                },
+            });
         }
         Object.map(sActions,(o,i)=>{
             if(isObj(o)){
@@ -878,7 +907,7 @@ export default class CommonDatagridComponent extends AppComponent {
                 }
                 r.push(rest)
             }
-        })
+        });
         endActs.map((a)=>{
             r.push(a);
         })
@@ -914,7 +943,18 @@ export default class CommonDatagridComponent extends AppComponent {
         }
         return r;
     }
-
+    getTableName(){
+        return defaultStr(this.tableName,this.props.table,this.props.tableName).toUpperCase().trim();
+    }
+    print(data,options){   
+        if(!this.isPrintable()) return;
+        if(!isObj(data) && !Array.isArray(data)) return;
+        const opts = {...defaultObj(options),tableName:this.getTableName(),table:this.getTableName(),isTableData:false,isDatagrid:true,context:this};
+        if(typeof this.props.print ==='function'){
+            return this.props.print.call(this,data,opts);
+        } 
+        return printTableData(data,opts);
+    }
     /*** le trie du tableau prend en paramètre 
         : le nom de la colonne de trie, la direction de la conne de trie
         par défaut, le trie se fait en ignorant la casse
@@ -3926,6 +3966,10 @@ export default class CommonDatagridComponent extends AppComponent {
     getRowsKeysIndexes(){
         return Array.isArray(this.rowsKeysIndexes) ? this.rowsKeysIndexes : [];
     }
+    /****
+        attention cette fonction est uniquement valide lorsque les données ne sont pas groupées
+        Lorsque les données sont groupées, cette fonction est inutile
+    */
     getRowKeyByIndex(rowIndex){
         if(typeof rowIndex !='number') return undefined;
         const idx = this.getRowsKeysIndexes();
@@ -4279,6 +4323,21 @@ CommonDatagridComponent.propTypes = {
     abreviateValues : PropTypes.bool, //si les valeurs numériques seront abregées
     handleTitle : PropTypes.bool,//si le titre du datagrid, props title, sera pris en compte dans les actions du datagrid, pour le rendu du DataSourceSelector, fonction renderDataSourceSelector
     checkPerms : PropTypes.func,//la fonction utilisée pour vérifier les permissions de l'utilisateur
+    printAction : PropTypes.oneOfType([
+        PropTypes.bool,
+        PropTypes.shape({
+            label : PropTypes.any,
+            text  : PropTypes.any,
+            icon : PropTypes.any,
+            onPress : PropTypes.func, //({selectedRows,context,.....})=><boolean | any>,
+            filter : PropTypes.func,//la fonction permettant de filtrer les données à imprimer,
+            noDataError : PropTypes.oneOfType([ //le message d'erreur lorsque aucune données n'a été selectionnée pour l'impression
+                PropTypes.string, 
+                PropTypes.object,
+            ]),
+            ///....rest, les options similaires à celles du composant Menu où de l'AppBar en fonction des cas
+        }), //les props à passer à l'action d'impression du datagrid
+    ]), //si l'action d'impression sera affiché dans le datagrid
 }
 
 const styles = StyleSheet.create({

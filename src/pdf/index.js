@@ -277,9 +277,9 @@ export function printTableData(data,options){
     } else if(!Auth.isTableDataAllowed({table,action:'print'})){
         return Promise.reject({message:'Vous n\'etes pas autorisé à imprimer ce type de document'});
     }
-    const printOptions = typeof tableObj.printOptions =="function"? tableObj.printOptions({...options,table,data}) : tableObj.printOptions;
     return print(data,{
         getSettings : (options)=>{
+            const printOptions = typeof tableObj.printOptions =="function"? tableObj.printOptions({...options,table}) : tableObj.printOptions;
             return getPrintSettings(extendObj(true,{},{sessionName:`print-${table}`,isTableData:true,tableDataFields:defaultObj(options.tableDataFields,tableObj.printableFields,tableObj.fields)},options,printOptions)).then(({data})=>{
                 return data;
             });

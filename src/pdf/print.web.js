@@ -8,8 +8,8 @@ export default function print(pdfMakeInstance,options,...rest){
     if(isElectron()){
         return electronPrint(pdfMakeInstance,options,...rest);
     }
+    logRNWebview("printing pdf, check if can post react native webview message ? "+canPostWebviewMessage());
     if(canPostWebviewMessage()){
-        alert("printing pdf, check if can post react native webview message ? "+canPostWebviewMessage());
         let fileName = defaultStr(options?.fileName);
         if(!fileName){
             fileName = "printed-pdf-"+DateLib.format(new Date(),"dd-mm-yyyy HH MM ss");

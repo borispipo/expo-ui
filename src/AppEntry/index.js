@@ -74,7 +74,6 @@ function App({init:initApp,initialRouteName:appInitialRouteName,children}) {
   });
    React.useEffect(() => {
       const loadResources = ()=>{
-          return Promise.resolve(true);
          return new Promise((resolve)=>{
             loadFonts(FontsIconsFilter).catch((e)=>{
               console.warn(e," ierror loading app resources fonts");

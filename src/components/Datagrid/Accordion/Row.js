@@ -9,6 +9,9 @@ import theme from "$theme"
 import {styles as rStyles,getRowStyle} from "../utils";
 import { useIsRowSelected,useDatagrid} from "../hooks";
 import {HStack} from "$ecomponents/Stack";
+import { isMobileNative, isReactNativeWebview} from "$cplatform";
+
+const isNative = isMobileNative() || isReactNativeWebview();
 
 const DatagridAccordionRow = React.forwardRef(({selectable,
         rowKey,
@@ -81,10 +84,7 @@ const DatagridAccordionRow = React.forwardRef(({selectable,
     const wrapStyle = React.useMemo(()=>{
         return getRowStyle({row:item,index,selected,numColumns,isAccordion:true,rowIndex:index});
     },[selected,numColumns]);
-    const viewWrapperStyle = [selectable !== false && theme.styles.cursorPointer];
-    if(!hasAvatar){
-        viewWrapperStyle.push(styles.hasNotAvatar);
-    }
+    const viewWrapperStyle = [selectable !== false && theme.styles.cursorPointer,hasAvatar ? styles.hasAvatar : styles.hasNotAvatar];
     if(selected) {
         const handleAvatarRowToggle = (event)=>{
             React.stopEventPropagation(event);
@@ -238,7 +238,9 @@ const styles = StyleSheet.create({
     },
     container : {
         paddingVertical : 0,
-        paddingHorizontal : 7,
+        paddingLeft : isNative ? 7 : 2,
+        //paddingHorizontal : 7,
+        paddingRight : 7,
         marginHorizontal : 0,
         flexWrap : 'nowrap',
         justifyContent : 'center',
@@ -249,14 +251,17 @@ const styles = StyleSheet.create({
         marginRight : 10,
     },
     hasNotAvatar : {
-        borderLeftWidth : 5,
+        borderLeftWidth : 7,
         paddingLeft : 0,
         height : "100%",
         borderLeftColor : "transparent",
     },
+    hasAvatar : {
+        paddingLeft : isNative ? 10 : 7,
+    },
     selected : {
-        paddingHorizontal : 0,
-        paddingVertical : 0,
+        //paddingHorizontal : 0,
+        //paddingVertical : 0,
     },
     contentContainerNotAvatar : {
         paddingLeft : 2,

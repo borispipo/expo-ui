@@ -9,11 +9,13 @@ export default function print(pdfMakeInstance,options,...rest){
         return electronPrint(pdfMakeInstance,options,...rest);
     }
     if(canPostWebviewMessage()){
+        alert("printing pdf, check if can post react native webview message ? "+canPostWebviewMessage());
+        let fileName = defaultStr(options?.fileName);
+        if(!fileName){
+            fileName = "printed-pdf-"+DateLib.format(new Date(),"dd-mm-yyyy HH MM ss");
+        }
+        logRNWebview(`will print native webview on filename +`+fileName);
         return pdfMakeInstance.getBase64((content)=>{
-            let fileName = defaultStr(options?.fileName);
-            if(!fileName){
-                fileName = "printed-pdf-"+DateLib.format(new Date(),"dd-mm-yyyy HH MM ss");
-            }
             const ext = getFileExtension(fileName,true);
             if(!ext || ext.toLowerCase() !=="pdf"){
                 fileName+=".pdf";

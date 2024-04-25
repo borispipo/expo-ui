@@ -54,6 +54,7 @@ const FontIcon = React.forwardRef(({icon,name,testID,color,iconColor,iconStyle,b
     const iconName = icon.trim().ltrim(iconSetName+"-").ltrim("-").trim();
     return <Icon {...props} 
         ref = {ref}
+        style = {fStyle}
         testID = {testID}
         color={color}
         iconColor = {iconColor}

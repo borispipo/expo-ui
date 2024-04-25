@@ -30,7 +30,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"@fto-consult/common": {
-		"version": "4.47.0",
+		"version": "4.48.0",
 		"url": "https://github.com/borispipo/common#readme",
 		"license": "ISC"
 	},

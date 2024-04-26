@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "8.76.8",
+  "version": "8.77.0",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "react-native-paper-doc": "https://github.com/callstack/react-native-paper/tree/main/docs/docs/guides",
   "scripts": {

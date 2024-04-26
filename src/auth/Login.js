@@ -2,6 +2,7 @@ import React from "$react";
 import {isNonNullString,isObj,defaultNumber,defaultStr,uniqid,extendObj,isFunction} from "$cutils";
 import {navigate} from "$cnavigation";
 import FormData from "$ecomponents/Form/FormData/FormData";
+import { Action } from "$ecomponents/Form";
 import {getForm} from "$ecomponents/Form/utils";
 import Button from "$ecomponents/Button";
 import notify from "$notify";
@@ -106,23 +107,76 @@ export default function LoginComponent(props){
         onSuccess = {onSuccess}
         auth = {auth}
     />
-    const getButtonAction = (buttonRef)=>{
-        return {
-            ref : buttonRef,
-            isDisabled : x=> typeof buttonRef?.current?.isDisabled ==="function" && buttonRef.current?.isDisabled(),
-            enable : x=>typeof buttonRef?.current?.enable =="function" && buttonRef.current.enable(),
-            disable : x=> typeof buttonRef?.current?.disable =="function" && buttonRef?.current.disable(),
+    const getButtonAction = React.useMemo(()=>{
+        return (buttonRef)=>{
+            buttonRef = buttonRef || React.createRef();
+            return {
+                ref : buttonRef,
+                isDisabled : x=> typeof buttonRef?.current?.isDisabled ==="function" && buttonRef.current?.isDisabled(),
+                enable : x=>{
+                    return typeof buttonRef?.current?.enable =="function" && buttonRef.current.enable();
+                },
+                disable : x=> {
+                    return typeof buttonRef?.current?.disable =="function" && buttonRef?.current.disable()
+                },
+            }
         }
-    }
+    },[]);
     const nextButton = getButtonAction(nextButtonRef),
     prevButton = getButtonAction(previousButtonRef);
-    const {header,
+    const setIsLoading = (buttonRef,bool)=>{
+        if(typeof buttonRef?.current?.setIsLoading == 'function'){
+            return buttonRef.current?.setIsLoading(bool)
+        }
+    }
+    const beforeSubmitRef = React.useRef(null);
+    const canSubmitRef = React.useRef(null);
+    const mutateDataRef = React.useRef(null);
+    const signIn = ()=>{
+        const canSubmit = typeof canSubmitRef.current == 'function'? canSubmitRef.current : w=>true;
+        const cS = canSubmit(args);
+        if(typeof cS === 'string' && cS){
+            return notifyUser(cS);
+        }
+        const data = getData();
+        const form = _getForm();
+        if(!form){
+            notifyUser("Impossible de valider le formulaire car celui-ci semble invalide")
+            return;
+        }
+        if(!form.isValid()){
+            notifyUser(form.getErrorText());
+            return;
+        }
+        const args = {...state,data,form,state,step,setState,nextButtonRef,previousButtonRef};
+        const beforeSubmit = typeof beforeSubmitRef.current === 'function' ? beforeSubmitRef.current : ()=> true;
+        if(cS && beforeSubmit(args) !== false){
+            Preloader.open("vérification ...");
+            setIsLoading(nextButtonRef,true);
+            return auth.signIn(data).then((a)=>{
+                if(typeof onLoginSuccess =='function' && onLoginSuccess(a)=== false) return;
+                if(isFunction(onSuccess)){
+                    onSuccess(data);
+                } else {
+                    navigate("Home");
+                } 
+            }).finally(()=>{
+                Preloader.close();
+                setIsLoading(nextButtonRef,false);
+            })
+        }
+    }
+    const {header : Header,
         headerTopContent:HeaderTopContent,
         containerProps : customContainerProps,
         contentProps : customContentProps,
-        withScrollView:customWithScrollView,children,initialize,contentTop,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,mutateData,beforeSubmit:beforeSubmitForm,canSubmit:canSubmitForm,onStepChange,...loginProps} = loginPropsMutator({
+        formProps,
+        withScrollView:customWithScrollView,children,initialize,contentTop,renderNextButton,renderPreviousButton,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,beforeSubmit:beforeSubmitForm,canSubmit:canSubmitForm,onStepChange,...loginProps} = loginPropsMutator({
         ...state,
+        getButtonAction,
+        signIn,
         setState,
+        setIsLoading,
         state,
         nextButton,
         prevButton,
@@ -143,8 +197,9 @@ export default function LoginComponent(props){
     /****la fonction à utiliser pour vérifier si l'on peut envoyer les données pour connextion
      * par défaut, on envoie les données lorssqu'on est à l'étappe 2
      * **/
-    const canSubmit = typeof canSubmitForm =='function'? canSubmitForm : ({step})=>step >= 2;
-    const beforeSubmit = typeof beforeSubmitForm =='function'? beforeSubmitForm : x=> true;
+    canSubmitRef.current = typeof canSubmitForm =='function'? canSubmitForm : ({step})=>step >= 2;
+    beforeSubmitRef.current  = typeof beforeSubmitForm =='function'? beforeSubmitForm : x=> true;
+    
     const goToNext = ()=>{
         let step = state.step;
         const data = getData();
@@ -175,27 +230,7 @@ export default function LoginComponent(props){
             nextButtonRef.current?.enable();
         }
         if(step > 1){
-            const cS = canSubmit(args);
-            if(typeof cS === 'string' && cS){
-                return notifyUser(cS);
-            }
-            if(cS && beforeSubmit(args) !== false){
-                ///pour modifier automatiquement la données à mettre à jour
-                if(typeof mutateData =='function'){
-                    mutateData(data);
-                }
-                Preloader.open("vérification ...");
-                return auth.signIn(data).then((a)=>{
-                    if(typeof onLoginSuccess =='function' && onLoginSuccess(a)=== false) return;
-                    if(isFunction(onSuccess)){
-                        onSuccess(data);
-                    } else {
-                        navigate("Home");
-                    } 
-                }).finally(()=>{
-                    Preloader.close();
-                })
-            }
+            signIn();
         } else {
             setState({...state,step:step+1,data})
         }
@@ -221,6 +256,7 @@ export default function LoginComponent(props){
     };
     const wrapperProps = withPortal ? {appBarProps,authRequired:false,title:loginTitle,withScrollView} : { style:styles.wrapper};
     const sH = React.isComponent(HeaderTopContent)? <HeaderTopContent mediaQueryUpdateStyle = {mediaQueryUpdateStyle} /> : React.isValidElement(HeaderTopContent)? HeaderTopContent : null;
+    const header = React.isComponent(Header) ? <Header mediaQueryUpdateStyle = {mediaQueryUpdateStyle}/> : React.isValidElement(Header)? Header : null;
     return <Wrapper testID = {testID+"_Wrapper" }{...wrapperProps}>
         <DialogProvider ref={dialogProviderRef}/>
         {sH}
@@ -237,22 +273,23 @@ export default function LoginComponent(props){
                     responsive  = {false}
                     {...loginProps}
                     fields = {loginFields}
-                    formProps = {{
+                    formProps = {extendObj(true,{},{
                         keyboardEvents : {
-                            ...defaultObj(keyboardEvents),
                             enter : ({formInstance})=>{
                                 goToNext();
-                            }
+                            },
                         }
-                    }}
+                    },formProps)}
                     data = {extendObj(state.data,loginData)}
                 >
                     <>
                         {React.isValidElement(contentTop)? contentTop : null}
-                        {hasLoginFields?<View testID={testID+"_ButtonsContainer"} style={[styles.buttonWrapper]}>
-                            <Button 
+                        {renderNextButton !== false || renderPreviousButton !== false ? <>
+                            {hasLoginFields?<View testID={testID+"_ButtonsContainer"} style={[styles.buttonWrapper]}>
+                            {renderNextButton !== false ? <Action
                                 ref = {nextButtonRef}
                                 primary
+                                formName={formName}
                                 mode = "contained"
                                 rounded
                                 style = {styles.button}
@@ -261,8 +298,8 @@ export default function LoginComponent(props){
                                 surface
                             >
                                 {state.step == 1? 'Suivant' : 'Connexion' }
-                            </Button>
-                            {state.step>=2 ? <Button 
+                            </Action> : null}
+                            {renderPreviousButton !== false && state.step>=2 ? <Button
                                 onPress = {goToFirstStep}
                                 ref = {previousButtonRef}
                                 mode = "contained"
@@ -276,6 +313,7 @@ export default function LoginComponent(props){
                                 Précédent
                             </Button> : null}
                         </View> : null}
+                     </> : null}
                     </>
                 </FormData>
                 {React.isValidElement(children) ? children : null}
@@ -352,7 +390,10 @@ LoginComponent.propTypes = {
     header : PropTypes.oneOfType([
         PropTypes.node,
         PropTypes.element,
+        PropTypes.func,
     ]),
+    renderNextButton : PropTypes.bool,//si le bouton next sera rendu
+    renderPreviousButton : PropTypes.bool,//si le bouton previous sera rendu
 }
 
 /*** les loginProps sont les porps à passer au composant FormData

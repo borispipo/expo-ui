@@ -29,7 +29,7 @@ const WIDTH = 400;
 export default function LoginComponent(props){
     let {formName,step,appBarProps,onSuccess,withPortal,testID} = props;
     const {auth:{loginPropsMutator,Login}} = useContext();
-    const loginTitle = getTitle();
+    let loginTitle = getTitle();
     testID = defaultStr(testID,"RN_Auth.LoginComponent");
     formName = React.useRef(uniqid(defaultStr(formName,"login-formname"))).current;
     const nextButtonRef = React.useRef(null);
@@ -131,14 +131,8 @@ export default function LoginComponent(props){
     }
     const beforeSubmitRef = React.useRef(null);
     const canSubmitRef = React.useRef(null);
-    const mutateDataRef = React.useRef(null);
+    const onSuccesRef = React.useRef(null);
     const signIn = ()=>{
-        const canSubmit = typeof canSubmitRef.current == 'function'? canSubmitRef.current : w=>true;
-        const cS = canSubmit(args);
-        if(typeof cS === 'string' && cS){
-            return notifyUser(cS);
-        }
-        const data = getData();
         const form = _getForm();
         if(!form){
             notifyUser("Impossible de valider le formulaire car celui-ci semble invalide")
@@ -148,13 +142,19 @@ export default function LoginComponent(props){
             notifyUser(form.getErrorText());
             return;
         }
-        const args = {...state,data,form,state,step,setState,nextButtonRef,previousButtonRef};
+        const data = getData();
+        const canSubmit = typeof canSubmitRef.current == 'function'? canSubmitRef.current : w=>true;
         const beforeSubmit = typeof beforeSubmitRef.current === 'function' ? beforeSubmitRef.current : ()=> true;
-        if(cS && beforeSubmit(args) !== false){
+        const args = {...state,data,form,state,setState,nextButtonRef,previousButtonRef};
+        const cS = canSubmit(args);
+        if(typeof cS === 'string' && cS){
+            return notifyUser(cS);
+        }
+        if(cS !== false && beforeSubmit(args) !== false){
             Preloader.open("vérification ...");
             setIsLoading(nextButtonRef,true);
             return auth.signIn(data).then((a)=>{
-                if(typeof onLoginSuccess =='function' && onLoginSuccess(a)=== false) return;
+                if(typeof onSuccesRef.current =='function' && onSuccesRef.current(a)=== false) return;
                 if(isFunction(onSuccess)){
                     onSuccess(data);
                 } else {
@@ -171,9 +171,12 @@ export default function LoginComponent(props){
         containerProps : customContainerProps,
         contentProps : customContentProps,
         formProps,
+        wrapperProps : cWrapperProps,
+        title : customTitle,
         withScrollView:customWithScrollView,children,initialize,contentTop,renderNextButton,renderPreviousButton,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,beforeSubmit:beforeSubmitForm,canSubmit:canSubmitForm,onStepChange,...loginProps} = loginPropsMutator({
         ...state,
         getButtonAction,
+        data : getData(),
         signIn,
         setState,
         setIsLoading,
@@ -192,6 +195,9 @@ export default function LoginComponent(props){
         ProviderSelector,
         previousButtonRef,
     });
+    if(isNonNullString(customTitle)){
+        loginTitle = customTitle;
+    }
     const containerProps = defaultObj(customContainerProps);
     const contentProps = defaultObj(customContentProps);
     /****la fonction à utiliser pour vérifier si l'on peut envoyer les données pour connextion
@@ -199,6 +205,7 @@ export default function LoginComponent(props){
      * **/
     canSubmitRef.current = typeof canSubmitForm =='function'? canSubmitForm : ({step})=>step >= 2;
     beforeSubmitRef.current  = typeof beforeSubmitForm =='function'? beforeSubmitForm : x=> true;
+    onSuccesRef.current = onLoginSuccess;
     
     const goToNext = ()=>{
         let step = state.step;
@@ -254,7 +261,8 @@ export default function LoginComponent(props){
     const mediaQueryUpdateStyle = (a)=>{
         return StyleSheet.flatten([updateMediaQueryStyle(),contentProps.style]);
     };
-    const wrapperProps = withPortal ? {appBarProps,authRequired:false,title:loginTitle,withScrollView} : { style:styles.wrapper};
+    const wProps = defaultObj(typeof cWrapperProps =="function"? cWrapperProps({...state,setState,formName,state,withPortal,withScreen:withPortal,withScrollView,state,formName}) : cWrapperProps);
+    const wrapperProps = withPortal ? {appBarProps,authRequired:false,title:loginTitle,withScrollView,...wProps} : { ...wProps,style:[styles.wrapper,wProps.style]};
     const sH = React.isComponent(HeaderTopContent)? <HeaderTopContent mediaQueryUpdateStyle = {mediaQueryUpdateStyle} /> : React.isValidElement(HeaderTopContent)? HeaderTopContent : null;
     const header = React.isComponent(Header) ? <Header mediaQueryUpdateStyle = {mediaQueryUpdateStyle}/> : React.isValidElement(Header)? Header : null;
     return <Wrapper testID = {testID+"_Wrapper" }{...wrapperProps}>
@@ -296,6 +304,7 @@ export default function LoginComponent(props){
                                 onPress = {goToNext}
                                 icon = {state.step == 1? 'arrow-right':'login'}
                                 surface
+                                testID = {testID+"_NextButton"}
                             >
                                 {state.step == 1? 'Suivant' : 'Connexion' }
                             </Action> : null}
@@ -309,6 +318,7 @@ export default function LoginComponent(props){
                                 secondary
                                 surface
                                 icon = {'arrow-left'}
+                                testID = {testID+"_PrevButton"}
                             >
                                 Précédent
                             </Button> : null}
@@ -382,6 +392,25 @@ const styles = StyleSheet.create({
 });
 
 LoginComponent.propTypes = {
+    /****
+        les props du composant Wrapper, peut être une fonction où un objet
+        - s'il s'agit d'une fonction : elle est définie comme suit : 
+            ({withScreen<boolean>,withPortal<boolean>,withScrolView<boolean>})=> <object>,
+        
+    */
+    wrapperProps : PropTypes.oneOfType([
+        PropTypes.func,
+        PropTypes.object,
+    ]),
+    /***
+        les props du composant Container, enfant  hiérachique au composant Wrapper
+        idem aux props du composant Surface
+    */
+    containerProps : PropTypes.shape(defaultObj(Surface.propTypes)),
+    //les props du composant Surface, parent direct du composant FormData utile pour le rendu du form
+    contentProps : PropTypes.shape(defaultObj(Surface.propTypes)),
+    //les props du form data, idem à ceux du composant FormData
+    formProps : PropTypes.object,
     headerTopContent : PropTypes.oneOfType([
         PropTypes.func,
         PropTypes.node,
@@ -392,13 +421,8 @@ LoginComponent.propTypes = {
         PropTypes.element,
         PropTypes.func,
     ]),
+    onSuccess : PropTypes.func, //la fonctino appelée lorsque l'utilisateur a été connecté, lorsque l'action liée à la fonction signIn de auth s'est terminée correctement
     renderNextButton : PropTypes.bool,//si le bouton next sera rendu
     renderPreviousButton : PropTypes.bool,//si le bouton previous sera rendu
 }
 
-/*** les loginProps sont les porps à passer au composant FormData
-*/
-const loginPropTypes = {
-    containerProps : PropTypes.object, //les props à passer au container
-    ...FormData.propTypes, //les props type du composant form data
-}

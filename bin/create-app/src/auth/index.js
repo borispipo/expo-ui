@@ -91,6 +91,11 @@ export default {
             beforeSubmit : ({step,data,...rest})=><void>, //la fonction appélée immédiatement avant le submit des donénes
             renderNextButton : <boolean>, //si le bouton next sera rendu
             renderPreviousButton : <boolean>, //si le bouton previous sera rendu
+            title : <string>, //le titre de l'interface de connexion, titre personnalisé s'il y a lieu
+            wrapperProps : <func({withScreen,withScrollView,state,...rest})=><object>,object>, //les props du composant wrapper, 
+            containerProps : <object>, //les props du composant container, idem à ceux du composant $ecomponents/Surface
+            contentProps : <object>, //les props du composant parent direct à la form rendu par le composatn formData, idem à ceux du composant $ecomponents/Surface
+            onSuccess : (object)=><boolean | any>, la fonction de rappel appelée lorsque l'utilisateur a été connecté, via la fonction signIn. si onSuccess retourne false, alors l'action par défaut de redirection de l'utilisateur via l'interface de connexion ne sera pas appelée. 
             ...loginProps {object}, les props Supplémentaires à passer au composant FormData utilisé pour le rendu du formulaire de connexion
         }
     */

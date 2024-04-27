@@ -47,9 +47,17 @@ export default {
         la fonction loginPropsMutator de muter les props du composant Login par défaut, prise en compte lorsque le composant de connexion n'est pas remplacer par celui définit dans la prop login,
         @param {object} props : les propriétés de la fonction login, les props ont des propriétés suivantes : 
         {
+            signIn : ()=><any>, la fonction permettant de connecter l'utilisateur, 
             onSuccess : ({object})=><Any>, la fonction appelée en cas de success
             setState : (newState)=>(...newState),//la fonction utilisée pour update le state du composant. elle doit remplacer le state du composant
-            state : <Object: data,...rest>, le state actuel à l'instant t du composant
+            state : <Object: data,...rest>, le state actuel à l'instant t du composant,
+            
+            //prend en paramètre une référence pointant sur le composant $ecomponents/Button et retourne les actions possible sur ledit button
+            getButtonAction : (buttonRef) => <{
+                enable : x=>typeof buttonRef?.current?.enable =="function" && buttonRef.current.enable(),
+                disable : x=> typeof buttonRef?.current?.disable =="function" && buttonRef?.current.disable(),
+                isDisabled : x=> typeof buttonRef?.current?.isDisabled ==="function" && buttonRef.current?.isDisabled(),
+            },
             nextButton : <Object : 
                 {
                     ref : nextButtonRef, //la référence vers le bouton next (le boutn Suivant)
@@ -72,6 +80,7 @@ export default {
             formName <string>, //le nom du formulaire Form, passé à la formData
             nextButtonRef <{current:<any>}>, la référence vers le bouton next
             previousButtonRef <{current:<any>}, la référence vers le bouton previous
+            formProps : (object), //les props à passer au composant FormData
         }   
         @return <{object}>, l'objet a retourné doit être de la forme : 
         {
@@ -80,6 +89,8 @@ export default {
             containerProps : <object>, les props du composant <Surface/>, le composant qui est le wrapper du composant FormData en charge de récupérer les données de l'interface de connexion
             canSubmit : ({step,...rest})=> <boolean>, //si les donées du formulaire peuvent être submit
             beforeSubmit : ({step,data,...rest})=><void>, //la fonction appélée immédiatement avant le submit des donénes
+            renderNextButton : <boolean>, //si le bouton next sera rendu
+            renderPreviousButton : <boolean>, //si le bouton previous sera rendu
             ...loginProps {object}, les props Supplémentaires à passer au composant FormData utilisé pour le rendu du formulaire de connexion
         }
     */

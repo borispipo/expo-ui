@@ -101,7 +101,5 @@ ButtonStatusComponent.propTypes = {
         PropTypes.element,
     ]),
     editIconProps : PropTypes.object,//les props de l'iconne edit
-    containerProps : {
-        ...Object.assign({},View.propTypes),
-    }, //les props du composant container, idem à ceux du composant $ecomponents/View
+    containerProps : PropTypes.shape(Object.assign({},View.propTypes)), //les props du composant container, idem à ceux du composant $ecomponents/View
 }

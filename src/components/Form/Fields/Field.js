@@ -655,7 +655,7 @@ export default class Field extends AppComponent {
         let {keyboardEvents,onKeyEvent} = this.props;
         const formInstance = this.getForm();
         const data = formInstance ? formInstance.getData() : {};
-        const arg = {key,event,formInstance,field:this.name,formName:this.getFormName(),value:this.getValidRule(),validValue:this.getValidValue(data),data,context:this,isFormField:true,formInstance};
+        const arg = {key,event,formInstance,form:formInstance,field:this.name,formName:this.getFormName(),value:this.getValidRule(),validValue:this.getValidValue(data),data,context:this,isFormField:true,formInstance};
         let handler = undefined;
         if(isObj(keyboardEvents)){
             handler = keyboardEvents[key];

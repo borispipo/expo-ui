@@ -1,6 +1,6 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
-		"version": "8.76.8",
+		"version": "8.77.2",
 		"url": "https://github.com/borispipo/expo-ui#readme",
 		"license": "ISC"
 	},
@@ -59,10 +59,10 @@ module.exports = {
 		"url": "https://github.com/software-mansion/react-native-screens#readme",
 		"license": "MIT"
 	},
-	"@fto-consult/common": {
-		"version": "4.50.6",
-		"url": "https://github.com/borispipo/common#readme",
-		"license": "ISC"
+	"@react-navigation/stack": {
+		"version": "6.3.29",
+		"url": "https://reactnavigation.org/docs/stack-navigator/",
+		"license": "MIT"
 	},
 	"@shopify/flash-list": {
 		"version": "1.6.3",
@@ -109,11 +109,6 @@ module.exports = {
 		"url": "https://docs.expo.dev/versions/latest/sdk/font/",
 		"license": "MIT"
 	},
-	"expo-image-manipulator": {
-		"version": "11.8.0",
-		"url": "https://docs.expo.dev/versions/latest/sdk/imagemanipulator/",
-		"license": "MIT"
-	},
 	"expo-image-picker": {
 		"version": "14.7.1",
 		"url": "https://docs.expo.dev/versions/latest/sdk/imagepicker/",
@@ -154,14 +149,19 @@ module.exports = {
 		"url": "https://docs.expo.dev/versions/latest/sdk/webbrowser/",
 		"license": "MIT"
 	},
-	"react": {
-		"version": "18.2.0",
-		"url": "https://reactjs.org/",
-		"license": "MIT"
-	},
 	"react-native": {
 		"version": "0.73.6",
 		"url": "https://reactnative.dev/",
+		"license": "MIT"
+	},
+	"react-native-big-list": {
+		"version": "1.6.1",
+		"url": "https://marcocesarato.github.io/react-native-big-list-docs/",
+		"license": "GPL-3.0-or-later"
+	},
+	"react-native-blob-util": {
+		"version": "0.18.6",
+		"url": "https://github.com/RonRadtke/react-native-blob-util",
 		"license": "MIT"
 	},
 	"react-native-gesture-handler": {
@@ -169,12 +169,8 @@ module.exports = {
 		"url": "https://github.com/software-mansion/react-native-gesture-handler#readme",
 		"license": "MIT"
 	},
-	"react-native-get-random-values": {
-		"version": "1.8.0",
-		"license": "MIT"
-	},
 	"react-native-reanimated": {
-		"version": "3.6.3",
+		"version": "3.6.2",
 		"url": "https://github.com/software-mansion/react-native-reanimated#readme",
 		"license": "MIT"
 	},

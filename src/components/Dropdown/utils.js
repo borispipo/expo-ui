@@ -14,8 +14,9 @@ export const getSearchTimeout = (itemCount)=>{
 
 /**** voir si le champ de recherche du composant peut être autofocus enf onction du nombre d'items et du type d'environnement */
 export const canAutoFocusSearchField = ({visible,items})=>{
-    const count = typeof items =='number'? items : typeof (items) === 'object' ? Object.size(items) : 0;
     if(!visible) return false;
+    const count = typeof items =='number'? items : typeof (items) === 'object' ? Object.size(items) : 0;
+    return true;///on pourra toujours autoFocus les dropdown Item
     const ret = count > MAX_AUTO_FOCUS_ITEMS && true || false;
     if(!isNativeMobile() && !isTouchDevice()) return true;
     return isNativeMobile()? ret : false;

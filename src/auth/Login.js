@@ -98,13 +98,6 @@ export default function LoginComponent(props){
             return onStepChange({...state,previousStep:prevStep,focusField,nextButtonRef})
         }
     },[state.step]);
-    if(React.isComponent(Login)) return <Login
-        {...props}
-        withScreen = {withPortal}
-        appBarProps = {appBarProps}
-        onSuccess = {onSuccess}
-        auth = {auth}
-    />
     const getButtonAction = React.useMemo(()=>{
         return (buttonRef)=>{
             buttonRef = buttonRef || React.createRef();
@@ -167,6 +160,19 @@ export default function LoginComponent(props){
     const mediaQueryUpdateStyle = ()=>{
         return StyleSheet.flatten([updateMediaQueryStyle()]);
     };
+    const withScrollView = typeof customWithScrollView =='boolean'? customWithScrollView : true;
+    const Wrapper = withPortal ? ScreenWithoutAuthContainer  : withScrollView ? ScrollView: View;
+    if(React.isComponent(Login)) return <Login
+        {...props}
+        withScreen = {withPortal}
+        withScrollView = {withScrollView}
+        Wrapper = {Wrapper}
+        wrapperProps = {withPortal ? {appBarProps,authRequired:false,title:loginTitle,withScrollView} : {style:[styles.wrapper]}}
+        appBarProps = {appBarProps}
+        onSuccess = {onSuccess}
+        auth = {auth}
+        mediaQueryUpdateStyle={mediaQueryUpdateStyle}
+    />
     const callArgs = {
         ...state,
         getButtonAction,
@@ -259,8 +265,7 @@ export default function LoginComponent(props){
             }
         }
     });
-    const withScrollView = typeof customWithScrollView =='boolean'? customWithScrollView : true;
-    const Wrapper = withPortal ? ScreenWithoutAuthContainer  : withScrollView ? ScrollView: View;
+    
     
     const wProps = defaultObj(typeof cWrapperProps =="function"? cWrapperProps({...callArgs,withPortal,withScreen:withPortal,withScrollView,state,formName}) : cWrapperProps);
     const wrapperProps = withPortal ? {appBarProps,authRequired:false,title:loginTitle,withScrollView,...wProps} : { ...wProps,style:[styles.wrapper,wProps.style]};

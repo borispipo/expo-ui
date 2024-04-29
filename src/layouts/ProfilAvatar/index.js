@@ -50,7 +50,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,renderedOnAppBar
     if(withLabel === undefined){
         withLabel = theme.showProfilAvatarOnDrawer;
     }
-     withLabel = withLabel !== false ? true : false;
+    withLabel = withLabel !== false ? true : false;
     props.src = u.avatar;
     size = defaultNumber(size,!withLabel?40:40);
     const userPseudo = Auth.getUserPseudo();
@@ -111,7 +111,6 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,renderedOnAppBar
                 onPress : signOut,
             },
         ];
-      
       const onChangeAvatar = ({dataURL})=>{
             if(u.avatar === dataURL) {
                 return;
@@ -135,7 +134,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,renderedOnAppBar
                     style : [styles.icon,withLabel=== false && {color:theme.colors.onPrimary},customChevronIconProps.style],
                 }
                 if(!withLabel){
-                    return <View testID={testID+"_AvatarContainer"} style={[theme.styles.row,theme.styles.alignItemsCenter,theme.styles.pr1]}>
+                    return <Pressable testID={testID+"_AvatarContainer"} style={[theme.styles.row,theme.styles.alignItemsCenter,theme.styles.pr1]}>
                         <Image
                             pickImageProps = {{quality:0.4}}
                             {...props} 
@@ -154,7 +153,7 @@ const UserProfileAvatarComponent = React.forwardRef(({drawerRef,renderedOnAppBar
                             {...aProps}
                             style = {[chevronIconProps.style,{marginLeft:-5}]}
                         />
-                    </View>
+                    </Pressable>
                 }
                 return <Pressable
                         testID={testID+"_ProfilAvatarContainer"}

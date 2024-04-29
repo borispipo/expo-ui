@@ -15,7 +15,6 @@ import Label from "$ecomponents/Label";
 import View from "$ecomponents/View";
 import Avatar from "$ecomponents/Avatar";
 import Surface from "$ecomponents/Surface";
-import {Provider as DialogProvider} from "$ecomponents/Dialog";
 import ScreenWithoutAuthContainer from "$escreen/ScreenWithoutAuthContainer";
 import {getTitle} from "$escreens/Auth/utils";
 import {isWeb} from "$cplatform";
@@ -34,7 +33,6 @@ export default function LoginComponent(props){
     formName = React.useRef(uniqid(defaultStr(formName,"login-formname"))).current;
     const nextButtonRef = React.useRef(null);
     const previousButtonRef = React.useRef(null);
-    const dialogProviderRef = React.useRef(null);
     const backgroundColor = theme.colors.surface;
     const _getForm = x=> getForm(formName);
     const isMounted = React.useIsMounted();
@@ -166,17 +164,14 @@ export default function LoginComponent(props){
             })
         }
     }
-    const {header : Header,
-        headerTopContent:HeaderTopContent,
-        containerProps : customContainerProps,
-        contentProps : customContentProps,
-        formProps,
-        wrapperProps : cWrapperProps,
-        title : customTitle,
-        withScrollView:customWithScrollView,children,initialize,contentTop,renderNextButton,renderPreviousButton,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,beforeSubmit:beforeSubmitForm,canSubmit:canSubmitForm,onStepChange,...loginProps} = loginPropsMutator({
+    const mediaQueryUpdateStyle = ()=>{
+        return StyleSheet.flatten([updateMediaQueryStyle()]);
+    };
+    const callArgs = {
         ...state,
         getButtonAction,
         data : getData(),
+        mediaQueryUpdateStyle,
         signIn,
         setState,
         setIsLoading,
@@ -194,7 +189,15 @@ export default function LoginComponent(props){
         nextButtonRef,
         ProviderSelector,
         previousButtonRef,
-    });
+    };
+    const {header : Header,
+        headerTopContent:HeaderTopContent,
+        containerProps : customContainerProps,
+        contentProps : customContentProps,
+        formProps,
+        wrapperProps : cWrapperProps,
+        title : customTitle,
+        withScrollView:customWithScrollView,children,initialize,renderNextButton,renderPreviousButton,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,beforeSubmit:beforeSubmitForm,canSubmit:canSubmitForm,onStepChange,...loginProps} = loginPropsMutator(callArgs);
     if(isNonNullString(customTitle)){
         loginTitle = customTitle;
     }
@@ -258,18 +261,15 @@ export default function LoginComponent(props){
     });
     const withScrollView = typeof customWithScrollView =='boolean'? customWithScrollView : true;
     const Wrapper = withPortal ? ScreenWithoutAuthContainer  : withScrollView ? ScrollView: View;
-    const mediaQueryUpdateStyle = (a)=>{
-        return StyleSheet.flatten([updateMediaQueryStyle(),contentProps.style]);
-    };
-    const wProps = defaultObj(typeof cWrapperProps =="function"? cWrapperProps({...state,setState,formName,state,withPortal,withScreen:withPortal,withScrollView,state,formName}) : cWrapperProps);
+    
+    const wProps = defaultObj(typeof cWrapperProps =="function"? cWrapperProps({...callArgs,withPortal,withScreen:withPortal,withScrollView,state,formName}) : cWrapperProps);
     const wrapperProps = withPortal ? {appBarProps,authRequired:false,title:loginTitle,withScrollView,...wProps} : { ...wProps,style:[styles.wrapper,wProps.style]};
     const sH = React.isComponent(HeaderTopContent)? <HeaderTopContent mediaQueryUpdateStyle = {mediaQueryUpdateStyle} /> : React.isValidElement(HeaderTopContent)? HeaderTopContent : null;
     const header = React.isComponent(Header) ? <Header mediaQueryUpdateStyle = {mediaQueryUpdateStyle}/> : React.isValidElement(Header)? Header : null;
     return <Wrapper testID = {testID+"_Wrapper" }{...wrapperProps}>
-        <DialogProvider ref={dialogProviderRef}/>
         {sH}
-        <Surface {...containerProps} {...defaultObj(loginProps?.containerProps)} style={[styles.container,{backgroundColor},containerProps.style,loginProps?.containerProps?.style]}  testID={testID}>
-            <Surface elevation = {0} {...contentProps} mediaQueryUpdateStyle = {mediaQueryUpdateStyle} {...contentProps} testID={testID+"_Content"} style={[styles.content,{backgroundColor},contentProps.style]}>
+        <Surface {...containerProps} {...defaultObj(loginProps?.containerProps)} style={[styles.container,{backgroundColor},containerProps.style,loginProps?.containerProps?.style]}  testID={testID+"_LoginContainer"}>
+            <Surface elevation = {0} {...contentProps} mediaQueryUpdateStyle = {mediaQueryUpdateStyle} {...contentProps} testID={testID+"_LoginContent"} style={[styles.content,{backgroundColor},contentProps.style]}>
                 <FormData 
                     formName = {formName}
                     testID = {testID+"_FormData"}
@@ -291,44 +291,46 @@ export default function LoginComponent(props){
                     data = {extendObj(state.data,loginData)}
                 >
                     <>
-                        {React.isValidElement(contentTop)? contentTop : null}
                         {renderNextButton !== false || renderPreviousButton !== false ? <>
-                            {hasLoginFields?<View testID={testID+"_ButtonsContainer"} style={[styles.buttonWrapper]}>
-                            {renderNextButton !== false ? <Action
-                                ref = {nextButtonRef}
-                                primary
-                                formName={formName}
-                                mode = "contained"
-                                rounded
-                                style = {styles.button}
-                                onPress = {goToNext}
-                                icon = {state.step == 1? 'arrow-right':'login'}
-                                surface
-                                testID = {testID+"_NextButton"}
-                            >
-                                {state.step == 1? 'Suivant' : 'Connexion' }
-                            </Action> : null}
-                            {renderPreviousButton !== false && state.step>=2 ? <Button
-                                onPress = {goToFirstStep}
-                                ref = {previousButtonRef}
-                                mode = "contained"
-                                rounded
-                                raised
-                                style = {styles.button}
-                                secondary
-                                surface
-                                icon = {'arrow-left'}
-                                testID = {testID+"_PrevButton"}
-                            >
-                                Précédent
-                            </Button> : null}
-                        </View> : null}
-                     </> : null}
+                                {hasLoginFields?<View testID={testID+"_ButtonsContainer"} style={[styles.buttonWrapper]}>
+                                {renderNextButton !== false ? <Action
+                                    ref = {nextButtonRef}
+                                    primary
+                                    formName={formName}
+                                    mode = "contained"
+                                    rounded
+                                    style = {styles.button}
+                                    onPress = {goToNext}
+                                    icon = {state.step == 1? 'arrow-right':'login'}
+                                    surface
+                                    testID = {testID+"_NextButton"}
+                                >
+                                    {state.step == 1? 'Suivant' : 'Connexion' }
+                                </Action> : null}
+                                {renderPreviousButton !== false && state.step>=2 ? <Button
+                                    onPress = {goToFirstStep}
+                                    ref = {previousButtonRef}
+                                    mode = "contained"
+                                    rounded
+                                    raised
+                                    style = {styles.button}
+                                    secondary
+                                    surface
+                                    icon = {'arrow-left'}
+                                    testID = {testID+"_PrevButton"}
+                                >
+                                    Précédent
+                                </Button> : null}
+                            </View> : null}
+                        </> : null}
+                        {React.isValidElement(children) ? children : null}
                     </>
                 </FormData>
-                {React.isValidElement(children) ? children : null}
+                 {React.isValidElement(contentProps.children) ? contentProps.children : null}
             </Surface>
+            {React.isValidElement(containerProps.children) ? containerProps.children : null}
         </Surface>
+        {React.isValidElement(wrapperProps.children) ? wrapperProps.children : null}
     </Wrapper>;
 }   
 

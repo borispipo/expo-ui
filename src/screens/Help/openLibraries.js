@@ -1,6 +1,6 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
-		"version": "8.79.0",
+		"version": "8.81.0",
 		"url": "https://github.com/borispipo/expo-ui#readme",
 		"license": "ISC"
 	},
@@ -159,6 +159,11 @@ module.exports = {
 		"url": "https://reactjs.org/",
 		"license": "MIT"
 	},
+	"react-dom": {
+		"version": "18.2.0",
+		"url": "https://reactjs.org/",
+		"license": "MIT"
+	},
 	"react-native": {
 		"version": "0.73.6",
 		"url": "https://reactnative.dev/",
@@ -196,6 +201,11 @@ module.exports = {
 	"react-native-view-shot": {
 		"version": "3.8.0",
 		"url": "https://github.com/gre/react-native-view-shot",
+		"license": "MIT"
+	},
+	"react-native-web": {
+		"version": "0.19.11",
+		"url": "git://github.com/necolas/react-native-web.git",
 		"license": "MIT"
 	},
 	"react-native-webview": {

@@ -9,7 +9,6 @@ import {renderSplitedActions} from "$ecomponents/AppBar/utils";
 import {isWeb,isNativeMobile,isTouchDevice} from "$cplatform";
 import Divider from "$ecomponents/Divider";
 import {isMobileOrTabletMedia} from "$cplatform/dimensions";
-import APP from "$capp/instance";
 import KeyboardAvoidingView from "$ecomponents/KeyboardAvoidingView";
 import {Elevations} from "$ecomponents/Surface";
 import {defaultStr} from "$cutils";

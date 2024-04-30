@@ -325,6 +325,7 @@ const DrawerComponent = React.forwardRef((props,ref)=>{
                   hideStatusBar = {defaultBool(hideStatusBar,true)}
                   overlayColor = {overlayColor}
                   renderNavigationView={(opts)=>{
+                    if(isPortal) return null;
                     const cArgs = {...getDrawerState()}
                     const h = typeof header === 'function'? header(cArgs) : header;
                     const c = typeof content =='function'? content (cArgs) : content;

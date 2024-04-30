@@ -11,11 +11,15 @@ import {
 import { Portal } from 'react-native-paper';
 import PropTypes from "prop-types";
 import View from "$ecomponents/View";
-import {defaultStr} from "$cutils";
+import {defaultStr,defaultObj} from "$cutils";
 import theme,{Colors} from "$theme";
 import {isMobileMedia} from "$cplatform/dimensions";
 import Preloader from "$epreloader";
 import {Elevations} from "$ecomponents/Surface";
+import {HStack} from "$ecomponents/Stack";
+import Divider from "$ecomponents/Divider";
+import Label from "$ecomponents/Label";
+import Icon from "$ecomponents/Icon";
 
 const MIN_SWIPE_DISTANCE = 3;
 const DEVICE_WIDTH = Math.max(Dimensions.get('window').width,280);
@@ -52,6 +56,7 @@ export default class DrawerLayout extends React.PureComponent {
             accessibilityViewIsModal: false,
             drawerShown,
             isPortal,
+            portalProps : {},
             openValue: new Animated.Value(drawerShown?1:0),
         };
     }
@@ -59,11 +64,18 @@ export default class DrawerLayout extends React.PureComponent {
         return !!this.state.isPortal;
     }
     getDrawerPosition() {
-        const { drawerPosition } = this.props;
         const rtl = I18nManager.isRTL;
+        const p = this.isPortal()? this.state.portalProps : this.props;
+        let position = defaultStr(p?.drawerPosition,p?.position,this.props.drawerPosition).toLowerCase();
+        if(position !=='left' && position !=='right'){
+            position = 'left';
+        }
         return rtl
-            ? drawerPosition === 'left' ? 'right' : 'left' // invert it
-            : drawerPosition;
+            ? position === 'left' ? 'right' : 'left' // invert it
+            : position;
+    }
+    isPositionRight(){
+        return this.getDrawerPosition() === 'right';
     }
     isOpen(){
         return this.state.drawerShown;
@@ -111,34 +123,67 @@ export default class DrawerLayout extends React.PureComponent {
     getBackgroundColor(){
         return Colors.isValid(this.props.drawerBackgroundColor)? this.props.backgroundColor : theme.colors.surface;
     }
+    getPortalTestID(){
+        return defaultStr(this.state.portalProps.testID,"RN_DrawerLayoutPortal");
+    }
+    renderPortalTitle(){
+        if(React.isValidElement(this.state.portalProps?.title)) return this.state.portalProps?.title;
+        const title = this.state.portalProps?.title;
+        const isPositionRight = this.isPositionRight();
+        if(typeof title == 'string' && title || typeof title =="number"){
+            const titleProps = defaultObj(this.state.portalProps.titleProps);
+            const testID = this.getPortalTestID();
+            const icon = <Icon
+                onPress = {this.closeDrawer.bind(this)}
+                icon = {this.state.portalProps?.closeIcon || !this.isPositionRight() == 'left'? 'chevron-left' : 'chevron-right'}
+                {...defaultObj(this.state.portalProps.closeIconProps)}
+            />;
+            return <>
+                <HStack style={[styles.portalTitle]} testID={testID+"_TitleContainer"}>
+                    {isPositionRight? icon : null}
+                    <Label {...titleProps} style={[styles.portalTitleText]} testID={testID+"_DrawerLayoutTitle"}>
+                        {title}
+                    </Label>
+                    {!isPositionRight ? icon : null}
+                </HStack>
+                <Divider/>
+            </>;
+        }
+        return null;
+    }
+    renderPortalChildren(){
+        return <>
+            {this.renderPortalTitle()}
+            {React.isValidElement(this.state.portalProps?.children) ? this.state.portalProps?.children : null}
+        </>
+    }
     renderContent({testID}){
         return <View style={[styles.main]} testID={testID+"_DrawerLayoutContent"}>
         {this.props.children}
     </View>;
+    }
+    getDrawerWidth() { 
+        return defaultNumber(this.isPortal()? this.state.portalProps?.drawerWidth : 0,this.props.drawerWidth);
     }
     render() {
         const { accessibilityViewIsModal, drawerShown, openValue } = this.state;
         const elevation = typeof this.props.elevation =='number'? this.props.elevation : 5;
         const elev = this.props.permanent && Elevations[elevation]? Elevations[elevation] : null;
         const testID = defaultStr(this.props.testID,"RN_DrawerLayoutComponent")
-        let {
-            drawerBackgroundColor,
-            drawerWidth,
-            drawerPosition,
-            permanent,
-            position,
+        let { permanent,
             navigationViewRef,
         } = this.props;
-
+        let drawerWidth = this.getDrawerWidth();
         /**
     * We need to use the "original" drawer position here
     * as RTL turns position left and right on its own
     **/
+        const posRight = this.isPositionRight();
         const dynamicDrawerStyles = {
             backgroundColor: this.getBackgroundColor(),
             width: drawerWidth,
-            left: drawerPosition === 'left' ? 0 : null,
-            right: drawerPosition === 'right' ? 0 : null,
+            left: !posRight ? 0 : null,
+            right: posRight? 0 : null,
         };
 
         /* Drawer styles */
@@ -167,11 +212,8 @@ export default class DrawerLayout extends React.PureComponent {
         });
         const animatedOverlayStyles = { opacity: overlayOpacity };
         const pointerEvents = drawerShown || permanent ? 'auto' : 'none';
-        position = defaultStr(position).toLowerCase();
-        if(position !=='left' && position !=='right'){
-            position = 'left';
-        }
-        const posRight = position =="right"? true : false;
+        
+        
         if(permanent){
             dynamicDrawerStyles.position = "relative";
         }
@@ -207,7 +249,7 @@ export default class DrawerLayout extends React.PureComponent {
                             animatedDrawerStyles,
                         ]}
                     >
-                        {this.props.renderNavigationView()}
+                        {this.isPortal()? this.renderPortalChildren() : this.props.renderNavigationView()}
                     </Animated.View>
                     {!posRight && this.renderContent({testID})}
                 </View>
@@ -228,27 +270,35 @@ export default class DrawerLayout extends React.PureComponent {
         }
     };
 
-    openDrawer = (options = {}) => {
-        this._emitStateChanged(SETTLING);
-        Animated.spring(this.state.openValue, {
-            toValue: 1,
-            bounciness: 0,
-            restSpeedThreshold: 0.1,
-            useNativeDriver: this.props.useNativeAnimations,
-            ...options,
-        }).start(() => {
-            if (this.props.onDrawerOpen) {
-                this.props.onDrawerOpen();
-            }
-            this._emitStateChanged(IDLE);
-        });
+    openDrawer = (options) => {
+        options = Object.assign({}, options);
+        const cb = ()=>{
+            this._emitStateChanged(SETTLING);
+            Animated.spring(this.state.openValue, {
+                toValue: 1,
+                bounciness: 0,
+                restSpeedThreshold: 0.1,
+                useNativeDriver: this.props.useNativeAnimations,
+                ...options,
+            }).start(() => {
+                if (this.props.onDrawerOpen) {
+                    this.props.onDrawerOpen();
+                }
+                this._emitStateChanged(IDLE);
+            });
+        }
+        if(this.isPortal()){
+            this.setState({portalProps:options},cb)
+        } else {
+            cb();
+        }
     };
 
     closeDrawer = (options = {},showPreloader) => {
         if(typeof options ==='boolean'){
             showPreloader = options;
         }
-        options = typeof options =='object' && options ? options : {};
+        options = Object.assign({}, options);
         if(typeof showPreloader !== 'boolean'){
             showPreloader = options.showPreloader || options.preloader;
         }
@@ -300,10 +350,9 @@ export default class DrawerLayout extends React.PureComponent {
         if (this._isLockedClosed() || this._isLockedOpen()) {
             return false;
         }
-
         if (this.getDrawerPosition() === 'left') {
             const overlayArea = DEVICE_WIDTH -
-                (DEVICE_WIDTH - this.props.drawerWidth);
+                (DEVICE_WIDTH - this.getDrawerWidth());
 
             if (this._lastOpenValue === 1) {
                 if (
@@ -323,8 +372,7 @@ export default class DrawerLayout extends React.PureComponent {
                 return false;
             }
         } else {
-            const overlayArea = DEVICE_WIDTH - this.props.drawerWidth;
-
+            const overlayArea = DEVICE_WIDTH - this.getDrawerWidth();
             if (this._lastOpenValue === 1) {
                 if (
                     (dx > 0 && Math.abs(dx) > Math.abs(dy) * 3) ||
@@ -426,7 +474,7 @@ export default class DrawerLayout extends React.PureComponent {
     };
 
     _getOpenValueForX(x) {
-        const { drawerWidth } = this.props;
+        const drawerWidth = this.getDrawerWidth();
 
         if (this.getDrawerPosition() === 'left') {
             return x / drawerWidth;
@@ -463,15 +511,20 @@ const styles = StyleSheet.create({
     },
     portalNotVisibleContainer : {
         opacity : 0,
+    },
+    portalTitle : {
+        justifyContent : 'space-between',
+        alignItems : 'center',
+        paddingHorizontal : 10,
     }
 });
-
+const posPropType = PropTypes.oneOf(['left', 'right']);
 DrawerLayout.propTypes = {
     isPortal : PropTypes.bool,
     children: PropTypes.any,
     drawerBackgroundColor : PropTypes.string,
     drawerLockMode: PropTypes.oneOf(['unlocked','locked-closed', 'locked-open']),
-    drawerPosition: PropTypes.oneOf(['left', 'right']),
+    drawerPosition: posPropType,
     drawerWidth: PropTypes.number,
     keyboardDismissMode: PropTypes.oneOf(['none' , 'on-drag']),
     onDrawerClose: PropTypes.func,
@@ -481,6 +534,36 @@ DrawerLayout.propTypes = {
     renderNavigationView: PropTypes.any,
     statusBarBackgroundColor : PropTypes.string,
     useNativeAnimations: PropTypes.bool,
+     /****
+   * les props à passer à la fonction open du drawer, lorsqu'il s'agit du portal
+   * 
+   */
+  portalProps : PropTypes.shape({
+    title : PropTypes.oneOfType([
+      PropTypes.string,//si title est une chaine de caractère alors il sera rendu avec le bouton close permettant de fermer le Drawer
+      PropTypes.node,
+      PropTypes.element,
+      PropTypes.elementType,
+    ]),
+    titleProps : PropTypes.shape({
+        ...defaultObj(Label.propTypes),
+    }),
+    closeIconProps : PropTypes.shape({
+        ...defaultObj(Icon.propTypes),
+    }),
+    icon : PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.node,
+        PropTypes.element,
+    ]),
+    children : PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.element,
+    ]),
+    drawerPosition : posPropType,
+    position : posPropType,
+    drawerWidth : PropTypes.number,
+  }),
 }
 
 DrawerLayout.defaultProps = {

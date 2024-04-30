@@ -33,6 +33,8 @@
 	"react-native-view-shot": "3.8.0",
 	"expo-intent-launcher": "~10.11.0",
 	"expo-image-manipulator": "~11.8.0",
-	"expo-document-picker": "~11.10.1"
+	"expo-document-picker": "~11.10.1",
+	"react-native-web": "~0.19.6",
+    "react-dom": "18.2.0"
 };
                             

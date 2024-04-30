@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "8.79.0",
+  "version": "8.80.0",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "react-native-paper-doc": "https://github.com/callstack/react-native-paper/tree/main/docs/docs/guides",
   "scripts": {
@@ -48,7 +48,7 @@
     "delete-node-modules": "rimraf ./**/node_modules",
     "dev": "npx expo start --no-dev --minify -c",
     "modifier-url-remote-git": "git remote set-url origin 'https://borispipo@github.com/borispipo/smart-eneo.git'",
-    "update": "npm i @fto-consult/common@latest react-native-web react-native-big-list@latest apexcharts@latest file-saver@latest google-libphonenumber@latest  react-native-iphone-x-helper@latest react-native-mime-types@latest react-native-paper@latest react-native-paper-dates@latest react-virtuoso@latest tippy.js@latest xlsx@latest && npm run update-apexchart && npm run find-licenses"
+    "update": "npm i @fto-consult/common@latest react-native-big-list@latest apexcharts@latest file-saver@latest google-libphonenumber@latest  react-native-iphone-x-helper@latest react-native-mime-types@latest react-native-paper@latest react-native-paper-dates@latest react-virtuoso@latest tippy.js@latest xlsx@latest && npm run update-apexchart && npm run find-licenses"
   },
   "bin": {
     "expo-ui": "bin/index.js"
@@ -81,13 +81,11 @@
     "jsbarcode": "^3.11.6",
     "prop-types": "^15.8.1",
     "react-content-loader": "^6.2.1",
-    "react-dom": "^18.2.0",
     "react-native-big-list": "^1.6.1",
     "react-native-iphone-x-helper": "^1.3.1",
     "react-native-mime-types": "^2.5.0",
     "react-native-paper": "^5.12.3",
     "react-native-paper-dates": "^0.22.7",
-    "react-native-web": "^0.19.11",
     "react-virtuoso": "^4.7.10",
     "readable-stream": "^4.5.2",
     "sanitize-filename": "^1.6.3",

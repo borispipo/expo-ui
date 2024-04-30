@@ -138,10 +138,11 @@ export default class DrawerLayout extends React.PureComponent {
                 icon = {this.state.portalProps?.closeIcon || !this.isPositionRight() == 'left'? 'chevron-left' : 'chevron-right'}
                 {...defaultObj(this.state.portalProps.closeIconProps)}
             />;
+            const titleContainerProps = defaultObj(this.state.portalProps?.titleContainerProps);
             return <>
-                <HStack style={[styles.portalTitle]} testID={testID+"_TitleContainer"}>
+                <HStack  testID={testID+"_TitleContainer"} {...titleContainerProps} style={[styles.portalTitle,titleContainerProps.style]}>
                     {isPositionRight? icon : null}
-                    <Label {...titleProps} style={[styles.portalTitleText]} testID={testID+"_DrawerLayoutTitle"}>
+                    <Label testID={testID+"_DrawerLayoutTitle"} {...titleProps} style={[styles.portalTitleText,titleProps.style]} >
                         {title}
                     </Label>
                     {!isPositionRight ? icon : null}
@@ -516,7 +517,12 @@ const styles = StyleSheet.create({
         justifyContent : 'space-between',
         alignItems : 'center',
         paddingHorizontal : 10,
-    }
+        flexWrap : 'nowrap',
+    },
+    portalTitleText : {
+        fontSize : 16,
+        fontWeight : 'bold',
+    },
 });
 const posPropType = PropTypes.oneOf(['left', 'right']);
 DrawerLayout.propTypes = {
@@ -563,6 +569,9 @@ DrawerLayout.propTypes = {
     drawerPosition : posPropType,
     position : posPropType,
     drawerWidth : PropTypes.number,
+    titleContainerProps : PropTypes.shape({
+        ...defaultObj(HStack.propTypes),
+    }),
   }),
 }
 

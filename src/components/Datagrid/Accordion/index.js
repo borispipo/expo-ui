@@ -221,7 +221,7 @@ export default class DatagridAccordionComponent extends Datagrid {
         return this.props.hasScrollViewParent ? true : false;
     }
     bindResizeEvents(){
-        return true;
+        return false;
     }
     getPageSize (){
         return INFINITE_SCROLL_PAGE_SIZE;

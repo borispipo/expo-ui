@@ -8,6 +8,7 @@ import {
     TouchableWithoutFeedback,
     I18nManager,
 } from 'react-native';
+import { Portal } from 'react-native-paper';
 import PropTypes from "prop-types";
 import View from "$ecomponents/View";
 import {defaultStr} from "$cutils";
@@ -37,6 +38,7 @@ export default class DrawerLayout extends React.PureComponent {
 
     constructor(props) {
         super(props);
+        const isPortal = !! props.isPortal;
         this._panResponder = PanResponder.create({
             onMoveShouldSetPanResponder: this._shouldSetPanResponder,
             onPanResponderGrant: this._panResponderGrant,
@@ -45,14 +47,17 @@ export default class DrawerLayout extends React.PureComponent {
             onPanResponderRelease: this._panResponderRelease,
             onPanResponderTerminate: () => {},
         });
-        const drawerShown = props.permanent? true : false;
+        const drawerShown = !isPortal && props.permanent? true : false;
         this.state = {
             accessibilityViewIsModal: false,
             drawerShown,
+            isPortal,
             openValue: new Animated.Value(drawerShown?1:0),
         };
     }
-
+    isPortal(){
+        return !!this.state.isPortal;
+    }
     getDrawerPosition() {
         const { drawerPosition } = this.props;
         const rtl = I18nManager.isRTL;
@@ -170,39 +175,43 @@ export default class DrawerLayout extends React.PureComponent {
         if(permanent){
             dynamicDrawerStyles.position = "relative";
         }
+        const Wrapper = this.isPortal()? Portal  : React.Fragment;
+        const canRender = this.isPortal()? this.state.drawerShown : true;
         return (
-            <View
-                testID = {testID}
-                style={{ flex: 1, backgroundColor: 'transparent',flexDirection:permanent?'row':'column'}}
-                {...this._panResponder.panHandlers}
-            >
-                {!permanent && <TouchableWithoutFeedback
-                    style={{pointerEvents}}
-                    testID = {testID+"_TouchableWithoutFeedBack"}
-                    onPress={this._onOverlayClick}
+            <Wrapper>
+                <View
+                    testID = {testID}
+                    style={[{ flex: canRender && 1 || 0, backgroundColor: 'transparent',flexDirection:permanent?'row':'column'},canRender?styles.portalVisibleContainer:styles.portalNotVisibleContainer]}
+                    {...this._panResponder.panHandlers}
                 >
+                    {!permanent && <TouchableWithoutFeedback
+                        style={{pointerEvents}}
+                        testID = {testID+"_TouchableWithoutFeedBack"}
+                        onPress={this._onOverlayClick}
+                    >
+                        <Animated.View
+                            testID={testID+"_Backdrow"}
+                            ref = {this._backdropRef}
+                            style={[styles.overlay,{backgroundColor:theme.colors.backdrop},{pointerEvents}, animatedOverlayStyles]}
+                        />
+                    </TouchableWithoutFeedback>}
+                    {posRight && this.renderContent({testID})}
                     <Animated.View
-                        testID={testID+"_Backdrow"}
-                        ref = {this._backdropRef}
-                        style={[styles.overlay,{backgroundColor:theme.colors.backdrop},{pointerEvents}, animatedOverlayStyles]}
-                    />
-                </TouchableWithoutFeedback>}
-                {posRight && this.renderContent({testID})}
-                <Animated.View
-                    testID={testID+"_NavigationViewContainer"}
-                    ref={React.mergeRefs(navigationViewRef,this._navigationViewRef)}
-                    accessibilityViewIsModal={accessibilityViewIsModal}
-                    style={[
-                        styles.drawer,
-                        dynamicDrawerStyles,
-                        elev,
-                        animatedDrawerStyles,
-                    ]}
-                >
-                    {this.props.renderNavigationView()}
-                </Animated.View>
-                {!posRight && this.renderContent({testID})}
-            </View>
+                        testID={testID+"_NavigationViewContainer"}
+                        ref={React.mergeRefs(navigationViewRef,this._navigationViewRef)}
+                        accessibilityViewIsModal={accessibilityViewIsModal}
+                        style={[
+                            styles.drawer,
+                            dynamicDrawerStyles,
+                            elev,
+                            animatedDrawerStyles,
+                        ]}
+                    >
+                        {this.props.renderNavigationView()}
+                    </Animated.View>
+                    {!posRight && this.renderContent({testID})}
+                </View>
+            </Wrapper>
         );
     }
 
@@ -449,10 +458,17 @@ const styles = StyleSheet.create({
         right: 0,
         zIndex: 1000,
     },
+    portalVisibleContainer : {
+        ...StyleSheet.absoluteFill,
+    },
+    portalNotVisibleContainer : {
+        opacity : 0,
+    }
 });
 
 DrawerLayout.propTypes = {
-    children: PropTypes.any.isRequired,
+    isPortal : PropTypes.bool,
+    children: PropTypes.any,
     drawerBackgroundColor : PropTypes.string,
     drawerLockMode: PropTypes.oneOf(['unlocked','locked-closed', 'locked-open']),
     drawerPosition: PropTypes.oneOf(['left', 'right']),

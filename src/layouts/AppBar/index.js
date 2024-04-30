@@ -1,14 +1,11 @@
 import AppBar from "$ecomponents/AppBar";
-import { Appbar } from "react-native-paper";
 import React from "$react";
 import {MENU_ICON} from "$ecomponents/Icon";
 import {defaultObj} from "$cutils";
 import {useDrawer} from "$ecomponents/Drawer";
 import Icon from "$ecomponents/Icon";
 import {useGetComponent} from "$econtext/hooks";
-import {navigate as cNavigate,sanitizeName} from "$cnavigation";
 import { StackActions } from '@react-navigation/native';
-
 export * from "./utils";
 
 const AppBarLayout = React.forwardRef(({backActionProps,withDrawer,withNotifications,backAction,backActionRef,options,...props},ref)=>{
@@ -29,8 +26,6 @@ const AppBarLayout = React.forwardRef(({backActionProps,withDrawer,withNotificat
                     goBack();
                     return false;
                 }
-                const home = sanitizeName("Home");
-                console.log(navigation," is navigation heeee ",args);
                 if(typeof navigation?.dispatch =='function'){
                     try {
                         navigation.dispatch(StackActions.popToTop());

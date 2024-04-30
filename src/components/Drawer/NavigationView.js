@@ -71,7 +71,7 @@ const DrawerNavigationViewComponent = React.forwardRef((props,ref)=>{
                 <DrawerItems
                     drawerRef = {drawerRef}
                     {...defaultObj(drawerItemsProps)}
-                    items = {drawerItems}
+                    items = {drawerItems || []}
                     drawerType = {drawerType}
                     isDrawerOpen = {drawerRef.current?.isOpen() || false}
                     minimized = {isMinimized}

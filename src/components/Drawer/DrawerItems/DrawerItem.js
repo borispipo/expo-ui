@@ -2,7 +2,7 @@ import {isNonNullString,defaultStr,uniqid} from "$cutils";
 import PropTypes from "prop-types"
 import _DrawerItem from "./_DrawerItem";
 import {navigate,setActiveRoute} from "$cnavigation";
-import { useDrawer } from "../Provider";
+import { useDrawer } from "../context";
 import { setActiveItem,getOnPressAction,closeDrawer as nCloseDrawer,previousActiveItemRef,activeItemRef} from "./utils";
 import {useIsScreenFocused} from "$enavigation/hooks";
 import React from "$react";

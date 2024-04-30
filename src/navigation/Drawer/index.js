@@ -8,7 +8,6 @@ import Login from "$eauth/Login";
 import {navigate} from "$cnavigation";
 import theme from "$theme";
 import Logo  from "$ecomponents/Logo";
-import appConfig from "$capp/config";
 
 const DrawerNavigator = React.forwardRef(({content,children:customChildren,state,...props},ref)=>{
     const drawerRef = React.useRef(null);

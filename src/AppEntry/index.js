@@ -5,6 +5,7 @@ import BackHandler from "$ecomponents/BackHandler";
 import * as Linking from 'expo-linking';
 import APP from "$capp";
 import {AppStateService,trackIDLE,stop as stopIDLE} from "$capp/idle";
+import {Provider as DrawerProvider} from "$ecomponents/Drawer";
 import { NavigationContainer} from '@react-navigation/native';
 import {navigationRef} from "$cnavigation"
 import NetInfo from '$cutils/NetInfo';
@@ -299,6 +300,7 @@ function App({init:initApp,initialRouteName:appInitialRouteName,children}) {
                       /> : myChildren}
                     </ErrorBoundary>
                   </Portal.Host>
+                  <DrawerProvider testID="RN_DrawerProviderRight"/>
               </PaperProvider>
             </AppEntryRootView>
    </SafeAreaProvider>

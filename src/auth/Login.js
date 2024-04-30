@@ -144,10 +144,10 @@ export default function LoginComponent(props){
         if(cS !== false && beforeSubmit(args) !== false){
             Preloader.open("vérification ...");
             setIsLoading(nextButtonRef,true);
-            return auth.signIn(data).then((a)=>{
-                if(typeof onSuccesRef.current =='function' && onSuccesRef.current(a)=== false) return;
+            return auth.signIn(data).then((result)=>{
+                if(typeof onSuccesRef.current =='function' && onSuccesRef.current({data,result})=== false) return;
                 if(isFunction(onSuccess)){
-                    onSuccess(data);
+                    onSuccess({data,result});
                 } else {
                     navigate("Home");
                 } 
@@ -171,6 +171,34 @@ export default function LoginComponent(props){
         appBarProps = {appBarProps}
         onSuccess = {onSuccess}
         auth = {auth}
+        formName = {formName}
+        /***
+         * permet de connecter un utilisatgeur au backend
+         * @param {object} data, la données liée à l'utilisateur à connecter
+         * @param {object} options, les options de connexion
+         * @return {object}, la données résultat à la fonction de connexion de l'utilisateur
+         */
+        signIn = {(data,options,...rest)=>{
+            options = defaultObj(options);
+            if(!isObj(data) || !Object.size(data,true)){
+                data = getData();
+            }
+            Preloader.open("Connexion ...");
+            return auth.signIn(data,...rest).then((result)=>{
+                if(typeof options.onSuccess === "function"){
+                    if(options.onSuccess({data,result}) === false) return;
+                } else if(typeof options.callback === "function" && options.callback({data,result}) === false){
+                    return;
+                } 
+                if(isFunction(onSuccess) && onSuccess({data,result}) === false){
+                } else {
+                    navigate("Home");
+                } 
+                return result;
+            }).finally(()=>{
+                Preloader.close();
+            });
+        }}
         mediaQueryUpdateStyle={mediaQueryUpdateStyle}
     />
     const callArgs = {

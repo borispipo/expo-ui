@@ -5,11 +5,11 @@ module.exports = (opts)=>{
     const dir = path.resolve(__dirname);
     const isDev = String(process.env.NODE_ENV).toLowerCase() !="production";
     const projectRoot = typeof opts.projectRoot =='string' && fs.existsSync(opts.projectRoot.trim()) && opts.projectRoot.trim() || process.cwd();
-    const assets = path.resolve(dir,"assets");
     opts = typeof opts =='object' && opts ? opts : {};
     opts.platform = "expo";
-    opts.assets = opts.assets || opts.alias && typeof opts.alias =='object' && opts.alias.$assets || assets;
     opts.projectRoot = opts.projectRoot || projectRoot;
+    const assets = fs.existsSync(path.resolve(opts.projectRoot,"assets")) ? path.resolve(opts.projectRoot,"assets") : path.resolve(dir,"assets");
+    opts.assets = opts.assets || opts.alias && typeof opts.alias =='object' && opts.alias.$assets || assets;
     opts.withPouchDB = opts.withPouchDB !== false && opts.withPouchdb !== false ? true : false;
     delete opts.withPouchdb;
     const expoUI = require("./expo-ui-path")();

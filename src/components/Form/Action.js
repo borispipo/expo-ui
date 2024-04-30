@@ -90,7 +90,7 @@ const FormActionComponent = React.forwardRef(({
             const formInstance = getFormInstance(formName);
             if(!formInstance || typeof formInstance.isValid != 'function' && isObj(formInstance.props)) return;
             if(formInstance.isValid()){
-                onPress({...args,data:formInstance.getData({handleChange})})
+                onPress({...args,formInstance,form:formInstance,data:formInstance.getData({handleChange})})
             }
         }
     };

@@ -1,5 +1,6 @@
 import React from "$react";
 import {defaultObj,isDecimal,defaultStr,debounce,extendObj,defaultVal,defaultFunc} from "$cutils";
+import {compare as compareUtil} from "$cutils";
 import TextField,{flatMode} from "$ecomponents/TextField";
 import {Pressable,Dimensions,StyleSheet} from "react-native";
 import { TouchableRipple} from "react-native-paper";
@@ -29,7 +30,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
     contentContainerProps = defaultObj(contentContainerProps);
     const prevLayout = React.usePrevious(layout);
     filter = defaultFunc(filter,x=>true);
-    compare = defaultFunc(compare,(a,b)=> a === b);
+    compare = defaultFunc(compare,compareUtil);
     const prevValue = React.usePrevious(value,compare);
     const selectedRef = React.useRef(undefined);
     const listRef = React.useRef(null);
@@ -89,7 +90,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
         return items;
     },[menuItems])
     React.useEffect(()=>{
-        if(compare(defaultValue == value)) return;
+        if(compare(defaultValue,value)) return;
         selectValue(defaultValue);
     },[defaultValue]);
     const setSelected = (node,update)=>{

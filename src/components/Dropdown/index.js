@@ -229,12 +229,16 @@ class DropdownComponent extends AppComponent {
         }
         this.updateSelected({...nState,data:!this.isBigList?[...this.state.data]: this.state.data,selected,selectedValuesKeys});
     }
-    compare (value,currentValue,avoidNullOrEmpty){
+    compare (value,currentValue){
         if(this.getValueKey(value) === this.getValueKey(currentValue)) return true;
         if(typeof this.props.compare =='function'){
             return this.props.compare(value,currentValue,{context:this,items:this.state.data})
         }
-        return NCompare(value,currentValue,defaultBool(avoidNullOrEmpty,true));
+        if(value === null || value ===""){
+            value  = "";
+        }
+        if(currentValue === null || currentValue =="") currentValue = "";
+        return NCompare(value,currentValue);
     }
     getCallArgs ({item,items,index,_index,...rest}) {
         return ({...rest,item,index,_index,counterIndex:_index,index,itemIndex:index,context:this,isDropdown:true,props:this.props,items,selectedColor:this.selectedColor,unselectedColor:theme.colors.text});

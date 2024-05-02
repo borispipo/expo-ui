@@ -161,7 +161,7 @@ export default function PhoneInputComponent(props){
                     }}
                     testID = {testID}
                     error = {error}
-                    errorText = {errorText}
+                    errorText = {state.errorText || errorText}
                     helperText = {helperText}
                     contentContainerProps = {contentContainerProps}
                     label = {label}
@@ -187,19 +187,18 @@ export default function PhoneInputComponent(props){
                         const {value:nValue} = args;
                         const prevState = state;
                         const nState = updateValue(nValue);
+                        let value = defaultStr(nState.defaultValue).trim();
+                        if(value =="+" || value =="("){
+                            value = "";
+                        }
+                        const prevVal = defaultStr(prevState.defaultValue).trim();
+                        if(prevVal.ltrim(dialCodePrefix) === value.ltrim(dialCodePrefix)) return;
+                        const canChange = value.length < 5 || PhoneNumber.parse(nState.displayValue,nState.countryCode);
+                        nState.errorText = canChange ? undefined : "Veuillez entrer un numéro de téléphone valide";
                         setState({...state,...nState});
                         const dialCodePrefix = getDialCodePrefix(prevState.countryDialCode) || getDialCodePrefix(state.countryDialCode);
-                        if(onChange){
-                            let value = defaultStr(nState.defaultValue).trim();
-                            if(value =="+" || value =="("){
-                                value = "";
-                            }
-                            const prevVal = defaultStr(prevState.defaultValue).trim();
-                            if(prevVal.ltrim(dialCodePrefix) === value.ltrim(dialCodePrefix)) return;
-                            const canChange = value.length < 5 || PhoneNumber.parse(nState.displayValue,nState.countryCode);
-                            if(canChange) {
-                                onChange({...nState,value,country:nState.country,displayValue:nState.displayValue,realValue:nState.defaultValue})
-                            }
+                        if(onChange && canChange){
+                            onChange({...nState,value,country:nState.country,displayValue:nState.displayValue,realValue:nState.defaultValue});
                         }
                     }}
                     ref = {ref}

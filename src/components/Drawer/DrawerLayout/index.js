@@ -163,8 +163,11 @@ export default class DrawerLayout extends React.PureComponent {
         {this.props.children}
     </View>;
     }
+    /***
+     * retourne le min entre la dimension de l'écran et la prop drawerWidth passée en paramètre
+     */
     getDrawerWidth() { 
-        return defaultNumber(this.isPortal()? this.state.portalProps?.drawerWidth : 0,this.props.drawerWidth);
+        return Math.min(defaultNumber(this.isPortal()? this.state.portalProps?.drawerWidth : 0,this.props.drawerWidth),Dimensions.get("window").width);
     }
     render() {
         const { accessibilityViewIsModal, drawerShown, openValue } = this.state;

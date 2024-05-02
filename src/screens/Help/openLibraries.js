@@ -1,6 +1,6 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
-		"version": "8.78.2",
+		"version": "8.82.0",
 		"url": "https://github.com/borispipo/expo-ui#readme",
 		"license": "ISC"
 	},
@@ -109,6 +109,11 @@ module.exports = {
 		"url": "https://docs.expo.dev/versions/latest/sdk/font/",
 		"license": "MIT"
 	},
+	"expo-image-manipulator": {
+		"version": "11.8.0",
+		"url": "https://docs.expo.dev/versions/latest/sdk/imagemanipulator/",
+		"license": "MIT"
+	},
 	"expo-image-picker": {
 		"version": "14.7.1",
 		"url": "https://docs.expo.dev/versions/latest/sdk/imagepicker/",
@@ -149,19 +154,19 @@ module.exports = {
 		"url": "https://docs.expo.dev/versions/latest/sdk/webbrowser/",
 		"license": "MIT"
 	},
+	"react": {
+		"version": "18.2.0",
+		"url": "https://reactjs.org/",
+		"license": "MIT"
+	},
+	"react-dom": {
+		"version": "18.2.0",
+		"url": "https://reactjs.org/",
+		"license": "MIT"
+	},
 	"react-native": {
 		"version": "0.73.6",
 		"url": "https://reactnative.dev/",
-		"license": "MIT"
-	},
-	"react-native-big-list": {
-		"version": "1.6.1",
-		"url": "https://marcocesarato.github.io/react-native-big-list-docs/",
-		"license": "GPL-3.0-or-later"
-	},
-	"react-native-blob-util": {
-		"version": "0.18.6",
-		"url": "https://github.com/RonRadtke/react-native-blob-util",
 		"license": "MIT"
 	},
 	"react-native-gesture-handler": {
@@ -169,8 +174,12 @@ module.exports = {
 		"url": "https://github.com/software-mansion/react-native-gesture-handler#readme",
 		"license": "MIT"
 	},
+	"react-native-get-random-values": {
+		"version": "1.8.0",
+		"license": "MIT"
+	},
 	"react-native-reanimated": {
-		"version": "3.6.2",
+		"version": "3.6.3",
 		"url": "https://github.com/software-mansion/react-native-reanimated#readme",
 		"license": "MIT"
 	},
@@ -192,6 +201,11 @@ module.exports = {
 	"react-native-view-shot": {
 		"version": "3.8.0",
 		"url": "https://github.com/gre/react-native-view-shot",
+		"license": "MIT"
+	},
+	"react-native-web": {
+		"version": "0.19.11",
+		"url": "git://github.com/necolas/react-native-web.git",
 		"license": "MIT"
 	},
 	"react-native-webview": {

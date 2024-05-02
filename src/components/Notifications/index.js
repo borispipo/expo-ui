@@ -6,7 +6,7 @@ import Menu from "$ecomponents/Menu";
 import List from "$ecomponents/List";
 import theme from "$theme";
 import Icon from "$ecomponents/Icon";
-import { defaultStr,isPlainObj } from "$utils";
+import { defaultStr} from "$cutils";
 import { HStack } from "$ecomponents/Stack";
 import Label from "$ecomponents/Label";
 import Divider from "$ecomponents/Divider";

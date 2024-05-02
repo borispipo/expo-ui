@@ -5,7 +5,7 @@ import * as React from "react"
 import {Animated, StyleSheet } from "react-native";
 import View from "$ecomponents/View";
 import {isNativeMobile} from "$platform";
-import {defaultDecimal} from "$utils";
+import {defaultDecimal} from "$cutils";
 import {LogoProgress} from "$ecomponents/Logo";
 import styles, {
   _solidBackground,

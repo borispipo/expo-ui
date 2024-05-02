@@ -128,11 +128,10 @@ export default class DrawerLayout extends React.PureComponent {
         return defaultStr(this.state.portalProps.testID,"RN_DrawerLayoutPortal");
     }
     renderPortalTitle(){
-        const titleProps = defaultObj(this.state.portalProps.titleProps);
         const testID = this.getPortalTestID();
         const title = this.state.portalProps?.title;
         const isPositionRight = this.isPositionRight();
-        const titleContainerProps = defaultObj(this.state.portalProps?.titleContainerProps);
+        const appBarProps = defaultObj(this.state.portalProps?.appBarProps);
         return <AppBar
             title={React.isValidElement(title) ? title : title || null}
             testID={testID+"_TitleContainer"} 
@@ -140,8 +139,8 @@ export default class DrawerLayout extends React.PureComponent {
                 this.closeDrawer();
                 return false;
             }}
-            {...titleContainerProps}
-            backActionProps = {extendObj(true,{},titleContainerProps.backActionProps,{icon:this.state.portalProps?.closeIcon || !isPositionRight == 'left'? 'chevron-left' : 'chevron-right'})}
+            {...appBarProps}
+            backActionProps = {extendObj(true,{},appBarProps.backActionProps,{icon:this.state.portalProps?.closeIcon || !isPositionRight == 'left'? 'chevron-left' : 'chevron-right'})}
         />
     }
     renderPortalChildren(){
@@ -564,7 +563,7 @@ DrawerLayout.propTypes = {
     drawerPosition : posPropType,
     position : posPropType,
     drawerWidth : PropTypes.number,
-    titleContainerProps : PropTypes.shape({
+    appBarProps : PropTypes.shape({
         ...defaultObj(AppBar.propTypes),
     }),
   }),

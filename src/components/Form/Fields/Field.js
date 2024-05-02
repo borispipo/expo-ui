@@ -317,7 +317,7 @@ export default class Field extends AppComponent {
                         return "Veuillez saisir une addresse email valide";
                     }
                 } else if(this.type ==="tel" || this.type =="phone"){
-                    if(!isValidPhoneNumber(value)){
+                    if(!isValidPhoneNumber(args.displayValue || value)){
                         return "Merci d'entrer un numéro de téléphone valide";
                     }
                 }  else if(((this.props.allowWhiteSpaces === false) || ((this.type ==='id' || this.type =='piece') && this.props.allowWhiteSpaces !== true))){

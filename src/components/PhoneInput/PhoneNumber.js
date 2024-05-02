@@ -14,7 +14,7 @@ export const parse = (number,iso2)=>{
     try {
         return phoneUtil.parse(number, defaultStr(iso2).toLowerCase());
     } catch (err) {
-        console.log(`Exception was thrown on parsing phone number : ${err.toString()}`);
+        console.log(`Exception was thrown on parsing phone number : ${err.toString()}`,number," country : ",iso2);
         return null;
     }
 }

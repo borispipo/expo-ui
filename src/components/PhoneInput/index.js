@@ -4,7 +4,7 @@ import TextField,{inputModes} from "$ecomponents/TextField";
 import { StyleSheet,Image,Pressable} from 'react-native';
 import PropTypes from "prop-types";
 import theme,{DISABLED_OPACITY} from "$theme";
-import {keyboardTypes,flatMode} from "$ecomponents/TextField";
+import {flatMode} from "$ecomponents/TextField";
 import Icon from "$ecomponents/Icon";
 import PhoneNumber from "./PhoneNumber";
 import SelectCountry from "$ecomponents/Countries/SelectCountry";
@@ -34,12 +34,12 @@ export const format = (number, iso2) => {
 }
 const prepareState = ({defaultValue,country})=>{
     defaultValue = defaultStr(defaultValue);
-    country = defaultStr(country,appConfig.countryCode);
+    country = defaultStr(country,appConfig.countryCode).toLowerCase();
     if (defaultValue) {
         if (defaultValue[0] !== '+') {
             defaultValue = `+${defaultValue}`;
         }
-        country = PhoneNumber.getCountryCodeOfNumber(defaultValue);
+        country = PhoneNumber.getCountryCodeOfNumber(defaultValue) || country;
         const displayValue = format(defaultValue,country);
         if(displayValue){
             return {displayValue,defaultValue,country}
@@ -59,9 +59,18 @@ const  possiblyEliminateZeroAfterCountryCode = (number) => {
         : number;
 }
 
+const getValue = (text) => {
+    return isNonNullString(text) ? text.replace(/[^0-9]/g, '') : defaultStr(text);
+}
+
+const getDialCodePrefix = (countryDialCode)=>{
+    return isNonNullString(countryDialCode) ? `+${countryDialCode.trim().ltrim("+")}` : "";
+}
+
 export default function PhoneInputComponent(props){
-    let {country,onChange,contentContainerProps,allowZeroAfterCountryCode,testID,inputProps,selectionColor,label,error,errorText,helperText,defaultValue,text,setRef,...rest} = props;
+    let {country,onChange,contentContainerProps,dialCodePrefix:dCodePrefix,allowZeroAfterCountryCode,testID,inputProps,selectionColor,label,error,errorText,helperText,defaultValue,text,setRef,...rest} = props;
     rest = defaultObj(rest);
+    const displayDialCodePrefix = dCodePrefix != false ? true : false;
     contentContainerProps = defaultObj(contentContainerProps);
     contentContainerProps.style = [styles.inputContainer,contentContainerProps.style];
     const ref = React.useRef(null);
@@ -73,10 +82,9 @@ export default function PhoneInputComponent(props){
     label = defaultVal(label,text);
     React.useEffect(()=>{
         React.setRef(ref,ref.current,setRef);
-        setState({...state})
     },[])
     React.useEffect(()=>{
-        const nState = prepareState({defaultValue,country});
+        const nState = prepareState({defaultValue,country:country || state.country})
         if(nState.defaultValue !== state.defaultValue && nState.country !== state.country){
             setState({...state,...nState});
         }
@@ -89,13 +97,9 @@ export default function PhoneInputComponent(props){
     inputProps = defaultObj(inputProps);
     const disabledStyle = props.disabled ?{opacity:DISABLED_OPACITY}:undefined; 
     const flagImageSource = getFlag(state.country);
-    const getValue = (text) => {
-        return isNonNullString(text) ? text.replace(/[^0-9]/g, '') : defaultStr(state.defaultValue);
-    }
-    
+ 
     const updateValue = (number) => {
         let modifiedNumber = getValue(number);
-
         if (modifiedNumber[0] !== '+' && number.length) {
             modifiedNumber = `+${modifiedNumber}`;
         }
@@ -109,20 +113,24 @@ export default function PhoneInputComponent(props){
             const countryData = PhoneNumber.getCountryDataByCode(iso2);
             countryDialCode = countryData.dialCode;
         }
-    
         let displayValue;
-        if (modifiedNumber === `+${countryDialCode}`) {
+        const dialCodePrefix = getDialCodePrefix(countryDialCode);
+        if (modifiedNumber === dialCodePrefix) {
             displayValue = modifiedNumber;
         } else {
             displayValue = format(modifiedNumber);
+        }
+        if(!displayDialCodePrefix){
+            modifiedNumber = defaultStr(modifiedNumber).trim().ltrim(dialCodePrefix);
+            displayValue = dialCodePrefix+defaultStr(displayValue).trim().ltrim(dialCodePrefix);
         }
         const nState = {
             country : iso2,
             displayValue,
             defaultValue : modifiedNumber,
-            countryDialCode
+            countryDialCode,
+            dialCodePrefix
         }
-        setState(nState);
         return nState;
     }
     const pointerEvents = props.disabled || props.readOnly ? "none":"auto";
@@ -179,14 +187,19 @@ export default function PhoneInputComponent(props){
                         const {value:nValue} = args;
                         const prevState = state;
                         const nState = updateValue(nValue);
-                        let value = defaultStr(nState.defaultValue).trim();
-                        if(prevState.defaultValue === value) return;
-                        if(value =="+" || value =="("){
-                            value = "";
-                        }
-                        if(prevState.defaultValue === value) return;
+                        setState({...state,...nState});
+                        const dialCodePrefix = getDialCodePrefix(prevState.countryDialCode) || getDialCodePrefix(state.countryDialCode);
                         if(onChange){
-                            onChange({...nState,value,country:nState.country,displayValue:nState.displayValue,realValue:nState.defaultValue})
+                            let value = defaultStr(nState.defaultValue).trim();
+                            if(value =="+" || value =="("){
+                                value = "";
+                            }
+                            const prevVal = defaultStr(prevState.defaultValue).trim();
+                            if(prevVal.ltrim(dialCodePrefix) === value.ltrim(dialCodePrefix)) return;
+                            const canChange = value.length < 5 || PhoneNumber.parse(nState.displayValue,nState.countryCode);
+                            if(canChange) {
+                                onChange({...nState,value,country:nState.country,displayValue:nState.displayValue,realValue:nState.defaultValue})
+                            }
                         }
                     }}
                     ref = {ref}
@@ -227,4 +240,5 @@ PhoneInputComponent.propTypes = {
     onChange : PropTypes.func,
     autoFormat : PropTypes.bool, //si le texte de telephone sera formatté automatiquement
     allowZeroAfterCountryCode : PropTypes.bool,
+    dialCodePrefix : PropTypes.bool, //si le prefix du pays sera supprimée de la valeur du nombre
 }

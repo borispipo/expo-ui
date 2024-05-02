@@ -139,6 +139,7 @@ export default class DrawerLayout extends React.PureComponent {
                 this.closeDrawer();
                 return false;
             }}
+            windowWidth = {this.getDrawerWidth()}
             {...appBarProps}
             backActionProps = {extendObj(true,{},appBarProps.backActionProps,{icon:this.state.portalProps?.closeIcon || !isPositionRight == 'left'? 'chevron-left' : 'chevron-right'})}
         />

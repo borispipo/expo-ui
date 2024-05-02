@@ -106,7 +106,7 @@ const AppBarComponent = React.forwardRef((props,ref)=> {
       return setLayout({...Dimensions.get("window")});
     }
     const rightContent = typeof right =='function' ? right ({drawerRef,context,isMobile:Dimensions.isMobileMedia(),isDesktop:Dimensions.isDesktopMedia(),isTablet:Dimensions.isTabletMedia(),isPhone:Dimensions.isPhoneMedia(),dimensions,...dimensions}): right;
-    const splitedActions = isSplitedActions(actions)? actions:  splitActions({...appBarProps,windowWidth:layout.width,canGoBack:back || options.back?true:false,isAppBarAction:true,onBackActionPress,goBack,route,navigation,actions});
+    const splitedActions = isSplitedActions(actions)? actions:  splitActions({windowWidth:layout.width,...appBarProps,canGoBack:back || options.back?true:false,isAppBarAction:true,onBackActionPress,goBack,route,navigation,actions});
     const onPageResize = bindResizeEvent !== false ? (e)=>{
           if(!e || !e.nativeEvent || !e.nativeEvent.layout) return null;
           const {width,height} = e.nativeEvent.layout;

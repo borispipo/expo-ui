@@ -8,6 +8,7 @@ import Action from "$ecomponents/Form/Action";
 import Menu from "$ecomponents/Menu";
 import Icon,{ MORE_ICON } from "$ecomponents/Icon";
 import {isAllowedFromStr} from "$cauth/perms";
+import breakpoints from "$cdimensions/breakpoints";
 
 export const ACTION_ICON_SIZE = 30;
 
@@ -31,6 +32,7 @@ export const getThemeColors = ()=>{
 
 const renderAction = ({action,isAlert,actionProps,opts,isAppBarAction,isAppBarActionStyle,key,ActionComponent,isMobile}) => {
     let {Component,isFormAction,...rest} = action;
+    isFormAction = typeof isFormAction === 'boolean' ? isFormAction : isNonNullString(action.formName);
     actionProps = defaultObj(actionProps);
     rest = Object.assign({},rest);
     rest["aria-label"] = defaultStr(rest["aria-label"],rest.title,rest.text,rest.label,rest.children);
@@ -86,7 +88,7 @@ export const splitActions = (args)=>{
         onAlertRequestClose = defaultFunc(onAlertRequestClose);
     }
     opts = defaultObj(opts);
-    const isMobile = isMobileOrTabletMedia();
+    const isMobile = isMobileOrTabletMedia() || typeof opts.windowWidth =="number" && opts.windowWidth < breakpoints.all.md;
     const isAppBarAction = opts.isAppBarAction && isMobile ? true : false;
     const ActionComponent = isAppBarAction ? Icon : Button;
     let menus = []

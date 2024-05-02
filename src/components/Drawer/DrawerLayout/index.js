@@ -11,7 +11,7 @@ import {
 import { Portal } from 'react-native-paper';
 import PropTypes from "prop-types";
 import View from "$ecomponents/View";
-import {defaultStr,defaultObj} from "$cutils";
+import {defaultStr,defaultObj,extendObj} from "$cutils";
 import theme,{Colors} from "$theme";
 import {isMobileMedia} from "$cplatform/dimensions";
 import Preloader from "$epreloader";
@@ -20,6 +20,7 @@ import {HStack} from "$ecomponents/Stack";
 import Divider from "$ecomponents/Divider";
 import Label from "$ecomponents/Label";
 import Icon from "$ecomponents/Icon";
+import AppBar from '$ecomponents/AppBar';
 
 const MIN_SWIPE_DISTANCE = 3;
 const DEVICE_WIDTH = Math.max(Dimensions.get('window').width,280);
@@ -127,30 +128,21 @@ export default class DrawerLayout extends React.PureComponent {
         return defaultStr(this.state.portalProps.testID,"RN_DrawerLayoutPortal");
     }
     renderPortalTitle(){
-        if(React.isValidElement(this.state.portalProps?.title)) return this.state.portalProps?.title;
+        const titleProps = defaultObj(this.state.portalProps.titleProps);
+        const testID = this.getPortalTestID();
         const title = this.state.portalProps?.title;
         const isPositionRight = this.isPositionRight();
-        if(typeof title == 'string' && title || typeof title =="number"){
-            const titleProps = defaultObj(this.state.portalProps.titleProps);
-            const testID = this.getPortalTestID();
-            const icon = <Icon
-                onPress = {this.closeDrawer.bind(this)}
-                icon = {this.state.portalProps?.closeIcon || !this.isPositionRight() == 'left'? 'chevron-left' : 'chevron-right'}
-                {...defaultObj(this.state.portalProps.closeIconProps)}
-            />;
-            const titleContainerProps = defaultObj(this.state.portalProps?.titleContainerProps);
-            return <>
-                <HStack  testID={testID+"_TitleContainer"} {...titleContainerProps} style={[styles.portalTitle,titleContainerProps.style]}>
-                    {isPositionRight? icon : null}
-                    <Label testID={testID+"_DrawerLayoutTitle"} {...titleProps} style={[styles.portalTitleText,titleProps.style]} >
-                        {title}
-                    </Label>
-                    {!isPositionRight ? icon : null}
-                </HStack>
-                <Divider/>
-            </>;
-        }
-        return null;
+        const titleContainerProps = defaultObj(this.state.portalProps?.titleContainerProps);
+        return <AppBar
+            title={React.isValidElement(title) ? title : title || null}
+            testID={testID+"_TitleContainer"} 
+            onBackActionPress={(...args) =>{
+                this.closeDrawer();
+                return false;
+            }}
+            {...titleContainerProps}
+            backActionProps = {extendObj(true,{},titleContainerProps.backActionProps,{icon:this.state.portalProps?.closeIcon || !isPositionRight == 'left'? 'chevron-left' : 'chevron-right'})}
+        />
     }
     renderPortalChildren(){
         return <>
@@ -573,7 +565,7 @@ DrawerLayout.propTypes = {
     position : posPropType,
     drawerWidth : PropTypes.number,
     titleContainerProps : PropTypes.shape({
-        ...defaultObj(HStack.propTypes),
+        ...defaultObj(AppBar.propTypes),
     }),
   }),
 }

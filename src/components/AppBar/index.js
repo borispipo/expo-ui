@@ -8,7 +8,7 @@ import BackAction from "./BackAction";
 import {StyleSheet} from "react-native";
 import {goBack as navGoBack,useNavigation,useRoute,useScreenOptions } from "$cnavigation";
 import PropTypes from "prop-types";
-import {View,Pressable} from "react-native";
+import {Pressable} from "react-native";
 import Dimensions from "$cdimensions";
 import Content from "./Content";
 import Icon from "$ecomponents/Icon";

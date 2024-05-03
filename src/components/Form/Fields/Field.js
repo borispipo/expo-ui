@@ -16,6 +16,7 @@ import {StyleSheet} from "react-native";
 import {isDevEnv} from "$cplatform";
 import {isMobileMedia} from "$cplatform/dimensions";
 import APP from "$capp/instance";
+import { prepareState as preparePhoneInput } from "$ecomponents/PhoneInput";
 ///la combinaison à appliquer pour modifier le contenu textuel de la valeur
 let sanitizeKeyEvent = 'ctrl+m' //le type hashtag
 import defaultKeyboardEvents from "../utils/keyboardEvents";
@@ -317,7 +318,8 @@ export default class Field extends AppComponent {
                         return "Veuillez saisir une addresse email valide";
                     }
                 } else if(this.type ==="tel" || this.type =="phone"){
-                    if(!isValidPhoneNumber(args.displayValue || value)){
+                    const nState = preparePhoneInput({...args,defaultValue:args.displayValue||args.value});
+                    if(!isValidPhoneNumber(nState?.displayValue)){
                         return "Merci d'entrer un numéro de téléphone valide";
                     }
                 }  else if(((this.props.allowWhiteSpaces === false) || ((this.type ==='id' || this.type =='piece') && this.props.allowWhiteSpaces !== true))){

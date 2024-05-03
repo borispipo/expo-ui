@@ -19,7 +19,7 @@ const asYouTypeFormatter = libPhoneNumber.AsYouTypeFormatter;
 
 // eslint-disable-next-line class-methods-use-this
 export const format = (number, iso2) => {
-    const formatter = new asYouTypeFormatter(iso2); // eslint-disable-line new-cap
+    const formatter = new asYouTypeFormatter(defaultStr(iso2).toUpperCase().trim()); // eslint-disable-line new-cap
     let formatted;
     number.replace(/-/g, '')
         .replace(/ /g, '')
@@ -32,21 +32,23 @@ export const format = (number, iso2) => {
 
     return formatted;
 }
-const prepareState = ({defaultValue,country})=>{
-    defaultValue = defaultStr(defaultValue);
+export const prepareState = ({defaultValue,country})=>{
+    defaultValue = defaultStr(defaultValue).trim();
     country = defaultStr(country,appConfig.countryCode).toLowerCase();
-    if (defaultValue) {
-        if (defaultValue[0] !== '+') {
-            defaultValue = `+${defaultValue}`;
+    country = isNonNullString(defaultValue)? PhoneNumber.getCountryCodeOfNumber(defaultValue) || country : country;
+    const countryData = country ? PhoneNumber.getCountryDataByCode(country) : null;
+    const prefix = getDialCodePrefix(countryData?.dialCode);
+    if (defaultValue) { 
+        let defValue = defaultValue;
+        if(prefix && !defaultValue.startsWith("+") && !defaultValue.startsWith(prefix)){
+            defValue = prefix+defaultValue;
         }
-        country = PhoneNumber.getCountryCodeOfNumber(defaultValue) || country;
-        const displayValue = format(defaultValue,country);
+        const displayValue = format(defValue,country);
         if(displayValue){
             return {displayValue,defaultValue,country}
         }
-    } else if(country) {
-        const countryData = PhoneNumber.getCountryDataByCode(country);
-        return {displayValue:countryData ? `+${countryData.dialCode}` : '',defaultValue:'',country};
+    } else if(prefix) {
+        return {displayValue:countryData ? prefix : '',defaultValue:'',country};
     }
     return {defaultValue:'',displayValue:'',country:''};
 }
@@ -85,7 +87,7 @@ export default function PhoneInputComponent(props){
     },[])
     React.useEffect(()=>{
         const nState = prepareState({defaultValue,country:country || state.country})
-        if(nState.defaultValue !== state.defaultValue && nState.country !== state.country){
+        if(nState.defaultValue !== state.defaultValue && nState.country !== state.country && nState.displayValue !== state.displayValue){
             setState({...state,...nState});
         }
     },[defaultValue,country])

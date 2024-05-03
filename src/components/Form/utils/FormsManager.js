@@ -106,3 +106,4 @@ export const getActions = (formName) =>{
 export const warning = (payload,msg) => {if(!isNonNullString(msg)) msg = "⚠ Forms, Missing field name";else msg = "⚠ Forms, "+msg;console.warn(`⚠ Forms, Missing field name: ${payload}`);}
 
 
+export {MANAGER as Manager,MANAGER}

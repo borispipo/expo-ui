@@ -307,6 +307,7 @@ export default class FormDataComponent extends AppComponent{
             name={this.getFormName()}
             onKeyEvent = {this.onKeyEvent.bind(this)}
             data = {data}
+            key = {this.getFormName()}
         >
             <FieldsContent
                 {...formProps}

@@ -63,14 +63,25 @@ const FormActionComponent = React.forwardRef(({
                 context.toggleStatus();
             }
         };
+        const onV = FormsManager.on("validate",onMountForm);
+        const onNoV = FormsManager.on("novalidate",onMountForm);
+        const onUpdate = FormsManager.on("update",onMountForm);
         APP.on("MOUNT_FORM",onMountForm);
         context.toggleStatus();
         return ()=>{
             React.setRef(ref,null);
             FormsManager.trigger("unmountAction",formName,id);
             APP.off("MOUNT_FORM",onMountForm);
+            [onV,onNoV,onUpdate].map(v=>{
+                if(typeof v?.remove =="function"){
+                    v.remove();
+                }
+            });
+            FormsManager.off("validate",onMountForm);
+            FormsManager.off("novalidate",onMountForm);
+            FormsManager.off("update",onMountForm);
         }
-    },[]);
+    },[formName]);
     const props = {
         ...rest,
         ...componentProps,
@@ -85,7 +96,6 @@ const FormActionComponent = React.forwardRef(({
                 return;
             }
             const args = React.getOnPressArgs(event);
-            //console.log(args," is argggggg ",onPress)
             if(!onPress) return;
             const formInstance = getFormInstance(formName);
             if(!formInstance || typeof formInstance.isValid != 'function' && isObj(formInstance.props)) return;
@@ -97,12 +107,12 @@ const FormActionComponent = React.forwardRef(({
     if(typeof children ==='function'){
         return children(props);
     }
-    Component = defaultVal(props.Component,Component,Button);
+    Component = React.isComponent(props.Component) ? props.Component : React.isComponent(Component)? Component : Button;
     delete props.Component;
     delete props.formName;
     delete props.isAction;
     delete props.formName;
-    return <Component  ref = {innerRef} {...props}>{children}</Component>
+    return <Component ref = {innerRef} {...props}>{children}</Component>
 });
 
 

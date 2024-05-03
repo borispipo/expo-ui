@@ -16,6 +16,8 @@ import {isDesktopMedia} from "$cplatform/dimensions";
 import { matchOperators,getSearchTimeout,canAutoFocusSearchField} from "$ecomponents/Dropdown/utils";
 import Dialog from "$ecomponents/Dialog";
 
+const isValidValue =(value)=> typeof value === "string" || typeof value === "number" || isObj(value) || Array.isArray(value);
+
 const  SimpleSelect = React.forwardRef((props,ref)=>{
     let {style : customStyle,onMount,mode,showSearch,anchorContainerProps,renderText,contentContainerProps,withCheckedIcon,testID,selectionColor,dialogProps,onShow,anchor,onUnmont,controlled:cr,onDismiss,visible:controlledVisible,selectedColor,inputProps,itemProps,itemContainerProps,label,listProps,readOnly,text,filter,renderItem,itemValue,getItemValue,defaultValue,items:menuItems,onPress,onChange,disabled,...rest} = props;
     const flattenStyle = StyleSheet.flatten(customStyle) || {};
@@ -42,8 +44,8 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
             return index;
         }
         if(isObj(item)) {
-            if(isNonNullString(item._id)) return item._id;
-            if(isNonNullString(item.code)) return item.code;
+            if(isNonNullString(item._id) || typeof item._id =="number") return item._id;
+            if(isNonNullString(item.code) || typeof item.code =="number") return item.code;
             return index;
         }
         return index;
@@ -58,16 +60,16 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
         const isValueDifferent = !compare(defaultValue,value);
         Object.map(menuItems,(item,index,_index)=>{
             if(React.isValidElement(item) || !filter({items:menuItems,item,_index,index})) return null;
-            const backupItem = item;
             if(!isObj(item)) {
                 if(isDecimal(item) || isNonNullString(item)){
                     item = {label:item+""};
                 } else return null;
             }
+            const backupItem = item;
             const {code,label,text} = item;
             let itValue = itemValue({item:backupItem,index,_index});
             if(itValue === undefined){
-                itValue = isNonNullString(code)? code : index;
+                itValue = isValidValue(code)? code : index;
             }
             const mItem = {item:backupItem,value:itValue,index,_index};
             let content = renderItem ? renderItem({item:backupItem,index,_index,value:itValue}) : defaultVal(label,text,code);
@@ -76,7 +78,10 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
                 content = rText;
             }
             if(isDecimal(content)) content+="";
-            if(!React.isValidElement(content,true)) return null;
+            if(!React.isValidElement(content,true)) {
+                console.warn("Simple select, invalid meuitem content: ",content,mItem,props);
+                return null;
+            }
             mItem.content = content;
             mItem.textContent = React.getTextContent(rText) || React.getTextContent(content);
             if(isValueDifferent && itValue !== undefined && compare(defaultValue,itValue)){
@@ -88,9 +93,11 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
             items.push(mItem);
         });
         return items;
-    },[menuItems])
+    },[menuItems,defaultValue,value]);
     React.useEffect(()=>{
-        if(compare(defaultValue,value)) return;
+        if(compare(defaultValue,value)) {
+            return;
+        }
         selectValue(defaultValue);
     },[defaultValue]);
     const setSelected = (node,update)=>{

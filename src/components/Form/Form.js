@@ -79,6 +79,10 @@ export default class FormComponent extends React.AppComponent {
         super.componentDidMount();
         Forms.trigger("mount",this.props.name,this,false);
     }
+    componentDidUpdate(...rest){
+        super.componentDidUpdate(...rest);
+        Forms.trigger("update",this.props.name,this,false);
+    }
     resetFields(){
         this._fields = {}
     }
@@ -89,6 +93,12 @@ export default class FormComponent extends React.AppComponent {
         if(!isNonNullString(fieldName)) return null;
         let fields = defaultObj(this.getFields());
         return fields[fieldName] || null;
+    }
+    onValidate(...rest){
+        Forms.trigger("validate",this.props.name,...rest);
+    }
+    onNoValidate(...rest){
+        Forms.trigger("novalidate",this.props.name,...rest);
     }
     render (){
         if(isNonNullString(this.props.perm) && !Auth.isAllowedFromStr(this.props.perm)){

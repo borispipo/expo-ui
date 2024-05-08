@@ -24,7 +24,7 @@ if(fs.existsSync(mainJSONPath)){
     });
     const filteredDeps = Object.keys(filterdDObj);
     if(filteredDeps.length){
-        exec(`npm install @fto-consult/expo-ui@latest expo@latest`,{projectRoot}).finally(()=>{
+        exec(`npm install @fto-consult/expo-ui expo`,{projectRoot}).finally(()=>{
             exec(`npx expo install ${filteredDeps.join(" ")}`,{projectRoot}).finally((i)=>{
                 (new Promise((resolve)=>{
                     devDependencies.length ? exec(`npm uninstall ${devDependencies.join(" ")}`,{projectRoot}).finally(()=>{

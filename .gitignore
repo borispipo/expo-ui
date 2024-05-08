@@ -32,3 +32,4 @@ mainPackageJSON.json
 package-lock.json
 jsconfig.json
 src/screens/Help/openLibraries.js
+src/screens/Help/openLibraries.js

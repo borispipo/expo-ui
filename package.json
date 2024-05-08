@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "9.0.1",
+  "version": "9.0.2",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "react-native-paper-doc": "https://github.com/callstack/react-native-paper/tree/main/docs/docs/guides",
   "scripts": {
@@ -89,7 +89,6 @@
   "devDependencies": {
     "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
     "@expo/metro-config": "~0.17.1",
-    "babel-plugin-inline-dotenv": "^1.7.0",
     "babel-plugin-module-resolver": "^5.0.0",
     "sharp-cli": "^2.1.1"
   }

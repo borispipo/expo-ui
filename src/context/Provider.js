@@ -1,3 +1,4 @@
+import "@expo/metro-runtime";
 import "$session";
 import React from "$react";
 import appConfig from "$capp/config";

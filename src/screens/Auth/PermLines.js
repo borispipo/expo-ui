@@ -111,14 +111,6 @@ const PermLines = React.forwardRef(({user,gridProps,defaultActions:cDefaultActio
 });
 
 PermLines.displayName = "AuthPermsLinesComponent";
-const PermTextType = PropTypes.shape({
-    text : PropTypes.string,//le texte de la permission
-    label : PropTypes.string,
-    title : PropTypes.string, //le tooltip associé à la permission
-    tooltip : PropTypes.string, //alias à title,
-    actions : PropTypes.objectOf(PermTextType),//les actions supportées par la permission
-    defaultAction : PropTypes.bool,//si les actions par défaut seront associés à la permission en cours
-});
 
 const permsType = PropTypes.oneOfType([
     PropTypes.func,PropTypes.object,

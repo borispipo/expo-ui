@@ -289,6 +289,7 @@ export default class TableDataScreenComponent extends FormDataScreen{
                         currentField.readOnly = true;
                     }
                 });
+                const isPrimary = this.primaryKeyFields[columnField] && true || false;
                 const cArgs = {...rest,field:currentField,columnField,columnDef:currentField,isUpdate:isUpdated,name:columnField,index:i,counterIndex,isPrimary,fields:preparedFields,contex:this,data:this.getCurrentData(),datas,currentIndex,isUpdated,tableName,table};
                 if(isUpdated){
                     //la props readOnlyOnEditing permet de rendre le champ readOnly en cas de mise à jour de la tableData
@@ -311,7 +312,6 @@ export default class TableDataScreenComponent extends FormDataScreen{
                 if(field.primaryKey ===true){
                     this.primaryKeyFields[columnField] = true;
                 }
-                const isPrimary = this.primaryKeyFields[columnField] && true || false;
                 if(!canRenderActions){
                     currentField.disabled = true;
                 }

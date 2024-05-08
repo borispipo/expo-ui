@@ -8,9 +8,9 @@ import {CHECKED_ICON,UNCHECKED_ICON} from "$ecomponents/Icon/utils";
 /****** icon de type checkbox variant en fonction de l'environnement ou la plateforme */
 const Checkbox = React.forwardRef((props,ref)=>{
     const {checked:customChecked,color:customColor,primary,secondary,primaryOnCheck,secondaryOnCheck,onChange,checkedIcon:customCheckedIcon,uncheckedIcon:customUncheckedIcon,onPress,...rest} = props; 
-    const checkedIcon = defaultStr(checkedIcon,CHECKED_ICON);
-    const uncheckedIcon = defaultStr(uncheckedIcon,UNCHECKED_ICON);
-    const [checked,setIsChecked] = React.useState(!!checked);
+    const checkedIcon = customCheckedIcon || CHECKED_ICON;
+    const uncheckedIcon = customUncheckedIcon || UNCHECKED_ICON;
+    const [checked,setIsChecked] = React.useState(!!customChecked);
     const isMounted = React.useIsMounted();
     const prevChecked = React.usePrevious(checked);
     const callOnChangeRef = React.useRef(true);

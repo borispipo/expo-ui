@@ -3,6 +3,7 @@ const fs = require("fs");
 const { getDefaultConfig } = require('@expo/metro-config');
 module.exports = function(opts){
   opts = opts && typeof opts =='object'? opts : {};
+  const isDev = String(process.env.NODE_ENV).toLowerCase().trim() !="production";
   let {assetExts,sourceExts} = opts;
   assetExts = Array.isArray(assetExts)? assetExts: [];
   sourceExts= Array.isArray(sourceExts)?sourceExts : [];
@@ -38,6 +39,10 @@ module.exports = function(opts){
       'jsx', 'js','tsx',
   ]
   config.watchFolders = Array.isArray(config.watchFolders)? config.watchFolders : [];
+  const expoUIP = require("./expo-ui-path")(projectRoot);
+  if(!config.watchFolders.includes(expoUIP)){
+    config.watchFolders.push(expoUIP);
+  }
   let hasFTO = false;
   for(let i in config.watchFolders){
       if(typeof config.watchFolders[i] ==="string" && config.watchFolders[i].includes("@fto-consult")){

@@ -1,3 +1,4 @@
+import "@expo/metro-runtime";
 import 'react-native-gesture-handler';//please do not remove this line
 import "$session";//please do not remove this line
 import { registerRootComponent } from 'expo';

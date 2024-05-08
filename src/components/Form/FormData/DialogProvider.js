@@ -22,7 +22,7 @@ const FormDataDialogProvider = React.forwardRef((props,innerRef)=>{
     const [state,setState] = React.useState({});
     const isMobile = isMobileOrTabletMedia();
     const formRef = React.useRef(null);
-    const {closeAction} = props;
+    let {closeAction} = props;
     const context = {
         open : (props)=>{
             let sData = {};
@@ -68,7 +68,7 @@ const FormDataDialogProvider = React.forwardRef((props,innerRef)=>{
             rest.windowWidth = !isMob ? MAX_WIDTH : undefined;
             const no = extendObj({},props.no,state.no);
             rest.actions = Array.isArray(rest.actions)? Object.clone(rest.actions) : isObj(rest.actions)? Object.clone(rest.actions) : null;
-            const closeAction = defaultObj(closeAction);
+            closeAction = defaultObj(closeAction);
             rest.cancelButton = false;
             if(cancelButton !== false && rest.actions && (!isMob || rest.fullScreen === false) && state.no !== false){
                 if(isDesktopMedia() && typeof rest.maxActions !=='number'){

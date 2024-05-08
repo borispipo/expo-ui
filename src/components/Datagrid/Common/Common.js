@@ -1051,7 +1051,7 @@ export default class CommonDatagridComponent extends AppComponent {
     renderDataSourceSelector(){
         const t = !this.props.handleTitle ? null : isNonNullString(this.props.title) || typeof this.props.title ==='number' ? <Label textBold primary style={[theme.styles.fs14]} testID={"RN_DatagridTitleProp"}>{this.props.title}</Label> : React.isValidElement(this.props.title)? this.props.title : null;
         const table = defaultStr(this.props.table,this.props.tableName);
-        const dS = dS === false ? null : typeof this.props.dataSourceSelector ==='function'? this.props.dataSourceSelector({
+        const dS = this.props.dataSourceSelector === false ? null : typeof this.props.dataSourceSelector ==='function'? this.props.dataSourceSelector({
             defaultValue : this.currentDataSources,
             onChange : this.onChangeDataSources.bind(this),
             tableName:table,

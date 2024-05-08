@@ -3,15 +3,10 @@ const fs = require("fs");
 
 module.exports = function(api,opts) {
   opts = typeof opts =='object' && opts ? opts : {};
-  const inlineDovOptions = { unsafe: true};
   const platform = api.caller(caller => caller && caller.platform);
   const isWeb = platform === 'web';
   const options = {...opts,isWeb,isAndroid:platform==="android",isIos : platform==="ios",platform:"expo"};
-  const environmentPath = require("./copy-env-file")();
-  if(environmentPath && fs.existsSync(environmentPath)){
-    inlineDovOptions.path ='./.env';
-  }
-  /*** par défaut, les variables d'environnements sont stockés dans le fichier .env situé à la racine du projet, référencée par la prop base  */
+  options.projectRoot = typeof options.projectRoot == 'string' && fs.existsSync(path.resolve(options.projectRoot)) ? path.resolve(options.projectRoot) : process.cwd();
   const alias =  require("./babel.config.alias")(options);
   if(typeof options.aliasMutator =="function"){
     options.aliasMutator({...options,alias});
@@ -35,7 +30,6 @@ module.exports = function(api,opts) {
     ],
     plugins : [
       ...plugins,
-      ["inline-dotenv",inlineDovOptions],
       ["module-resolver", {"alias": alias}],
       "@babel/plugin-proposal-export-namespace-from",
       ...(reanimated?[reanimated]:[]),

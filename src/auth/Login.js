@@ -36,7 +36,8 @@ export default function LoginComponent(props){
     const backgroundColor = theme.colors.surface;
     const _getForm = x=> getForm(formName);
     const isMounted = React.useIsMounted();
-    
+    const initializeRef = React.useRef(props.initialize);
+    const onStepChangeRef = React.useRef(props.onStepChange);
     const auth = useAuth();
     const notifyUser = (message,title)=> {
         if(isObj(message)){
@@ -87,15 +88,15 @@ export default function LoginComponent(props){
     React.useEffect(()=>{
         Preloader.closeAll();
         /*** pour initializer les cordonnées du composant login */
-        if(typeof initialize =='function'){
-            initialize();
+        if(typeof initializeRef.current =='function'){
+            initializeRef.current();
         }
     },[]);
     const prevStep = React.usePrevious(state.step);
     React.useEffect(()=>{
         /*** lorsque le state du composant change */
-        if(typeof onStepChange =='function'){
-            return onStepChange({...state,previousStep:prevStep,focusField,nextButtonRef})
+        if(typeof onStepChangeRef.current =='function'){
+            return onStepChangeRef.current({...state,previousStep:prevStep,focusField,nextButtonRef})
         }
     },[state.step]);
     const getButtonAction = React.useMemo(()=>{
@@ -160,7 +161,7 @@ export default function LoginComponent(props){
     const mediaQueryUpdateStyle = ()=>{
         return StyleSheet.flatten([updateMediaQueryStyle()]);
     };
-    const withScrollView = typeof customWithScrollView =='boolean'? customWithScrollView : true;
+    let withScrollView = typeof props.withScrollView =='boolean'? props.withScrollView : true;
     const Wrapper = withPortal ? ScreenWithoutAuthContainer  : withScrollView ? ScrollView: View;
     if(React.isComponent(Login)) return <Login
         {...props}
@@ -231,7 +232,15 @@ export default function LoginComponent(props){
         formProps,
         wrapperProps : cWrapperProps,
         title : customTitle,
-        withScrollView:customWithScrollView,children,initialize,renderNextButton,renderPreviousButton,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,beforeSubmit:beforeSubmitForm,canSubmit:canSubmitForm,onStepChange,...loginProps} = loginPropsMutator(callArgs);
+        withScrollView:customWithScrollView,children,initialize,renderNextButton,renderPreviousButton,data:loginData,canGoToNext,keyboardEvents,onSuccess:onLoginSuccess,beforeSubmit:beforeSubmitForm,canSubmit:canSubmitForm,onStepChange,...loginProps} = loginPropsMutator(callArgs);    
+   
+    if(typeof initialize =="function"){
+        initializeRef.current = initialize;
+    }
+    if(typeof onStepChange =="function"){
+        onStepChangeRef.current = onStepChange;
+    }
+    withScrollView = typeof customWithScrollView =='boolean'? customWithScrollView : withScrollView;
     if(isNonNullString(customTitle)){
         loginTitle = customTitle;
     }

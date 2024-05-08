@@ -1,0 +1,1 @@
+Upgrade to SDK 51 : https://expo.dev/changelog/2024/05-07-sdk-51

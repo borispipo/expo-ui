@@ -3,7 +3,7 @@ const fs = require("fs");
 
 module.exports = (opts)=>{
     const dir = path.resolve(__dirname);
-    const isDev = String(process.env.NODE_ENV).toLowerCase() !="production";
+    const isDev = String(process.env.NODE_ENV).toLowerCase().trim() !="production";
     const projectRoot = typeof opts.projectRoot =='string' && fs.existsSync(opts.projectRoot.trim()) && opts.projectRoot.trim() || process.cwd();
     opts = typeof opts =='object' && opts ? opts : {};
     opts.platform = "expo";
@@ -12,7 +12,7 @@ module.exports = (opts)=>{
     opts.assets = opts.assets || opts.alias && typeof opts.alias =='object' && opts.alias.$assets || assets;
     opts.withPouchDB = opts.withPouchDB !== false && opts.withPouchdb !== false ? true : false;
     delete opts.withPouchdb;
-    const expoUI = require("./expo-ui-path")();
+    const expoUI = require("./expo-ui-path")(projectRoot);
     const cPath = isDev && fs.existsSync(path.resolve(expoUI,"node_modules","@fto-consult","common"))? path.resolve(expoUI,"node_modules","@fto-consult","common") : null; 
     const r = require(`${cPath ? path.resolve(cPath,"babel.config.alias.js"):'@fto-consult/common/babel.config.alias'}`)(opts);
     const expo = path.resolve(expoUI,"src");

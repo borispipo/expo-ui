@@ -31,12 +31,12 @@ export const defaultHeight = 300;
 const useNativeDriver = false;
 
 const BottomSheetComponent = React.forwardRef((props,ref)=> {
-    const {
+    let {
         animationType,
         animationDuration,
         animationPosition,
         closeOnDragDown,
-        //dragFromTopOnly,
+        dragFromTopOnly,
         closeOnPressMask,
         closeOnPressBack,
         children,
@@ -62,7 +62,7 @@ const BottomSheetComponent = React.forwardRef((props,ref)=> {
         actionTitle,
         elevation:customElevation,
         containerProps : customContainerProps,
-        backdropProps : customBackdropProps,
+        backdropProps,
         ...rest
     } = props;
     const {height:winHeight} = Dimensions.get("window");
@@ -192,7 +192,7 @@ const BottomSheetComponent = React.forwardRef((props,ref)=> {
         transform: pan.getTranslateTransform()
     };
     const actionProps = Object.assign({},rest.actionProps);
-    const backdropProps = defaultObj(backdropProps);
+    backdropProps = defaultObj(backdropProps);
     //actionProps.size = actionProps.size || 25;
     actionProps.style = [{marginVertical:0,paddingVertical:0},actionProps.style]
     const aStyle = {color:theme.colors.primaryOnSurface};
@@ -231,7 +231,7 @@ const BottomSheetComponent = React.forwardRef((props,ref)=> {
             React.setRef(ref,null);
         }
     },[]);
-    const dragFromTopOnly = typeof dragFromTopOnly ==='boolean' ? dragFromTopOnly : withScrollView !== false ? true : isTouchDevice();
+    dragFromTopOnly = typeof dragFromTopOnly ==='boolean' ? dragFromTopOnly : withScrollView !== false ? true : isTouchDevice();
     const testID = defaultStr(customTestID,"RN_BottomSheetComponent");
     const containerProps = defaultObj(customContainerProps);
     const elevation = typeof customElevation =='number'? Math.ceil(customElevation) : 10;

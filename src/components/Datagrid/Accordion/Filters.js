@@ -18,8 +18,8 @@ import { useDatagrid } from "../hooks";
 const MIN_WIDTH = 250;
 let windowWidth = Dimensions.get("window").width;
 
-const FiltersAccordionComponent = React.forwardRef(({children,filters,filteredColumns,context,label,testID:cTestID,filterTitle:customFilterTitle,visible:customVisible,orOperator,andOperator,onToggleFilters,...rest},ref)=>{
-    const testID = defaultStr(testID,"RN_AccordionFilters");
+const FiltersAccordionComponent = React.forwardRef(({children,testID,filters,filteredColumns,context,label,testID:cTestID,filterTitle:customFilterTitle,visible:customVisible,orOperator,andOperator,onToggleFilters,...rest},ref)=>{
+    testID = defaultStr(testID,"RN_AccordionFilters");
     const [visibleColumns,setVisibleColumns] = React.useState(filteredColumns);
     const [visible,setVisible] = React.useState(defaultBool(customVisible,false));
     const valuesRefs = React.useRef({});

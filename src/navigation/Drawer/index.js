@@ -14,6 +14,8 @@ const DrawerNavigator = React.forwardRef(({content,children:customChildren,state
     const mergedRefs = React.useMergeRefs(drawerRef,ref);
     const forceRender = React.useForceRender();
     const refreshItemsRef = React.useRef(false);
+    const isAuthLoggedIn = Auth.isLoggedIn();
+    const [isLoggedIn,setIsLoggedIn] = React.useState(isAuthLoggedIn);
     const items = useGetItems({refresh:()=>{
         if(drawerRef.current && drawerRef.current && drawerRef.current.forceRenderNavigationView){
             return  drawerRef.current.forceRenderNavigationView();
@@ -45,8 +47,6 @@ const DrawerNavigator = React.forwardRef(({content,children:customChildren,state
         }
         return <ProfilAvatar ref={uProfileRef} drawerRef={drawerRef}/>;
     };
-    const isAuthLoggedIn = Auth.isLoggedIn();
-    const [isLoggedIn,setIsLoggedIn] = React.useState(isAuthLoggedIn);
     const prevIsLoggedIn = React.usePrevious(isLoggedIn);
     const navigationViewRef = React.useRef(null);
     state = defaultObj(state);

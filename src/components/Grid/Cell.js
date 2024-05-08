@@ -74,7 +74,7 @@ const GridCellComponent = React.forwardRef((p,ref)=>{
     const testID = defaultStr(props.testID,"RN_Grid.CellComponent");
     const contentProps = defaultObj(cProps);
     const C = onPress || onLongPress || onPressIn || onPressOut ? Pressable : View;
-    const elevation = typeof elevation == "number"? elevation : withSurface ? 5 : undefined;
+    const elevation = typeof cElev == "number"? cElev : withSurface ? 5 : undefined;
     const elevStyle = typeof elevation =="number" ? Elevations[elevation] || null : null;
     return <View 
         {...props}

@@ -7,7 +7,7 @@
     "orientation": "portrait",
     "expoSdkVersion" : "50",
     "web": {
-      "bundler": "webpack"
+      "bundler": "metro"
     },
     "android": {
       "package": "com.borispipo.ftoconsultexpoui"

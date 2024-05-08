@@ -481,6 +481,7 @@ export default class Filter extends AppComponent {
       data,
       testID,
       filterContainerProps,
+      responsiveProps,
       ...rest
     } = {...this.props,...this.filterProps};
      const type = this.type;
@@ -646,7 +647,7 @@ export default class Filter extends AppComponent {
      const containerProps = defaultObj(this.props.containerProps,rest.containerProps);
      delete rest.containerProps;
      const Component = isBetweenAction ? FilterBetweenComponent : this.Component;
-     const responsiveProps = Object.assign({},responsiveProps);
+     responsiveProps = Object.assign({},responsiveProps);
      responsiveProps.style = [theme.styles.w100,responsiveProps.style]
      if(ignoreDefaultValue && isPeriodAction) {
         rest.isPeriodAction = true;

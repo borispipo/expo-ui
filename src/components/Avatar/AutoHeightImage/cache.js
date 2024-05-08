@@ -1,4 +1,5 @@
 import { Image } from 'react-native';
+import { resolveAssetSource } from '$ecomponents/Image';
 
 /**
  * store with
@@ -22,7 +23,7 @@ const loadImageSize = (image) => {
   return new Promise((resolve, reject) => {
     //number indicates import X or require(X) was used (i.e. local file)
     if (typeof image === 'number') {
-      const { width, height } = Image.resolveAssetSource(image);
+      const { width, height } = defaultObj(resolveAssetSource(image));
       resolve({ width, height });
     } else {
       Image.getSize(

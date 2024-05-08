@@ -75,7 +75,7 @@ module.exports = function(appName,{projectRoot:root}){
         writeFile(mainPackagePath,JSON.stringify(mainPackage,null,2),{overwrite:true});
     }
     console.log("creating application .....");
-    ["babel.config.js","metro.config.js","webpack.config.js"].map((p)=>{
+    ["babel.config.js","metro.config.js"].map((p)=>{
         const rP = path.join(projectRoot,p);
         const pp = path.join(getAppDir(),p);
         if(!fs.existsSync(rP) && fs.existsSync(pp)){
@@ -98,7 +98,6 @@ module.exports = function(appName,{projectRoot:root}){
     });
 }
 const defaultDevDependencies = {
- "@expo/webpack-config":"latest", 
  "@expo/metro-config" : "latest", 
 }
 const createEntryFile = (projectRoot)=>{
@@ -191,7 +190,7 @@ electron/**/*
       },
       "web": {
         "favicon": "./assets/favicon.png",
-        "bundler": "webpack"
+        "bundler": "metro"
       }
     }
   }

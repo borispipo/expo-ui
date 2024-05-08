@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "8.84.0",
+  "version": "9.0.0",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "react-native-paper-doc": "https://github.com/callstack/react-native-paper/tree/main/docs/docs/guides",
   "scripts": {
@@ -31,9 +31,6 @@
     "install-apk": "adb -s emulator-5554 install myapp.apk",
     "android-emulator": "emulator -avd EMULATOR",
     "flipper": "npx cross-env METRO_SERVER_PORT=19000 E:\\Studies\\react-native\\debugger\\Flipper-win\\Flipper.exe",
-    "test:build": "electron-webpack && electron-builder --dir -c.compression=store -c.mac.identity=null",
-    "compile-electron": "webpack --env platform=electron",
-    "compile-electron-p": "webpack --config ./electron/webpack.config.js --mode=production",
     "electron": "electron ./electron",
     "logcat": "adb -d logcat com.ftc.apps.salite1:E > errors.txt",
     "logcat-export": "adb -d logcat com.ftc.apps.salite1 *:S > logcat.txt",
@@ -71,7 +68,6 @@
     "@emotion/react": "^11.11.1",
     "@faker-js/faker": "^8.0.2",
     "@fto-consult/common": "^4.52.0",
-    "@fto-consult/expo-ui": "^8.73.1",
     "apexcharts": "^3.49.0",
     "file-saver": "^2.0.5",
     "google-libphonenumber": "^3.2.34",
@@ -95,12 +91,8 @@
   "devDependencies": {
     "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
     "@expo/metro-config": "~0.17.1",
-    "@expo/webpack-config": "^19.0.1",
     "babel-plugin-inline-dotenv": "^1.7.0",
     "babel-plugin-module-resolver": "^5.0.0",
-    "crypto-browserify": "^3.12.0",
-    "sharp-cli": "^2.1.1",
-    "stream-browserify": "^3.0.0",
-    "vm": "^0.1.0"
+    "sharp-cli": "^2.1.1"
   }
 }

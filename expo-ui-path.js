@@ -4,34 +4,29 @@
 
 const fs = require("fs");
 const path = require("path");
+const {JSONManager} = require("@fto-consult/node-utils");
 ///retourne le chemin vers le package @expo-ui
-module.exports = function (){
-    const ag = Array.prototype.slice.call(arguments,0);
-    let suffix ="";
-    ag.map(p=>{
-        if(typeof p ==='string' && p){
-            suffix = path.join(suffix,p);
-        }
-    })
+module.exports = function (projectRoot){
     const sep = path.sep;
     if(require("./is-local-dev")()){//le programme s'exécute en environnement fix bugs sur electron
-        return path.resolve(__dirname,suffix).replace(sep,(sep+sep));///pour la résolution du module expo-ui en mode test
+        return path.resolve(__dirname).replace(sep,(sep+sep));///pour la résolution du module expo-ui en mode test
     }
-    const isDevEnv = process?.env?.WEBPACK_SERVE && 'development' === process.env.NODE_ENV;
-    const packageJSON = path.resolve(process.cwd(),"package.json");
-    const expoUIPath = path.resolve(process.cwd(),"node_modules","@fto-consult","expo-ui");
-    if(isDevEnv && fs.existsSync(packageJSON)){
-        try {
-            const package = require(`${packageJSON}`);
-            if(package && typeof package =='object' && package?.expoUIRootPath && typeof package.expoUIRootPath ==='string'){
-                const p = path.resolve(package.expoUIRootPath);
-                if(fs.existsSync(p) && fs.existsSync(path.resolve(p,"src")) && fs.existsSync(path.resolve(p,"webpack.config.js"))){
-                    return path.resolve(p,suffix).replace(sep,(sep+sep));
+    const isDev = String(process.env.NODE_ENV).toLowerCase().trim() !="production";
+    projectRoot = typeof projectRoot =='string' && fs.existsSync(path.resolve(projectRoot)) && path.resolve(projectRoot) || process.cwd();
+    const packageJSON = path.resolve(projectRoot,"package.json");
+    const expoUIPath = path.resolve(projectRoot,"node_modules","@fto-consult","expo-ui");
+    if(isDev && fs.existsSync(packageJSON)){
+        const pM = JSONManager(packageJSON);
+        if(pM.hasPackage){
+            const expoUIRootPath = pM.get("expoUIRootPath");
+            if(typeof expoUIRootPath =="string" && expoUIRootPath){
+                const p = path.resolve(expoUIRootPath);
+                const pM2 = JSONManager(path.resolve(expoUIRootPath,"package.json"));
+                if(pM2.hasPackage && pM2.get("name") =="@fto-consult/expo-ui" && fs.existsSync(p) && fs.existsSync(path.resolve(p,"src"))){
+                    return p;
                 }
             }
-            
-        } catch (e){}
+        }
     }
-    /***** old dev env */
-    return suffix ? path.join(expoUIPath,suffix).replace(sep,"/"): expoUIPath;
+    return expoUIPath;
 };

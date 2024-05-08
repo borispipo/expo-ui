@@ -7,7 +7,7 @@ let maxWidthDiff = 100, maxHeightDiff = 100;
 import {StyleSheet} from "react-native";
 import React from "$react";
 import PropTypes from "prop-types";
-import {isMobileNative} from "$cplatform";
+import {isMobileNative,isWeb} from "$cplatform";
 import {uniqid} from "$cutils";
 //import Signature from "$ecomponents/Signature";
 import Label from "$ecomponents/Label";
@@ -26,9 +26,12 @@ export const isValidImageSrc = (src)=>{
 export const resolveAssetSource = (source)=>{
     if(!source && !isDecimal(source)) return undefined;
     try {
+        if(isWeb()){
+            return {uri:source};
+        }
         return Image.resolveAssetSource(source);
     } catch(e){
-        console.log(r," triing to resolve image asset from source ",source)
+        console.log(e," triing to resolve image asset from source ",source)
         return undefined;
     }
 }

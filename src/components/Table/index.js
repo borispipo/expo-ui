@@ -65,9 +65,7 @@ const TableComponent = React.forwardRef(({containerProps,tableHeadId,fixedHeader
     const hasData = !!Object.size(items,true);
     const emptyData = !hasData && (renderListContent === false ?null : typeof renderEmpty =='function' ? renderEmpty() : null) || null;
     const hasEmptyData = emptyData && React.isValidElement(emptyData);
-    const emptyContent = <View onRender={onComponentRender} testID={testID+"_EmptyData"} style={styles.hasNotData}>
-        {emptyData}
-    </View> 
+    const listWidth = '100%';
     const scrollContentContainerStyle = {flex:1,width:listWidth,minWidth:totalWidths,height:'100%'};
     const scrollEventThrottle = isMobileNative()?200:50;
     const scrollViewFlexGrow = {flexGrow:0};
@@ -80,7 +78,6 @@ const TableComponent = React.forwardRef(({containerProps,tableHeadId,fixedHeader
         scrollViewProps.style],
         contentContainerStyle : [styles.scrollView,scrollViewProps.contentContainerStyle,scrollViewFlexGrow,scrollContentContainerStyle]
     }
-    const listWidth = '100%';
     const footerScrollViewRef = React.useRef(null);
     const context = {
         listRef,
@@ -143,6 +140,9 @@ const TableComponent = React.forwardRef(({containerProps,tableHeadId,fixedHeader
             }
         }
     };
+    const emptyContent = <View onRender={onComponentRender} testID={testID+"_EmptyData"} style={styles.hasNotData}>
+        {emptyData}
+    </View> 
     return <View testID= {testID+"_Container"}  {...containerProps} onLayout={(e)=>{
         layoutRef.current = e.nativeEvent.layout;
         if(containerProps.onLayout){

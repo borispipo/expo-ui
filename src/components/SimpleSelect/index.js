@@ -1,5 +1,5 @@
 import React from "$react";
-import {defaultObj,isDecimal,defaultStr,debounce,extendObj,defaultVal,defaultFunc} from "$cutils";
+import {defaultObj,defaultStr,debounce,extendObj,defaultVal,defaultFunc} from "$cutils";
 import {compare as compareUtil} from "$cutils";
 import TextField,{flatMode} from "$ecomponents/TextField";
 import {Pressable,Dimensions,StyleSheet} from "react-native";
@@ -16,7 +16,7 @@ import {isDesktopMedia} from "$cplatform/dimensions";
 import { matchOperators,getSearchTimeout,canAutoFocusSearchField} from "$ecomponents/Dropdown/utils";
 import Dialog from "$ecomponents/Dialog";
 
-const isValidValue =(value)=> typeof value === "string" || typeof value === "number" || isObj(value) || Array.isArray(value);
+const isValidValue =(value)=> typeof value === "string" || typeof value === "number" || typeof value =="boolean" || isObj(value) || Array.isArray(value);
 
 const  SimpleSelect = React.forwardRef((props,ref)=>{
     let {style : customStyle,onMount,mode,showSearch,anchorContainerProps,renderText,contentContainerProps,withCheckedIcon,testID,selectionColor,dialogProps,onShow,anchor,onUnmont,controlled:cr,onDismiss,visible:controlledVisible,selectedColor,inputProps,itemProps,itemContainerProps,label,listProps,readOnly,text,filter,renderItem,itemValue,getItemValue,defaultValue,items:menuItems,onPress,onChange,disabled,...rest} = props;
@@ -61,8 +61,8 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
         Object.map(menuItems,(item,index,_index)=>{
             if(React.isValidElement(item) || !filter({items:menuItems,item,_index,index})) return null;
             if(!isObj(item)) {
-                if(isDecimal(item) || isNonNullString(item)){
-                    item = {label:item+""};
+                if(isValidValue(item)){
+                    item = {label:String(item),code:item};
                 } else return null;
             }
             const backupItem = item;
@@ -77,7 +77,7 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
             if(!content && typeof content != "number"){
                 content = rText;
             }
-            if(isDecimal(content)) content+="";
+            if(typeof content !="string") content = String(content);
             if(!React.isValidElement(content,true)) {
                 console.warn("Simple select, invalid meuitem content: ",content,mItem,props);
                 return null;

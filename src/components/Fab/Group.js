@@ -7,7 +7,7 @@ import {MENU_ICON} from "$ecomponents/Icon";
 import theme,{Colors} from "$theme";
 import Group from "./GroupComponent";
 import {Portal} from "react-native-paper";
-import {isAllowedFromStr} from "$cauth/perms";
+import { isPermAllowed } from "$eauth/utils";
 import { useIsScreenFocused } from '$enavigation/hooks';
 import { useScreen } from '$econtext/hooks';
 
@@ -129,8 +129,7 @@ const FabGroupComponent = React.forwardRef((props,innerRef)=>{
                 const a = actionMutator ? actionMutator ({action:act,key:i,isFab:true,fab:true}) : act;
                 if(!isObj(a) || !isNonNullString(a.label)) return null;
                 const {perm,isAllowed,primary,secondary,...restItem} = a;
-                if(typeof isAllowed =='function' && isAllowed() === false) return null;
-                if(isNonNullString(perm) && !isAllowedFromStr(perm)) return false;
+                if(!isPermAllowed(perm,{...props,permAction:"fab",action:a}) || !isPermAllowed(isAllowed,{...props,permAction:"fab",action:a})) return false;
                 if(primary){
                     restItem.style = StyleSheet.flatten([restItem.style,{color:theme.colors.onPrimary,backgroundColor:theme.colors.primary}])
                 } else if(secondary){

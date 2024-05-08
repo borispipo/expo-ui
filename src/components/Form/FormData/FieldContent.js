@@ -4,6 +4,7 @@ import {defaultStr,isNonNullString,defaultObj,defaultBool} from "$cutils";
 import getComponentFromType from "./componentsTypes";
 import appConfig from "$capp/config";
 import Colors from "$theme/colors";
+import { isPermAllowed } from "$eauth/utils";
 
 const FieldContentComponent = React.forwardRef(({field,data,index,fields,formName,onLoopField,fieldProps,backgroundColor,primaryKey:customPrimaryKey,increment,fieldProp,archivable,disabled,windowWidth,responsive,responsiveProps,archived,...props},ref)=>{
     if(field?.form === false) return null;
@@ -19,7 +20,7 @@ const FieldContentComponent = React.forwardRef(({field,data,index,fields,formNam
     if(customPrimaryKey === true){
         primaryKey = true;
     }
-    if(form === false || ignore || (isNonNullString(perm) && !Auth.isAllowedFromStr(perm))){
+    if(form === false || ignore || (!isPermAllowed(perm,{...props,field,isFormData:true,index,data,formName}))){
         return null;
     }
     if(rest.nullable === false){

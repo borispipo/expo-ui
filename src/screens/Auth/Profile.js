@@ -15,7 +15,7 @@ import {isValidUrl} from "$cutils";
 import {screenName} from "./utils";
 import notify from "$notify";
 import {getAnimationType,setAnimationType,animationTypes} from "$enavigation/animationTypes"
-import {isWeb} from "$cplatform";
+import { isPermAllowed } from "$eauth/utils";
 
 export default function UserProfileScreen({fields,...p}){
     const {auth:{profilePropsMutator}} = useContext();
@@ -49,11 +49,8 @@ export default function UserProfileScreen({fields,...p}){
     const {changeElectronAppUrlPerm} = props;
     const changeElectronUrl = React.useMemo(()=>{
         if(!isElectron() || !window?.ELECTRON || typeof ELECTRON?.setAppUrl !=='function' || typeof ELECTRON?.getAppUrl !=='function') return false;
-        if(typeof changeElectronAppUrlPerm ==='string'){
-            return Auth.isAllowedFromStr(changeElectronAppUrlPerm);
-        } else if(typeof changeElectronAppUrlPerm =='function'){
-            return !!changeElectronAppUrlPerm(props);
-        } 
+        if(!isPermAllowed(changeElectronAppUrlPerm,props)) return false;
+        if(changeElectronAppUrlPerm) return true;
         return Auth.isMasterAdmin();
     },[changeElectronAppUrlPerm]);
     const user = defaultObj(props.user,Auth.getLoggedUser());

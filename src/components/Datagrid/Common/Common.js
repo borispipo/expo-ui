@@ -44,10 +44,11 @@ import events from "../events";
 import {MORE_ICON} from "$ecomponents/Icon"
 import ActivityIndicator from "$ecomponents/ActivityIndicator";
 import {createTableHeader,fields as pdfFields,pageHeaderMargin,sprintf as pdfSprintf} from "$cpdf";
-import {isWeb,isMobileNative} from "$cplatform";
+import {isMobileNative} from "$cplatform";
 import { createPDF,getFields as getPdfFields } from '$expo-ui/pdf';
 import actions from '$cactions';
 import {printTableData} from "$epdf";
+import {isPermAllowed} from "$eauth/utils";
 
 export const TIMEOUT = 100;
 
@@ -160,10 +161,6 @@ Object.map(displayTypes,(c,k)=>{
 const dataSourceArgs = {};
 export const footerFieldName = "dgrid-fters-fields";
 
-const checkPerm = (perm,args)=>{
-    return typeof perm ==='function'? perm(args) : isNonNullString(perm) ? Auth.isAllowedFromStr(perm) : typeof perm =='boolean'? perm : true;
-}
-
 /*****
  * Pour spécifier qu'un champ du datagrid n'existe pas en bd il s'ufit de suffixer le nom du champ par le suffix : "FoundInDB" et de renseigner false comme valeur 
 de l'objet rowData de cette propriété
@@ -206,10 +203,10 @@ export default class CommonDatagridComponent extends AppComponent {
         const disTypes = {};
         let hasFoundDisplayTypes = false;
         const pArgs = {context:this,data,props:this.props}
-        const perm = checkPerm(renderChartIsAllowed,pArgs)
-        const ePDFIsAllowed = !isMobileNative() && checkPerm(exportToPDFIsAllowed,pArgs);
-        const eExcelISAllowed = checkPerm(exportToExcelIsAllowed,pArgs);
-        const renderSectionListIsAllowedP = checkPerm(renderSectionListIsAllowed,pArgs);
+        const perm = isPermAllowed(renderChartIsAllowed,pArgs)
+        const ePDFIsAllowed = !isMobileNative() && isPermAllowed(exportToPDFIsAllowed,pArgs);
+        const eExcelISAllowed = isPermAllowed(exportToExcelIsAllowed,pArgs);
+        const renderSectionListIsAllowedP = isPermAllowed(renderSectionListIsAllowed,pArgs);
         if(typeof customCheckPerms =='function'){
             customCheckPerms({context:this});
         }

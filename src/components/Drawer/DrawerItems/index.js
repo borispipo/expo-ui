@@ -6,8 +6,7 @@ import DrawerSection from "./DrawerSection"
 import PropTypes from "prop-types";
 import Divider from "$ecomponents/Divider";
 import View from "$ecomponents/View";
-import Auth from "$cauth";
-import { useDrawer } from '../context';
+import {isPermAllowed} from "$eauth/utils";
 
 export * from "./utils";
 
@@ -23,7 +22,7 @@ const DrawerItemsComponent = React.forwardRef((props,ref)=> {
   const r = React.useMemo(()=>{
     let items = []
     const renderExpandableOrSection = ({item,key,items})=>{
-          if(isNonNullString(item.perm) && !Auth.isAllowedFromStr(item.perm)) return null;
+          if(!isPermAllowed(item.perm,props)) return null;
           const {section,items:itx2,...rest} = item;
           if(section){
             const sDivider = rest.divider !== false && !hasDivider && items.length ? true : false;
@@ -128,7 +127,8 @@ const getDefaultProps = function(item){
   return item;
 }
 
-const renderItem = ({item,minimized,renderExpandableOrSection,index,key})=>{
+const renderItem = (args1)=>{
+  let {item,minimized,renderExpandableOrSection,index,key} = args1;
   key = key||index;
   if(React.isValidElement(item)){
     hasDivider = false;
@@ -136,7 +136,7 @@ const renderItem = ({item,minimized,renderExpandableOrSection,index,key})=>{
         {item}
     </React.Fragment>
   } else {
-    if(isNonNullString(item.perm) && !Auth.isAllowedFromStr(item.perm)) return null;
+    if(!isPermAllowed(item.perm,args1)) return null;
     if(!item.label && !item.text && !item.icon) {
         if(item.divider === true && !hasDivider){
           const {divider,...rest} = item;

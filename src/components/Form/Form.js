@@ -7,6 +7,7 @@ import { StyleSheet } from "react-native";
 import APP from "$capp/instance";
 import PropTypes from "prop-types";
 import View from "$ecomponents/View";
+import { isPermAllowed } from "$eauth/utils";
 
 /**** règles d'utilisation : 
     1. les forms doivent toujours avoir un nom : chaine de caractère unique pour l'application et non null
@@ -101,7 +102,7 @@ export default class FormComponent extends React.AppComponent {
         Forms.trigger("novalidate",this.props.name,...rest);
     }
     render (){
-        if(isNonNullString(this.props.perm) && !Auth.isAllowedFromStr(this.props.perm)){
+        if(!isPermAllowed(this.props.perm,this.props)){
             return null;
         }
         let {

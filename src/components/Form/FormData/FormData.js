@@ -11,6 +11,7 @@ import {handleBeforeSaveCallback} from "./utils";
 import isDbDocEditing,{checkPrimaryKey} from "../utils/isDocEditing";
 import keyboardShortcuts from "../utils/keyboardShortcuts";
 import FieldsContent from "./FieldsContent";
+import { isPermAllowed } from "$eauth/utils";
 
 export default class FormDataComponent extends AppComponent{
     constructor(props){
@@ -24,7 +25,7 @@ export default class FormDataComponent extends AppComponent{
                 value : x=> formName,
             },
             isAllowed : {
-                value : isNonNullString(this.props.perm) ? Auth.isAllowedFromStr(this.props.perm) : true
+                value : isPermAllowed(this.props.perm,props),
             },
         });
     }

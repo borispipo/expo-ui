@@ -8,6 +8,7 @@ import PropTypes from "prop-types";
 import Auth from "$cauth";
 import Surface from "$ecomponents/Surface";
 import { StyleSheet } from "react-native";
+import {isPermAllowed} from "$eauth/utils";
 
 export const title = 'Statistiques en BD';
 export default function DatabaseStatisticScreen ({withScreen,fetchDataProps,itemProps,itemContainerProps,tableFilter,fetchCount,fetchData,title:customTitle,contentProps,containerProps,tables,Component,...props}){
@@ -38,10 +39,9 @@ export default function DatabaseStatisticScreen ({withScreen,fetchDataProps,item
             let {containerProps,cellProps,...rDBProps} = dbStatisticsProps;
             cellProps = Object.assign({},cellProps);
             containerProps = Object.assign({},containerProps);
-            const chartAllowedPerm =  defaultStr(table.chartAllowedPerm);
             const testID = "RN_DatabaseStatisticsCell_"+index;
-            if(chartAllowedPerm){
-                if(!Auth.isAllowedFromStr(chartAllowedPerm)) return null;
+            if(table.chartAllowedPerm !== undefined){
+                if(!isPermAllowed(table.chartAllowedPerm,{table,tables,databaseStatistic:true})) return null;
             } else if((!Auth.isTableDataAllowed({table:tableName}))) return null;
             content.push(<Cell elevation = {5} withSurface mobileSize={12} desktopSize={3} tabletSize={6} {...contentProps} testID={testID}  {...cellProps} style={[contentProps.style,cellProps.style]} key = {index} >
                 <Surface testID = {testID+"_Surface"} elevation = {5} {...itemContainerProps} {...containerProps} style={[theme.styles.w100,styles.itemContainer,itemContainerProps.style,containerProps.style]}>

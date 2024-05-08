@@ -1,6 +1,6 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
-		"version": "8.83.1",
+		"version": "8.83.2",
 		"url": "https://github.com/borispipo/expo-ui#readme",
 		"license": "ISC"
 	},
@@ -59,10 +59,10 @@ module.exports = {
 		"url": "https://github.com/software-mansion/react-native-screens#readme",
 		"license": "MIT"
 	},
-	"@fto-consult/common": {
-		"version": "4.52.0",
-		"url": "https://github.com/borispipo/common#readme",
-		"license": "ISC"
+	"@react-navigation/stack": {
+		"version": "6.3.29",
+		"url": "https://reactnavigation.org/docs/stack-navigator/",
+		"license": "MIT"
 	},
 	"@shopify/flash-list": {
 		"version": "1.6.3",

@@ -10,6 +10,7 @@ import appConfig from "$capp/config";
 import Auth from "$cauth";
 import DateLib from "$clib/date";
 import crypToJS from "$clib/crypto-js";
+import { isPermAllowed } from "$eauth/utils";
 
 export const QR_CODE_HASH_KEY_PREFIX = defaultStr(appConfig.name).replace(/\s/g, "");
 export const QR_CODE_HASH_KEY = `${QR_CODE_HASH_KEY_PREFIX}-QR_CODE_HASH_KEY`;//la clé de décryptage du QRCODE
@@ -266,14 +267,8 @@ export function printTableData(data,options){
     if(!tablePrint){
         return Promise.reject({message : `La fonction d'impression n'est pas supportée par la table [${tableText}]`})
     }
-    if(typeof options.perm =="function"){
-        if(!options.perm({table,tableObj})) {
-            return Promise.reject({message:'Vous n\'etes pas autorisé à imprimer ce type de document'});
-        }
-    } else if(isNonNullString(options.perm)){
-        if(!Auth.isAllowedFromString(options.perm)){
-            return Promise.reject({message:'Vous n\'etes pas autorisé à imprimer ce type de document'});
-        }
+    if((options.perm !== undefined && !isPermAllowed(options.perm,{...options,table,tableObj,permAction:'print',tableName:table,data}))){
+        return Promise.reject({message:'Vous n\'etes pas autorisé à imprimer ce type de document'});
     } else if(!Auth.isTableDataAllowed({table,action:'print'})){
         return Promise.reject({message:'Vous n\'etes pas autorisé à imprimer ce type de document'});
     }

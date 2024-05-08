@@ -4,6 +4,7 @@
 import {navigate,sanitizeName} from "$cnavigation";
 import {isNonNullString,defaultStr,defaultObj,isObj} from "$cutils";
 import appConfig from "$capp/config";
+import { isPermAllowed } from "$eauth/utils";
 
 export const tableDataRouteName = 'table-data';
 
@@ -35,8 +36,8 @@ const navigateToTableOrStructData = function(tableName,params,actionType){
     let isAllowed = true;
     actionType = defaultStr(actionType,"tabledata").replaceAll("_","").replaceAll("-","").replaceAll(" ","").toLowerCase();
     const isTableData = actionType =='tabledata';
-    if(isNonNullString(perm)){
-        isAllowed = Auth.isAllowedFromStr(perm)
+    if(perm !== undefined){
+        isAllowed = isPermAllowed(perm,{permAction:"navigate",...params,tableName,table:tableName})
     } else if(canCheckNavPerms() !== false){
         if(actionType =='structdata') {
             isAllowed = Auth.isStructDataAllowed({table:tableName})

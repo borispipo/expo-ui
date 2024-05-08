@@ -16,6 +16,8 @@ import Auth from "$cauth";
 import fetch from "$capi/fetch";
 import useContext from "$econtext/hooks";
 import TouchableRipple from "$ecomponents/TouchableRipple";
+import { isPermAllowed } from "$eauth/utils";
+
 /***** la fonction fetchForeignData permet de spécifier s'il s'agit d'une données de structure où non 
     dans le champ isStructData
 */
@@ -50,13 +52,8 @@ export const usePrepareProps = (props)=>{
     }
     const fetchArgs = {type,columnType:type,isStructData,fetch,foreignKeyTable,foreignKeyColumn,data,id};
     const checkIfAllowed = ()=>{
-        if((isNonNullString(perm))){
-            if(!Auth.isAllowedFromString(perm))return false;
-        } else {
-            if(typeof isAllowed ==="function"){
-                if(!isAllowed(args)) return false;
-            } else if(!Auth[isStructData?"isStructDataAllowed":"isTableDataAllowed"]({table:foreignKeyTable,action:'read'})) return false;
-        }
+        if(!isPermAllowed(perm,props) || !isPermAllowed(isAllowed,props)) return false;
+        if((!perm && !isAllowed && perm !== undefined &&  isAllowed !== undefined) && !Auth[isStructData?"isStructDataAllowed":"isTableDataAllowed"]({table:foreignKeyTable,action:'read'})) return false;
         return true;
     }
     const navigate = (data)=>{

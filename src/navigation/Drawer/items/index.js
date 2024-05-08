@@ -16,6 +16,7 @@ import useExpoUI from "$econtext/hooks";
 import Auth,{useIsSignedIn,tableDataPerms} from "$cauth";
 import {getTableDataListRouteName} from "$enavigation/utils";
 import {isValidElement,usePrevious} from "$react";
+import { isPermAllowed } from "$eauth/utils";
 
 /***** les props supplémentaires à passer aux drawers items d'une table de données sont dans le champ drawerItemProps */
 const useGetItems = (options)=>{
@@ -73,7 +74,7 @@ const useGetItems = (options)=>{
             if(!tableName || table.showInDrawer === false || !Auth.isTableDataAllowed({table:tableName})){
                 return;
             }
-            if(isNonNullString(table.perm) && !Auth.isAllowedFromStr(table.perm)) return;
+            if(!isPermAllowed(table.perm,{...options,tableName:table,permAction:"drawerItem",tables,table,index})) return;
             const section = (table.drawerSection).trim();
             if(!items[section]){
                 if(!sections) sections = Object.keys(items);

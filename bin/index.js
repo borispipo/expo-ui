@@ -45,5 +45,10 @@ program.command('generate-getTable')
     require("./install");
   });
 
+  program.command('upgrade')
+  .description('Met à jour l\'application à la version d\'expo supérieure à la version actuelle')
+  .action((src, options) => {
+    require("./upgrade");
+  });
 
   program.parse();

@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "9.2.1",
+  "version": "9.3.0",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "react-native-paper-doc": "https://github.com/callstack/react-native-paper/tree/main/docs/docs/guides",
   "scripts": {
@@ -13,6 +13,7 @@
     "start-p": "npm run start-d",
     "start-no-minify": "npx expo start --no-dev --minify",
     "start-no-dev": "npx expo start --no-dev --minify",
+    "upgrade": "node ./bin/upgrade",
     "expo-start-client": "npx expo start --dev --no-minify --dev-client",
     "generate-jsonconfig": "node ./bin/generate-jsonconfig.js",
     "start-m": "npx expo start - c--dev--no -minify",
@@ -68,6 +69,7 @@
     "@emotion/react": "^11.11.4",
     "@faker-js/faker": "^8.0.2",
     "@fto-consult/common": "^4.53.0",
+    "@fto-consult/node-utils": "^1.9.3",
     "apexcharts": "^3.49.0",
     "file-saver": "^2.0.5",
     "google-libphonenumber": "^3.2.34",

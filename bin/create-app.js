@@ -47,6 +47,7 @@ module.exports = function(appName,{projectRoot:root}){
             "build-web" : "npx expo export -p web",
             "build-android" : "npx eas build --platform android --profile preview",
             "build-ios" : "eas build --platform ios",
+            "upgrade" : "npx @fto-consult/expo-ui upgrade",
             "generate-getTable" : "npx @fto-consult/expo-ui generate-getTable",
             "update" : "npx @fto-consult/expo-ui update"
           },

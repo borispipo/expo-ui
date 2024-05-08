@@ -43,8 +43,8 @@ module.exports = function(appName,{projectRoot:root}){
           "scripts" : {
             start : "npx expo start -c",
             "dev" : "npx expo start --no-dev --minify -c",
-            "serve-web" : "npx serve web-build --single",
-            "build-web" : "npx expo export:web",
+            "serve-web" : "npx serve dist --single",
+            "build-web" : "npx expo export",
             "build-android" : "npx eas build --platform android --profile preview",
             "build-ios" : "eas build --platform ios",
             "generate-getTable" : "npx @fto-consult/expo-ui generate-getTable",

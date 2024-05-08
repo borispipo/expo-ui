@@ -40,8 +40,12 @@ module.exports = function(opts){
   ]
   config.watchFolders = Array.isArray(config.watchFolders)? config.watchFolders : [];
   const expoUIP = require("./expo-ui-path")(projectRoot);
+  const cPath = require("./common-path")(projectRoot);
   if(!config.watchFolders.includes(expoUIP)){
     config.watchFolders.push(expoUIP);
+  }
+  if(cPath && !config.watchFolders.includes(cPath)){
+      config.watchFolders.push(cPath);
   }
   let hasFTO = false;
   for(let i in config.watchFolders){

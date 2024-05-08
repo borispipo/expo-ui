@@ -1,8 +1,8 @@
 // Copyright 2022 @fto-consult/Boris Fouomene. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
-import {isObj,defaultNumber} from "$cutils";
-import appConfig from "$app/config";
+import {defaultNumber} from "$cutils";
+import appConfig from "$capp/config";
 
 /*** retourne le nombre maximal de courbes pouvant s'afficher sur un même graphe
  * exempt  du graphe de type pie/donut

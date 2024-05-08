@@ -12,7 +12,7 @@ import View from "$ecomponents/View";
 import Label from "$ecomponents/Label";
 import {defaultStr} from "$cutils";
 import theme from "$theme";
-import APP from "$app";
+import APP from "$capp";
 import AutoLink from "$ecomponents/AutoLink";
 import getReleaseText from "./getReleaseText";
 import appConfig from "$capp/config";

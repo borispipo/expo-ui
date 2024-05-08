@@ -5,7 +5,7 @@ import React from "$react";
 import {defaultStr} from "$cutils";
 import SimpleSelect from "$ecomponents/SimpleSelect";
 import {currencies} from "$ccurrency";
-import appConfig from "$app/config";
+import appConfig from "$capp/config";
 import Format from "./Format";
 
 const CurrencySelector = React.forwardRef((props,ref)=>{

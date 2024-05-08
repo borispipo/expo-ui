@@ -1,6 +1,6 @@
 {
   "name": "@fto-consult/expo-ui",
-  "version": "9.0.2",
+  "version": "9.0.3",
   "description": "Bibliothèque de composants UI Expo,react-native",
   "react-native-paper-doc": "https://github.com/callstack/react-native-paper/tree/main/docs/docs/guides",
   "scripts": {
@@ -22,7 +22,7 @@
     "web-c": "npx expo start --web -c",
     "eject": "expo eject",
     "emulator": "npm run android-emulator",
-    "web-server": "npx serve web-build",
+    "web-server": "npx serve dist",
     "build-android": "eas build --clear-cache -p android --profile preview",
     "build-android-local": "eas build --platform android --local",
     "build-android-dist": "eas build --clear-cache -p android",
@@ -67,7 +67,7 @@
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@faker-js/faker": "^8.0.2",
-    "@fto-consult/common": "^4.52.1",
+    "@fto-consult/common": "^4.53.0",
     "apexcharts": "^3.49.0",
     "file-saver": "^2.0.5",
     "google-libphonenumber": "^3.2.34",

@@ -1,7 +1,7 @@
 module.exports = {
 	"@fto-consult/expo-ui": {
 		"name": "@fto-consult/expo-ui",
-		"version": "9.0.0",
+		"version": "9.0.2",
 		"repository": {
 			"type": "git",
 			"url": "git+https://github.com/borispipo/expo-ui.git"
@@ -29,7 +29,7 @@ module.exports = {
 		"license": "MIT"
 	},
 	"@fto-consult/common": {
-		"version": "4.52.1",
+		"version": "4.53.0",
 		"url": "https://github.com/borispipo/common#readme",
 		"license": "ISC"
 	},
@@ -37,11 +37,6 @@ module.exports = {
 		"version": "3.49.0",
 		"url": "https://apexcharts.com",
 		"license": "MIT"
-	},
-	"babel-plugin-inline-dotenv": {
-		"version": "1.7.0",
-		"url": "https://github.com/brysgo/babel-plugin-inline-dotenv#readme",
-		"license": "ISC"
 	},
 	"babel-plugin-module-resolver": {
 		"version": "5.0.2",

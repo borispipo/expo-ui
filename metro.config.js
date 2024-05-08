@@ -61,6 +61,8 @@ module.exports = function(opts){
   
   // Remove all console logs in production...
   config.transformer.minifierConfig.compress.drop_console = false;
+
+  require(path.resolve(__dirname,"bin/find-licenses"))(projectRoot);
   
   return config;
 }

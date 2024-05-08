@@ -105,15 +105,15 @@ const findLicencesMain = (options)=>{
     }
 }
 
-module.exports = ()=>{
+module.exports = (projectRoot)=>{
     ///on génère les librairies open sources utilisées par l'application
-    const root = path.resolve(process.cwd());
+    projectRoot = typeof projectRoot === "string" && fs.existsSync(path.resolve(projectRoot)) ? path.resolve(projectRoot) : process.cwd();
     const expoUI = require("../expo-ui-path")();
-    const localNodeModule = path.resolve(root,"node_modules");
+    const localNodeModule = path.resolve(projectRoot,"node_modules");
     const HelpScreen = path.resolve(expoUI,"src","screens","Help");
     const outputPath = path.resolve(HelpScreen,"openLibraries.js");
     return findLicencesMain({
-        paths : [root,path.resolve(process.cwd())],
+        paths : [projectRoot,path.resolve(__dirname)],
         nodeModulesPath : fs.existsSync(localNodeModule) ? localNodeModule :  path.resolve(expoUI,"node_modules"),
         outputPath
     });

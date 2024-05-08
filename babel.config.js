@@ -11,8 +11,6 @@ module.exports = function(api,opts) {
   if(typeof options.aliasMutator =="function"){
     options.aliasMutator({...options,alias});
   }
-  require(`${path.resolve(__dirname,"bin","generate-tables")}`)();//génère les tables des bases de données
-  require(`${path.resolve(__dirname,"bin","find-licenses")}`); //met à jour les licenses de l'application
   const plugins = (Array.isArray(opts.plugins) ? options.plugins : []);
   let reanimated = "react-native-reanimated/plugin";
   const filteredPlugins = plugins.filter((p)=>{

@@ -36,6 +36,7 @@
     "react-native-svg": "15.2.0-rc.0",
     "react-native-view-shot": "3.8.0",
     "react-native-web": "~0.19.10",
-    "react-native-webview": "13.8.6"
+    "react-native-webview": "13.8.6",
+    "react-virtuoso": "latest",
 };
                             

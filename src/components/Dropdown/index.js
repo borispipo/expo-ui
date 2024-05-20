@@ -790,9 +790,10 @@ class DropdownComponent extends AppComponent {
             right,
             backgroundColor : cBackgroundColor,
             dialogProps,
+            testID,
             ...dropdownProps
         } = this.props;
-
+        testID = defaultStr(testID,"RN_DropdownComponent");
         const flattenStyle = StyleSheet.flatten(dropdownProps.style) || {};
         itemContainerProps = defaultObj(itemContainerProps);
         dropdownProps = defaultObj(dropdownProps);
@@ -965,7 +966,6 @@ class DropdownComponent extends AppComponent {
             >{text} </Chip>;
         })}
         </View> : null;
-        const testID = defaultStr(dropdownProps.testID,"RN_DropdownComponent");
         const defRight = defaultVal(textInputProps.right,inputProps.right);
         const enableCopy = defaultBool(inputProps.enableCopy,textInputProps.enableCopy,(iconDisabled || (!multiple && !showAdd)) && !loadingElement ?true : false);
         const anchor = <TouchableRipple

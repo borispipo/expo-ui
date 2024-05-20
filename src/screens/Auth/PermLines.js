@@ -19,7 +19,7 @@ const PermLines = React.forwardRef(({user,gridProps,defaultActions:cDefaultActio
     permLineProps = defaultObj(permLineProps);
     const allPerms = React.useRef({}).current;
     const dataRef = React.useRef(defaultObj(perms));
-    const defaultActions = React.useRef(extendObj(true,{},mDefaultAction,defaultActions)).current;
+    const defaultActions = React.useRef(extendObj(true,{},mDefaultAction,cDefaultActions)).current;
     const data = dataRef.current;
     disabled = !!disabled || isUserMasterAdmin;
     const  onChange = disabled ? undefined : (arg)=>{

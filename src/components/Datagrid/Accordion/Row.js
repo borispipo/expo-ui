@@ -41,12 +41,14 @@ const DatagridAccordionRow = React.forwardRef(({selectable,
     rowProps = defaultObj(rowProps);
     rightProps = defaultObj(rightProps);
     contentContainerProps = defaultObj(contentContainerProps);
-    if(!isObj(item)) {
-        return null;
-    }
+    let rowIndex = defaultDecimal(index);
+    let rowIndexCount = index+1;
     const selected = useIsRowSelected(rowKey,rowIndex);
     const innerRef = React.useRef(null);
     const [expanded,setExpanded] = React.useState(false);
+    if(!isObj(item)) {
+        return null;
+    }
     const toggleExpander = ()=>{
         if(onRowPress){
             onRowPress(callArgs);
@@ -69,9 +71,6 @@ const DatagridAccordionRow = React.forwardRef(({selectable,
         } 
         setExpanded(!expanded);
     }
-
-    let rowIndex = defaultDecimal(index);
-    let rowIndexCount = index+1;
     testID = defaultStr(testID,"RN_DatagridAccordionRow"+(rowKey||rowIndex))
     const hasAvatar = React.isValidElement(avatarContent);
     const handleRowToggle = (event)=>{

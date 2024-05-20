@@ -1,6 +1,5 @@
 const fs = require("fs");
 const path = require("path");
-const {writeFile,copy} = require("./bin/utils");
 
 const checkEnv = (...envrs)=>{
     for(let i in envrs){
@@ -18,18 +17,8 @@ module.exports = (projectRoot,forceCreate)=>{
     projectRoot = projectRoot && typeof projectRoot =="string" && fs.existsSync(projectRoot) && projectRoot || process.cwd();
     const pWithEnv = path.resolve(projectRoot,`.env.${env}`);
     const environmentPath = fs.existsSync(pWithEnv) ? pWithEnv : path.resolve(projectRoot,".env"); 
-    const localEnv = path.resolve(__dirname,".env");
-    if(environmentPath && fs.existsSync(environmentPath) && environmentPath !== localEnv){
-        // File ".env" will be created or overwritten by default.
-        try {
-          copy(environmentPath, localEnv,{overwrite:true});
-        }
-        catch (e){}
+    if(environmentPath && fs.existsSync(environmentPath)){
+        return environmentPath;
     } 
-    if(!fs.existsSync(localEnv) && forceCreate !==false){
-        try {
-            writeFile(localEnv,"");
-        } catch(e){}
-    }
-    return localEnv;
+    return null;
 }

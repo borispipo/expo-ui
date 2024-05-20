@@ -177,5 +177,7 @@ export default function AppMainEntry(){
         FontsIconsFilter ={(font,fontName,fontNameLower)=>false}
     />
 }  
-
-registerRootComponent(AppMainEntry);
+if(!window.hasRegistredRootComponent){
+    registerRootComponent(AppMainEntry);
+    window.hasRegistredRootComponent = true;
+}

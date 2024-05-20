@@ -3,51 +3,21 @@ import Menu from "$ecomponents/Menu";
 import Avatar from "$ecomponents/Avatar";
 import {isDecimal,setQueryParams,isValidURL,defaultDecimal,defaultStr as defaultString,isDataURL,isPromise,defaultBool,isObj,isNonNullString} from "$cutils";
 import notify from "$enotify";
-let maxWidthDiff = 100, maxHeightDiff = 100;
 import {StyleSheet} from "react-native";
 import React from "$react";
 import PropTypes from "prop-types";
-import {isMobileNative,isWeb} from "$cplatform";
+import {isMobileNative} from "$cplatform";
+import {getUri} from "./utils";
 import {uniqid} from "$cutils";
 //import Signature from "$ecomponents/Signature";
 import Label from "$ecomponents/Label";
 //import Cropper from "./Cropper";
-
 import {pickImage,nonZeroMin,canTakePhoto,takePhoto} from "$emedia";
 import addPhoto from "$eassets/add_photo.png";
 
-export const isAssets = (asset,staticAssets)=>{
-    return isObj(asset) && isDecimal(asset.width) && isDecimal(asset.height) && isNonNullString(asset.uri) && (staticAssets ? asset.uri.contains("/static/"):true);
-}
-export const isValidImageSrc = (src)=>{
-    if(!isNonNullString(src)) return false;
-    return isDataURL(src) && !src.includes(",undefined") ? true : isValidURL(src) ? true : src.contains("/static/media/")? true  : false;
-}
-export const resolveAssetSource = (source)=>{
-    if(!source && !isDecimal(source)) return undefined;
-    try {
-        if(isWeb()){
-            return {uri:source};
-        }
-        return Image.resolveAssetSource(source);
-    } catch(e){
-        console.log(e," triing to resolve image asset from source ",source)
-        return undefined;
-    }
-}
-export const getUri = (src,onlySting)=>{
-    if(isAssets(src)) return src.uri;
-    if(isDecimal(src)){
-        if(onlySting !== false){
-            return resolveAssetSource(src)?.uri;
-        }
-        return resolveAssetSource(src);
-    }
-    if(isObj(src) && isValidImageSrc(src.uri)){
-        return src.uri;
-    } else if(isValidImageSrc(src)) return src;
-    return null;
-}
+let maxWidthDiff = 100, maxHeightDiff = 100;
+
+export * from "./utils";
 
 export default function ImageComponent(props){
     const [src,setSrc] = React.useState(defaultVal(props.src));

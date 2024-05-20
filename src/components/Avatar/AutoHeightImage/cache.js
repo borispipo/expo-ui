@@ -1,5 +1,5 @@
 import { Image } from 'react-native';
-import { resolveAssetSource } from '$ecomponents/Image';
+import { resolveAssetSource } from '$ecomponents/Image/utils';
 
 /**
  * store with

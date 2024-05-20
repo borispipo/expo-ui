@@ -19,7 +19,12 @@ module.exports = function(api,opts) {
       return false;
     }
     return true;
-  })
+  });
+  const inlineDovOptions = { unsafe: true};
+  const environmentPath = require("./copy-env-file")(options.projectRoot);
+  if(environmentPath && fs.existsSync(environmentPath)){
+    inlineDovOptions.path = environmentPath;
+  }
   require("@fto-consult/common/bin/generate-jsonconfig")({...opts,alias});
   return {
     presets: [
@@ -28,6 +33,7 @@ module.exports = function(api,opts) {
     ],
     plugins : [
       ...plugins,
+      ["inline-dotenv",inlineDovOptions],
       ["module-resolver", {"alias": alias}],
       "@babel/plugin-proposal-export-namespace-from",
       ...(reanimated?[reanimated]:[]),

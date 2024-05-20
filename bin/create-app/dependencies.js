@@ -10,7 +10,7 @@
 	"@react-navigation/native-stack": "^6.9.26",
 	"@react-navigation/stack": "^6.3.29",
 	"@shopify/flash-list": "1.6.4",
-	"expo": "^51.0.0",
+	"expo": "^51.0.8",
 	"expo-camera": "~15.0.9",
 	"expo-clipboard": "~6.0.3",
 	"expo-document-picker": "~12.0.1",

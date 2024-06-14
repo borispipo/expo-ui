@@ -26,7 +26,7 @@ if(typeof expoVersion !="string" || !expoVersion){
             return;
         }
         if(compareNPMVersions(expoVersion,eVersion) < 1){
-            console.log(`App already to date, current version of expo sdk is ${eVersion}, expo sdk version on @fto-consult/expo-ui is ${expoVersion}`);
+            console.log(`App already to date, current version of expo sdk is ${eVersion}, expo sdk version on @fto-consult/expo-ui is ${expoVersion}`,compareNPMVersions(expoVersion,eVersion));
             return;
         }
         const version = getSDKVersion(expoVersion);

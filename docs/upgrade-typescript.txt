@@ -1,0 +1,8 @@
+@see : https://docs.expo.dev/guides/typescript/
+
+npx expo install -- --save-dev typescript @types/react
+
+
+**** EXPO ROUTER*********
+@see : https://docs.expo.dev/router/installation/#quick-start
+

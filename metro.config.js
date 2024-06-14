@@ -3,7 +3,7 @@ const fs = require("fs");
 const { getDefaultConfig } = require('@expo/metro-config');
 module.exports = function(opts){
   opts = opts && typeof opts =='object'? opts : {};
-  const isDev = String(process.env.NODE_ENV).toLowerCase().trim() !="production";
+  const isElectron = process.env.isElectron || process.env.platform =="electron" || typeof process.env.platform =="string" && process.env.platform.toLowerCase().trim() ==='electron';
   let {assetExts,sourceExts} = opts;
   assetExts = Array.isArray(assetExts)? assetExts: [];
   sourceExts= Array.isArray(sourceExts)?sourceExts : [];
@@ -27,6 +27,10 @@ module.exports = function(opts){
   }
   config.resolver.nodeModulesPaths = nodeModulesPaths;
   config.projectRoot = projectRoot;
+  if(isElectron){
+    config.resolver.platforms = ["electron",...(Array.isArray(config.resolver.platforms)? config.resolver.platforms : [])];
+  }
+  console.log(isElectron," is electron ",config.resolver.platforms);
   config.resolver.assetExts = [
      ...config.resolver.assetExts,
      ...assetExts,
@@ -36,7 +40,7 @@ module.exports = function(opts){
   config.resolver.sourceExts = [
       ...config.resolver.sourceExts,
       ...sourceExts,"txt",
-      'jsx', 'js','tsx',
+      'tsx','ts','jsx', 'js',
   ]
   config.watchFolders = Array.isArray(config.watchFolders)? config.watchFolders : [];
   const expoUIP = require("./expo-ui-path")(projectRoot);

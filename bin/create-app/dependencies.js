@@ -34,6 +34,6 @@
 	"react-native-view-shot": "3.8.0",
 	"react-native-web": "~0.19.10",
 	"react-native-webview": "13.8.6",
-	"react-virtuoso": "^4.7.10"
+	"react-virtuoso": "^4.7.11"
 };
                             

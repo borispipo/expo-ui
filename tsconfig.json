@@ -1,0 +1,53 @@
+{
+  "extends": "expo/tsconfig.base",
+  "files.associations": {
+    "*.tsx": "typescriptreact",
+    "*.ts": "typescriptreact"
+  },
+  "compilerOptions": {
+    "strict": true,
+    "baseUrl": ".",
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "allowImportingTsExtensions": true,
+    "lib": ["dom"],
+    "paths": {
+      "$eapp/*": ["app/*"],
+      "$api/*": ["src/api/*"],
+      "$enavigation/*": ["src/navigation/*"],
+      "$enavigation": ["src/navigation"],
+      "$notify/*": ["src/notify/*"],
+      "$notify": ["src/notify"],
+      "$eresources/*": ["src/resources/*"],
+      "$eresources": ["src/resources"],
+      "$api": ["src/api"],
+      "$fetch" :["src/api/fetch"],
+      "$react/*": ["src/utils/react/*"],
+      "$react":["src/utils/react"],
+      "$observable": ["src/utils/observable"],
+      "$etypes/*":["src/types/*"],
+      "$etypes":["src/types"],
+      "$ehooks/*": ["src/hooks/*"],
+      "$ehooks": ["src/hooks"],
+      "$ecomponents/*": ["src/components/*"],//components folder
+      "$epackage": ["package.json"],
+      "$session" : ["src/session"],
+      "$platform/*": ["src/platform/*"],
+      "$platform": ["src/platform"],
+      "$dimensions/*": ["src/dimensions/*"],
+      "$dimensions": ["src/dimensions"],
+      "$auth/*" : ["src/auth/*"],
+      "$auth" : ["src/auth"],
+      "$crypto" : ["src/utils/crypto-js"],
+      "$theme/*" : ["src/theme/*"],
+      "$theme" : ["src/theme"],
+      "$colors/*" : ["src/theme/colors/*"],
+      "$colors" : ["src/theme/colors"],
+      "$eassets/*" : ["assets/*"],
+      "$eimages/*" : ["assets/images/*"],
+      "$utils/*": ["src/utils/*"],
+      "$eutils":["src/utils"],
+      "$esrc/*": ["src/*"],
+    }
+  }
+}

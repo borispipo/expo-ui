@@ -1,11 +1,12 @@
 {
-  "extends": "expo/tsconfig.base",
+  "extends": ["expo/tsconfig.base","../common/tsconfig.json"],
   "files.associations": {
     "*.tsx": "typescriptreact",
     "*.ts": "typescriptreact"
   },
   "compilerOptions": {
     "strict": true,
+    "allowJs": true,
     "baseUrl": ".",
     "resolveJsonModule": true,
     "experimentalDecorators": true,
@@ -39,8 +40,6 @@
       "$auth/*" : ["src/auth/*"],
       "$auth" : ["src/auth"],
       "$crypto" : ["src/utils/crypto-js"],
-      "$theme/*" : ["src/theme/*"],
-      "$theme" : ["src/theme"],
       "$colors/*" : ["src/theme/colors/*"],
       "$colors" : ["src/theme/colors"],
       "$eassets/*" : ["assets/*"],

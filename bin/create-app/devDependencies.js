@@ -3,5 +3,6 @@ module.exports = [
     "@expo/metro-config",
     "babel-plugin-inline-dotenv",
     "babel-plugin-module-resolver",
-    "concurrently"
+    "concurrently",
+    "@expo/metro-runtime"
 ]

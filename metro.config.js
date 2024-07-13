@@ -1,14 +1,10 @@
-const path = require("path");
-const fs = require("fs");
-const { getDefaultConfig } = require('@expo/metro-config');
-module.exports = function(opts){
-  opts = opts && typeof opts =='object'? opts : {};
-  const isDev = String(process.env.NODE_ENV).toLowerCase().trim() !="production";
-  let {assetExts,sourceExts} = opts;
-  assetExts = Array.isArray(assetExts)? assetExts: [];
-  sourceExts= Array.isArray(sourceExts)?sourceExts : [];
-  const projectRoot = typeof opts.projectRoot =="string" && opts.projectRoot && fs.existsSync(path.resolve(opts.projectRoot))? path.resolve(opts.projectRoot) : path.resolve(process.cwd());
-  const transpilePath = null;//require("./create-transpile-module-transformer")(opts);
+module.exports = function(){
+  const isElectron = process.env.isElectronScript || process.env.isElectron;
+  const path = require("path");
+  const fs = require("fs");
+  const { getDefaultConfig } = require('@expo/metro-config');
+  const projectRoot = path.resolve(process.cwd());
+  const transpilePath = null;
   const hasTranspilePath = typeof transpilePath =='string' && transpilePath && fs.existsSync(transpilePath);
   //@see : https://docs.expo.dev/versions/latest/config/metro/
   const config = getDefaultConfig(projectRoot,{
@@ -29,15 +25,22 @@ module.exports = function(opts){
   config.projectRoot = projectRoot;
   config.resolver.assetExts = [
      ...config.resolver.assetExts,
-     ...assetExts,
      "db",
      "txt"
   ];
-  config.resolver.sourceExts = [
-      ...config.resolver.sourceExts,
-      ...sourceExts,"txt",
-      'jsx', 'js','tsx',
-  ]
+  ["txt",'jsx', 'js','tsx','cjs','mjs'].map((ex)=>{
+    if(!config.resolver.sourceExts.includes(ex)){
+      config.resolver.sourceExts.push(ex);
+    }
+  });
+  if(isElectron){
+     config.resolver.sourceExts = [
+       ...config.resolver.sourceExts.map((ex)=>{
+        return `electron.${ex}`;
+       }),
+       ...config.resolver.sourceExts,
+     ]
+  }
   config.watchFolders = Array.isArray(config.watchFolders)? config.watchFolders : [];
   const expoUIP = require("./expo-ui-path")(projectRoot);
   const cPath = require("./common-path")(projectRoot);
@@ -61,7 +64,7 @@ module.exports = function(opts){
   
   // Remove all console logs in production...
   config.transformer.minifierConfig.compress.drop_console = false;
-
+  
   require(path.resolve(__dirname,"bin/find-licenses"))(projectRoot);
   
   return config;

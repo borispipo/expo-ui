@@ -132,6 +132,7 @@ npm-debug.*
 *.key
 *.mobileprovision
 *.orig.*
+dist/**/*
 web-build/**/*
 web-report/**/*
 electron/**/*

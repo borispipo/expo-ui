@@ -25,7 +25,7 @@ export const isAssets = (asset,staticAssets)=>{
     return isObj(asset) && "width" in (asset) && "height" in (asset) && isNonNullString(asset.uri) && (staticAssets ? asset.uri.contains("/static/"):true);
 }
 export const isDocumentPickerAsset = (asset)=>{
-   if(isObj(asset) && assets.lastModified && assets.mimeType && assets.name && isNonNullString(assets.uri)){
+   if(isObj(asset) && asset.lastModified && asset.mimeType && asset.name && isNonNullString(asset.uri)){
      asset.localUri =  defaultStr(asset.localUri,asset.uri);
      return true;
    } 

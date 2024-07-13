@@ -115,7 +115,7 @@ export class SQLiteSession {
       this.data.delete(key);
       await this.init();
       debug(`removing session: ${key}`)
-      return await this.db.runAsync(SQL`DELETE FROM sessions WHERE key = ?`,key);
+      return await this.db.runAsync(`DELETE FROM sessions WHERE key = ?`,key);
     }
     async getAll () {
       if(!this.hasInit || !this.db) return {};

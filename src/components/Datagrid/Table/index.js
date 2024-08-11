@@ -279,7 +279,6 @@ export default class DatagridTableComponent extends Datagrid {
                             ]}
                         />
                     </View>:null}
-                    {/*filters !== false && <td  className="datagrid-local-filter-wrapper" ><LocalFilter title = {this.props.title} fields ={this.state.columns} onChange={this.onLocalFiltersChange.bind(this)}/></td>*/}
                     {!canRenderChart && <RenderType/> || null}
                 </View>
             </ScrollView>

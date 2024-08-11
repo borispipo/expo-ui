@@ -194,11 +194,11 @@ export default function PhoneInputComponent(props){
                             value = "";
                         }
                         const prevVal = defaultStr(prevState.defaultValue).trim();
+                        const dialCodePrefix = getDialCodePrefix(prevState.countryDialCode) || getDialCodePrefix(state.countryDialCode);
                         if(prevVal.ltrim(dialCodePrefix) === value.ltrim(dialCodePrefix)) return;
                         const canChange = value.length < 5 || PhoneNumber.parse(nState.displayValue,nState.countryCode);
                         nState.errorText = canChange ? undefined : "Veuillez entrer un numéro de téléphone valide";
                         setState({...state,...nState});
-                        const dialCodePrefix = getDialCodePrefix(prevState.countryDialCode) || getDialCodePrefix(state.countryDialCode);
                         if(onChange && canChange){
                             onChange({...nState,value,country:nState.country,displayValue:nState.displayValue,realValue:nState.defaultValue});
                         }

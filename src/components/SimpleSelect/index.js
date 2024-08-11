@@ -60,12 +60,12 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
         const isValueDifferent = !compare(defaultValue,value);
         Object.map(menuItems,(item,index,_index)=>{
             if(React.isValidElement(item) || !filter({items:menuItems,item,_index,index})) return null;
+            let backupItem = item;
             if(!isObj(item)) {
                 if(isValidValue(item)){
                     item = {label:String(item),code:item};
                 } else return null;
             }
-            const backupItem = item;
             const {code,label,text} = item;
             let itValue = itemValue({item:backupItem,index,_index});
             if(itValue === undefined){

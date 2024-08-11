@@ -15,7 +15,10 @@ const getActiveProps = (type,currentType)=>{
 }
 const DatagridRenderTypeComponent = (props)=>{
     const isDesk = isDesktopMedia();
-    let type = defaultStr(get(typeKey),isDesk? "fixed":'accordion').toLowerCase().trim();
+    let type = defaultStr(get(typeKey),isDesk? "table":'accordion').toLowerCase().trim();
+    if(!["accordion","table"].includes(type)){
+        type = "auto";
+    }
     const rTypes = [
         {...getActiveProps(type,'accordion'),tooltip:"Les éléments de liste s'affichent de manière optimisé pour téléphone mobile",code:'accordion',icon:accordionIcon,label:'Mobile',labelText:'environnement optimisé pour téléphone mobile'},
         {...getActiveProps(type,'table'),tooltip:"Les éléments de listes s'affichent dans un tableau",code:'table',icon:tableIcon,label:'Tableau'},

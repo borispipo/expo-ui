@@ -56,8 +56,6 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
     const items = React.useStableMemo(()=>{
         const items = [];
         selectedRef.current = null;
-        //let currentSelectedValue = value;
-        const isValueDifferent = !compare(defaultValue,value);
         Object.map(menuItems,(item,index,_index)=>{
             if(React.isValidElement(item) || !filter({items:menuItems,item,_index,index})) return null;
             let backupItem = item;
@@ -84,16 +82,13 @@ const  SimpleSelect = React.forwardRef((props,ref)=>{
             }
             mItem.content = content;
             mItem.textContent = React.getTextContent(rText) || React.getTextContent(content);
-            if(isValueDifferent && itValue !== undefined && compare(defaultValue,itValue)){
-                selectedRef.current = mItem;
-                //currentSelectedValue = defaultValue;
-            } else if(isSelected(itValue,index)){
+            if(isSelected(itValue,index)){
                 selectedRef.current = mItem;
             }
             items.push(mItem);
         });
         return items;
-    },[menuItems,defaultValue,value]);
+    },[menuItems,value]);
     React.useEffect(()=>{
         if(compare(defaultValue,value)) {
             return;

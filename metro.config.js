@@ -28,7 +28,7 @@ module.exports = function(){
      "db",
      "txt"
   ];
-  ["txt",'jsx', 'js','tsx','cjs','mjs'].map((ex)=>{
+  ["txt",'tsx','ts','jsx', 'js','cjs','mjs'].map((ex)=>{
     if(!config.resolver.sourceExts.includes(ex)){
       config.resolver.sourceExts.push(ex);
     }

@@ -7,7 +7,7 @@
     "clear-npx-cache": "npx clear-npx-cache",
     "publish1": "npm publish --access=public",
     "unpublish": "npm -f unpublish @fto-consult/expo-ui",
-    "build-web": "",
+    "build-web": "npx expo export -p web",
     "start": "npx expo start --dev --no-minify",
     "start-d": "npx expo start -c --no-dev --no-minify",
     "start-p": "npm run start-d",
